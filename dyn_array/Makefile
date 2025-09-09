@@ -39,6 +39,7 @@ AR= ar
 CC= cc
 CHECKNR= checknr
 CMP= cmp
+CP= cp
 CTAGS= ctags
 GREP= grep
 INDEPEND= independ
@@ -218,12 +219,17 @@ SH_FILES=
 # all man pages that NOT built and NOT removed by make clobber
 #
 MAN1_PAGES=
-MAN3_PAGES= man/man3/dyn_array.3 \
+
+DYN_ARRAY_MAN3= man/man3/dyn_array.3
+DYN_ARRAY_MAN3_DUPS= \
 	man/man3/dyn_array_rewind.3 man/man3/dyn_array_free.3 man/man3/dyn_array_seek.3 \
 	man/man3/dyn_array_append_value.3 man/man3/dyn_array_append_set.3 \
 	man/man3/dyn_array_concat_array.3 man/man3/dyn_array_avail.3 man/man3/dyn_array_clear.3 \
 	man/man3/dyn_array_tell.3 man/man3/dyn_array_beyond.3 man/man3/dyn_array_addr.3 \
-	man/man3/dyn_array_alloced.3 man/man3/dyn_array_create.3
+	man/man3/dyn_array_alloced.3 man/man3/dyn_array_create.3 man/man3/dyn_array_qsort.3 \
+# NON_STANDARD_SORT	man/man3/dyn_array_alloced.3 man/man3/dyn_array_create.3 man/man3/dyn_array_qsort.3
+
+MAN3_PAGES= ${DYN_ARRAY_MAN3} ${DYN_ARRAY_MAN3_DUPS}
 MAN8_PAGES=
 ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
 
@@ -386,6 +392,15 @@ dyn_test.o: dyn_test.c dyn_array.h
 
 dyn_test: dyn_test.o dyn_array.o
 	${CC} ${CFLAGS} dyn_test.o dyn_array.o -o dyn_test
+
+# form the duplicate copies of the `dyn_array(3)` man page
+#
+${DYN_ARRAY_MAN3_DUPS}: ${DYN_ARRAY_MAN3}
+	@for i in ${DYN_ARRAY_MAN3_DUPS}; do \
+	    if ! ${CMP} -s ${DYN_ARRAY_MAN3} "$$i" > /dev/null 2>&1; then \
+		${CP} -f -p -v ${DYN_ARRAY_MAN3} "$$i"; \
+	    fi; \
+	done
 
 
 ####################################

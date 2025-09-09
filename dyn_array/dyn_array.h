@@ -1,7 +1,7 @@
 /*
  * dyn_array - dynamic array facility
  *
- * Copyright (c) 2014,2015,2022-2024 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2014,2015,2022-2025 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -37,6 +37,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
+#include <sys/errno.h>
 
 
 /*
@@ -63,7 +64,7 @@
 /*
  * official version
  */
-#define DYN_ARRAY_VERSION "2.3.1 2024-08-28"	/* format: major.minor YYYY-MM-DD */
+#define DYN_ARRAY_VERSION "2.4.0 2024-09-08"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -166,6 +167,25 @@ extern bool dyn_array_concat_array(struct dyn_array *array, struct dyn_array *ot
 extern bool dyn_array_seek(struct dyn_array *array, off_t offset, int whence);
 extern void dyn_array_clear(struct dyn_array *array);
 extern void dyn_array_free(struct dyn_array *array);
+/**/
+extern void dyn_array_qsort(struct dyn_array *array, int (*compar)(const void *, const void *));
+
+
+#if defined(NON_STANDARD_SORT)
+
+/*
+ * NON_STANDARD_SORT
+ *
+ * It is sad that qsort_r() is not part of the standard C library as of 2025.  Worse yet, clang libc and gnu libc
+ * put the thunk argument in different positions in the comparison library.
+ *
+ * It is sad that both heapsort() and mergesort() part of the standard C library as of 2025.
+ */
+extern void dyn_array_qsort_r(struct dyn_array *array, void *thunk, int (*compar)(void *, const void *, const void *));
+extern int dyn_array_heapsort(struct dyn_array *array, int (*compar)(const void *, const void *));
+extern int dyn_array_mergesort(struct dyn_array *array, int (*compar)(const void *, const void *));
+
+#endif /* NON_STANDARD_SORT */
 
 
 #endif		/* INCLUDE_DYN_ARRAY_H */

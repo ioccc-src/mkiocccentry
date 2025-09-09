@@ -1,6 +1,26 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.6.4 2025-09-08
+
+Update `dyn_array` to use the `DYN_ARRAY_VERSION` "2.4.0 2024-09-08".
+This update adds the new `dyn_array_qsort(3)` function.
+
+Add missing `CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `LICENSE`
+and `SECURITY.md` from both the [dbg repo](https://github.com/lcn2/dbg)
+and the [dyn_array repo](https://github.com/lcn2/dyn_array).
+Those files are compatible with this repo.  Including them is OK
+and makes comparing with the repo easier.
+
+Updated `jparse/jsemtblgen.c` to use the new `dyn_array_qsort(3)` function.
+
+**NOTE**: This requires installing `DYN_ARRAY_VERSION` "2.4.0 2024-09-08"
+from he [dyn_array repo](https://github.com/lcn2/dyn_array).
+
+Updated `JPARSE_REPO_VERSION` to "2.3.1 2025-09-08".
+Updated `JSEMTBLGEN_VERSION` to "2.0.3 2025-09-08".
+
+
 ## Release 2.6.3 2025-09-06
 
 Fix exit codes in `test_file_util.c` and add `test_file_util.8`.

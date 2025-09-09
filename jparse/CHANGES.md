@@ -1,5 +1,14 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.3.1 2025-09-08
+
+Updated `jparse/jsemtblgen.c` to use the new `dyn_array_qsort(3)` function
+from [dyn_array repo](https://github.com/lcn2/dyn_array) "2.4.0 2024-09-08".
+
+Updated `JPARSE_REPO_VERSION` to "2.3.1 2025-09-08".
+Updated `JSEMTBLGEN_VERSION` to "2.0.3 2025-09-08".
+
+
 ## Release 2.3.0 2025-09-01
 
 Moved nearly all of the tree and file utility functions

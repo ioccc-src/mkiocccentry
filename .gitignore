@@ -31,6 +31,8 @@ foobar
 /jparse.clone/
 /jparse.clone.lcn2/
 /jparse.clone.xexyl/
+/jparse/CODE_OF_CONDUCT.md
+/jparse/CONTRIBUTING.md
 /jparse/c.tmpfile.*.c
 /jparse/.github
 /jparse/jparse_bug_report.*.c
@@ -46,6 +48,8 @@ foobar
 /jparse/jstrencode-*.tmp
 /jparse/jstr_util-*.tmp
 /jparse/lex.jparse_.c
+/jparse/LICENSE
+/jparse/SECURITY.md
 /jparse/test_jparse/c.tmpfile.*.c
 /jparse/test_jparse/jnum_chk-*.tmp
 /jparse/test_jparse/jnum_gen-*.tmp
@@ -53,13 +57,13 @@ foobar
 /jparse/test_jparse/jstr_test2.out
 /jparse/test_jparse/jstr_test.out
 /jparse/test_jparse/pr_jparse_test-*.tmp
+/jparse/test_jparse/sed*
 /jparse_test.log
 .jparse_test.stderr.*
 /jparse/.tmp.is_available.sh.C_SRC.
 /jparse/util-*.tmp
 /jparse/verge_main-*.tmp
 /jparse/verge-*.tmp
-/jparse/test_jparse/sed*
 .local.dir.tags
 makefile.local
 /Makefile.local

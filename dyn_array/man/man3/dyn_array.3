@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH dyn_array 3  "29 January 2023" "dyn_array"
+.TH dyn_array 3  "08 September 2025" "dyn_array"
 .SH NAME
 .BR dyn_array_value() \|,
 .BR dyn_array_addr() \|,
@@ -19,12 +19,16 @@
 .BR dyn_array_avail() \|,
 .BR dyn_array_rewind() \|,
 .BR dyn_array_create() \|,
+.BR dyn_array_free() \|,
 .BR dyn_array_append_value() \|,
 .BR dyn_array_append_set() \|,
 .BR dyn_array_concat_array() \|,
 .BR dyn_array_seek() \|,
 .BR dyn_array_clear() \|,
-.BR dyn_array_free()
+.BR dyn_array_qsort()
+.\" NON_STANDARD_SORT .BR dyn_array_qsort_r() \|,
+.\" NON_STANDARD_SORT .BR dyn_array_heapsort() \|,
+.\" NON_STANDARD_SORT .BR dyn_array_mergesort()
 \- dynamic array facility
 .SH SYNOPSIS
 \fB#include "dyn_array.h"\fP
@@ -60,6 +64,14 @@
 .B "extern bool dyn_array_seek(struct dyn_array *array, off_t offset, int whence);"
 .br
 .B "extern void dyn_array_clear(struct dyn_array *array);"
+.sp
+.B "extern void dyn_array_qsort(struct dyn_array *array, int (*compar)(const void *, const void *));"
+.\" NON_STANDARD_SORT .br
+.\" NON_STANDARD_SORT .B "extern void dyn_array_qsort_r(struct dyn_array *array, void *thunk, int (*compar)(void *, const void *, const void *));"
+.\" NON_STANDARD_SORT .br
+.\" NON_STANDARD_SORT .B "extern int dyn_array_heapsort(struct dyn_array *array, int (*compar)(const void *, const void *));"
+.\" NON_STANDARD_SORT .br
+.\" NON_STANDARD_SORT .B "extern int dyn_array_mergesort(struct dyn_array *array, int (*compar)(const void *, const void *));"
 .SH DESCRIPTION
 These macros and functions provide a way to create, modify and manipulate general purpose dynamic arrays.
 .sp
@@ -245,6 +257,125 @@ which points to
 is the current version of the
 .B dyn_array
 facility.
+.SH SORTING DESCRIPTION
+The function
+.B dyn_array_qsort()
+functions sort the dynamic array
+according to the
+.BR qsort (3)
+standard C function.
+.\" NON_STANDARD_SORT .PP
+.\" NON_STANDARD_SORT The function
+.\" NON_STANDARD_SORT .B dyn_array_qsort_r()
+.\" NON_STANDARD_SORT functions sort the dynamic array
+.\" NON_STANDARD_SORT according to the
+.\" NON_STANDARD_SORT .BR qsort_r (3)
+.\" NON_STANDARD_SORT standard C function.
+.\" NON_STANDARD_SORT .PP
+.\" NON_STANDARD_SORT The
+.\" NON_STANDARD_SORT .B dyn_array_qsort_r()
+.\" NON_STANDARD_SORT sorts identically to
+.\" NON_STANDARD_SORT .B dyn_array_qsort()
+.\" NON_STANDARD_SORT except that it takes an additional argument,
+.\" NON_STANDARD_SORT .IR thunk ,
+.\" NON_STANDARD_SORT which is passed unchanged as the first argument to function pointed to
+.\" NON_STANDARD_SORT .IR compar ,
+.\" NON_STANDARD_SORT thus the
+.\" NON_STANDARD_SORT .B compar
+.\" NON_STANDARD_SORT takes 3 arguments
+.\" NON_STANDARD_SORT .RI ( thunk
+.\" NON_STANDARD_SORT and pointers to 2 elements).
+.\" NON_STANDARD_SORT This allows the comparison function to access additional data without using global variables, and thus
+.\" NON_STANDARD_SORT .B dyn_array_qsort_r()
+.\" NON_STANDARD_SORT is suitable for use in functions which must be reentrant.
+.PP
+The function
+.B dyn_array_qsort()
+.\" NON_STANDARD_SORT and the function
+.\" NON_STANDARD_SORT .B dyn_array_qsort_r()
+will perform modified partition-exchange sort, or quicksort,
+and are an implementation of C.A.R.,
+Hoare's "quicksort" algorithm, a
+variant of partition-exchange sorting.
+This takes O(N lg N) average time and uses median selection to avoid its O(N*N) worst-case behavior.
+.PP
+Although the function
+.B dyn_array_qsort()
+.\" NON_STANDARD_SORT and the function
+.\" NON_STANDARD_SORT .B dyn_array_qsort_r()
+do not explicitly allocate memory, its use of recursion does consume space on the stack.
+.PP
+.\" NON_STANDARD_SORT The function
+.\" NON_STANDARD_SORT .B dyn_array_heapsort()
+.\" NON_STANDARD_SORT functions sort the dynamic array
+.\" NON_STANDARD_SORT according to the
+.\" NON_STANDARD_SORT .BR heapsort (3)
+.\" NON_STANDARD_SORT standard C function.
+.\" NON_STANDARD_SORT .PP
+.\" NON_STANDARD_SORT The
+.\" NON_STANDARD_SORT .B dyn_array_heapsort()
+.\" NON_STANDARD_SORT function is an implementation of J.W.J. William's "heapsort" lgorithm, a variant of selection sorting.
+.\" NON_STANDARD_SORT The
+.\" NON_STANDARD_SORT .B only
+.\" NON_STANDARD_SORT advantage
+.\" NON_STANDARD_SORT .B dyn_array_heapsort()
+.\" NON_STANDARD_SORT has over
+.\" NON_STANDARD_SORT over
+.\" NON_STANDARD_SORT .B dyn_array_qsort()
+.\" NON_STANDARD_SORT and
+.\" NON_STANDARD_SORT .B dyn_array_qsort_r()
+.\" NON_STANDARD_SORT is that it uses almost no additional memory.
+.\" NON_STANDARD_SORT This takes O(N lg N) as a worst-case behavior.
+.\" NON_STANDARD_SORT .PP
+.\" NON_STANDARD_SORT The function
+.\" NON_STANDARD_SORT .B dyn_array_mergesort()
+.\" NON_STANDARD_SORT functions sort the dynamic array
+.\" NON_STANDARD_SORT according to the
+.\" NON_STANDARD_SORT .BR mergesort (3)
+.\" NON_STANDARD_SORT standard C function.
+.\" NON_STANDARD_SORT .PP
+.\" NON_STANDARD_SORT The function
+.\" NON_STANDARD_SORT .B dyn_array_mergesort()
+.\" NON_STANDARD_SORT requires additional memory on the order of the size of the dynamic array that is currently in use.
+.\" NON_STANDARD_SORT This function should be used only when space is not at a premium.
+.\" NON_STANDARD_SORT .PP
+.\" NON_STANDARD_SORT The function
+.\" NON_STANDARD_SORT .B dyn_array_mergesort()
+.\" NON_STANDARD_SORT is optimized for data with pre-existing order (mostly sorted).
+.\" NON_STANDARD_SORT This takes O(N lg N) as a worst-case behavior,
+.\" NON_STANDARD_SORT and has a best case of O(N).
+.\" NON_STANDARD_SORT .PP
+.\" NON_STANDARD_SORT In general case:
+.\" NON_STANDARD_SORT .B dyn_array_qsort()
+.\" NON_STANDARD_SORT and
+.\" NON_STANDARD_SORT .B dyn_array_qsort_r()
+.\" NON_STANDARD_SORT are faster than
+.\" NON_STANDARD_SORT .B dyn_array_mergesort()
+.\" NON_STANDARD_SORT which is faster than
+.\" NON_STANDARD_SORT .BR dyn_array_heapsort() .
+.\" NON_STANDARD_SORT However, the need for additional memory,
+.\" NON_STANDARD_SORT and the possibility of pre-existing order (mostly sorted) data
+.\" NON_STANDARD_SORT may change that relative speed order.
+.PP
+The sort algorithms implemented by the function
+.BR dyn_array_qsort()
+.\" NON_STANDARD_SORT and the function
+.\" NON_STANDARD_SORT .BR dyn_array_qsort_r() ,
+.\" NON_STANDARD_SORT and the function
+.\" NON_STANDARD_SORT .B dyn_array_heapsort()
+are
+.B NOT
+stable.
+If two dynamic array elements compare as equal, their order in the sorted array is undefined.
+Sorting the dynamic array again may change the relative order of equal dynamic array elements.
+That is, equal dynamic array elements may change their relative order during the sort, and there is
+.I NO
+ability to control the relative order of equal dynamic array elements.
+.\" NON_STANDARD_SORT .PP
+.\" NON_STANDARD_SORT The
+.\" NON_STANDARD_SORT .B dyn_array_mergesort()
+.\" NON_STANDARD_SORT is stable.
+.\" NON_STANDARD_SORT That is, equal dynamic array elements will not change change their relative order during the sort.
 .SH RETURN VALUE
 .PP
 The function
@@ -257,22 +388,46 @@ It does not return on error.
 The functions
 .BR dyn_array_append_value() \|,
 .BR dyn_array_append_set() \|,
-.BR dyn_array_concat_array()
+.BR dyn_array_concat_array() \|,
 and
-.BR dyn_array_seek()
+.B dyn_array_seek()
 return true if the address of the array of elements moved during
 .BR realloc (3).
 Otherwise they return false.
 .PP
-The functions
-.B dyn_array_clear()
+The function
+.BR dyn_array_clear() \|,
+.BR dyn_array_qsort() \|,
+.\" NON_STANDARD_SORT .BR dyn_array_qsort_r() \|,
 and
 .B dyn_array_free()
 return void.
+.\" NON_STANDARD_SORT .PP
+.\" NON_STANDARD_SORT The functions
+.\" NON_STANDARD_SORT .BR dyn_array_heapsort() \|,
+.\" NON_STANDARD_SORT and
+.\" NON_STANDARD_SORT .B dyn_array_mergesort()
+.\" NON_STANDARD_SORT return the value 0 if successful,
+.\" NON_STANDARD_SORT and set the global variable
+.\" NON_STANDARD_SORT .B errno
+.\" NON_STANDARD_SORT to
+.\" NON_STANDARD_SORT .BR 0 .
+.\" NON_STANDARD_SORT They return
+.\" NON_STANDARD_SORT .B \-1
+.\" NON_STANDARD_SORT if a sorting error is encountered, and the underlying standard C function changes the global variable
+.\" NON_STANDARD_SORT to indicate the error.
 .SH EXAMPLE
 For an example program that uses the dynamic array facility see the files
 .I dyn_test.h
 and
 .IR dyn_test.c .
+.SH SEE ALSO
+.\" NON_STANDARD_SORT .BR heapsort (3),
+.BR memset (3),
+.\" NON_STANDARD_SORT .BR mergesort (3),
+.BR qsort (3),
+.\" NON_STANDARD_SORT .BR qsort_r (3),
+and
+.BR realloc (3).
 .SH HISTORY
 The dyn_array facility was first written by Landon Curt Noll in 2014 for use in tools such as STS (see the https://github.com/arcetri/STS GitHub repo).

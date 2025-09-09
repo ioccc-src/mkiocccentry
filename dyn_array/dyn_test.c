@@ -1,7 +1,7 @@
 /*
  * dyn_array_test - test the dynamic array facility
  *
- * Copyright (c) 2014,2015,2022-2024 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2014,2015,2022-2025 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -48,6 +48,8 @@
  */
 #define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
 #define CHUNK (1024)		/* allocate CHUNK elements at a time */
+#define DEFAULT_SEED (23209)	/* default seed used when calling srandom() */
+#define MAX_RANDOM (0x7fffffff)	/* maximum value returned by random() */
 
 /*
  * usage message
@@ -55,11 +57,12 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V]\n"
+    "usage: %s [-h] [-v level] [-V] [-s seed]\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
     "\t-V\t\tprint version string and exit\n"
+    "\t-s seed\t\tset seed for srandom() (def: %u)\n"
     "\n"
     "\n"
     "Exit codes:\n"
@@ -76,20 +79,27 @@ static const char * const usage_msg =
 /*
  * forward declarations
  */
+static int dbl_cmp(const void *pa, const void *pb);
+#if defined(NON_STANDARD_SORT)
+static int thunk_dbl_cmp(void *pthunk, const void *pa, const void *pb);
+#endif /* NON_STANDARD_SORT */
 static void usage(int exitcode, char const *str, char const *prog) __attribute__((noreturn));
 
 
+#if !defined(DBG_USE)
+
 /*
- * dbg forward declarations
+ * dbg defines and forward declarations
  *
  * NOTICE: What follows are declarations lifted from dbg.c in the dbg repo:
  *
  *	https://github.com/lcn2/dbg
  *
- * We reproduce it here so that one may run this test code here without having to have
- * access to the dbg repo source code.
+ *	These defines and forward declarations are used when DBG_USE is NOT defined.
+ *	This allows dyn_test to be compiled without requiring the dbg.h file to be installed.
+ *	We reproduce dbg defines and forward declarations  here so that one may run this test
+ *	code here without having to have access to the dbg repo source code.
  */
-#if !defined(DBG_USE)
 
 #  if !defined(DBG_NONE)
 #  define DBG_NONE (0)		   /* no debugging */
@@ -99,6 +109,28 @@ static void usage(int exitcode, char const *str, char const *prog) __attribute__
 #  define DBG_DEFAULT (DBG_NONE)  /* default debugging level */
 #  endif
 
+
+/*
+ * not_reached
+ *
+ * In the old days of lint, one could give lint and friends a hint by
+ * placing the token NOTREACHED immediately between opening and closing
+ * comments.  Modern compilers do not honor such commented tokens
+ * and instead rely on features such as __builtin_unreachable
+ * and __attribute__((noreturn)).
+ *
+ * The not_reached will either yield a __builtin_unreachable() feature call,
+ * or it will call abort from stdlib.
+ */
+#if __has_builtin(__builtin_unreachable)
+#    define not_reached() __builtin_unreachable()
+#else
+#    define not_reached() abort()
+#endif /* __has_builtin(__builtin_unreachable) */
+
+/*
+ * globals for debugging
+ */
 int verbosity_level = DBG_DEFAULT;	/* maximum debug level for debug messages */
 bool dbg_output_allowed = true;		/* false ==> disable debug messages */
 bool warn_output_allowed = true;	/* false ==> disable warning messages */
@@ -106,8 +138,13 @@ bool err_output_allowed = true;		/* false ==> disable error messages */
 bool usage_output_allowed = true;	/* false ==> disable usage messages */
 bool msg_warn_silent = false;		/* true ==> silence info & warnings if verbosity_level <= 0 */
 
+/*
+ * forward declarations
+ */
 static void fdbg_write(FILE *stream, char const *caller, int level, char const *fmt, va_list ap);
 static void fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt, va_list ap);
+static void ferr_write(FILE *stream, int error_code, char const *caller,
+		       char const *name, char const *fmt, va_list ap);
 static void ferrp_write(FILE *stream, int error_code, char const *caller,
 			char const *name, char const *fmt, va_list ap);
 static void fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt, va_list ap);
@@ -120,11 +157,123 @@ bool usage_allowed(void);
 void dbg(int level, char const *fmt, ...);
 void fwarn(FILE *stream, char const *name, char const *fmt, ...);
 void warnp(char const *name, char const *fmt, ...);
+void err(int exitcode, char const *name, char const *fmt, ...);
 void errp(int exitcode, char const *name, char const *fmt, ...);
 void fprintf_usage(int exitcode, FILE *stream, char const *fmt, ...);
 int parse_verbosity(char const *optarg);
 void check_invalid_option(char const *prog, int ch, int opt);
-#endif
+
+#endif /* !DBG_USE */
+
+
+/*
+ * dbl_cmp - compare doubles for sorting
+ *
+ * given:
+ *	pa	    pointer to a
+ *	pb	    pointer to b
+ *
+ * returns
+ *	-1 ==> a < b
+ *	0  ==> a == b
+ *	1  ==> a > b
+ */
+static int
+dbl_cmp(const void *pa, const void *pb)
+{
+    double a, b;	    /* values to compare */
+
+    /*
+     * firewall - paranoia
+     */
+    if (pa == NULL) {
+	err(10, __func__, "pa is NULL");    /*ooo*/
+	not_reached();
+    }
+    if (pb == NULL) {
+	err(11, __func__, "pb is NULL");
+	not_reached();
+    }
+
+    /*
+     * compare
+     */
+    a = *(double *)pa;
+    b = *(double *)pb;
+    if (a < b) {
+	return -1;
+    } else if (a > b) {
+	return 1;
+    }
+    return 0;
+}
+
+
+#if defined(NON_STANDARD_SORT)
+
+/*
+ * NON_STANDARD_SORT
+ *
+ * It is sad that qsort_r() is not part of the standard C library as of 2025.  Worse yet, clang libc and gnu libc
+ * put the thunk argument in different positions in the comparison library.
+ *
+ * It is sad that both heapsort() and mergesort() part of the standard C library as of 2025.
+ */
+
+
+/*
+ * thunk_dbl_cmp - compare doubles for sorting with a thunk value for use by qsort_r(3)
+ *
+ * given:
+ *	pthunk	    pointer to a thunk
+ *	pa	    pointer to a
+ *	pb	    pointer to b
+ *
+ * returns
+ *	-1 ==> a < b
+ *	0  ==> a == b
+ *	1  ==> a > b
+ */
+static int
+thunk_dbl_cmp(void *pthunk, const void *pa, const void *pb)
+{
+    double a, b;	    /* values to compare */
+
+    /*
+     * firewall - paranoia
+     */
+    if (pthunk == NULL) {
+	err(12, __func__, "pthunk is NULL");
+	not_reached();
+    }
+    if (pa == NULL) {
+	err(13, __func__, "pa is NULL");
+	not_reached();
+    }
+    if (pb == NULL) {
+	err(14, __func__, "pb is NULL");
+	not_reached();
+    }
+
+    /*
+     * increment thunk
+     */
+    ++(*(intmax_t *)pthunk);
+
+    /*
+     * compare
+     */
+    a = *(double *)pa;
+    b = *(double *)pb;
+    if (a < b) {
+	return -1;
+    } else if (a > b) {
+	return 1;
+    }
+    return 0;
+}
+
+#endif /* NON_STANDARD_SORT */
 
 
 int
@@ -135,13 +284,18 @@ main(int argc, char *argv[])
     double d;			/* test double */
     bool error = false;		/* true ==> test error found */
     intmax_t len = 0;		/* length of the dynamic array */
+#if defined(NON_STANDARD_SORT)
+    intmax_t thunk = 0;		/* qsort_r(3) compare count */
+    int ret;				/* dyn_array_heapsort() or dyn_array_mergesort() return */
+#endif /* NON_STANDARD_SORT */
+    unsigned long seed = DEFAULT_SEED;	/* seed for random(3) */
     int i;
 
     /*
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:V")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:Vs:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, ""); /*ooo*/
@@ -161,6 +315,14 @@ main(int argc, char *argv[])
 	    (void) printf("%s version: %s\n", DYN_TEST_BASENAME, DYN_TEST_VERSION);
 	    exit(2); /*ooo*/
 	    not_reached();
+	    break;
+	case 's':
+	    errno = 0;
+	    seed = strtoul(optarg, NULL, 0);
+	    if (errno != 0) {
+		err(15, __func__, "strtoul error");
+		not_reached();
+	    }
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
@@ -185,6 +347,7 @@ main(int argc, char *argv[])
     /*
      * load a million doubles
      */
+    dbg(DBG_LOW, "loading a million doubles into array");
     for (d = 0.0; d < 1000000.0; d += 1.0) {
 	if (dyn_array_append_value(array, &d)) {
 	    dbg(DBG_LOW, "moved data after appending d: %f", d);
@@ -213,9 +376,104 @@ main(int argc, char *argv[])
     dbg(DBG_VHIGH, "array size is %ju", (uintmax_t)len);
 
     /*
+     * qsort array that is already sorted
+     */
+    dbg(DBG_MED, "dyn_array_qsort() array, that is already sorted, using dbl_cmp");
+    dyn_array_qsort(array, dbl_cmp);
+
+    /*
+     * verify array is sorted
+     */
+    dbg(DBG_HIGH, "verify array is sorted after dyn_array_qsort()");
+    for (i = 1; i < 1000000; ++i) {
+	if ((intmax_t)dyn_array_value(array, double, i) < (intmax_t)dyn_array_value(array, double, i-1)) {
+	    warn(__func__, "array not sorted: array[%d]: %f < array[%d]: %f",
+			   i, dyn_array_value(array, double, i), i-1, dyn_array_value(array, double, i-1));
+	}
+    }
+    dbg(DBG_LOW, "successful sort of array, that is already sorted, by dyn_array_qsort()");
+
+
+#if defined(NON_STANDARD_SORT)
+
+/*
+ * NON_STANDARD_SORT
+ *
+ * It is sad that qsort_r() is not part of the standard C library as of 2025.  Worse yet, clang libc and gnu libc
+ * put the thunk argument in different positions in the comparison library.
+ *
+ * It is sad that both heapsort() and mergesort() part of the standard C library as of 2025.
+ */
+
+    /*
+     * qsort_r array that is already sorted
+     */
+    thunk = 0;
+    dbg(DBG_MED, "dyn_array_qsort_r() array, that is already sorted, using dbl_cmp");
+    dyn_array_qsort_r(array, &thunk, thunk_dbl_cmp);
+
+    /*
+     * verify array is sorted
+     */
+    dbg(DBG_HIGH, "verify array is sorted after dyn_array_qsort_r()");
+    for (i = 1; i < 1000000; ++i) {
+	if ((intmax_t)dyn_array_value(array, double, i) < (intmax_t)dyn_array_value(array, double, i-1)) {
+	    warn(__func__, "array not sorted: array[%d]: %f < array[%d]: %f",
+			   i, dyn_array_value(array, double, i), i-1, dyn_array_value(array, double, i-1));
+	}
+    }
+    dbg(DBG_LOW, "successful sort of array, that is already sorted, by dyn_array_qsort_r(), thunk: %jd", thunk);
+
+    /*
+     * heapsort array that is already sorted
+     */
+    dbg(DBG_MED, "dyn_array_heapsort() array, that is already sorted, using dbl_cmp");
+    ret = dyn_array_heapsort(array, dbl_cmp);
+    if (ret != 0) {
+	errp(16, __func__, "dyn_array_heapsort() error: %d", ret);
+	not_reached();
+    }
+
+    /*
+     * verify array is sorted
+     */
+    dbg(DBG_HIGH, "verify array is sorted after dyn_array_heapsort()");
+    for (i = 1; i < 1000000; ++i) {
+	if ((intmax_t)dyn_array_value(array, double, i) < (intmax_t)dyn_array_value(array, double, i-1)) {
+	    warn(__func__, "array not sorted: array[%d]: %f < array[%d]: %f",
+			   i, dyn_array_value(array, double, i), i-1, dyn_array_value(array, double, i-1));
+	}
+    }
+    dbg(DBG_LOW, "successful sort of array, that is already sorted, by dyn_array_heapsort()");
+
+    /*
+     * mergesort array that is already sorted
+     */
+    dbg(DBG_MED, "dyn_array_mergesort() array, that is already sorted, using dbl_cmp");
+    ret = dyn_array_mergesort(array, dbl_cmp);
+    if (ret != 0) {
+	errp(17, __func__, "dyn_array_mergesort() error: %d", ret);
+	not_reached();
+    }
+
+#endif /* NON_STANDARD_SORT */
+
+    /*
+     * verify array is sorted
+     */
+    dbg(DBG_HIGH, "verify array is sorted after dyn_array_mergesort()");
+    for (i = 1; i < 1000000; ++i) {
+	if ((intmax_t)dyn_array_value(array, double, i) < (intmax_t)dyn_array_value(array, double, i-1)) {
+	    warn(__func__, "array not sorted: array[%d]: %f < array[%d]: %f",
+			   i, dyn_array_value(array, double, i), i-1, dyn_array_value(array, double, i-1));
+	}
+    }
+    dbg(DBG_LOW, "successful sort of array, that is already sorted, by dyn_array_mergesort()");
+
+    /*
      * concatenate the array onto itself
      */
-    dbg(DBG_MED, "concatenating array on to itself");
+    dbg(DBG_LOW, "concatenating array on to itself");
     if (dyn_array_concat_array(array, array)) {
 	dbg(DBG_LOW, "moved data after concatenation");
     }
@@ -247,6 +505,171 @@ main(int argc, char *argv[])
     }
 
     /*
+     * append random double values
+     */
+    dbg(DBG_LOW, "appending a million doubles onto the array");
+    srandom((unsigned) seed);
+    for (i = 0; i < 1000000; ++i) {
+	d = ((double)1000000.0 * (double)random() / ((double)MAX_RANDOM)) + ((double)random() / ((double)MAX_RANDOM));
+	if (dyn_array_append_value(array, &d)) {
+	    dbg(DBG_LOW, "#0: moved data after append %d of d: %f", i, d);
+	}
+    }
+    len = dyn_array_tell(array);
+    dbg(DBG_LOW, "array size after appending random double values: %jd", len);
+
+    /*
+     * qsort array that as quasi-sorted
+     */
+    dbg(DBG_LOW, "calling dyn_array_qsort() array, that as quasi-sorted, using dbl_cmp");
+    dyn_array_qsort(array, dbl_cmp);
+
+    /*
+     * append more random double values
+     */
+    dbg(DBG_LOW, "appending a million more doubles onto the array");
+    srandom((unsigned) seed);
+    for (i = 0; i < 1000000; ++i) {
+	d = ((double)1000000.0 * (double)random() / ((double)MAX_RANDOM)) + ((double)random() / ((double)MAX_RANDOM));
+	if (dyn_array_append_value(array, &d)) {
+	    dbg(DBG_LOW, "#1: moved data after append %d of d: %f", i, d);
+	}
+    }
+    len = dyn_array_tell(array);
+    dbg(DBG_LOW, "array size after appending more random double values: %jd", len);
+
+    /*
+     * verify array is sorted
+     */
+    dbg(DBG_HIGH, "verify array is sorted after dyn_array_qsort()");
+    for (i = 1; i < 1000000; ++i) {
+	if ((intmax_t)dyn_array_value(array, double, i) < (intmax_t)dyn_array_value(array, double, i-1)) {
+	    warn(__func__, "array not sorted: array[%d]: %f < array[%d]: %f",
+			   i, dyn_array_value(array, double, i), i-1, dyn_array_value(array, double, i-1));
+	}
+    }
+    dbg(DBG_LOW, "successful sort of that as quasi-sorted, by dyn_array_qsort()");
+
+
+#if defined(NON_STANDARD_SORT)
+
+/*
+ * NON_STANDARD_SORT
+ *
+ * It is sad that qsort_r() is not part of the standard C library as of 2025.  Worse yet, clang libc and gnu libc
+ * put the thunk argument in different positions in the comparison library.
+ *
+ * It is sad that both heapsort() and mergesort() part of the standard C library as of 2025.
+ */
+
+    /*
+     * append yet more random double values
+     */
+    dbg(DBG_LOW, "appending a 2nd million more doubles onto the array");
+    srandom((unsigned) seed);
+    for (i = 0; i < 1000000; ++i) {
+	d = ((double)1000000.0 * (double)random() / ((double)MAX_RANDOM)) + ((double)random() / ((double)MAX_RANDOM));
+	if (dyn_array_append_value(array, &d)) {
+	    dbg(DBG_LOW, "#1: moved data after append %d of d: %f", i, d);
+	}
+    }
+    len = dyn_array_tell(array);
+    dbg(DBG_LOW, "array size after appending yet more random double values: %jd", len);
+
+    /*
+     * qsort_r array that as quasi-sorted
+     */
+    thunk = 0;
+    dbg(DBG_LOW, "calling dyn_array_qsort_r() array, that as quasi-sorted, using dbl_cmp");
+    dyn_array_qsort_r(array, &thunk, thunk_dbl_cmp);
+
+    /*
+     * verify array is sorted
+     */
+    dbg(DBG_HIGH, "verify array is sorted after dyn_array_qsort_r()");
+    for (i = 1; i < 1000000; ++i) {
+	if ((intmax_t)dyn_array_value(array, double, i) < (intmax_t)dyn_array_value(array, double, i-1)) {
+	    warn(__func__, "array not sorted: array[%d]: %f < array[%d]: %f",
+			   i, dyn_array_value(array, double, i), i-1, dyn_array_value(array, double, i-1));
+	}
+    }
+    dbg(DBG_LOW, "successful sort of that as quasi-sorted, by dyn_array_qsort_r(), thunk: %jd", thunk);
+
+    /*
+     * append even more random double values
+     */
+    dbg(DBG_LOW, "appending another million more doubles onto the array");
+    srandom((unsigned) seed);
+    for (i = 0; i < 1000000; ++i) {
+	d = ((double)1000000.0 * (double)random() / ((double)MAX_RANDOM)) + ((double)random() / ((double)MAX_RANDOM));
+	if (dyn_array_append_value(array, &d)) {
+	    dbg(DBG_LOW, "#2: moved data after append %d of d: %f", i, d);
+	}
+    }
+    len = dyn_array_tell(array);
+    dbg(DBG_LOW, "array size after appending even more random double values: %jd", len);
+
+    /*
+     * heapsort array that as quasi-sorted
+     */
+    dbg(DBG_LOW, "calling dyn_array_heapsort() array, that as quasi-sorted, using dbl_cmp");
+    ret = dyn_array_heapsort(array, dbl_cmp);
+    if (ret != 0) {
+	errp(18, __func__, "dyn_array_heapsort() error: %d", ret);
+	not_reached();
+    }
+
+    /*
+     * verify array is sorted
+     */
+    dbg(DBG_HIGH, "verify array is sorted after dyn_array_heapsort()");
+    for (i = 1; i < 1000000; ++i) {
+	if ((intmax_t)dyn_array_value(array, double, i) < (intmax_t)dyn_array_value(array, double, i-1)) {
+	    warn(__func__, "array not sorted: array[%d]: %f < array[%d]: %f",
+			   i, dyn_array_value(array, double, i), i-1, dyn_array_value(array, double, i-1));
+	}
+    }
+    dbg(DBG_LOW, "successful sort of that as quasi-sorted, by dyn_array_heapsort()");
+
+    /*
+     * append yet even more random double values
+     */
+    dbg(DBG_LOW, "appending yet another million more doubles onto the array");
+    srandom((unsigned) seed);
+    for (i = 0; i < 1000000; ++i) {
+	d = ((double)1000000.0 * (double)random() / ((double)MAX_RANDOM)) + ((double)random() / ((double)MAX_RANDOM));
+	if (dyn_array_append_value(array, &d)) {
+	    dbg(DBG_LOW, "#3: moved data after append %d of d: %f", i, d);
+	}
+    }
+    len = dyn_array_tell(array);
+    dbg(DBG_LOW, "array size after appending yet even more random double values: %jd", len);
+
+    /*
+     * mergesort array that as quasi-sorted
+     */
+    dbg(DBG_LOW, "calling dyn_array_mergesort() array, that as quasi-sorted, using dbl_cmp");
+    ret = dyn_array_mergesort(array, dbl_cmp);
+    if (ret != 0) {
+	errp(19, __func__, "dyn_array_mergesort() error: %d", ret);
+	not_reached();
+    }
+
+    /*
+     * verify array is sorted
+     */
+    dbg(DBG_HIGH, "verify array is sorted after dyn_array_mergesort()");
+    for (i = 1; i < 1000000; ++i) {
+	if ((intmax_t)dyn_array_value(array, double, i) < (intmax_t)dyn_array_value(array, double, i-1)) {
+	    warn(__func__, "array not sorted: array[%d]: %f < array[%d]: %f",
+			   i, dyn_array_value(array, double, i), i-1, dyn_array_value(array, double, i-1));
+	}
+    }
+    dbg(DBG_LOW, "successful sort of that as quasi-sorted, by dyn_array_mergesort()");
+
+#endif /* NON_STANDARD_SORT */
+
+    /*
      * free dynamic array
      */
     if (array != NULL) {
@@ -272,8 +695,8 @@ main(int argc, char *argv[])
  *
  * given:
  *	exitcode        value to exit with
+ *	prog		our program name
  *	str		top level usage message
- *	program		our program name
  *
  * NOTE: We warn with extra newlines to help internal fault messages stand out.
  *       Normally one should NOT include newlines in warn messages.
@@ -302,11 +725,15 @@ usage(int exitcode, char const *prog, char const *str)
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
 
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, DYN_TEST_BASENAME, DYN_TEST_VERSION, dyn_array_version);
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, DEFAULT_SEED,
+						     DYN_TEST_BASENAME, DYN_TEST_VERSION,
+						     dyn_array_version);
     exit(exitcode); /*ooo*/
     not_reached();
 }
 
+
+#if !defined(DBG_USE)
 
 /*
  * NOTICE: What follows is code lifted from dbg.c in the dbg repo:
@@ -318,7 +745,6 @@ usage(int exitcode, char const *prog, char const *str)
  */
 
 
-#if !defined(DBG_USE)
 /*
  * fdbg_write - write a diagnostic message to a stream
  *
@@ -504,6 +930,104 @@ fwarn_write(FILE *stream, char const *caller, char const *name, char const *fmt,
 	/* we cannot call warn() because that would produce an infinite loop! */
 	(void) fprintf(stream, "\nWarning: %s: in %s(stream, %s, %s, %s, ap): fflush returned error: %s\n",
 			       caller, __func__, caller, name, fmt, strerror(errno));
+    }
+
+    /*
+     * restore previous errno value
+     */
+    errno = saved_errno;
+    return;
+}
+
+
+/*
+ * ferr_write - write an error diagnostic, to a stream
+ *
+ * Write a formatted an error diagnostic to a stream.
+ *
+ * given:
+ *	stream		open stream on which to write
+ *	error_code	error code
+ *	caller		name of the calling function
+ *	name		name of function issuing the error diagnostic
+ *	fmt		format of the warning
+ *	ap		variable argument list
+ *
+ * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
+ *	 this function does nothing (just returns).
+ *
+ * NOTE: If stderr is NULL, this function will not issue warnings about print errors.
+ *
+ * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
+ *	 Normally one should NOT include newlines in warn messages.
+ */
+static void
+ferr_write(FILE *stream, int error_code, char const *caller,
+	   char const *name, char const *fmt, va_list ap)
+{
+    int ret;		/* libc function return code */
+    int saved_errno;	/* errno at function start */
+
+    /*
+     * firewall - if stream is NULL, try stderr
+     */
+    if (stream == NULL) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "called with NULL stream, will use stderr");
+	}
+	stream = stderr;
+    }
+
+    /*
+     * firewall - just return if given a NULL ptr
+     */
+    if (stream == NULL || caller == NULL || name == NULL || fmt == NULL) {
+	return;
+    }
+
+    /*
+     * save errno so we can restore it before returning
+     */
+    saved_errno = errno;
+
+    /*
+     * write error diagnostic header to stream
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = fprintf(stream, "ERROR[%d]: %s: ", error_code, name);
+    if (ret < 0) {
+	warnp(caller, "\nin %s(stream, %s, %d, %s, %s, ap): fprintf error\n",
+			       __func__, caller, error_code, name, fmt);
+    }
+
+    /*
+     * write error diagnostic warning to stream
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = vfprintf(stream, fmt, ap);
+    if (ret < 0) {
+	warnp(caller, "\nin %s(stream, %s, %d, %s, %s, ap): vfprintf error\n",
+			       __func__, caller, error_code, name, fmt);
+    }
+
+    /*
+     * write final newline to stream
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = fputc('\n', stream);
+    if (ret != '\n') {
+	warnp(caller, "\nin %s(stream, %s, %d, %s, %s, ap): fputc error\n",
+			       __func__, caller, error_code, name, fmt);
+    }
+
+    /*
+     * flush the stream
+     */
+    errno = 0;		/* pre-clear errno for warnp() */
+    ret = fflush(stream);
+    if (ret < 0) {
+	warnp(caller, "\nin %s(stream, %s, %d, %s, %s, ap): fflush error\n",
+			       __func__, caller, error_code, name, fmt);
     }
 
     /*
@@ -1118,6 +1642,98 @@ warnp(char const *name, char const *fmt, ...)
 
 
 /*
+ * err - write a fatal error message to stderr before exiting
+ *
+ * given:
+ *	exitcode	value to exit with
+ *	name		name of function issuing the error
+ *	fmt		format of the warning
+ *	...		optional format args
+ *
+ * Example:
+ *
+ *	err(1, __func__, "bad foobar: %s", message);
+ *
+ * This function does not return.
+ *
+ * NOTE: If stderr is NULL, this function does nothing (just exits).
+ */
+void
+err(int exitcode, char const *name, char const *fmt, ...)
+{
+    va_list ap;			/* variable argument list */
+    bool allowed = false;	/* true ==> output is allowed */
+
+    /*
+     * stage 0: determine if conditions allow function to write, exit if not
+     */
+    allowed = err_allowed();
+    if (allowed == false) {
+	exit((exitcode < 0 || exitcode > 255) ? 255 : exitcode);
+	not_reached();
+    }
+
+    /* stage 1: we will not return so we do not need to save errno */
+
+    /*
+     * stage 2: stdarg variable argument list setup
+     */
+    va_start(ap, fmt);
+
+    /*
+     * stage 3: firewall checks
+     */
+    if (exitcode < 0) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nexitcode < 0: %d\n", exitcode);
+        }
+	exitcode = 255;
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+        }
+    } else if (exitcode > 255) {
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nexitcode > 255: %d\n", exitcode);
+        }
+	exitcode = 255;
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nforcing use of exit code: %d\n", exitcode);
+        }
+    }
+    if (name == NULL) {
+	name = "((NULL name))";
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nname is NULL, forcing name to be: %s", name);
+        }
+    }
+    if (fmt == NULL) {
+	fmt = "((NULL fmt))";
+	if (stderr != NULL) {
+	    fwarn(stderr, __func__, "\nfmt is NULL, forcing fmt to be: %s", fmt);
+        }
+    }
+
+    /*
+     * stage 4: write error diagnostic
+     */
+    if (stderr != NULL) {
+	ferr_write(stderr, exitcode, __func__, name, fmt, ap);
+    }
+
+    /*
+     * stage 5: stdarg variable argument list cleanup
+     */
+    va_end(ap);
+
+    /*
+     * stage 6: do not restore errno, just exit
+     */
+    exit(exitcode);
+    not_reached();
+}
+
+
+/*
  * errp - write a fatal error message with errno details to stderr before exiting
  *
  * given:
@@ -1381,4 +1997,5 @@ check_invalid_option(char const *prog, int ch, int opt)
     }
     return;
 }
-#endif /* !defined(DBG_USE) */
+
+#endif /* !DBG_USE */

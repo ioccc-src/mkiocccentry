@@ -1,7 +1,7 @@
 /*
  * dyn_array - dynamic array facility
  *
- * Copyright (c) 2014,2015,2022-2024 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2014,2015,2022-2025 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -1546,3 +1546,312 @@ dyn_array_free(struct dyn_array *array)
 
     return;
 }
+
+
+/*
+ * dyn_array_qsort - use the qsort(3) facility on a dynamic array
+ *
+ * The contents of the array base are sorted in ascending order according to a comparison function pointed
+ * to by compar, which requires two arguments pointing to the objects being compared.
+ (
+ * The comparison function must return an integer less than, equal to, or greater than zero if the first
+ * argument is considered to be respectively less than, equal to, or greater than the second.
+ *
+ * given:
+ *      array           - pointer to the dynamic array
+ *	compar		- comparison function pointing to the objects being compared
+ *
+ * NOTE: This function does not return on error.
+ */
+void
+dyn_array_qsort(struct dyn_array *array, int (*compar)(const void *, const void *))
+{
+    /*
+     * Check preconditions (firewall) - sanity check args
+     */
+    if (array == NULL) {
+	err(131, __func__, "array arg is NULL");
+	not_reached();
+    }
+    if (compar == NULL) {
+	err(132, __func__, "compar arg is NULL");
+	not_reached();
+    }
+
+    /*
+     * Check preconditions (firewall) - sanity check array
+     */
+    if (array->data == NULL) {
+	err(133, __func__, "array->data in dynamic array is NULL");
+	not_reached();
+    }
+    if (array->elm_size <= 0) {
+	err(134, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	not_reached();
+    }
+    if (array->chunk <= 0) {
+	err(135, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	not_reached();
+    }
+    if (array->allocated <= 0) {
+	err(136, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
+	not_reached();
+    }
+    if (array->count > array->allocated) {
+	err(137, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
+			  array->count, array->allocated);
+	not_reached();
+    }
+
+    /*
+     * quick return - less than 2 elements means nothing to sort
+     */
+    if (array->count < 2) {
+	return;
+    }
+
+    /*
+     * sort the dynamic array according to the comparison function order
+     */
+    qsort(array->data, (size_t)(array->count), (size_t)(array->elm_size), compar);
+}
+
+
+#if defined(NON_STANDARD_SORT)
+
+/*
+ * NON_STANDARD_SORT
+ *
+ * It is sad that qsort_r() is not part of the standard C library as of 2025.  Worse yet, clang libc and gnu libc
+ * put the thunk argument in different positions in the comparison library.
+ *
+ * It is sad that both heapsort() and mergesort() part of the standard C library as of 2025.
+ */
+
+/*
+ * dyn_array_qsort_r - use the qsort_r(3) facility on a dynamic array
+ *
+ * The contents of the array base are sorted in ascending order according to a comparison function pointed
+ * to by compar, which requires a pointer to thunk followed by two arguments pointing to the objects being compared.
+ *
+ * The thunk value allows the comparison function to access additional data without using global variables,
+ * making function suitable for use in functions which must be reentrant.
+ *
+ * The comparison function must return an integer less than, equal to, or greater than zero if the first
+ * argument is considered to be respectively less than, equal to, or greater than the second.
+ *
+ * given:
+ *      array           - pointer to the dynamic array
+ *	compar		- comparison function pointing to thunk and the objects being compared
+ *	thunk		- additional unchanged data that as passed as the 1st argument to compar
+ *
+ * NOTE: This function does not return on error.
+ */
+void
+dyn_array_qsort_r(struct dyn_array *array, void *thunk, int (*compar)(void *, const void *, const void *))
+{
+    /*
+     * Check preconditions (firewall) - sanity check args
+     */
+    if (array == NULL) {
+	err(138, __func__, "array arg is NULL");
+	not_reached();
+    }
+    if (compar == NULL) {
+	err(139, __func__, "compar arg is NULL");
+	not_reached();
+    }
+
+    /*
+     * Check preconditions (firewall) - sanity check array
+     */
+    if (array->data == NULL) {
+	err(140, __func__, "array->data in dynamic array is NULL");
+	not_reached();
+    }
+    if (array->elm_size <= 0) {
+	err(141, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	not_reached();
+    }
+    if (array->chunk <= 0) {
+	err(142, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	not_reached();
+    }
+    if (array->allocated <= 0) {
+	err(143, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
+	not_reached();
+    }
+    if (array->count > array->allocated) {
+	err(144, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
+			  array->count, array->allocated);
+	not_reached();
+    }
+
+    /*
+     * quick return - less than 2 elements means nothing to sort
+     */
+    if (array->count < 2) {
+	return;
+    }
+
+    /*
+     * sort the dynamic array according to the comparison function order
+     */
+    qsort_r(array->data, (size_t)(array->count), (size_t)(array->elm_size), thunk, compar);
+}
+
+
+/*
+ * dyn_array_heapsort - use the heapsort(3) facility on a dynamic array
+ *
+ * The contents of the array base are sorted in ascending order according to a comparison function pointed
+ * to by compar, which requires two arguments pointing to the objects being compared.
+ (
+ * The comparison function must return an integer less than, equal to, or greater than zero if the first
+ * argument is considered to be respectively less than, equal to, or greater than the second.
+ *
+ * given:
+ *      array           - pointer to the dynamic array
+ *	compar		- comparison function pointing to the objects being compared
+ *
+ * returns:
+ *	0 ==> sort successful (errno set to 0)
+ *	-1 ==> sort error (errno is also set)
+ *
+ * NOTE: This function does not return when given invalid arguments.
+ */
+int
+dyn_array_heapsort(struct dyn_array *array, int (*compar)(const void *, const void *))
+{
+    int ret;		    /* heapsort return value */
+
+    /*
+     * Check preconditions (firewall) - sanity check args
+     */
+    if (array == NULL) {
+	err(145, __func__, "array arg is NULL");
+	not_reached();
+    }
+    if (compar == NULL) {
+	err(146, __func__, "compar arg is NULL");
+	not_reached();
+    }
+
+    /*
+     * Check preconditions (firewall) - sanity check array
+     */
+    if (array->data == NULL) {
+	err(147, __func__, "array->data in dynamic array is NULL");
+	not_reached();
+    }
+    if (array->elm_size <= 0) {
+	err(148, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	not_reached();
+    }
+    if (array->chunk <= 0) {
+	err(149, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	not_reached();
+    }
+    if (array->allocated <= 0) {
+	err(150, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
+	not_reached();
+    }
+    if (array->count > array->allocated) {
+	err(151, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
+			  array->count, array->allocated);
+	not_reached();
+    }
+
+    /*
+     * quick return - less than 2 elements means nothing to sort
+     */
+    errno = 0;
+    if (array->count < 2) {
+	return 0;
+    }
+
+    /*
+     * sort the dynamic array according to the comparison function order
+     */
+    ret = heapsort(array->data, (size_t)(array->count), (size_t)(array->elm_size), compar);
+    return ret;
+}
+
+
+/*
+ * dyn_array_mergesort - use the mergesort(3) facility on a dynamic array
+ *
+ * The contents of the array base are sorted in ascending order according to a comparison function pointed
+ * to by compar, which requires two arguments pointing to the objects being compared.
+ (
+ * The comparison function must return an integer less than, equal to, or greater than zero if the first
+ * argument is considered to be respectively less than, equal to, or greater than the second.
+ *
+ * given:
+ *      array           - pointer to the dynamic array
+ *	compar		- comparison function pointing to the objects being compared
+ *
+ * returns:
+ *	0 ==> sort successful
+ *	-1 ==> sort error (errno is also set)
+ *
+ * NOTE: This function does not return when given invalid arguments.
+ */
+int
+dyn_array_mergesort(struct dyn_array *array, int (*compar)(const void *, const void *))
+{
+    int ret;		    /* mergesort return value */
+
+    /*
+     * Check preconditions (firewall) - sanity check args
+     */
+    if (array == NULL) {
+	err(152, __func__, "array arg is NULL");
+	not_reached();
+    }
+    if (compar == NULL) {
+	err(153, __func__, "compar arg is NULL");
+	not_reached();
+    }
+
+    /*
+     * Check preconditions (firewall) - sanity check array
+     */
+    if (array->data == NULL) {
+	err(154, __func__, "array->data in dynamic array is NULL");
+	not_reached();
+    }
+    if (array->elm_size <= 0) {
+	err(155, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	not_reached();
+    }
+    if (array->chunk <= 0) {
+	err(156, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	not_reached();
+    }
+    if (array->allocated <= 0) {
+	err(157, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
+	not_reached();
+    }
+    if (array->count > array->allocated) {
+	err(158, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
+			  array->count, array->allocated);
+	not_reached();
+    }
+
+    /*
+     * quick return - less than 2 elements means nothing to sort
+     */
+    errno = 0;
+    if (array->count < 2) {
+	return 0;
+    }
+
+    /*
+     * sort the dynamic array according to the comparison function order
+     */
+    ret = mergesort(array->data, (size_t)(array->count), (size_t)(array->elm_size), compar);
+    return ret;
+}
+
+#endif /* NON_STANDARD_SORT */

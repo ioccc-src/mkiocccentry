@@ -1040,7 +1040,7 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
     /*
      * sort the semantic table
      */
-    qsort(tbl->data, (size_t)dyn_array_tell(tbl), sizeof(struct json_sem), sem_cmp);
+    dyn_array_qsort(tbl, sem_cmp);
 
     /*
      * print semantic table header
@@ -1256,7 +1256,7 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
     /*
      * sort the semantic table
      */
-    qsort(tbl->data, (size_t)dyn_array_tell(tbl), sizeof(struct json_sem), sem_cmp);
+    dyn_array_qsort(tbl, sem_cmp);
 
     /*
      * allocate empty dynamic array of unique function names
