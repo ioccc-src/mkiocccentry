@@ -19,7 +19,6 @@ from [dyn_array repo](https://github.com/lcn2/dyn_array) "2.4.0 2024-09-08".
 
 Updated `JPARSE_REPO_VERSION` to "2.3.1 2025-09-08".
 Updated `JSEMTBLGEN_VERSION` to "2.0.3 2025-09-08".
-Updated
 
 
 ## Release 2.3.0 2025-09-01
