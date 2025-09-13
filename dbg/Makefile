@@ -795,6 +795,6 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-dbg.o: dbg.c dbg.h
-dbg_example.o: dbg.h dbg_example.c
-dbg_test.o: dbg.h dbg_test.c
+dbg.o: c_bool.h c_compat.h dbg.c dbg.h
+dbg_example.o: c_bool.h c_compat.h dbg.h dbg_example.c
+dbg_test.o: c_bool.h c_compat.h dbg.h dbg_test.c

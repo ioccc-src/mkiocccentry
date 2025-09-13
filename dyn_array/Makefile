@@ -730,5 +730,7 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-dyn_array.o: ../dbg/dbg.h dyn_array.c dyn_array.h
-dyn_test.o: ../dbg/dbg.h dyn_array.h dyn_test.c dyn_test.h
+dyn_array.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h dyn_array.c \
+    dyn_array.h
+dyn_test.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h dyn_array.h \
+    dyn_test.c dyn_test.h

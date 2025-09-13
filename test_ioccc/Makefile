@@ -797,20 +797,22 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-fnamchk.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
-    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
-    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
-    ../jparse/version.h ../soup/../dbg/dbg.h \
-    ../soup/../dyn_array/dyn_array.h ../soup/default_handle.h \
-    ../soup/file_util.h ../soup/limit_ioccc.h ../soup/location.h \
-    ../soup/version.h fnamchk.c fnamchk.h
-test_file_util.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
-    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
-    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
-    ../jparse/version.h ../soup/../dyn_array/dyn_array.h \
-    ../soup/file_util.h ../soup/version.h test_file_util.c
-utf8_test.o: ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
-    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
-    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
-    ../jparse/version.h ../soup/default_handle.h ../soup/limit_ioccc.h \
-    ../soup/location.h ../soup/version.h utf8_test.c
+fnamchk.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
+    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
+    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
+    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h \
+    ../soup/../dbg/dbg.h ../soup/../dyn_array/dyn_array.h \
+    ../soup/default_handle.h ../soup/file_util.h ../soup/limit_ioccc.h \
+    ../soup/location.h ../soup/version.h fnamchk.c fnamchk.h
+test_file_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
+    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
+    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
+    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h \
+    ../soup/../dyn_array/dyn_array.h ../soup/file_util.h ../soup/version.h \
+    test_file_util.c
+utf8_test.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
+    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
+    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
+    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h \
+    ../soup/default_handle.h ../soup/limit_ioccc.h ../soup/location.h \
+    ../soup/version.h utf8_test.c

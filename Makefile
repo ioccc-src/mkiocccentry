@@ -1746,37 +1746,39 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-chkentry.o: chkentry.c chkentry.h dbg/dbg.h dyn_array/dyn_array.h \
-    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
-    jparse/json_sem.h jparse/json_utf8.h jparse/json_util.h jparse/util.h \
-    jparse/version.h soup/../dyn_array/dyn_array.h soup/chk_sem_auth.h \
-    soup/chk_sem_info.h soup/chk_validate.h soup/default_handle.h \
-    soup/entry_util.h soup/file_util.h soup/foo.h soup/limit_ioccc.h \
-    soup/location.h soup/sanity.h soup/soup.h soup/version.h
-chksubmit.o: chksubmit.c chksubmit.h dbg/dbg.h dyn_array/dyn_array.h \
-    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
-    jparse/json_sem.h jparse/json_utf8.h jparse/json_util.h jparse/util.h \
-    jparse/version.h soup/../dyn_array/dyn_array.h soup/chk_sem_auth.h \
-    soup/chk_sem_info.h soup/chk_validate.h soup/default_handle.h \
-    soup/entry_util.h soup/file_util.h soup/foo.h soup/limit_ioccc.h \
-    soup/location.h soup/sanity.h soup/soup.h soup/version.h
-iocccsize.o: dbg/dbg.h iocccsize.c iocccsize.h jparse/jparse.h \
-    jparse/jparse.tab.h jparse/json_parse.h jparse/json_sem.h \
-    jparse/json_utf8.h jparse/json_util.h jparse/util.h jparse/version.h \
-    soup/../dbg/dbg.h soup/../dyn_array/dyn_array.h soup/iocccsize_err.h \
-    soup/limit_ioccc.h soup/location.h soup/version.h
-mkiocccentry.o: dbg/dbg.h iocccsize.h jparse/jparse.h jparse/jparse.tab.h \
+chkentry.o: chkentry.c chkentry.h dbg/c_bool.h dbg/c_compat.h dbg/dbg.h \
+    dyn_array/dyn_array.h jparse/jparse.h jparse/jparse.tab.h \
     jparse/json_parse.h jparse/json_sem.h jparse/json_utf8.h \
-    jparse/json_util.h jparse/util.h jparse/version.h mkiocccentry.c \
-    mkiocccentry.h soup/../dbg/dbg.h soup/../dyn_array/dyn_array.h \
-    soup/chk_sem_auth.h soup/chk_sem_info.h soup/chk_validate.h \
-    soup/default_handle.h soup/entry_util.h soup/file_util.h \
-    soup/limit_ioccc.h soup/location.h soup/random_answers.h soup/sanity.h \
-    soup/soup.h soup/version.h
-txzchk.o: dbg/dbg.h jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
+    jparse/json_util.h jparse/util.h jparse/version.h \
+    soup/../dyn_array/dyn_array.h soup/chk_sem_auth.h soup/chk_sem_info.h \
+    soup/chk_validate.h soup/default_handle.h soup/entry_util.h \
+    soup/file_util.h soup/foo.h soup/limit_ioccc.h soup/location.h \
+    soup/sanity.h soup/soup.h soup/version.h
+chksubmit.o: chksubmit.c chksubmit.h dbg/c_bool.h dbg/c_compat.h dbg/dbg.h \
+    dyn_array/dyn_array.h jparse/jparse.h jparse/jparse.tab.h \
+    jparse/json_parse.h jparse/json_sem.h jparse/json_utf8.h \
+    jparse/json_util.h jparse/util.h jparse/version.h \
+    soup/../dyn_array/dyn_array.h soup/chk_sem_auth.h soup/chk_sem_info.h \
+    soup/chk_validate.h soup/default_handle.h soup/entry_util.h \
+    soup/file_util.h soup/foo.h soup/limit_ioccc.h soup/location.h \
+    soup/sanity.h soup/soup.h soup/version.h
+iocccsize.o: dbg/c_bool.h dbg/c_compat.h dbg/dbg.h iocccsize.c iocccsize.h \
+    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
     jparse/json_sem.h jparse/json_utf8.h jparse/json_util.h jparse/util.h \
     jparse/version.h soup/../dbg/dbg.h soup/../dyn_array/dyn_array.h \
-    soup/chk_sem_auth.h soup/chk_sem_info.h soup/chk_validate.h \
-    soup/default_handle.h soup/entry_util.h soup/file_util.h \
-    soup/limit_ioccc.h soup/location.h soup/sanity.h soup/soup.h \
-    soup/version.h txzchk.c txzchk.h
+    soup/iocccsize_err.h soup/limit_ioccc.h soup/location.h soup/version.h
+mkiocccentry.o: dbg/c_bool.h dbg/c_compat.h dbg/dbg.h iocccsize.h \
+    jparse/jparse.h jparse/jparse.tab.h jparse/json_parse.h \
+    jparse/json_sem.h jparse/json_utf8.h jparse/json_util.h jparse/util.h \
+    jparse/version.h mkiocccentry.c mkiocccentry.h soup/../dbg/dbg.h \
+    soup/../dyn_array/dyn_array.h soup/chk_sem_auth.h soup/chk_sem_info.h \
+    soup/chk_validate.h soup/default_handle.h soup/entry_util.h \
+    soup/file_util.h soup/limit_ioccc.h soup/location.h \
+    soup/random_answers.h soup/sanity.h soup/soup.h soup/version.h
+txzchk.o: dbg/c_bool.h dbg/c_compat.h dbg/dbg.h jparse/jparse.h \
+    jparse/jparse.tab.h jparse/json_parse.h jparse/json_sem.h \
+    jparse/json_utf8.h jparse/json_util.h jparse/util.h jparse/version.h \
+    soup/../dbg/dbg.h soup/../dyn_array/dyn_array.h soup/chk_sem_auth.h \
+    soup/chk_sem_info.h soup/chk_validate.h soup/default_handle.h \
+    soup/entry_util.h soup/file_util.h soup/limit_ioccc.h soup/location.h \
+    soup/sanity.h soup/soup.h soup/version.h txzchk.c txzchk.h
