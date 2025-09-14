@@ -2,7 +2,7 @@
 #
 # dyn_array - dynamic array facility
 #
-# Copyright (c) 2022-2024 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2022-2025 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -652,6 +652,7 @@ clobber: legacy_clobber clean
 	${E} ${RM} ${RM_V} -f ${EXTERN_CLOBBER}
 	${E} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
 	${E} ${RM} ${RM_V} -f Makefile.orig
+	${E} ${RM} ${RM_V} -f ${DYN_ARRAY_MAN3_DUPS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

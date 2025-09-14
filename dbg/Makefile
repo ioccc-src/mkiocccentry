@@ -2,7 +2,7 @@
 #
 # dbg - info, debug, warning, error and usage message facilities
 #
-# Copyright (c) 1989,1997,2018-2024 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 1989,1997,2018-2024-2025 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -217,18 +217,38 @@ SH_FILES=
 # all man pages that NOT built and NOT removed by make clobber
 #
 MAN1_PAGES=
-MAN3_PAGES= man/man3/dbg.3 man/man3/err.3 man/man3/msg.3 man/man3/warn.3 man/man3/werr.3 \
-	man/man3/printf_usage.3 man/man3/warn_or_err.3 \
-	man/man3/errp.3 man/man3/fdbg.3 man/man3/ferr.3 man/man3/ferrp.3 man/man3/fmsg.3 \
-	man/man3/fprintf_usage.3 man/man3/fwarn.3 man/man3/fwarn_or_err.3 man/man3/fwarnp.3 \
-	man/man3/fwerr.3 man/man3/fwerrp.3 man/man3/sndbg.3 man/man3/snmsg.3 man/man3/snwarn.3 \
-	man/man3/snwarnp.3 man/man3/snwerr.3 man/man3/snwerrp.3 man/man3/vdbg.3 man/man3/verr.3 \
-	man/man3/verrp.3 man/man3/vfdbg.3 man/man3/vferr.3 man/man3/vferrp.3 man/man3/vfmsg.3 \
-	man/man3/vfprintf_usage.3 man/man3/vfwarn.3 man/man3/vfwarn_or_err.3 man/man3/vfwarnp.3 \
-	man/man3/vfwerr.3 man/man3/vfwerrp.3 man/man3/vmsg.3 man/man3/vprintf_usage.3 man/man3/vsndbg.3 \
-	man/man3/vsnmsg.3 man/man3/vsnwarn.3 man/man3/vsnwarnp.3 man/man3/vsnwerr.3 man/man3/vsnwerrp.3 \
-	man/man3/vwarn.3 man/man3/vwarn_or_err.3 man/man3/vwarnp.3 man/man3/vwerr.3 man/man3/vwerrp.3 \
-	man/man3/warnp.3 man/man3/werrp.3
+DBG_MAN3= man/man3/dbg.3
+DBG_MAN3_DUPS= \
+	man/man3/fdbg.3 man/man3/sndbg.3 man/man3/vdbg.3 man/man3/vfdbg.3 man/man3/vsndbg.3
+WARN_MAN3= man/man3/warn.3
+WARN_MAN3_DUPS= \
+	man/man3/fwarn.3 man/man3/fwarnp.3 man/man3/snwarn.3 man/man3/snwarnp.3 \
+	man/man3/vfwarn.3 man/man3/vfwarnp.3 man/man3/vsnwarn.3 man/man3/vsnwarnp.3 \
+	man/man3/vwarn.3 man/man3/vwarnp.3 man/man3/warnp.3
+WERR_MAN3= man/man3/werr.3
+WERR_MAN3_DUPS= \
+	man/man3/fwerr.3 man/man3/fwerrp.3 man/man3/snwerr.3 man/man3/snwerrp.3 \
+	man/man3/vfwerr.3 man/man3/vfwerrp.3 man/man3/vsnwerr.3 man/man3/vsnwerrp.3 \
+	man/man3/vwerr.3 man/man3/vwerrp.3 man/man3/werrp.3
+WARN_OR_ERR_MAN3= man/man3/warn_or_err.3
+WARN_OR_ERR_MAN3_DUPS= \
+	man/man3/fwarn_or_err.3 man/man3/vfwarn_or_err.3 man/man3/vwarn_or_err.3
+ERR_MAN3= man/man3/err.3
+ERR_MAN3_DUPS= \
+	man/man3/errp.3 man/man3/ferr.3 man/man3/ferrp.3 man/man3/verr.3 man/man3/verrp.3 \
+	man/man3/vferr.3 man/man3/vferrp.3
+MSG_MAN3= man/man3/msg.3
+MSG_MAN3_DUPS= \
+	man/man3/fmsg.3 man/man3/snmsg.3 man/man3/vfmsg.3 man/man3/vmsg.3 man/man3/vsnmsg.3
+PRINTF_USAGE_MAN3= man/man3/printf_usage.3
+PRINTF_USAGE_MAN3_DUPS= \
+	man/man3/fprintf_usage.3 man/man3/vfprintf_usage.3 man/man3/vprintf_usage.3
+MAN3_PAGES= ${DBG_MAN3} ${DBG_MAN3_DUPS} \
+	    ${WARN_MAN3} ${WARN_MAN3_DUPS} \
+	    ${WERR_MAN3} ${WERR_MAN3_DUPS} \
+	    ${WARN_OR_ERR_MAN3} ${WARN_OR_ERR_MAN3_DUPS} \
+	    ${ERR_MAN3} ${MSG_MAN3_DUPS} \
+	    ${PRINTF_USAGE_MAN3} ${PRINTF_USAGE_MAN3_DUPS}
 MAN8_PAGES=
 ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
 
@@ -268,7 +288,8 @@ ALL_SRC= ${ALL_CSRC} ${ALL_HSRC} ${SH_FILES}
 # all man pages that built and removed by make clobber
 #
 MAN1_BUILT=
-MAN3_BUILT=
+MAN3_BUILT= ${DBG_MAN3_DUPS} ${WARN_MAN3_DUPS} ${WERR_MAN3_DUPS} \
+	    ${WARN_OR_ERR_MAN3_DUPS} ${ERR_MAN3_DUPS} ${MSG_MAN3_DUPS} ${PRINTF_USAGE_MAN3_DUPS}
 MAN8_BUILT=
 ALL_MAN_BUILT= ${MAN1_BUILT} ${MAN3_BUILT} ${MAN8_BUILT}
 
@@ -310,9 +331,9 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 
 # man pages
 #
-MAN1_TARGETS= ${MAN1_PAGES} ${MAN1_BUILT}
-MAN3_TARGETS= ${MAN3_PAGES} ${MAN3_BUILT}
-MAN8_TARGETS= ${MAN8_PAGES} ${MAN8_BUILT}
+MAN1_TARGETS= ${MAN1_PAGES}
+MAN3_TARGETS= ${MAN3_PAGES}
+MAN8_TARGETS= ${MAN8_PAGES}
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
 # libraries to make by all, what to install, and removed by clobber
@@ -403,6 +424,51 @@ dbg_example.o: dbg_example.c
 
 dbg_example: dbg_example.o dbg.o
 	${CC} ${CFLAGS} dbg_example.o dbg.o -o $@
+
+# form the duplicate copies of the `dyn_array(3)` man page
+#
+${DBG_MAN3_DUPS}: ${DBG_MAN3}
+	@for i in ${DBG_MAN3_DUPS}; do \
+	    if ! ${CMP} -s ${DBG_MAN3} "$$i" > /dev/null 2>&1; then \
+		${CP} -f -p -v ${DBG_MAN3} "$$i"; \
+	    fi; \
+	done
+${WARN_MAN3_DUPS}: ${WARN_MAN3}
+	@for i in ${WARN_MAN3_DUPS}; do \
+	    if ! ${CMP} -s ${WARN_MAN3} "$$i" > /dev/null 2>&1; then \
+		${CP} -f -p -v ${WARN_MAN3} "$$i"; \
+	    fi; \
+	done
+${WERR_MAN3_DUPS}: ${WERR_MAN3}
+	@for i in ${WERR_MAN3_DUPS}; do \
+	    if ! ${CMP} -s ${WERR_MAN3} "$$i" > /dev/null 2>&1; then \
+		${CP} -f -p -v ${WERR_MAN3} "$$i"; \
+	    fi; \
+	done
+${WARN_OR_ERR_MAN3_DUPS}: ${WARN_OR_ERR_MAN3}
+	@for i in ${WARN_OR_ERR_MAN3_DUPS}; do \
+	    if ! ${CMP} -s ${WARN_OR_ERR_MAN3} "$$i" > /dev/null 2>&1; then \
+		${CP} -f -p -v ${WARN_OR_ERR_MAN3} "$$i"; \
+	    fi; \
+	done
+${ERR_MAN3_DUPS}: ${ERR_MAN3}
+	@for i in ${ERR_MAN3_DUPS}; do \
+	    if ! ${CMP} -s ${ERR_MAN3} "$$i" > /dev/null 2>&1; then \
+		${CP} -f -p -v ${ERR_MAN3} "$$i"; \
+	    fi; \
+	done
+${MSG_MAN3_DUPS}: ${MSG_MAN3}
+	@for i in ${MSG_MAN3_DUPS}; do \
+	    if ! ${CMP} -s ${MSG_MAN3} "$$i" > /dev/null 2>&1; then \
+		${CP} -f -p -v ${MSG_MAN3} "$$i"; \
+	    fi; \
+	done
+${PRINTF_USAGE_MAN3_DUPS}: ${PRINTF_USAGE_MAN3}
+	@for i in ${PRINTF_USAGE_MAN3_DUPS}; do \
+	    if ! ${CMP} -s ${PRINTF_USAGE_MAN3} "$$i" > /dev/null 2>&1; then \
+		${CP} -f -p -v ${PRINTF_USAGE_MAN3} "$$i"; \
+	    fi; \
+	done
 
 
 #########################################################
@@ -679,6 +745,8 @@ clobber: legacy_clobber clean
 	${E} ${RM} ${RM_V} -f ${TARGETS}
 	${E} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
 	${E} ${RM} ${RM_V} -f Makefile.orig
+	${E} ${RM} ${RM_V} -f ${DBG_MAN3_DUPS} ${DBG_MAN3_DUPS} ${WERR_MAN3_DUPS}
+	${E} ${RM} ${RM_V} -f ${WARN_OR_ERR_MAN3_DUPS} ${MSG_MAN3_DUPS} ${PRINTF_USAGE_MAN3_DUPS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
