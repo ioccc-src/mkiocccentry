@@ -63,17 +63,50 @@
 #include <stdint.h>
 #include <locale.h>
 
-#if defined(MKIOCCCENTRY_USE)
 /*
- * limit_ioccc - IOCCC size and rule related limitations
+ * For use in the https://github.com/ioccc-src/mkiocccentry repo
  */
-#include "soup/iocccsize_err.h"
-#include "soup/limit_ioccc.h"
-#include "soup/location.h"
+#if defined(MKIOCCCENTRY_USE)
+
+  /*
+   * c_bool - sure that bool, true, and false are understood by the C compiler
+   */
+  #include "dbg/c_bool.h"
+
+  /*
+   * limit_ioccc - IOCCC size and rule related limitations
+   */
+  #include "soup/limit_ioccc.h"
+
+  /*
+   * version - official IOCCC toolkit versions
+   */
+  #include "soup/version.h"
+
+  /*
+   * iocccsize_err.h - debug, warning and error compat routines
+   */
+  #include "soup/iocccsize_err.h"
+
+  /*
+   * location - location/country codes
+   */
+  #include "soup/location.h"
+
+  /*
+   * iocccsize - IOCCC Source Size Tool
+   */
+  #include "iocccsize.h"
+
+/*
+ * For use in the https://github.com/SirWumpus/iocccsize repo
+ */
 #else /* MKIOCCCENTRY_USE */
-#include "iocccsize_err.h"
+
+  #include "iocccsize_err.h"
+
 #endif /* MKIOCCCENTRY_USE */
-#include "iocccsize.h"
+
 
 /*
  * usage message, split into strings that are small enough to be supported by C standards

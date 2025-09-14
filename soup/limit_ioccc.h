@@ -30,7 +30,6 @@
 #if !defined(INCLUDE_LIMIT_IOCCC_H)
 #    define  INCLUDE_LIMIT_IOCCC_H
 
-
 #include <time.h>
 
 /*
@@ -38,12 +37,12 @@
  */
 #include "version.h"
 
-
 #undef DIGRAPHS		/* digraphs count a 2 for Rule 2b */
 #undef TRIGRAPHS	/* trigraphs count a 3 for Rule 2b */
 
 #define RULE_2A_SIZE ((off_t)(4993))		/* Rule 2a size of prog.c */
 #define RULE_2B_SIZE ((size_t)(2503))		/* Rule 2b size of prog.c */
+
 /*
  * IMPORTANT:
  *
@@ -92,6 +91,7 @@
 #define MAX_EXTRA_DIR_COUNT (13)                /* maximum number of EXTRA directories */
 /* maximum total file count, including mandatory files, for a submission */
 #define MAX_FILE_COUNT (MANDATORY_SUBMISSION_FILES+OPTIONAL_SUBMISSION_FILES+MAX_EXTRA_FILE_COUNT)
+
 /*
  * IMPORTANT:
  *
