@@ -1,6 +1,13 @@
 /*
  * c_compat - backward compatibility for __attribute__, __func__, and not_reached()
  *
+ * "The symbol compatible appears to have become undefined in the minds of
+ "  some of the members of the ANSI C committee."
+ *
+ * "The wise speak only of what they know."
+ *
+ *      -- The Two Towers
+ *
  * Copyright (c) 2025 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
@@ -28,7 +35,7 @@
 
 
 #if !defined(INCLUDE_C_COMPAT_H)
-#define INCLUDE_C_COMPAT_H
+#    define  INCLUDE_C_COMPAT_H
 
 
 /*
@@ -62,7 +69,7 @@
 /*
  * backward compatibility for not_reached()
  *
- * The not_reached() dbg library, however ...
+ * The not_reached() is used in the dbg library, however ...
  *
  * In the old days of lint, one could give lint and friends a hint by
  * placing the token NOTREACHED immediately between opening and closing
@@ -74,7 +81,7 @@
  * or it will call abort from stdlib.
  *
  * NOTE: Not all C compilers have the __has_builtin special operator, so we have
- *       to use it with care.   If we do not support __has_builtin, then
+ *       to use it with care.  If we do not support __has_builtin, then
  *       we need to have not_reached() just call abort(3).
  */
 #if defined(__has_builtin)
@@ -87,4 +94,4 @@
 #endif
 
 
-#endif				/* INCLUDE_C_COMPAT_H */
+#endif                          /* INCLUDE_C_COMPAT_H */
