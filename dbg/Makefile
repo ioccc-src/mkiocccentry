@@ -208,7 +208,7 @@ H_SRC= dbg.h
 # source files that do not conform to strict picky standards
 #
 LESS_PICKY_CSRC=
-LESS_PICKY_HSRC=
+LESS_PICKY_HSRC= c_bool.h
 
 # all shell scripts
 #
