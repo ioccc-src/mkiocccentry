@@ -219,25 +219,33 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= jparse_main.c json_parse.c json_sem.c json_util.c \
+C_SRC= jparse_main.c json_sem.c json_util.c \
        jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c jstr_util.c
 H_SRC= jparse.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
        jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h jparse.tab.ref.h \
        jstr_util.h version.h
+#
+PICKY_OPTIONS= -c -e -s -t8 -u -v -w132
 
 # source files that do not conform to strict picky standards
 #
-LESS_PICKY_CSRC= jparse.ref.c jparse.tab.ref.c
+LESS_PICKY_CSRC= jparse.ref.c jparse.tab.ref.c json_parse.c
 LESS_PICKY_HSRC= jparse.lex.ref.h
+#
+LESS_PICKY_OPTIONS= -8 -c -e -t8 -u -v -w
 
 # bison and flex
 #
-FLEXFILES= jparse.l
 BISONFILES= jparse.y
+FLEXFILES= jparse.l
+#
+BISON_FLEX_PICKY_OPTIONS= -8 -e -s -t8 -u -v -w
 
 # all shell scripts
 #
 SH_FILES= jsemcgen.sh run_bison.sh run_flex.sh jparse_bug_report.sh
+#
+SH_PICKY_OPTIONS= -c -e -s -t8 -u -v -w132
 
 # all man pages that NOT built and NOT removed by make clobber
 #
@@ -890,9 +898,6 @@ seqcexit: ${FLEXFILES} ${BISONFILES} ${ALL_CSRC} test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
-# NOTE: the -v in the picky command is NOT verbosity so do NOT
-# use -v ${VERBOSITY} here!
-#
 picky: ${ALL_SRC} test_jparse/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -909,19 +914,68 @@ picky: ${ALL_SRC} test_jparse/Makefile
 	    echo 1>&2; \
 	    exit 1; \
 	else \
-	    echo "${PICKY} -w132 -u -s -t8 -v -e -8 -- ${C_SRC} ${H_SRC}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -8 -- ${C_SRC} ${H_SRC}; \
-	    EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
-		exit 1; \
+	    if [[ -n "${C_SRC}" ]]; then \
+		echo "${PICKY} ${PICKY_OPTIONS} -- ${C_SRC}"; \
+		${PICKY} ${PICKY_OPTIONS} -- ${C_SRC}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 1; \
+		fi; \
 	    fi; \
-	    echo "${PICKY} -w -u -s -t8 -v -e -8 -- ${FLEXFILES} ${BISONFILES}"; \
-	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${FLEXFILES} ${BISONFILES}; \
-	    EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; \
-		exit 2; \
+	    if [[ -n "${H_SRC}" ]]; then \
+		echo "${PICKY} ${PICKY_OPTIONS} -- ${H_SRC}"; \
+		${PICKY} ${PICKY_OPTIONS} -- ${H_SRC}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 2; \
+		fi; \
+	    fi; \
+	    if [[ -n "${LESS_PICKY_CSRC}" ]]; then \
+		echo "${PICKY} ${LESS_PICKY_OPTIONS} -- ${LESS_PICKY_CSRC}"; \
+		${PICKY} ${LESS_PICKY_OPTIONS} -- ${LESS_PICKY_CSRC}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 3; \
+		fi; \
+	    fi; \
+	    if [[ -n "${LESS_PICKY_HSRC}" ]]; then \
+		echo "${PICKY} ${LESS_PICKY_OPTIONS} -- ${LESS_PICKY_HSRC}"; \
+		${PICKY} ${LESS_PICKY_OPTIONS} -- ${LESS_PICKY_HSRC}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 4; \
+		fi; \
+	    fi; \
+	    if [[ -n "${SH_FILES}" ]]; then \
+		echo "${PICKY} ${SH_PICKY_OPTIONS} -- ${SH_FILES}"; \
+		${PICKY} ${SH_PICKY_OPTIONS} -- ${SH_FILES}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; \
+		    exit 5; \
+		fi; \
+	    fi; \
+	    if [[ -n "${BISONFILES}" ]]; then \
+		echo "${PICKY} ${BISON_FLEX_PICKY_OPTIONS} -- ${BISONFILES}"; \
+		${PICKY} ${BISON_FLEX_PICKY_OPTIONS} -- ${BISONFILES}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 6; \
+		fi; \
+	    fi; \
+	    if [[ -n "${FLEXFILES}" ]]; then \
+		echo "${PICKY} ${BISON_FLEX_PICKY_OPTIONS} -- ${FLEXFILES}"; \
+		${PICKY} ${BISON_FLEX_PICKY_OPTIONS} -- ${FLEXFILES}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 7; \
+		fi; \
 	    fi; \
 	fi
 	${S} echo

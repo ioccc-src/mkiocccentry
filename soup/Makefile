@@ -234,19 +234,25 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= chk_validate.c entry_util.c file_util.c \
-	location_util.c location_main.c sanity.c rule_count.c random_answers.c
+C_SRC= chk_validate.c entry_util.c file_util.c location_util.c location_main.c sanity.c \
+       rule_count.c random_answers.c
 H_SRC= chk_validate.h soup.h entry_util.h file_util.h foo.h limit_ioccc.h location.h \
 	sanity.h default_handle.h version.h iocccsize_err.h random_answers.h
+#
+PICKY_OPTIONS= -c -e -s -t8 -u -v -w132
 
 # source files that do not conform to strict picky standards
 #
-LESS_PICKY_CSRC= default_handle.c foo.c location_tbl.c chk_sem_info.c chk_sem_info.c chk_sem_auth.c 
+LESS_PICKY_CSRC= default_handle.c foo.c location_tbl.c chk_sem_info.c chk_sem_info.c chk_sem_auth.c
 LESS_PICKY_HSRC= oebxergfB.h
+#
+LESS_PICKY_OPTIONS= -8 -c -e -s -t8 -u -v -w
 
 # all shell scripts
 #
 SH_FILES= all_sem_ref.sh reset_tstamp.sh not_a_comment.sh
+#
+SH_PICKY_OPTIONS= -c -e -s -t8 -u -v -w132
 
 # all man pages that NOT built and NOT removed by make clobber
 #
@@ -267,9 +273,9 @@ LOCAL_DIR_TAGS= .local.dir.tags
 
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
-LIB_OBJS= chk_sem_info.o chk_sem_auth.o chk_validate.o entry_util.o file_util.o \
-	location_tbl.o location_util.o sanity.o foo.o default_handle.o rule_count.o \
-	random_answers.o
+LIB_OBJS= chk_validate.o entry_util.o file_util.o location_util.o location_tbl.o sanity.o \
+       foo.o rule_count.o random_answers.o \
+       default_handle.o chk_sem_info.o chk_sem_auth.o
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
@@ -406,14 +412,9 @@ all: ${TARGETS}
 # things to make in this directory #
 ####################################
 
-rule_count.o: rule_count.c
-	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
-
-chk_sem_info.o: chk_sem_info.c chk_sem_info.h
-	${CC} ${CFLAGS} chk_sem_info.c -c
-
-chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h
-	${CC} ${CFLAGS} chk_sem_auth.c -c
+################
+# for LIB_OBJS #
+################
 
 chk_validate.o: chk_validate.c
 	${CC} ${CFLAGS} chk_validate.c -c
@@ -424,32 +425,29 @@ entry_util.o: entry_util.c
 file_util.o: file_util.c
 	${CC} ${CFLAGS} file_util.c -c
 
-location_tbl.o: location_tbl.c
-	${CC} ${CFLAGS} location_tbl.c -c
-
-location_util.o: location_util.c
+location_util.o: location_util.c location.h
 	${CC} ${CFLAGS} location_util.c -c
 
-location_main.o: location_main.c
-	${CC} ${CFLAGS} location_main.c -c
-
-location: location_main.o location_tbl.o location_util.o ../jparse/libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
-	${CC} ${CFLAGS} $^ -o $@
-
-foo.o: foo.c
-	${CC} ${CFLAGS} foo.c -c
+location_tbl.o: location_tbl.c
+	${CC} ${CFLAGS} location_tbl.c -c
 
 sanity.o: sanity.c
 	${CC} ${CFLAGS} sanity.c -c
 
+foo.o: foo.c
+	${CC} ${CFLAGS} foo.c -c
+
+rule_count.o: rule_count.c
+	${CC} ${CFLAGS} -DMKIOCCCENTRY_USE rule_count.c -c
+
+random_answers.o: random_answers.c random_answers.h
+	${CC} ${CFLAGS} random_answers.c -c
+
 default_handle.o: default_handle.c
 	${CC} ${CFLAGS} default_handle.c -c
 
-soup.a: ${LIB_OBJS}
-	${Q} ${RM} ${RM_V} -f $@
-	${AR} -r -u -v $@ $^
-	${RANLIB} $@
-	${MAKE} limit_ioccc.sh
+chk.info.head.c chk.info.ptch.c chk.info.tail.c:
+	@:
 
 chk_sem_info.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/info.json/good/info.reference.json \
 		chk.info.head.c chk.info.ptch.c chk.info.tail.c
@@ -459,9 +457,6 @@ chk_sem_info.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JS
 	    chk.info.ptch.c chk.info.tail.c $@
 	${E} ${RM} ${RM_V} -f .jsemcgen.out.*
 
-chk.info.head.c chk.info.ptch.c chk.info.tail.c:
-	@:
-
 chk_sem_info.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/info.json/good/info.reference.json \
 		chk.info.head.h chk.info.ptch.h chk.info.tail.h
 	${Q} ${RM} ${RM_V} -f $@
@@ -469,6 +464,9 @@ chk_sem_info.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JS
 	    ../test_ioccc/test_JSON/info.json/good/info.reference.json chk.info.head.h \
 	    chk.info.ptch.h chk.info.tail.h $@
 	${E} ${RM} ${RM_V} -f .jsemcgen.out.*
+
+chk_sem_info.o: chk_sem_info.c chk_sem_info.h
+	${CC} ${CFLAGS} chk_sem_info.c -c
 
 chk_sem_auth.c: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/auth.json/good/auth.reference.json \
 		chk.auth.head.c chk.auth.ptch.c chk.auth.tail.c
@@ -486,8 +484,36 @@ chk_sem_auth.h: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JS
 	    chk.auth.ptch.h chk.auth.tail.h $@
 	${Q} ${RM} ${RM_V} -f .jsemcgen.out.*
 
-kitchen soup_kitchen: kitchen.sh
-	-@./kitchen.sh
+chk_sem_auth.o: chk_sem_auth.c chk_sem_auth.h
+	${CC} ${CFLAGS} chk_sem_auth.c -c
+
+
+##################
+# for OTHER_OBJS #
+##################
+
+location_main.o: location_main.c
+	${CC} ${CFLAGS} location_main.c -c
+
+
+####################
+# for LIBA_TARGETS #
+####################
+
+soup.a: ${LIB_OBJS}
+	${Q} ${RM} ${RM_V} -f $@
+	${AR} -r -u -v $@ $^
+	${RANLIB} $@
+	${MAKE} limit_ioccc.sh
+
+
+####################
+# for PROG_TARGETS #
+####################
+
+location: location_main.o location_tbl.o location_util.o ../jparse/libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
+	${CC} ${CFLAGS} $^ -o $@
+
 
 #########################################################
 # rules that invoke Makefile rules in other directories #
@@ -559,6 +585,9 @@ extern_everything: extern_include extern_objs extern_liba extern_man extern_prog
 # repo tools - rules for those who maintain the this repo #
 ###########################################################
 
+kitchen soup_kitchen: kitchen.sh
+	-@./kitchen.sh
+
 test:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -590,7 +619,7 @@ all_sem_ref: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/
 #
 # This rule is run by the repo maintainers only AFTER chk_sem_????.{c,h} files
 # are updated by hand.
-# 
+#
 # Last, run "make all_sem_ref" before running "make all_sem_ref_ptch".
 #
 all_sem_ref_ptch: ref/info.reference.json.c ref/info.reference.json.h \
@@ -684,19 +713,50 @@ picky: ${ALL_SRC}
 	    echo 1>&2; \
 	    exit 1; \
 	else \
-	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; \
-	    EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
-		exit 1; \
+	    if [[ -n "${C_SRC}" ]]; then \
+		echo "${PICKY} ${PICKY_OPTIONS} -- ${C_SRC}"; \
+		${PICKY} ${PICKY_OPTIONS} -- ${C_SRC}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 1; \
+		fi; \
 	    fi; \
-	    echo "${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}"; \
-	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; \
-	    EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; \
-		exit 2; \
+	    if [[ -n "${H_SRC}" ]]; then \
+		echo "${PICKY} ${PICKY_OPTIONS} -- ${H_SRC}"; \
+		${PICKY} ${PICKY_OPTIONS} -- ${H_SRC}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 2; \
+		fi; \
+	    fi; \
+	    if [[ -n "${LESS_PICKY_CSRC}" ]]; then \
+		echo "${PICKY} ${LESS_PICKY_OPTIONS} -- ${LESS_PICKY_CSRC}"; \
+		${PICKY} ${LESS_PICKY_OPTIONS} -- ${LESS_PICKY_CSRC}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 3; \
+		fi; \
+	    fi; \
+	    if [[ -n "${LESS_PICKY_HSRC}" ]]; then \
+		echo "${PICKY} ${LESS_PICKY_OPTIONS} -- ${LESS_PICKY_HSRC}"; \
+		${PICKY} ${LESS_PICKY_OPTIONS} -- ${LESS_PICKY_HSRC}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 4; \
+		fi; \
+	    fi; \
+	    if [[ -n "${SH_FILES}" ]]; then \
+		echo "${PICKY} ${SH_PICKY_OPTIONS} -- ${SH_FILES}"; \
+		${PICKY} ${SH_PICKY_OPTIONS} -- ${SH_FILES}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; \
+		    exit 5; \
+		fi; \
 	    fi; \
 	fi
 	${S} echo

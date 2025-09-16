@@ -219,15 +219,21 @@ CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 #
 C_SRC= jnum_chk.c jnum_gen.c jnum_header.c pr_jparse_test.c
 H_SRC= jnum_chk.h jnum_gen.h
+#
+PICKY_OPTIONS= -c -e -s -t8 -u -v -w132
 
 # source files that do not conform to strict picky standards
 #
 LESS_PICKY_CSRC= jnum_test.c
 LESS_PICKY_HSRC=
+#
+LESS_PICKY_OPTIONS= -8 -c -e -s -t8 -u -v -w
 
 # all shell scripts
 #
 SH_FILES= prep.sh jparse_test.sh jstr_test.sh
+#
+SH_PICKY_OPTIONS= -c -e -s -t8 -u -v -w
 
 
 ######################
@@ -476,10 +482,6 @@ seqcexit: ${ALL_CSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
-
-# NOTE: the -v in the picky command is NOT verbosity so do NOT
-# use -v ${VERBOSITY} here!
-#
 picky: ${ALL_SRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
@@ -494,19 +496,50 @@ picky: ${ALL_SRC}
 	    echo 1>&2; \
 	    exit 1; \
 	else \
-	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; \
-	    EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
-		exit 1; \
+	    if [[ -n "${C_SRC}" ]]; then \
+		echo "${PICKY} ${PICKY_OPTIONS} -- ${C_SRC}"; \
+		${PICKY} ${PICKY_OPTIONS} -- ${C_SRC}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 1; \
+		fi; \
 	    fi; \
-	    echo "${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}"; \
-	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; \
-	    EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-		echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; \
-		exit 2; \
+	    if [[ -n "${H_SRC}" ]]; then \
+		echo "${PICKY} ${PICKY_OPTIONS} -- ${H_SRC}"; \
+		${PICKY} ${PICKY_OPTIONS} -- ${H_SRC}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 2; \
+		fi; \
+	    fi; \
+	    if [[ -n "${LESS_PICKY_CSRC}" ]]; then \
+		echo "${PICKY} ${LESS_PICKY_OPTIONS} -- ${LESS_PICKY_CSRC}"; \
+		${PICKY} ${LESS_PICKY_OPTIONS} -- ${LESS_PICKY_CSRC}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 3; \
+		fi; \
+	    fi; \
+	    if [[ -n "${LESS_PICKY_HSRC}" ]]; then \
+		echo "${PICKY} ${LESS_PICKY_OPTIONS} -- ${LESS_PICKY_HSRC}"; \
+		${PICKY} ${LESS_PICKY_OPTIONS} -- ${LESS_PICKY_HSRC}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 4; \
+		fi; \
+	    fi; \
+	    if [[ -n "${SH_FILES}" ]]; then \
+		echo "${PICKY} ${SH_PICKY_OPTIONS} -- ${SH_FILES}"; \
+		${PICKY} ${SH_PICKY_OPTIONS} -- ${SH_FILES}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; \
+		    exit 5; \
+		fi; \
 	    fi; \
 	fi
 	${S} echo

@@ -256,15 +256,21 @@ CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 #
 C_SRC= mkiocccentry.c iocccsize.c txzchk.c chkentry.c chksubmit.c
 H_SRC= mkiocccentry.h iocccsize.h txzchk.h chkentry.h chksubmit.h
+#
+PICKY_OPTIONS= -c -e -s -t8 -u -v -w132
 
 # source files that do not conform to strict picky standards
 #
 LESS_PICKY_CSRC=
 LESS_PICKY_HSRC=
+#
+LESS_PICKY_OPTIONS= -8 -c -e -s -t8 -u -v -w
 
 # all shell scripts
 #
 SH_FILES= bug_report.sh
+#
+SH_PICKY_OPTIONS= -c -e -s -t8 -u -v -w132
 
 # all man pages that are NOT built and NOT removed by make clobber
 #
@@ -835,7 +841,7 @@ picky: ${ALL_SRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
-		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
+					       LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
 	${Q} if ! ${IS_AVAILABLE} ${PICKY} >/dev/null 2>&1; then \
@@ -848,19 +854,50 @@ picky: ${ALL_SRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	    echo 1>&2; \
 	    exit 1; \
 	else \
-	    echo "${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}"; \
-	    ${PICKY} -w132 -u -s -t8 -v -e -- ${C_SRC} ${H_SRC}; \
-	    EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-	        echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
-		exit 1; \
+	    if [[ -n "${C_SRC}" ]]; then \
+		echo "${PICKY} ${PICKY_OPTIONS} -- ${C_SRC}"; \
+		${PICKY} ${PICKY_OPTIONS} -- ${C_SRC}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 1; \
+		fi; \
 	    fi; \
-	    echo "${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}"; \
-	    ${PICKY} -w -u -s -t8 -v -e -8 -- ${SH_FILES}; \
-	    EXIT_CODE="$$?"; \
-	    if [[ $$EXIT_CODE -ne 0 ]]; then \
-	        echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; \
-		exit 2; \
+	    if [[ -n "${H_SRC}" ]]; then \
+		echo "${PICKY} ${PICKY_OPTIONS} -- ${H_SRC}"; \
+		${PICKY} ${PICKY_OPTIONS} -- ${H_SRC}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 2; \
+		fi; \
+	    fi; \
+	    if [[ -n "${LESS_PICKY_CSRC}" ]]; then \
+		echo "${PICKY} ${LESS_PICKY_OPTIONS} -- ${LESS_PICKY_CSRC}"; \
+		${PICKY} ${LESS_PICKY_OPTIONS} -- ${LESS_PICKY_CSRC}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 3; \
+		fi; \
+	    fi; \
+	    if [[ -n "${LESS_PICKY_HSRC}" ]]; then \
+		echo "${PICKY} ${LESS_PICKY_OPTIONS} -- ${LESS_PICKY_HSRC}"; \
+		${PICKY} ${LESS_PICKY_OPTIONS} -- ${LESS_PICKY_HSRC}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
+		    exit 4; \
+		fi; \
+	    fi; \
+	    if [[ -n "${SH_FILES}" ]]; then \
+		echo "${PICKY} ${SH_PICKY_OPTIONS} -- ${SH_FILES}"; \
+		${PICKY} ${SH_PICKY_OPTIONS} -- ${SH_FILES}; \
+		EXIT_CODE="$$?"; \
+		if [[ $$EXIT_CODE -ne 0 ]]; then \
+		    echo "make $@: ERROR: CODE[2]: $$EXIT_CODE" 1>&2; \
+		    exit 5; \
+		fi; \
 	    fi; \
 	fi
 	${S} echo
