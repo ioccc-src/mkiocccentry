@@ -13,14 +13,14 @@
  *
  * "It is true that some people have been known to define 0 as true."
  *
- * "He that breaks a thing to find out what it is has left the path of wisdom."
+ * "And he that breaks a thing to find out what it is has left the path of wisdom."
  *
- *      -- The Fellowship of the Ring
+ *      -- Gandalf to Saruman, The Fellowship of the Ring.
  *
- * "Smeagol'll get into real true hot water, when this water boils,
+ * "Sméagol'll get into real true hot water, when this water boils,
  *  if he don’t do as he asked ..."
  *
- *      -- JRR Tolkien
+ *      -- Samwise Gamgee to Gollum in Ithilien, The Two Towers.
  *
  * Copyright (c) 2025 by Landon Curt Noll.  All Rights Reserved.
  *
