@@ -203,14 +203,14 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= dbg.c dbg_example.c dbg_test.c
-H_SRC= dbg.h
+H_SRC= dbg.h c_compat.h
 #
 PICKY_OPTIONS= -c -e -s -t8 -u -v -w132
 
 # source files that do not conform to strict picky standards
 #
 LESS_PICKY_CSRC=
-LESS_PICKY_HSRC=
+LESS_PICKY_HSRC= c_bool.h
 #
 LESS_PICKY_OPTIONS= -8 -c -e -s -t8 -u -v -w
 
