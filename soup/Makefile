@@ -1055,12 +1055,14 @@ default_handle.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../jparse/json_util.h ../jparse/util.h default_handle.c \
     default_handle.h limit_ioccc.h version.h
 entry_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
+    ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
     ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
     ../jparse/verge.h ../jparse/version.h entry_util.c entry_util.h \
     file_util.h limit_ioccc.h location.h version.h
 file_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
+    ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
     ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/util.h \
     file_util.c file_util.h
 foo.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h foo.c foo.h \

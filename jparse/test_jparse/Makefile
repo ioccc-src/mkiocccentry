@@ -765,22 +765,27 @@ depend: ${ALL_CSRC}
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 jnum_chk.o: ../../dbg/c_bool.h ../../dbg/c_compat.h ../../dbg/dbg.h \
+    ../../dyn_array/../dbg/c_bool.h ../../dyn_array/../dbg/c_compat.h \
     ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h ../jparse.h \
     ../jparse.tab.h ../json_parse.h ../json_sem.h ../json_utf8.h \
     ../json_util.h ../util.h ../version.h jnum_chk.c jnum_chk.h
 jnum_gen.o: ../../dbg/c_bool.h ../../dbg/c_compat.h ../../dbg/dbg.h \
+    ../../dyn_array/../dbg/c_bool.h ../../dyn_array/../dbg/c_compat.h \
     ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h ../jparse.h \
     ../jparse.tab.h ../json_parse.h ../json_sem.h ../json_utf8.h \
     ../json_util.h ../util.h ../version.h jnum_gen.c jnum_gen.h
 jnum_header.o: ../../dbg/c_bool.h ../../dbg/c_compat.h ../../dbg/dbg.h \
+    ../../dyn_array/../dbg/c_bool.h ../../dyn_array/../dbg/c_compat.h \
     ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h ../jparse.h \
     ../jparse.tab.h ../json_parse.h ../json_sem.h ../json_utf8.h \
     ../json_util.h ../util.h ../version.h jnum_chk.h jnum_header.c
 jnum_test.o: ../../dbg/c_bool.h ../../dbg/c_compat.h ../../dbg/dbg.h \
+    ../../dyn_array/../dbg/c_bool.h ../../dyn_array/../dbg/c_compat.h \
     ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h ../jparse.h \
     ../jparse.tab.h ../json_parse.h ../json_sem.h ../json_utf8.h \
     ../json_util.h ../util.h ../version.h jnum_chk.h jnum_test.c
 pr_jparse_test.o: ../../dbg/c_bool.h ../../dbg/c_compat.h ../../dbg/dbg.h \
+    ../../dyn_array/../dbg/c_bool.h ../../dyn_array/../dbg/c_compat.h \
     ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h ../jparse.h \
     ../jparse.tab.h ../json_parse.h ../json_sem.h ../json_utf8.h \
     ../json_util.h ../util.h ../version.h pr_jparse_test.c pr_jparse_test.h
