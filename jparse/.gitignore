@@ -1,6 +1,7 @@
 # We sort the list below via: sort -d -u
 ?
 *.[ao]
+.DS_Store
 /backup
 /bug-report*
 *build.log*
