@@ -719,6 +719,7 @@ uninstall:
 	${S} echo
 	${E} ${RM} -f ${RM_V} ${DEST_LIB}/libdyn_array.a
 	${E} ${RM} -f ${RM_V} ${DEST_LIB}/dyn_array.a
+	${E} ${RM} -f ${RM_V} ${DEST_INCLUDE}/dyn_array.h
 	${E} ${RM} -f ${RM_V} ${DEST_DIR}/dyn_test
 	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array.3
 	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_rewind.3

@@ -356,7 +356,7 @@ PROG_TARGETS= dbg_test dbg_example
 
 # include files but NOT to removed by clobber
 #
-H_SRC_TARGETS= dbg.h
+H_SRC_TARGETS= dbg.h c_bool.h c_compat.h
 
 # what to make by all but NOT to removed by clobber
 #
@@ -815,6 +815,9 @@ uninstall:
 	${S} echo
 	${E} ${RM} ${RM_V} -f ${DEST_LIB}/libdbg.a
 	${E} ${RM} ${RM_V} -f ${DEST_LIB}/dbg.a
+	${E} ${RM} ${RM_V} -f ${DEST_INCLUDE}/dbg.h
+	${E} ${RM} ${RM_V} -f ${DEST_INCLUDE}/c_bool.h
+	${E} ${RM} ${RM_V} -f ${DEST_INCLUDE}/c_compat.h
 	${E} ${RM} ${RM_V} -f ${DEST_DIR}/dbg_example
 	${E} ${RM} ${RM_V} -f ${DEST_DIR}/dbg_test
 	${E} ${RM} ${RM_V} -f ${MAN3_DIR}/dbg.3
