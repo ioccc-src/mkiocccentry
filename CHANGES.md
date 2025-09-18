@@ -1,6 +1,17 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.6.6 2025-09-18
+
+Fix bug in `test_ioccc/hostchk.sh` where if you did not have `dbg` and
+`dyn_array` installed it would fail as it was looking for new include files. It
+appears that this did not happen with `jparse` not being installed but if anyone
+has an issue (I did a `make uninstall` but it's possible I missed something)
+**PLEASE** report it.
+
+Updated `HOSTCHK_VERSION` to `"2.0.2 2025-09-18"`.
+
+
 ## Release 2.6.5 2025-09-09
 
 Synced [jparse repo](https://github.com/xexyl/jparse) with an enhancement to the
