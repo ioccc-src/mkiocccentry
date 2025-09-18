@@ -50,28 +50,34 @@
  * dbg - info, debug, warning, error, and usage message facility
  */
 #if defined(INTERNAL_INCLUDE)
-#include "../dbg/dbg.h"
+  #include "../dbg/c_bool.h"
+  #include "../dbg/c_compat.h"
+  #include "../dbg/dbg.h"
 #elif defined(INTERNAL_INCLUDE_2)
-#include "dbg/dbg.h"
+  #include "../dbg/c_bool.h"
+  #include "../dbg/c_compat.h"
+  #include "../dbg/dbg.h"
 #else
-#include <dbg.h>
+  #include <c_bool.h>
+  #include <c_compat.h>
+  #include <dbg.h>
+#endif
+
+/*
+ * dyn_array - dynamic array facility
+ */
+#if defined(INTERNAL_INCLUDE)
+  #include "../dyn_array/dyn_array.h"
+#elif defined(INTERNAL_INCLUDE_2)
+#include "../dyn_array/dyn_array.h"
+#else
+  #include <dyn_array.h>
 #endif
 
 /*
  * util - common utility functions for the JSON parser
  */
 #include "util.h"
-
-/*
- * dyn_array - dynamic array facility
- */
-#if defined(INTERNAL_INCLUDE)
-#include "../dyn_array/dyn_array.h"
-#elif defined(INTERNAL_INCLUDE_2)
-#include "dyn_array/dyn_array.h"
-#else
-#include <dyn_array.h>
-#endif
 
 /*
  * json_util - general JSON parser utility support functions
@@ -88,11 +94,11 @@
  */
 #include "version.h"
 
-
 /*
  * json_sem - JSON semantics support
  */
 #include "json_sem.h"
+
 
 /*
  * official jsemtblgen version

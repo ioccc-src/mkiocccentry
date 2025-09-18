@@ -46,11 +46,17 @@
  * dbg - info, debug, warning, error, and usage message facility
  */
 #if defined(INTERNAL_INCLUDE)
-#include "../dbg/dbg.h"
+  #include "../dbg/c_bool.h"
+  #include "../dbg/c_compat.h"
+  #include "../dbg/dbg.h"
 #elif defined(INTERNAL_INCLUDE_2)
-#include "dbg/dbg.h"
+  #include "../dbg/c_bool.h"
+  #include "../dbg/c_compat.h"
+  #include "../dbg/dbg.h"
 #else
-#include <dbg.h>
+  #include <c_bool.h>
+  #include <c_compat.h>
+  #include <dbg.h>
 #endif
 
 /*
@@ -68,11 +74,11 @@
  */
 #include "version.h"
 
+
 /*
  * official verge tool version
  */
 #define VERGE_VERSION "2.0.4 2025-09-01"		/* format: major.minor YYYY-MM-DD */
-
 
 /*
  * verge tool basename
@@ -80,19 +86,21 @@
 #define VERGE_BASENAME "verge"
 
 
-
 /*
  * globals
  */
 
+
 /*
  * externals
  */
+
 
 /*
  * function prototypes
  */
 size_t allocate_vers(char *str, intmax_t **pvers);
 int vercmp(char *ver1, char *ver2);
+
 
 #endif /* INCLUDE_VERGE_H */

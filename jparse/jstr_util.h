@@ -46,18 +46,28 @@
  * dbg - info, debug, warning, error, and usage message facility
  */
 #if defined(INTERNAL_INCLUDE)
-#include "../dbg/dbg.h"
+  #include "../dbg/c_bool.h"
+  #include "../dbg/c_compat.h"
+  #include "../dbg/dbg.h"
+#elif defined(INTERNAL_INCLUDE_2)
+  #include "../dbg/c_bool.h"
+  #include "../dbg/c_compat.h"
+  #include "../dbg/dbg.h"
 #else
-#include <dbg.h>
+  #include <c_bool.h>
+  #include <c_compat.h>
+  #include <dbg.h>
 #endif
 
 /*
  * dyn_array - dynamic array facility
  */
 #if defined(INTERNAL_INCLUDE)
+  #include "../dyn_array/dyn_array.h"
+#elif defined(INTERNAL_INCLUDE_2)
 #include "../dyn_array/dyn_array.h"
 #else
-#include <dyn_array.h>
+  #include <dyn_array.h>
 #endif
 
 /*
@@ -75,6 +85,7 @@
  */
 #include "jparse.h"
 
+
 /*
  * struct for jstr utilities
  */
@@ -85,9 +96,11 @@ struct jstring
     struct jstring *next;   /* next in list */
 };
 
+
 /*
  * globals
  */
+
 
 /*
  * function prototypes
@@ -96,5 +109,6 @@ extern struct jstring *alloc_jstr(char *string, size_t bufsiz);
 extern int parse_entertainment(char const *optarg);
 extern void free_jstring(struct jstring **jstr);
 extern void free_jstring_list(struct jstring **jstring_list);
+
 
 #endif /* INCLUDE_JSTR_UTIL_H */

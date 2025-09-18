@@ -47,24 +47,35 @@
  * dbg - info, debug, warning, error, and usage message facility
  */
 #if defined(INTERNAL_INCLUDE)
-#include "../dbg/dbg.h"
+  #include "../dbg/c_bool.h"
+  #include "../dbg/c_compat.h"
+  #include "../dbg/dbg.h"
 #elif defined(INTERNAL_INCLUDE_2)
-#include "dbg/dbg.h"
+  #include "../dbg/c_bool.h"
+  #include "../dbg/c_compat.h"
+  #include "../dbg/dbg.h"
 #else
-#include <dbg.h>
+  #include <c_bool.h>
+  #include <c_compat.h>
+  #include <dbg.h>
 #endif
 
 /*
- * dyn_array - dynamic array facility
+ * dbg - info, debug, warning, error, and usage message facility
  */
 #if defined(INTERNAL_INCLUDE)
-#include "../dyn_array/dyn_array.h"
+  #include "../dbg/c_bool.h"
+  #include "../dbg/c_compat.h"
+  #include "../dbg/dbg.h"
 #elif defined(INTERNAL_INCLUDE_2)
-#include "dyn_array/dyn_array.h"
+  #include "../dbg/c_bool.h"
+  #include "../dbg/c_compat.h"
+  #include "../dbg/dbg.h"
 #else
-#include <dyn_array.h>
+  #include <c_bool.h>
+  #include <c_compat.h>
+  #include <dbg.h>
 #endif
-
 
 /*
  * util - common utility functions for the JSON parser
@@ -90,6 +101,7 @@
  * version - JSON parser API and tool version
  */
 #include "version.h"
+
 
 /*
  * official jstrdecode version

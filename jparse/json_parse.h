@@ -56,11 +56,17 @@
  * dbg - info, debug, warning, error, and usage message facility
  */
 #if defined(INTERNAL_INCLUDE)
-#include "../dbg/dbg.h"
+  #include "../dbg/c_bool.h"
+  #include "../dbg/c_compat.h"
+  #include "../dbg/dbg.h"
 #elif defined(INTERNAL_INCLUDE_2)
-#include "dbg/dbg.h"
+  #include "../dbg/c_bool.h"
+  #include "../dbg/c_compat.h"
+  #include "../dbg/dbg.h"
 #else
-#include <dbg.h>
+  #include <c_bool.h>
+  #include <c_compat.h>
+  #include <dbg.h>
 #endif
 
 

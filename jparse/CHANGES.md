@@ -1,5 +1,30 @@
 # Significant changes in the JSON parser repo
 
+
+## Release 2.3.3 2025-09-16
+
+In keeping with the mkiocccentry toolkit, the new header
+files from dbg are included.
+
+Where needed the include files from dyn_array
+are consistently included.
+
+Added `${PICKY_OPTIONS}` to specify the picky options
+for the `${C_SRC}` and ${H_SRC} files.
+
+Added `${LESS_PICKY_OPTIONS}` to specify the picky options
+for the `${LESS_PICKY_CSRC}` and ${LESS_PICKY_HSRC} files.
+
+Added `${SH_PICKY_OPTIONS}` to specify the picky options
+for the `${SH_FILES}` files.
+
+Where applicable, added ${BISON_FLEX_PICKY_OPTIONS` to specify the picky options
+for the `${BISONFILES}` and ${FLEXFILES} files.
+
+The `make picky` rule tests a single set, if that set is non-empty,
+one at a time.
+
+
 ## Release 2.3.2 2025-09-09
 
 Improved `jparse(1)` to allow for more than one arg of the specific type (string
