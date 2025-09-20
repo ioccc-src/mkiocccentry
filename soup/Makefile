@@ -511,8 +511,8 @@ soup.a: ${LIB_OBJS}
 # for PROG_TARGETS #
 ####################
 
-location: location_main.o location_tbl.o location_util.o ../jparse/libjparse.a ../dyn_array/libdyn_array.a \
-	../dbg/libdbg.a ../pr/libpr.a
+location: location_main.o location_tbl.o location_util.o ../pr/libpr.a ../jparse/libjparse.a \
+	../dyn_array/libdyn_array.a ../dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -o $@
 
 
