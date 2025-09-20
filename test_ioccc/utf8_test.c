@@ -129,6 +129,7 @@ main(int argc, char *argv[])
     extern int optind;			/* argv index of the next arg */
     char *name = NULL;			/* translated name argument */
     int ret;				/* libc return code */
+    bool opt_error = false;		/* fchk_inval_opt() return */
     int i;
 
     /* IOCCC requires use of C locale */
@@ -165,9 +166,13 @@ main(int argc, char *argv[])
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
-	    check_invalid_option(program, i, optopt);
-	    usage(3, program, ""); /*ooo*/
-	    not_reached();
+	    opt_error = fchk_inval_opt(stderr, program, i, optopt);
+	    if (opt_error) {
+		usage(3, program, ""); /*ooo*/
+		not_reached();
+	    } else {
+		fwarn(stderr, __func__, "getopt() return: %c optopt: %c", (char)i, (char)optopt);
+	    }
 	    break;
 	}
     }

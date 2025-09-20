@@ -74,10 +74,22 @@
 #if defined(INTERNAL_INCLUDE)
   #include "../dyn_array/dyn_array.h"
 #elif defined(INTERNAL_INCLUDE_2)
-#include "../dyn_array/dyn_array.h"
+  #include "../dyn_array/dyn_array.h"
 #else
   #include <dyn_array.h>
 #endif
+
+/*
+ * pr - stdio helper library
+ */
+#if defined(INTERNAL_INCLUDE)
+  #include "../pr/pr.h"
+#elif defined(INTERNAL_INCLUDE_2)
+  #include "../pr/pr.h"
+#else
+  #include <pr.h>
+#endif
+
 
 /*
  * byte as octet constants
@@ -89,7 +101,6 @@
 #define MAX_BYTE (0xff)		    /* maximum byte value */
 #define BYTE_VALUES (MAX_BYTE+1)    /* number of different combinations of bytes */
 
-
 /*
  * off_t MAX and MIN
  */
@@ -100,7 +111,6 @@
 #define OFF_MIN (((off_t)1 << (sizeof(off_t) * BITS_IN_BYTE - 1)))
 #endif /* OFF_MIN */
 
-
 /*
  * size_t MAX and MIN
  */
@@ -110,7 +120,6 @@
 #if !defined(SIZE_MIN)
 #define SIZE_MIN ((size_t)(0))
 #endif /* SIZE_MIN */
-
 
 /*
  * ssize_t MAX and MIN
@@ -192,18 +201,6 @@
  * external function declarations
  */
 extern bool fd_is_ready(char const *name, bool open_test_only, int fd);
-extern bool chk_stdio_printf_err(FILE *stream, int ret);
-extern void para(char const *line, ...);
-extern void fpara(FILE * stream, char const *line, ...);
-extern void vfpr(FILE *stream, char const *name, char const *fmt, va_list ap);
-extern void fpr(FILE *stream, char const *name, char const *fmt, ...)
-	__attribute__((format(printf, 3, 4)));		/* 3=format 4=params */
-extern void pr(char const *name, char const *fmt, ...)
-	__attribute__((format(printf, 2, 3)));		/* 2=format 3=params */
-extern ssize_t readline(char **linep, FILE * stream);
-extern char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);
-extern void chkbyte2asciistr(void);
-extern void *read_all(FILE *stream, size_t *psize);
 extern bool is_string(char const * const ptr, size_t len);
 extern char const *strnull(char const * const str);
 extern bool string_to_intmax(char const *str, intmax_t *ret);
@@ -217,18 +214,11 @@ extern bool is_e_notation_str(char const *str, size_t *retlen);
 extern bool posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first);
 extern void posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe,
 			   bool *first_alphanum, bool *upper);
-extern void clearerr_or_fclose(FILE *stream);
-extern ssize_t fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end);
-extern ssize_t fprint_line_str(FILE *stream, char *str, size_t *retlen, int start, int end);
-extern FILE *open_dir_file(char const *dir, char const *file);
 
 extern size_t count_char(char const *str, int ch);
 
 /* find non-whitespace text */
 extern size_t find_text(char const *ptr, size_t len, char **first);
 extern size_t find_text_str(char const *str, char **first);
-
-/* for getopt() invalid option or missing option argument */
-extern void check_invalid_option(char const *prog, int ch, int opt);
 
 #endif				/* INCLUDE_UTIL_H */

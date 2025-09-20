@@ -404,7 +404,7 @@ all: ${TARGETS} ${EXTERN_PROG}
 utf8_test.o: utf8_test.c
 	${CC} ${CFLAGS} utf8_test.c -c
 
-utf8_test: utf8_test.o ../soup/soup.a ../jparse/libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
+utf8_test: utf8_test.o ../soup/soup.a ../pr/libpr.a ../jparse/libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -o $@
 
 ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test
@@ -413,7 +413,7 @@ ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test
 fnamchk.o: fnamchk.c fnamchk.h
 	${CC} ${CFLAGS} fnamchk.c -c
 
-fnamchk: fnamchk.o ../soup/soup.a ../jparse/libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
+fnamchk: fnamchk.o ../soup/soup.a ../pr/libpr.a ../jparse/libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -o $@
 
 
@@ -458,7 +458,7 @@ test_JSON: ../soup/limit_ioccc.h ../soup/version.h
 test_file_util.o: test_file_util.c
 	${CC} ${CFLAGS} test_file_util.c -c
 
-test_file_util: test_file_util.o ../soup/soup.a ../jparse/libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
+test_file_util: test_file_util.o ../soup/soup.a ../pr/libpr.a ../jparse/libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 test: test_JSON
@@ -835,22 +835,29 @@ depend: ${ALL_CSRC}
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 fnamchk.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
-    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h \
-    ../soup/../dbg/c_bool.h ../soup/../dbg/c_compat.h ../soup/../dbg/dbg.h \
+    ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
+    ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
+    ../jparse/util.h ../jparse/version.h ../soup/../dbg/c_bool.h \
+    ../soup/../dbg/c_compat.h ../soup/../dbg/dbg.h \
     ../soup/../dyn_array/dyn_array.h ../soup/default_handle.h \
     ../soup/file_util.h ../soup/limit_ioccc.h ../soup/location.h \
     ../soup/version.h fnamchk.c fnamchk.h
 test_file_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
-    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h \
-    ../soup/../dyn_array/dyn_array.h ../soup/file_util.h ../soup/version.h \
-    test_file_util.c
+    ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
+    ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
+    ../jparse/util.h ../jparse/version.h ../soup/../dyn_array/dyn_array.h \
+    ../soup/file_util.h ../soup/version.h test_file_util.c
 utf8_test.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
-    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h \
-    ../soup/default_handle.h ../soup/limit_ioccc.h ../soup/location.h \
-    ../soup/version.h utf8_test.c
+    ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
+    ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
+    ../jparse/util.h ../jparse/version.h ../soup/default_handle.h \
+    ../soup/limit_ioccc.h ../soup/location.h ../soup/version.h utf8_test.c

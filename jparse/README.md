@@ -71,9 +71,9 @@ make sure things are correct.
 # Dependencies
 
 In order to compile and use `jparse` (the applications and the library) you will
-need to download, compile and install the [dbg
-repo](https://github.com/lcn2/dbg) and the [dyn_array
-repo](https://github.com/lcn2/dyn_array).
+need to download, compile and install the [dbg repo](https://github.com/lcn2/dbg),
+the [dyn_array repo](https://github.com/lcn2/dyn_array), and the
+[pr repo](https://github.com/lcn2/pr).
 
 To clone, make and install these dependencies:
 
@@ -82,8 +82,7 @@ To clone, make and install these dependencies:
 
 git clone https://github.com/lcn2/dbg
 cd dbg && make all
-# then as root or via sudo(8):
-make install
+suto make install
 
 
 # clone, compile and install dyn_array:
@@ -91,8 +90,15 @@ make install
 git clone https://github.com/lcn2/dyn_array
 cd dyn_array
 make all
-# then as root or via sudo(8):
-make install
+suto make install
+
+
+# clone, compile and install pr:
+
+git clone https://github.com/lcn2/pr
+cd pr
+make all
+sudo make install
 ```
 
 The default `PREFIX` to the install and uninstall rules for these libraries is

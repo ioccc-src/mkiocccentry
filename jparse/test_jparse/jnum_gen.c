@@ -126,6 +126,7 @@ main(int argc, char *argv[])
     struct dyn_array *result_array = NULL;	/* dynamic array of test results */
     bool moved = false;		/* true ==> realloc() moved data */
     intmax_t linenum = 0;	/* readline_buf number from filename */
+    bool opt_error = false;	/* fchk_inval_opt() return */
     int i;
 
     /*
@@ -168,9 +169,13 @@ main(int argc, char *argv[])
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
-	    check_invalid_option(program, i, optopt);
-	    usage(3, program, ""); /*ooo*/
-	    not_reached();
+	    opt_error = fchk_inval_opt(stderr, program, i, optopt);
+	    if (opt_error) {
+		usage(3, program, ""); /*ooo*/
+		not_reached();
+	    } else {
+		fwarn(stderr, __func__, "getopt() return: %c optopt: %c", (char)i, (char)optopt);
+	    }
 	    break;
 	}
     }

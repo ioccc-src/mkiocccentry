@@ -112,6 +112,7 @@ main(int argc, char **argv)
     size_t idx = 0;		/* location to start searching table at */
     bool found = false;		/* true if nothing found */
     bool use_common = false;	/* true ==> use common name, false ==> use official name */
+    bool opt_error = false;	/* fchk_inval_opt() return */
     int i;
 
     /* IOCCC requires use of C locale */
@@ -159,9 +160,13 @@ main(int argc, char **argv)
         case ':':   /* option requires an argument */
         case '?':   /* illegal option */
         default:    /* anything else but should not actually happen */
-	    check_invalid_option(program, i, optopt);
-	    usage(3, program, ""); /*ooo*/
-            not_reached();
+	    opt_error = fchk_inval_opt(stderr, program, i, optopt);
+	    if (opt_error) {
+		usage(3, program, ""); /*ooo*/
+		not_reached();
+	    } else {
+		fwarn(stderr, __func__, "getopt() return: %c optopt: %c", (char)i, (char)optopt);
+	    }
             break;
         }
     }

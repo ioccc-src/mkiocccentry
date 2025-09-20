@@ -364,19 +364,19 @@ jnum_chk.o: jnum_chk.c jnum_chk.h ../json_utf8.h ../version.h
 	${CC} ${CFLAGS} -I../.. jnum_chk.c -c
 
 jnum_chk: jnum_chk.o jnum_test.o ../libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR2} -ldyn_array -ldbg
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR2} -lpr -ldyn_array -ldbg
 
 jnum_gen.o: jnum_gen.c jnum_gen.h ../json_utf8.h ../version.h
 	${CC} ${CFLAGS} jnum_gen.c -c
 
 jnum_gen: jnum_gen.o ../libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR2} -ldyn_array -ldbg
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR2} -lpr -ldyn_array -ldbg
 
 pr_jparse_test.o: pr_jparse_test.c pr_jparse_test.h ../json_utf8.h ../version.h
 	${CC} ${CFLAGS} pr_jparse_test.c -c
 
 pr_jparse_test: pr_jparse_test.o ../libjparse.a
-	${CC} ${CFLAGS} $^ -o $@ ${LD_DIR2} -ldyn_array -ldbg
+	${CC} ${CFLAGS} $^ -o $@ ${LD_DIR2} -lpr -ldyn_array -ldbg
 
 
 #########################################################
@@ -766,26 +766,41 @@ depend: ${ALL_CSRC}
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 jnum_chk.o: ../../dbg/c_bool.h ../../dbg/c_compat.h ../../dbg/dbg.h \
     ../../dyn_array/../dbg/c_bool.h ../../dyn_array/../dbg/c_compat.h \
-    ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h ../jparse.h \
-    ../jparse.tab.h ../json_parse.h ../json_sem.h ../json_utf8.h \
-    ../json_util.h ../util.h ../version.h jnum_chk.c jnum_chk.h
+    ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h \
+    ../../pr/../dbg/c_bool.h ../../pr/../dbg/c_compat.h \
+    ../../pr/../dbg/dbg.h ../../pr/../dyn_array/dyn_array.h ../../pr/pr.h \
+    ../jparse.h ../jparse.tab.h ../json_parse.h ../json_sem.h \
+    ../json_utf8.h ../json_util.h ../util.h ../version.h jnum_chk.c \
+    jnum_chk.h
 jnum_gen.o: ../../dbg/c_bool.h ../../dbg/c_compat.h ../../dbg/dbg.h \
     ../../dyn_array/../dbg/c_bool.h ../../dyn_array/../dbg/c_compat.h \
-    ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h ../jparse.h \
-    ../jparse.tab.h ../json_parse.h ../json_sem.h ../json_utf8.h \
-    ../json_util.h ../util.h ../version.h jnum_gen.c jnum_gen.h
+    ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h \
+    ../../pr/../dbg/c_bool.h ../../pr/../dbg/c_compat.h \
+    ../../pr/../dbg/dbg.h ../../pr/../dyn_array/dyn_array.h ../../pr/pr.h \
+    ../jparse.h ../jparse.tab.h ../json_parse.h ../json_sem.h \
+    ../json_utf8.h ../json_util.h ../util.h ../version.h jnum_gen.c \
+    jnum_gen.h
 jnum_header.o: ../../dbg/c_bool.h ../../dbg/c_compat.h ../../dbg/dbg.h \
     ../../dyn_array/../dbg/c_bool.h ../../dyn_array/../dbg/c_compat.h \
-    ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h ../jparse.h \
-    ../jparse.tab.h ../json_parse.h ../json_sem.h ../json_utf8.h \
-    ../json_util.h ../util.h ../version.h jnum_chk.h jnum_header.c
+    ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h \
+    ../../pr/../dbg/c_bool.h ../../pr/../dbg/c_compat.h \
+    ../../pr/../dbg/dbg.h ../../pr/../dyn_array/dyn_array.h ../../pr/pr.h \
+    ../jparse.h ../jparse.tab.h ../json_parse.h ../json_sem.h \
+    ../json_utf8.h ../json_util.h ../util.h ../version.h jnum_chk.h \
+    jnum_header.c
 jnum_test.o: ../../dbg/c_bool.h ../../dbg/c_compat.h ../../dbg/dbg.h \
     ../../dyn_array/../dbg/c_bool.h ../../dyn_array/../dbg/c_compat.h \
-    ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h ../jparse.h \
-    ../jparse.tab.h ../json_parse.h ../json_sem.h ../json_utf8.h \
-    ../json_util.h ../util.h ../version.h jnum_chk.h jnum_test.c
+    ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h \
+    ../../pr/../dbg/c_bool.h ../../pr/../dbg/c_compat.h \
+    ../../pr/../dbg/dbg.h ../../pr/../dyn_array/dyn_array.h ../../pr/pr.h \
+    ../jparse.h ../jparse.tab.h ../json_parse.h ../json_sem.h \
+    ../json_utf8.h ../json_util.h ../util.h ../version.h jnum_chk.h \
+    jnum_test.c
 pr_jparse_test.o: ../../dbg/c_bool.h ../../dbg/c_compat.h ../../dbg/dbg.h \
     ../../dyn_array/../dbg/c_bool.h ../../dyn_array/../dbg/c_compat.h \
-    ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h ../jparse.h \
-    ../jparse.tab.h ../json_parse.h ../json_sem.h ../json_utf8.h \
-    ../json_util.h ../util.h ../version.h pr_jparse_test.c pr_jparse_test.h
+    ../../dyn_array/../dbg/dbg.h ../../dyn_array/dyn_array.h \
+    ../../pr/../dbg/c_bool.h ../../pr/../dbg/c_compat.h \
+    ../../pr/../dbg/dbg.h ../../pr/../dyn_array/dyn_array.h ../../pr/pr.h \
+    ../jparse.h ../jparse.tab.h ../json_parse.h ../json_sem.h \
+    ../json_utf8.h ../json_util.h ../util.h ../version.h pr_jparse_test.c \
+    pr_jparse_test.h

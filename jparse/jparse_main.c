@@ -104,6 +104,7 @@ main(int argc, char **argv)
     bool valid_json = false;	    /* true ==> JSON parse was valid */
     int exit_code = 0;              /* exit code depends on if any JSON is invalid */
     struct json *tree = NULL;	    /* JSON parse tree or NULL */
+    bool opt_error = false;		/* fchk_inval_opt() return */
     int i;
 
     /*
@@ -158,9 +159,13 @@ main(int argc, char **argv)
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
-	    check_invalid_option(program, i, optopt);
-	    usage(3, program, ""); /*ooo*/
-	    not_reached();
+	    opt_error = fchk_inval_opt(stderr, program, i, optopt);
+	    if (opt_error) {
+		usage(3, program, ""); /*ooo*/
+		not_reached();
+	    } else {
+		fwarn(stderr, __func__, "getopt() return: %c optopt: %c", (char)i, (char)optopt);
+	    }
 	    break;
 	}
     }

@@ -480,7 +480,7 @@ test_compile()
     fi
 
     printf "#include <jparse/jparse.h>\nint main(void){return 0;}" > "$SOURCE_FILE"
-    exec_command "${CC}" "$SOURCE_FILE" -o "$PROG_FILE" -ljparse -ldbg -ldyn_array
+    exec_command "${CC}" "$SOURCE_FILE" -o "$PROG_FILE" -ljparse -lpr -ldbg -ldyn_array
     status="$?"
     if [[ $status -eq 0 ]]; then
         write_echo "## TEST COMPILING WITH: \"#include <jparse/jparse.h>\" WORKS"

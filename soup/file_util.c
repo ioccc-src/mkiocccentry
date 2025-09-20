@@ -59,9 +59,11 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  * dyn_array - dynamic array facility
+ * pr - stdio helper library
  */
 #include "../dbg/dbg.h"
 #include "../dyn_array/dyn_array.h"
+#include "../pr/pr.h"
 
 /*
  * file_util - common utility functions for file operations

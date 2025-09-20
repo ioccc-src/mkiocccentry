@@ -511,7 +511,8 @@ soup.a: ${LIB_OBJS}
 # for PROG_TARGETS #
 ####################
 
-location: location_main.o location_tbl.o location_util.o ../jparse/libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
+location: location_main.o location_tbl.o location_util.o ../jparse/libjparse.a ../dyn_array/libdyn_array.a \
+	../dbg/libdbg.a ../pr/libpr.a
 	${CC} ${CFLAGS} $^ -o $@
 
 
@@ -1036,64 +1037,93 @@ depend: ${ALL_CSRC}
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 chk_sem_auth.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
-    ../jparse/json_util.h ../jparse/util.h chk_sem_auth.c chk_sem_auth.h
+    ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
+    ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
+    ../jparse/util.h chk_sem_auth.c chk_sem_auth.h
 chk_sem_info.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
-    ../jparse/json_util.h ../jparse/util.h chk_sem_info.c chk_sem_info.h
+    ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
+    ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
+    ../jparse/util.h chk_sem_info.c chk_sem_info.h
 chk_validate.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
-    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h \
-    chk_sem_auth.h chk_sem_info.h chk_validate.c chk_validate.h \
-    entry_util.h location.h version.h
+    ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
+    ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
+    ../jparse/util.h ../jparse/version.h chk_sem_auth.h chk_sem_info.h \
+    chk_validate.c chk_validate.h entry_util.h location.h version.h
 default_handle.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
-    ../jparse/json_util.h ../jparse/util.h default_handle.c \
-    default_handle.h limit_ioccc.h version.h
+    ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
+    ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
+    ../jparse/util.h default_handle.c default_handle.h limit_ioccc.h \
+    version.h
 entry_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
-    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
-    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
-    ../jparse/verge.h ../jparse/version.h entry_util.c entry_util.h \
-    file_util.h limit_ioccc.h location.h version.h
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../jparse/../pr/../dbg/c_bool.h ../jparse/../pr/../dbg/c_compat.h \
+    ../jparse/../pr/../dbg/dbg.h ../jparse/../pr/../dyn_array/dyn_array.h \
+    ../jparse/../pr/pr.h ../jparse/jparse.h ../jparse/jparse.tab.h \
+    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
+    ../jparse/json_util.h ../jparse/util.h ../jparse/verge.h \
+    ../jparse/version.h entry_util.c entry_util.h file_util.h limit_ioccc.h \
+    location.h version.h
 file_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/util.h \
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
+    ../jparse/util.h ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h \
+    ../pr/../dbg/dbg.h ../pr/../dyn_array/dyn_array.h ../pr/pr.h \
     file_util.c file_util.h
 foo.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h foo.c foo.h \
     oebxergfB.h
 location_main.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
-    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h location.h \
-    location_main.c version.h
+    ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
+    ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
+    ../jparse/util.h ../jparse/version.h location.h location_main.c \
+    version.h
 location_tbl.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
-    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h location.h \
-    location_tbl.c version.h
+    ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
+    ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
+    ../jparse/util.h ../jparse/version.h location.h location_tbl.c \
+    version.h
 location_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
-    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h location.h \
-    location_util.c version.h
+    ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
+    ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
+    ../jparse/util.h ../jparse/version.h location.h location_util.c \
+    version.h
 random_answers.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
-    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h \
-    default_handle.h limit_ioccc.h location.h random_answers.c \
-    random_answers.h version.h
+    ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
+    ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
+    ../jparse/util.h ../jparse/version.h default_handle.h limit_ioccc.h \
+    location.h random_answers.c random_answers.h version.h
 rule_count.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h ../iocccsize.h \
     iocccsize_err.h limit_ioccc.h rule_count.c version.h
 sanity.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
-    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h \
-    chk_sem_auth.h chk_sem_info.h chk_validate.h default_handle.h \
-    entry_util.h file_util.h limit_ioccc.h location.h sanity.c sanity.h \
-    soup.h version.h
+    ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
+    ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
+    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
+    ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
+    ../jparse/util.h ../jparse/version.h chk_sem_auth.h chk_sem_info.h \
+    chk_validate.h default_handle.h entry_util.h file_util.h limit_ioccc.h \
+    location.h sanity.c sanity.h soup.h version.h

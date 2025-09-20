@@ -1,6 +1,23 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.7.0 2025-09-20
+
+Added `pr/` as "imported" from the [pr repo](https://github.com/lcn2/pr).
+This is being done do that users of this toolkit don't have to install `libpr.a`.
+Removed `libpr` duplicate from `soup/file_util.c`, and `jparse/util.c`.
+Removed `libpr` duplicate from `soup/file_util.h`m and `jparse/util.h`.
+
+Updated top level `Makefile` to manage the new ``pr/` tree and use `pr/libpr.a`.
+Changed `$LD_DIR} and `${LD_DIR2}` top level Makefile variables
+to also refer to the new `pr/` directory tree.
+
+Replaced calls to the `check_invalid_option()` function with the more general
+`fchk_inval_opt()` interface from `libpr.a`.
+
+Updated `MKIOCCCENTRY_REPO_VERSION` to "2.7.0 2025-09-20".
+
+
 ## Release 2.6.6 2025-09-18
 
 Fix bug in `test_ioccc/hostchk.sh` where if you did not have `dbg` and

@@ -376,13 +376,14 @@ main(int argc, char **argv)
     bool write_quote = false;	/* true ==> output enclosing quotes */
     bool esc_quotes = false;	/* true ==> escape quotes */
     bool quote = true;          /* true ==> require surrounding quotes */
-    bool json_parse = false;  /* true ==> skip parsing encoded JSON before decoding */
+    bool json_parse = false;    /* true ==> skip parsing encoded JSON before decoding */
     int ret;			/* libc return code */
     int i;
     struct json *tree = NULL;   /* for parsing json if not -j */
     bool is_valid = true;       /* if not -j and JSON is valid */
     struct jstring *jstr = NULL;    /* decoded string */
     char *dup_input = NULL;	/* duplicate of arg string */
+    bool opt_error = false;	/* fchk_inval_opt() return */
 
     /*
      * use default locale based on LANG
@@ -474,9 +475,13 @@ main(int argc, char **argv)
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
-	    check_invalid_option(program, i, optopt);
-	    usage(3, program, ""); /*ooo*/
-	    not_reached();
+	    opt_error = fchk_inval_opt(stderr, program, i, optopt);
+	    if (opt_error) {
+		usage(3, program, ""); /*ooo*/
+		not_reached();
+	    } else {
+		fwarn(stderr, __func__, "getopt() return: %c optopt: %c", (char)i, (char)optopt);
+	    }
 	    break;
 	}
     }

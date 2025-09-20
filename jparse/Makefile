@@ -513,7 +513,7 @@ jparse.o: jparse.c jparse.h version.h
 	${CC} ${CFLAGS} jparse.c -c
 
 jparse: jparse_main.o libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array -lpr
 
 
 jstr_util.o: jstr_util.c jstr_util.h
@@ -523,7 +523,7 @@ jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c json_utf8.h vers
 	${CC} ${CFLAGS} jstrencode.c -c
 
 jstrencode: jstrencode.o libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array -lpr
 
 json_utf8.o: json_utf8.c json_utf8.h
 	${CC} ${CFLAGS} json_utf8.c -c
@@ -532,7 +532,7 @@ jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h json_utf8.h ver
 	${CC} ${CFLAGS} jstrdecode.c -c
 
 jstrdecode: jstrdecode.o libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array -lpr
 
 json_parse.o: json_parse.c
 	${CC} ${CFLAGS} json_parse.c -c
@@ -541,7 +541,7 @@ jsemtblgen.o: jsemtblgen.c jparse.tab.h json_utf8.h version.h
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
 jsemtblgen: jsemtblgen.o libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array -lpr
 
 json_sem.o: json_sem.c
 	${CC} ${CFLAGS} json_sem.c -c
@@ -580,7 +580,7 @@ verge.o: verge.c verge.h version.h
 	${CC} ${CFLAGS} verge.c -c
 
 verge: verge.o verge_main.o util.o
-	${CC} ${CFLAGS} $^ -o $@ ${LD_DIR} -ldbg -ldyn_array
+	${CC} ${CFLAGS} $^ -o $@ ${LD_DIR} -ldbg -ldyn_array -lpr
 
 libjparse.a: ${LIB_OBJS}
 	${Q} ${RM} ${RM_V} -f $@
@@ -1325,67 +1325,91 @@ depend: ${ALL_CSRC}
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 jparse.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h jparse.c jparse.h \
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../pr/../dyn_array/dyn_array.h ../pr/pr.h jparse.c jparse.h \
     jparse.tab.h json_parse.h json_sem.h json_utf8.h json_util.h util.h
 jparse.ref.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
-    jparse.ref.c jparse.tab.h json_parse.h json_sem.h json_utf8.h \
-    json_util.h util.h
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../pr/../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.ref.c \
+    jparse.tab.h json_parse.h json_sem.h json_utf8.h json_util.h util.h
 jparse.tab.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
-    jparse.lex.h jparse.tab.c jparse.tab.h json_parse.h json_sem.h \
-    json_utf8.h json_util.h util.h version.h
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../pr/../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.lex.h \
+    jparse.tab.c jparse.tab.h json_parse.h json_sem.h json_utf8.h \
+    json_util.h util.h version.h
 jparse.tab.ref.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
-    jparse.lex.h jparse.tab.h jparse.tab.ref.c json_parse.h json_sem.h \
-    json_utf8.h json_util.h util.h version.h
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../pr/../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.lex.h \
+    jparse.tab.h jparse.tab.ref.c json_parse.h json_sem.h json_utf8.h \
+    json_util.h util.h version.h
 jparse_main.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
-    jparse.tab.h jparse_main.c jparse_main.h json_parse.h json_sem.h \
-    json_utf8.h json_util.h util.h version.h
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../pr/../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.tab.h \
+    jparse_main.c jparse_main.h json_parse.h json_sem.h json_utf8.h \
+    json_util.h util.h version.h
 jsemtblgen.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
-    jparse.tab.h jsemtblgen.c jsemtblgen.h json_parse.h json_sem.h \
-    json_utf8.h json_util.h util.h version.h
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../pr/../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.tab.h \
+    jsemtblgen.c jsemtblgen.h json_parse.h json_sem.h json_utf8.h \
+    json_util.h util.h version.h
 json_parse.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
-    jparse.tab.h json_parse.c json_parse.h json_sem.h json_utf8.h \
-    json_util.h util.h
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../pr/../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.tab.h \
+    json_parse.c json_parse.h json_sem.h json_utf8.h json_util.h util.h
 json_sem.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
-    jparse.tab.h json_parse.h json_sem.c json_sem.h json_utf8.h json_util.h \
-    util.h
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../pr/../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.tab.h \
+    json_parse.h json_sem.c json_sem.h json_utf8.h json_util.h util.h
 json_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
-    jparse.tab.h json_parse.h json_sem.h json_utf8.h json_util.c \
-    json_util.h util.h
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../pr/../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.tab.h \
+    json_parse.h json_sem.h json_utf8.h json_util.c json_util.h util.h
 jstr_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
-    jparse.tab.h json_parse.h json_sem.h json_utf8.h json_util.h \
-    jstr_util.c jstr_util.h util.h
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../pr/../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.tab.h \
+    json_parse.h json_sem.h json_utf8.h json_util.h jstr_util.c jstr_util.h \
+    util.h
 jstrdecode.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
-    jparse.tab.h json_parse.h json_sem.h json_utf8.h json_util.h \
-    jstr_util.h jstrdecode.c jstrdecode.h util.h version.h
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../pr/../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.tab.h \
+    json_parse.h json_sem.h json_utf8.h json_util.h jstr_util.h \
+    jstrdecode.c jstrdecode.h util.h version.h
 jstrencode.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h jparse.h \
-    jparse.tab.h json_parse.h json_sem.h json_utf8.h json_util.h \
-    jstr_util.h jstrencode.c jstrencode.h util.h version.h
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../pr/../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.tab.h \
+    json_parse.h json_sem.h json_utf8.h json_util.h jstr_util.h \
+    jstrencode.c jstrencode.h util.h version.h
 util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h util.c util.h
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../pr/../dyn_array/dyn_array.h ../pr/pr.h util.c util.h
 verge.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h json_utf8.h util.h \
-    verge.c verge.h version.h
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../pr/../dyn_array/dyn_array.h ../pr/pr.h json_utf8.h util.h verge.c \
+    verge.h version.h

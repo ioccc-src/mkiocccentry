@@ -425,6 +425,7 @@ main(int argc, char **argv)
     int i;
     struct jstring *jstr = NULL;    /* to iterate through list */
     char *dup_input = NULL;	/* duplicate of input w/o newlines */
+    bool opt_error = false;	/* fchk_inval_opt() return */
 
     /*
      * use default locale based on LANG
@@ -500,9 +501,13 @@ main(int argc, char **argv)
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
-	    check_invalid_option(program, i, optopt);
-	    usage(3, program, ""); /*ooo*/
-	    not_reached();
+	    opt_error = fchk_inval_opt(stderr, program, i, optopt);
+	    if (opt_error) {
+		usage(3, program, ""); /*ooo*/
+		not_reached();
+	    } else {
+		fwarn(stderr, __func__, "getopt() return: %c optopt: %c", (char)i, (char)optopt);
+	    }
 	    break;
 	}
     }

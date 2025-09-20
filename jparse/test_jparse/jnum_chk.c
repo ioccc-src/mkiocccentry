@@ -116,6 +116,7 @@ main(int argc, char *argv[])
     struct json_number *item = NULL;	/* JSON parser tree node for a JSON number */
     size_t len = 0;		/* length of str */
     int arg_count = 0;		/* number of args to process */
+    bool opt_error = false;	/* fchk_inval_opt() return */
     int i;
 
     /*
@@ -171,9 +172,13 @@ main(int argc, char *argv[])
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
-	    check_invalid_option(program, i, optopt);
-	    usage(3, program, ""); /*ooo*/
-	    not_reached();
+	    opt_error = fchk_inval_opt(stderr, program, i, optopt);
+	    if (opt_error) {
+		usage(3, program, ""); /*ooo*/
+		not_reached();
+	    } else {
+		fwarn(stderr, __func__, "getopt() return: %c optopt: %c", (char)i, (char)optopt);
+	    }
 	    break;
 	}
     }

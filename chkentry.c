@@ -402,7 +402,8 @@ main(int argc, char *argv[])
     bool found_index = false;           /* true ==> index.html found */
     bool found_remarks = false;         /* true ==> remarks.md found */
     bool found_Makefile = false;        /* true ==> Makefile found */
-    bool ignored_subpath = false;  /* true ==> '-i path' used */
+    bool ignored_subpath = false;	/* true ==> '-i path' used */
+    bool opt_error = false;		/* fchk_inval_opt() return */
 
     /* IOCCC requires use of C locale */
     set_ioccc_locale();
@@ -478,9 +479,13 @@ main(int argc, char *argv[])
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
-	    check_invalid_option(program, i, optopt);
-	    usage(3, program, ""); /*ooo*/
-	    not_reached();
+	    opt_error = fchk_inval_opt(stderr, program, i, optopt);
+	    if (opt_error) {
+		usage(3, program, ""); /*ooo*/
+		not_reached();
+	    } else {
+		fwarn(stderr, __func__, "getopt() return: %c optopt: %c", (char)i, (char)optopt);
+	    }
 	    break;
 	}
     }

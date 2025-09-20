@@ -127,6 +127,7 @@ main(int argc, char *argv[])
     int notatty_test_cnt = 0;	/* error count from notatty_test() */
     int vprint_test_cnt = 0;	/* error count from vprint_test() */
     int pr_jparse_test_cnt = 0;	/* error count from pr_jparse_test() */
+    bool opt_error = false;	/* fchk_inval_opt() return */
     int i;
 
     /*
@@ -188,9 +189,13 @@ main(int argc, char *argv[])
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
-	    check_invalid_option(program, i, optopt);
-	    usage(3, program, ""); /*ooo*/
-	    not_reached();
+	    opt_error = fchk_inval_opt(stderr, program, i, optopt);
+	    if (opt_error) {
+		usage(3, program, ""); /*ooo*/
+		not_reached();
+	    } else {
+		fwarn(stderr, __func__, "getopt() return: %c optopt: %c", (char)i, (char)optopt);
+	    }
 	    break;
 	}
     }

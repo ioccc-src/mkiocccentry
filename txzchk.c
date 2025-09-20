@@ -163,6 +163,7 @@ main(int argc, char **argv)
     int i;
     bool found_tar = false;                     /* for find_utils */
     bool found_fnamchk = false;                 /* for find_utils */
+    bool opt_error = false;			/* fchk_inval_opt() return */
 
     /* IOCCC requires use of C locale */
     set_ioccc_locale();
@@ -228,9 +229,13 @@ main(int argc, char **argv)
 	case ':': /* option requires an argument */
 	case '?': /* illegal option */
 	default:  /* anything else but should not actually happen */
-	    check_invalid_option(program, i, optopt);
-	    usage(3, program, ""); /*ooo*/
-	    not_reached();
+	    opt_error = fchk_inval_opt(stderr, program, i, optopt);
+	    if (opt_error) {
+		usage(3, program, ""); /*ooo*/
+		not_reached();
+	    } else {
+		fwarn(stderr, __func__, "getopt() return: %c optopt: %c", (char)i, (char)optopt);
+	    }
 	    break;
 	}
     }

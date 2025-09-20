@@ -117,7 +117,6 @@
  */
 #define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
 #define INITIAL_BUF_SIZE (8192)	/* initial size of buffer allocated by read_all */
-#define READ_ALL_CHUNK (65536)	/* grow this read_all by this amount when needed */
 #define LLONG_MAX_BASE10_DIGITS (19) /* for string to int functions */
 #define TBLLEN(x) (sizeof(x)/sizeof((x)[0]))	/* number of elements in an initialized table array */
 #define UNUSED_ARG(x) (void)(x)			/* prevent compiler from complaining about an unused arg */
@@ -130,16 +129,6 @@
 #define EXIT_SYSTEM_FAILED (-3)		/* invalid exit code - system() failed - returned exit 127 */
 #define EXIT_FFLUSH_FAILED (-4)		/* invalid exit code - fflush() failed */
 #define EXIT_NULL_ARGS (-5)		/* invalid exit code - function called with a NULL arg */
-
-
-/*
- * fpr() and pr() related macros
- */
-#define fprint(stream, fmt, ...) fpr((stream), __func__, (fmt), __VA_ARGS__)
-#define fprstr(stream, fmt) fpr((stream), __func__, (fmt))
-/**/
-#define print(fmt, ...) pr(__func__, (fmt), __VA_ARGS__)
-#define prstr(fmt) pr(__func__, (fmt))
 
 
 /*
