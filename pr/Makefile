@@ -203,6 +203,21 @@ C_SPECIAL=
 #
 LD_SPECIAL=
 
+# where to find libdbg.a and libdyn_array.a
+#
+# NOTE: By default, when ${LD_DIR} is empty, we assume that both
+# 	libdbg.a (see https://github.com/lcn2/dbg) and
+# 	libdyn_array.a (see https://github.com/lcn2/dyn_array)
+# 	installed on the system.
+#
+# NOTE: For cases such as the [mkiocccentry toolkit](https://github.com/ioccc-src/mkiocccentry)
+# 	the top level Makefile can set ${LD_DIR} to something such as:
+#
+# 	    LD_DIR= -L../dbg -L../dyn_array -L../pr
+#
+LD_DIR=
+#LD_DIR= -L../dbg -L../dyn_array -L../pr
+
 # linker options
 #
 LDFLAGS= ${LD_SPECIAL}
@@ -408,8 +423,7 @@ pr_test.o: pr_test.c pr.h
 	${CC} ${CFLAGS} pr_test.c -c
 
 pr_test: pr_test.o pr.o
-	# XXX - when this repo is "included" in the mkiocccentry repo, we cannot use -ldbg -ldyn_array - XXX
-	${CC} ${CFLAGS} pr_test.o pr.o -ldbg -ldyn_array -o pr_test
+	${CC} ${CFLAGS} pr_test.o pr.o ${LD_DIR} -ldbg -ldyn_array -o pr_test
 
 # form the duplicate copies of the `pr(3)` man page
 #
@@ -451,7 +465,7 @@ man/man3/pr.3:
 # repo tools - rules for those who maintain the this repo #
 ###########################################################
 
-test:
+test: pr_test
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo

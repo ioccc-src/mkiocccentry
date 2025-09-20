@@ -238,8 +238,8 @@ LDFLAGS=
 # LD_DIR - locations of libdbg.a and libdyn_array.a for the next sub-directory down
 # LD_DIR2 - locations of libdbg.a and libdyn_array.a for 2 sub-directories down
 #
-LD_DIR= -L../dbg -L../dyn_array
-LD_DIR2= -L../../dbg -L../../dyn_array
+LD_DIR= -L../dbg -L../dyn_array -L../pr
+LD_DIR2= -L../../dbg -L../../dyn_array -L../../pr
 
 # how to compile
 #
@@ -615,8 +615,13 @@ soup/soup.h: soup/Makefile
 soup/limit_ioccc.sh: soup/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_prog C_SPECIAL="${C_SPECIAL}"
 
-pr/pr.h: pr/Makefile
-	${Q} ${MAKE} ${MAKE_CD_Q} -C pr extern_include C_SPECIAL="${C_SPECIAL}"
+pr/libpr.a: pr/Makefile
+	${Q} ${MAKE} ${MAKE_CD_Q} -C pr extern_include C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}"
+
+pr/pr_test: pr/Makefile
+	${Q} ${MAKE} ${MAKE_CD_Q} -C pr extern_prog C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}"
 
 reset_min_timestamp: soup/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C soup reset_min_timestamp C_SPECIAL="${C_SPECIAL}"
@@ -1088,7 +1093,8 @@ test:
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
-	${E} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}" \
+		     LD_DIR="${LD_DIR}"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 	${S} echo "All done!!! All done!! -- Jessica Noll, Age 2."
