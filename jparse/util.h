@@ -132,33 +132,13 @@
 #endif /* SSIZE_MIN */
 
 /*
- * MAX and MIN macros
- */
-#if !defined(MAX)
-#define MAX(a,b) ((a)>(b)?(a):(b))
-#endif /* MAX */
-#if !defined(MIN)
-#define MIN(a,b) ((a)<(b)?(a):(b))
-#endif /* MIN */
-
-/*
  * definitions
  */
 #define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
 #define INITIAL_BUF_SIZE (8192)	/* initial size of buffer allocated by read_all */
 #define READ_ALL_CHUNK (65536)	/* grow this read_all by this amount when needed */
-#define LLONG_MAX_BASE10_DIGITS (19) /* for string to int functions */
 #define TBLLEN(x) (sizeof(x)/sizeof((x)[0]))	/* number of elements in an initialized table array */
 #define UNUSED_ARG(x) (void)(x)			/* prevent compiler from complaining about an unused arg */
-
-
-/*
- * invalid exit codes (values < 0) that may be returned by shell_cmd()
- */
-#define EXIT_CALLOC_FAILED (-2)		/* invalid exit code - calloc() failure */
-#define EXIT_SYSTEM_FAILED (-3)		/* invalid exit code - system() failed - returned exit 127 */
-#define EXIT_FFLUSH_FAILED (-4)		/* invalid exit code - fflush() failed */
-#define EXIT_NULL_ARGS (-5)		/* invalid exit code - function called with a NULL arg */
 
 
 /*
@@ -178,18 +158,6 @@
 #define is_all_text_str(str) (is_all_text((str), strlen(str)))
 #define is_all_whitespace(buf, len) (find_text((buf), (len), NULL) == 0)
 #define is_all_whitespace_str(str) (is_all_whitespace((str), strlen(str)))
-
-/*
- * useful util macros for bitvectors
- */
-#define IS_SET(flag,bit)  ((flag) & (bit))
-#define SET_BIT(var,bit)  ((var) |= ((uintmax_t)bit))
-#define REMOVE_BIT(var,bit)  ((var) &= ~((uintmax_t)bit))
-#define TOGGLE_BIT(var,bit) ((var)) = ((var)) ^ ((uintmax_t)bit)
-
-#define LSET_BIT(var,bit)  ((var) | ((uintmax_t)bit))
-#define LREMOVE_BIT(var,bit)  ((var) & ~((uintmax_t)bit))
-#define LTOGGLE_BIT(var,bit) ((var) ^ ((uintmax_t)bit))
 
 /*
  * non-strict floating match to 1 part in MATCH_PRECISION

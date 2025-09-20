@@ -513,7 +513,7 @@ jparse.o: jparse.c jparse.h version.h
 	${CC} ${CFLAGS} jparse.c -c
 
 jparse: jparse_main.o libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array -lpr
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -lpr -ldbg -ldyn_array
 
 
 jstr_util.o: jstr_util.c jstr_util.h
@@ -523,7 +523,7 @@ jstrencode.o: jstrencode.c jstrencode.h json_util.h json_util.c json_utf8.h vers
 	${CC} ${CFLAGS} jstrencode.c -c
 
 jstrencode: jstrencode.o libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array -lpr
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -lpr -ldbg -ldyn_array
 
 json_utf8.o: json_utf8.c json_utf8.h
 	${CC} ${CFLAGS} json_utf8.c -c
@@ -532,7 +532,7 @@ jstrdecode.o: jstrdecode.c jstrdecode.h json_util.h json_parse.h json_utf8.h ver
 	${CC} ${CFLAGS} jstrdecode.c -c
 
 jstrdecode: jstrdecode.o libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array -lpr
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -lpr -ldbg -ldyn_array
 
 json_parse.o: json_parse.c
 	${CC} ${CFLAGS} json_parse.c -c
@@ -541,7 +541,7 @@ jsemtblgen.o: jsemtblgen.c jparse.tab.h json_utf8.h version.h
 	${CC} ${CFLAGS} jsemtblgen.c -c
 
 jsemtblgen: jsemtblgen.o libjparse.a
-	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -ldbg -ldyn_array -lpr
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -lpr -ldbg -ldyn_array
 
 json_sem.o: json_sem.c
 	${CC} ${CFLAGS} json_sem.c -c
@@ -580,7 +580,7 @@ verge.o: verge.c verge.h version.h
 	${CC} ${CFLAGS} verge.c -c
 
 verge: verge.o verge_main.o util.o
-	${CC} ${CFLAGS} $^ -o $@ ${LD_DIR} -ldbg -ldyn_array -lpr
+	${CC} ${CFLAGS} $^ -o $@ ${LD_DIR} -lpr -ldbg -ldyn_array
 
 libjparse.a: ${LIB_OBJS}
 	${Q} ${RM} ${RM_V} -f $@
