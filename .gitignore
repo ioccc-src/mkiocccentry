@@ -73,6 +73,9 @@ makefile.local
 /NOTES/
 oebxergfB.txt
 *.orig
+/pr.clone/
+/pr/.github
+/pr/tags
 random_answers.*
 *.rej
 /soup/.all_ref.*.out

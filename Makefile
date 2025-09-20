@@ -379,7 +379,7 @@ DSYMDIRS= mkiocccentry.dSYM iocccsize.dSYM txzchk.dSYM chkentry.dSYM chksubmit.d
 TMP_BUILD_LOG= ".build.log.$$$$"
 BUILD_LOG= build.log
 
-ALL_SUBDIRS= all_dbg all_dyn_array all_jparse all_jparse_test all_man all_soup all_test_ioccc
+ALL_SUBDIRS= all_dbg all_dyn_array all_jparse all_jparse_test all_man all_soup all_test_ioccc all_pr
 
 # what to make by all but NOT to removed by clobber
 #
@@ -490,7 +490,7 @@ hostchk_warning:
         pull release seqcexit shellcheck tags local_dir_tags all_tags test test-chkentry use_json_ref \
 	eat eating eat eating_soup kitchen soup_kitchen bug_report-txl \
 	build release pull reset_min_timestamp load_json_ref build_man bug_report-tx \
-	all_dbg all_dyn_array all_jparse all_jparse_test all_man all_soup all_test_ioccc depend
+	all_dbg all_dyn_array all_jparse all_jparse_test all_pr all_man all_soup all_test_ioccc depend
 
 
 
@@ -562,6 +562,9 @@ kitchen soup_kitchen: soup/kitchen.sh
 all_test_ioccc: test_ioccc/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc all C_SPECIAL="${C_SPECIAL}"
 
+all_pr: pr/Makefile
+	${Q} ${MAKE} ${MAKE_CD_Q} -C pr all C_SPECIAL="${C_SPECIAL}"
+
 dbg/dbg.h: dbg/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dbg extern_include C_SPECIAL="${C_SPECIAL}"
 
@@ -611,6 +614,9 @@ soup/soup.h: soup/Makefile
 
 soup/limit_ioccc.sh: soup/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C soup extern_prog C_SPECIAL="${C_SPECIAL}"
+
+pr/pr.h: pr/Makefile
+	${Q} ${MAKE} ${MAKE_CD_Q} -C pr extern_include C_SPECIAL="${C_SPECIAL}"
 
 reset_min_timestamp: soup/Makefile
 	${Q} ${MAKE} ${MAKE_CD_Q} -C soup reset_min_timestamp C_SPECIAL="${C_SPECIAL}"
@@ -807,7 +813,7 @@ all_sem_ref_ptch: soup/Makefile
 # sequence exit codes
 #
 seqcexit: ${ALL_CSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
-	soup/Makefile test_ioccc/Makefile
+	soup/Makefile test_ioccc/Makefile pr/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
@@ -817,6 +823,7 @@ seqcexit: ${ALL_CSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}"
 	${Q} if ! ${IS_AVAILABLE} ${SEQCEXIT} >/dev/null 2>&1; then \
 	    echo 'The ${SEQCEXIT} tool could not be found or is unreliable in your system.' 1>&2; \
 	    echo 'The ${SEQCEXIT} tool is required for the $@ rule.'; 1>&2; \
@@ -834,7 +841,7 @@ seqcexit: ${ALL_CSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 picky: ${ALL_SRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
-	soup/Makefile test_ioccc/Makefile
+	soup/Makefile test_ioccc/Makefile pr/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
@@ -844,6 +851,7 @@ picky: ${ALL_SRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 					       LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}"
 	${Q} if ! ${IS_AVAILABLE} ${PICKY} >/dev/null 2>&1; then \
 	    echo 'The ${PICKY} tool could not be found or is unreliable in your system.' 1>&2; \
 	    echo 'The ${PICKY} tool is required for the $@ rule.' 1>&2; \
@@ -906,7 +914,7 @@ picky: ${ALL_SRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 # inspect and verify shell scripts
 #
 shellcheck: ${SH_FILES} .shellcheckrc dbg/Makefile dyn_array/Makefile jparse/Makefile \
-	soup/Makefile test_ioccc/Makefile
+	soup/Makefile test_ioccc/Makefile pr/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
@@ -916,6 +924,7 @@ shellcheck: ${SH_FILES} .shellcheckrc dbg/Makefile dyn_array/Makefile jparse/Mak
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}"
 	${Q} if ! ${IS_AVAILABLE} ${SHELLCHECK} >/dev/null 2>&1; then \
 	    echo 'The ${SHELLCHECK} command could not be found or is unreliable in your system.' 1>&2; \
 	    echo 'The ${SHELLCHECK} command is required to run the $@ rule.'; 1>&2; \
@@ -941,7 +950,7 @@ shellcheck: ${SH_FILES} .shellcheckrc dbg/Makefile dyn_array/Makefile jparse/Mak
 # inspect and verify man pages
 #
 check_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
-	soup/Makefile test_ioccc/Makefile
+	soup/Makefile test_ioccc/Makefile pr/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
@@ -951,13 +960,14 @@ check_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 # build a user convenience man directory
 #
 build_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
-	soup/Makefile test_ioccc/Makefile
+	soup/Makefile test_ioccc/Makefile pr/Makefile
 	${V} echo
 	${V} echo "${OUR_NAME}: make $@ starting"
 	${V} echo
@@ -965,8 +975,8 @@ build_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 		     MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ \
 		     INSTALL_V= C_SPECIAL="${C_SPECIAL}"
 	${Q} ${MAKE} ${MAKE_CD_Q} -C dyn_array install_man \
-		MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ \
-		INSTALL_V= C_SPECIAL="${C_SPECIAL}"
+		     MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ \
+		     INSTALL_V= C_SPECIAL="${C_SPECIAL}"
 	${Q} ${MAKE} ${MAKE_CD_Q} -C jparse install_man \
 		     MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ \
 		     INSTALL_V= C_SPECIAL="${C_SPECIAL}" \
@@ -977,13 +987,16 @@ build_man: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc install_man \
 		     MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ \
 		     INSTALL_V= C_SPECIAL="${C_SPECIAL}"
+	${Q} ${MAKE} ${MAKE_CD_Q} -C pr install_man \
+		     MAN1_DIR=../man/man1 MAN3_DIR=../man/man3 MAN8_DIR=../man/man8 I=@ \
+		     INSTALL_V= C_SPECIAL="${C_SPECIAL}"
 	${V} echo
 	${V} echo "${OUR_NAME}: make $@ ending"
 
 # vi/vim tags
 #
 tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
-	soup/Makefile test_ioccc/Makefile
+	soup/Makefile test_ioccc/Makefile pr/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
@@ -1004,6 +1017,7 @@ tags: ${ALL_CSRC} ${ALL_HSRC} dbg/Makefile dyn_array/Makefile jparse/Makefile \
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup local_dir_tags C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc local_dir_tags C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C pr local_dir_tags C_SPECIAL="${C_SPECIAL}"
 	${Q} echo
 	${E} ${MAKE} local_dir_tags
 	${Q} echo
@@ -1045,6 +1059,7 @@ all_tags:
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}"
 	${Q} echo
 	${Q} ${RM} -f tags
 	${Q} for dir in . dbg dyn_array jparse jparse/test_jparse soup test_ioccc; do \
@@ -1073,6 +1088,7 @@ test:
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 	${S} echo "All done!!! All done!! -- Jessica Noll, Age 2."
@@ -1101,7 +1117,7 @@ mkchk_sem: soup/Makefile
 # clean legacy code and files - files that are no longer needed
 #
 legacy_clean: dbg/Makefile dyn_array/Makefile jparse/Makefile \
-	soup/Makefile test_ioccc/Makefile
+	soup/Makefile test_ioccc/Makefile pr/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
@@ -1111,6 +1127,7 @@ legacy_clean: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${Q} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
+	${Q} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}"
 	${V} echo "${OUR_NAME}: nothing to do"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -1118,7 +1135,7 @@ legacy_clean: dbg/Makefile dyn_array/Makefile jparse/Makefile \
 # clobber legacy code and files - files that are no longer needed
 #
 legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
-	jparse/test_jparse/Makefile soup/Makefile test_ioccc/Makefile
+	jparse/test_jparse/Makefile soup/Makefile test_ioccc/Makefile pr/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
@@ -1130,6 +1147,7 @@ legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 		     LD_DIR2="${LD_DIR2}"
 	${Q} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${Q} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
+	${Q} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}"
 	${V} echo "${OUR_NAME}: nothing to do"
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
@@ -1166,6 +1184,9 @@ legacy_clobber: legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	jparse.help jparse.setup jparse.clone jparse.clone_status jparse.update_clone jparse.reload_clone \
 	jparse.update_from_clone jparse.update_into_clone \
 	jparse.diff_jparse_clone jparse.diff_clone_jparse jparse.diff_summary \
+	pr.help pr.setup pr.clone pr.clone_status pr.update_clone pr.reload_clone \
+	pr.update_from_clone pr.update_into_clone \
+	pr.diff_pr_clone pr.diff_clone_pr pr.diff_summary \
 	all.help all.setup all.clone all.clone_status all.update_clone all.reload_clone \
 	all.update_from_clone all.update_into_clone \
 	all.diff_all_clone all.diff_clone_all all.diff_summary
@@ -1485,6 +1506,113 @@ jparse.diff_clone_jparse: jparse/ jparse.clone/ .exclude
 jparse.diff_summary: jparse.clone/ jparse/ .exclude
 	-${E} ${DIFF} -r --brief --exclude-from=.exclude jparse.clone jparse
 
+# rules to help incorporate the external pr repo
+#
+pr.help:
+	${S} echo "The following rules are used by the people who maintain this repo."
+	${S} echo
+	${S} echo "Summary of rules to help incorporate the external pr repo:"
+	${S} echo
+	${S} echo "make pr.help - print this message"
+	${S} echo "make pr.setup - create or update pr.clone directory from remote repo"
+	${S} echo "make pr.clone - create missing pr.clone directory from remote repo"
+	${S} echo "make pr.clone_status - git status of pr.clone directory"
+	${S} echo "make pr.update_clone - update pr.clone directory from remote repo"
+	${S} echo "make pr.recreate_clone - remove then clone pr.clone directory from remote repo"
+	${S} echo "make pr.update_from_clone - modify pr directory from pr.clone directory"
+	${S} echo "make pr.update_into_clone - modify pr.clone directory from pr directory"
+	${S} echo "make pr.diff_pr_clone - compare pr directory with pr.clone directory"
+	${S} echo "make pr.diff_clone_pr - compare pr.clone directory with pr directory"
+	${S} echo "make pr.diff_summary - summarize differnces between pr and pr.clone directories"
+
+pr.setup:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	-@if [[ -d pr.clone ]]; then \
+	    ${MAKE} pr.update_clone; \
+	else \
+	    ${MAKE} pr.clone; \
+	fi
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+pr.clone:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${Q} if [[ -d pr.clone ]]; then \
+	    echo "ERROR: pr.clone exists"; \
+	    exit 1; \
+	else \
+	    echo "If git clone fails because you do not have the ssh key, try:"; \
+	    echo; \
+	    echo "	${GIT} clone https://github.com/lcn2/pr.git pr.clone"; \
+	    echo; \
+	    ${GIT} clone https://github.com/lcn2/pr.git pr.clone; \
+	fi
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+pr.clone_status: pr.clone/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${GIT} status pr.clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+pr.update_clone: pr.clone/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} cd pr.clone && ${GIT} fetch
+	${E} cd pr.clone && ${GIT} fetch --prune --tags
+	${E} cd pr.clone && ${GIT} merge --ff-only || ${GIT} rebase --rebase-merges
+	${E} ${MAKE} pr.clone_status
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+pr.recreate_clone:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${RM} -rf pr.clone
+	${E} ${MAKE} pr.clone
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+pr.update_from_clone: pr.clone/ pr/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${RSYNC} -a -S -0 --exclude=.git --exclude=.github -C --delete -v pr.clone/ pr
+	${E} ${MAKE} ${MAKE_CD_Q} -C dbg libdbg.a
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array libdyn_array.a
+	${E} ${MAKE} ${MAKE_CD_Q} -C pr depend C_SPECIAL=-DINTERNAL_INCLUDE \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+pr.update_into_clone: pr/ pr.clone/
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${E} ${RSYNC} -a -S -0 --exclude=.git --exclude=.github -C --delete -v pr/ pr.clone
+	${E} ${MAKE} ${MAKE_CD_Q} -C pr.clone depend C_SPECIAL=-UINTERNAL_INCLUDE \
+		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+pr.diff_pr_clone: pr.clone/ pr/ .exclude
+	-${E} ${DIFF} -u -r --exclude-from=.exclude pr.clone pr
+
+pr.diff_clone_pr: pr/ pr.clone/ .exclude
+	-${E} ${DIFF} -u -r --exclude-from=.exclude pr pr.clone
+
+pr.diff_summary: pr.clone/ pr/ .exclude
+	-${E} ${DIFF} -r --brief --exclude-from=.exclude pr.clone pr
+
 # rules to help incorporate external repos
 #
 all.help:
@@ -1511,6 +1639,7 @@ all.setup:
 	${E} ${MAKE} dbg.setup
 	${E} ${MAKE} dyn_array.setup
 	${E} ${MAKE} jparse.setup
+	${E} ${MAKE} pr.setup
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1521,6 +1650,7 @@ all.clone:
 	${E} ${MAKE} dbg.clone
 	${E} ${MAKE} dyn_array.clone
 	${E} ${MAKE} jparse.clone
+	${E} ${MAKE} pr.clone
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1531,6 +1661,7 @@ all.clone_status:
 	${E} ${MAKE} dbg.clone_status
 	${E} ${MAKE} dyn_array.clone_status
 	${E} ${MAKE} jparse.clone_status
+	${E} ${MAKE} pr.clone_status
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1541,6 +1672,7 @@ all.update_clone:
 	${E} ${MAKE} dbg.update_clone
 	${E} ${MAKE} dyn_array.update_clone
 	${E} ${MAKE} jparse.update_clone
+	${E} ${MAKE} pr.update_clone
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1551,6 +1683,7 @@ all.recreate_clone:
 	${E} ${MAKE} dbg.recreate_clone
 	${E} ${MAKE} dyn_array.recreate_clone
 	${E} ${MAKE} jparse.recreate_clone
+	${E} ${MAKE} pr.recreate_clone
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1561,6 +1694,7 @@ all.update_from_clone:
 	${E} ${MAKE} dbg.update_from_clone
 	${E} ${MAKE} dyn_array.update_from_clone
 	${E} ${MAKE} jparse.update_from_clone
+	${E} ${MAKE} pr.update_from_clone
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1571,6 +1705,7 @@ all.update_into_clone:
 	${E} ${MAKE} dbg.update_into_clone
 	${E} ${MAKE} dyn_array.update_into_clone
 	${E} ${MAKE} jparse.update_into_clone
+	${E} ${MAKE} pr.update_into_clone
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1583,6 +1718,7 @@ all.diff_dir_clone:
 	${E} ${MAKE} dyn_array.diff_dyn_array_clone
 	${E} echo
 	${E} ${MAKE} jparse.diff_jparse_clone
+	${E} ${MAKE} pr.diff_pr_clone
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1595,6 +1731,7 @@ all.diff_clone_dir:
 	${E} ${MAKE} dyn_array.diff_clone_dyn_array
 	${E} echo
 	${E} ${MAKE} jparse.diff_clone_jparse
+	${E} ${MAKE} pr.diff_clone_pr
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1607,6 +1744,7 @@ all.diff_summary:
 	${E} ${MAKE} dyn_array.diff_summary
 	${E} echo
 	${E} ${MAKE} jparse.diff_summary
+	${E} ${MAKE} pr.diff_summary
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -1619,7 +1757,7 @@ configure:
 	${V} echo nothing to configure
 
 clean: clean_generated_obj legacy_clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
-	soup/Makefile test_ioccc/Makefile
+	soup/Makefile test_ioccc/Makefile pr/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
@@ -1629,6 +1767,7 @@ clean: clean_generated_obj legacy_clean dbg/Makefile dyn_array/Makefile jparse/M
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C jparse $@ C_SPECIAL="${C_SPECIAL}" \
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}"
 	${V} echo
 	${RM} -f ${OTHER_OBJS} ${LESS_PICKY_OBJS}
 	${RM} -rf ${DSYMDIRS}
@@ -1636,7 +1775,7 @@ clean: clean_generated_obj legacy_clean dbg/Makefile dyn_array/Makefile jparse/M
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
-	jparse/test_jparse/Makefile soup/Makefile test_ioccc/Makefile
+	jparse/test_jparse/Makefile soup/Makefile test_ioccc/Makefile pr/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
@@ -1648,6 +1787,7 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C jparse/test_jparse $@ C_SPECIAL="${C_SPECIAL}" \
 		     LD_DIR2="${LD_DIR2}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}"
 	${V} echo
 	${RM} -rf .hostchk.work.*
 	${RM} -f .txzchk_test.*
@@ -1665,12 +1805,13 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 #       This repo do not use installed dbg, nor dyn_array, nor jparse code.
 #
 install: all dbg/Makefile dyn_array/Makefile jparse/Makefile \
-        soup/Makefile test_ioccc/Makefile
+        soup/Makefile test_ioccc/Makefile pr/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}"
 	${V} echo
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
 	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
@@ -1692,12 +1833,14 @@ uninstall:
 	${RM} -f ${RM_V} ${DEST_DIR}/iocccsize
 	${RM} -f ${RM_V} ${DEST_DIR}/location
 	${RM} -f ${RM_V} ${DEST_DIR}/mkiocccentry
+	${RM} -f ${RM_V} ${DEST_DIR}/try_walk_set
 	${RM} -f ${RM_V} ${DEST_DIR}/prep.sh
 	${RM} -f ${RM_V} ${DEST_DIR}/reset_tstamp.sh
 	${RM} -f ${RM_V} ${DEST_DIR}/run_usage.sh
 	${RM} -f ${RM_V} ${DEST_DIR}/txzchk
 	${RM} -f ${RM_V} ${DEST_DIR}/utf8_test
 	${RM} -f ${RM_V} ${DEST_DIR}/vermod.sh
+	${RM} -f ${RM_V} ${DEST_LIB}/pr.a
 	${RM} -f ${RM_V} ${DEST_LIB}/soup.a
 	${RM} -f ${RM_V} ${MAN1_DIR}/bug_report.sh.1
 	${RM} -f ${RM_V} ${MAN1_DIR}/chkentry.1
@@ -1717,6 +1860,7 @@ uninstall:
 	${RM} -f ${RM_V} ${MAN8_DIR}/prep.sh.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/reset_tstamp.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/run_usage.8
+	${RM} -f ${RM_V} ${MAN8_DIR}/try_walk_set.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/txzchk_test.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/utf8_test.8
 	${RM} -f ${RM_V} ${MAN8_DIR}/vermod.8
@@ -1739,6 +1883,7 @@ depend: ${ALL_CSRC}
 		     LD_DIR="${LD_DIR}" LD_DIR2="${LD_DIR2}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}"
 	${Q} if ! ${IS_AVAILABLE} ${INDEPEND} >/dev/null 2>&1; then \
 	    echo '${OUR_NAME}: The ${INDEPEND} command could not be found or is unreliable in your system.' 1>&2; \
 	    echo '${OUR_NAME}: The ${INDEPEND} command is required to run the $@ rule'; 1>&2; \

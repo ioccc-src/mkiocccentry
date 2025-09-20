@@ -71,7 +71,7 @@
 #include "../jparse/version.h"
 
 /*
- * location - location/country codes
+ * location - location/country codes and set the IOCCC locale
  */
 #include "../soup/location.h"
 

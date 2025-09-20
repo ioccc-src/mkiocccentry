@@ -1,5 +1,5 @@
 /*
- * location - location/country codes
+ * location - location/country codes and set the IOCCC locale
  *
  * "Because there is an I in IOCCC." :-)
  *

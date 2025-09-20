@@ -1,0 +1,19 @@
+# sort using: sort -d -u
+?
+*.[ao]
+*.dSYM/
+/man/man3/chk_stdio_printf_err.3
+/man/man3/clearerr_or_fclose.3
+/man/man3/fpara.3
+/man/man3/fpr.3
+/man/man3/fprint_line_buf.3
+/man/man3/fprint_line_str.3
+/man/man3/open_dir_file.3
+/man/man3/para.3
+/man/man3/read_all.3
+/man/man3/readline.3
+/man/man3/readline_dup.3
+/man/man3/vfpr.3
+pr_test
+.*.swp
+/tags

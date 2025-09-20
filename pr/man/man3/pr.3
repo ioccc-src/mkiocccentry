@@ -1,0 +1,76 @@
+.\" section 3 man page for pr
+.\"
+.\" XXX - add stuff here - XXX
+.\"
+.\" "Share and Enjoy!"
+.\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+.\"
+.TH pr 3  "19 September 2025" "pr"
+.SH NAME
+.BR chk_stdio_printf_err() \|,
+.BR para() \|,
+.BR fpara() \|,
+.BR vfpr() \|,
+.BR fpr() \|,
+.BR pr() \|,
+.BR readline() \|,
+.BR readline_dup() \|,
+.BR read_all() \|,
+.BR clearerr_or_fclose() \|,
+.BR fprint_line_buf() \|,
+.BR fprint_line_str() \|,
+.BR open_dir_file()
+\- stdio helper library
+.SH SYNOPSIS
+\fB#include "pr.h"\fP
+.sp
+\fB#define PR_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
+.sp
+\fBextern const char *const pr_version;	/* library version format: major.minor YYYY-MM-DD */\fP
+.sp
+.B "bool chk_stdio_printf_err(FILE *stream, int ret);"
+.sp
+.B "void para(char const *line, ...);"
+.br
+.B "void fpara(FILE * stream, char const *line, ...);"
+.sp
+.B "void vfpr(FILE *stream, char const *name, char const *fmt, va_list ap);"
+.br
+.B "void fpr(FILE *stream, char const *name, char const *fmt, ...)"
+.br
+.in +0.5i
+.B "__attribute__((format(printf, 3, 4)));          /* 3=format 4=params */"
+.in -0.5i
+.br
+.B "void pr(FILE *stream, char const *name, char const *fmt, ...)"
+.br
+.in +0.5i
+.B "__attribute__((format(printf, 3, 4)));          /* 3=format 4=params */"
+.in -0.5i
+.sp
+.B "ssize_t readline(char **linep, FILE * stream);"
+.br
+.B "char *readline_dup(char **linep, bool strip, size_t *lenp, FILE * stream);"
+.sp
+.B "void *read_all(FILE *stream, size_t *psize);"
+.br
+.B "void clearerr_or_fclose(FILE *stream);"
+.sp
+.B "ssize_t fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end);"
+.br
+.B "ssize_t fprint_line_str(FILE *stream, char *str, size_t *retlen, int start, int end);"
+.sp
+.B "FILE *open_dir_file(char const *dir, char const *file);"
+.SH DESCRIPTION
+XXX - add DESCRIPTION here - XXX
+.SH RETURN VALUE
+XXX - add RETURN VALUE here - XXX
+.SH NOTES
+XXX - add NOTES here - XXX
+.SH EXAMPLE
+XXX - add EXAMPLE here - XXX
+.SH SEE ALSO
+XXX - add SEE ALSO here - XXX
+.SH HISTORY
+The pr facility was first written by Landon Curt Noll some about 2008.
+Version 1.0 was developed and tested within the IOCCC mkiocccentry and jparse GitHub repos.

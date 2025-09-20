@@ -45,7 +45,7 @@
 
 
 /*
- * location - location/country codes
+ * location - location/country codes and set the IOCCC locale
  */
 #include "location.h"
 
