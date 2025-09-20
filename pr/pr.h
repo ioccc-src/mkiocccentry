@@ -78,7 +78,7 @@
 /*
  * official version
  */
-#define PR_VERSION "1.0.0 2025-09-19"    /* format: major.minor YYYY-MM-DD */
+#define PR_VERSION "1.1.0 2025-09-20"    /* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -123,6 +123,7 @@ extern void clearerr_or_fclose(FILE *stream);
 extern ssize_t fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end);
 extern ssize_t fprint_line_str(FILE *stream, char *str, size_t *retlen, int start, int end);
 extern FILE *open_dir_file(char const *dir, char const *file);
+extern bool fchk_inval_opt(FILE *stream, char const *prog, int ch, int opt);
 
 
 #endif				/* INCLUDE_PR_H */

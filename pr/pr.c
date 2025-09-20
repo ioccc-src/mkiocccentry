@@ -1575,3 +1575,70 @@ open_dir_file(char const *dir, char const *file)
      */
     return ret_stream;
 }
+
+
+/*
+ * fchk_inval_opt - check for option error in getopt()
+ *
+ * given:
+ *
+ *	stream	    - open stream to write to, or NULL ==> just return length
+ *      prog        - program name
+ *      ch          - value returned by getopt()
+ *      opt         - program's optopt (option triggering the error)
+ *
+ * return:
+ *	true ==> opt is : or ?, or stream is NULL, or prog is NULL,
+ *		 caller should call usage() as needed and exit as needed
+ *	false ==> no issue detected, nothing printed
+ *
+ * NOTE:    If prog is NULL we warn and then set to ((NULL prog)).
+ *
+ * NOTE:    This function should only be called if getopt() returns a ':' or a
+ *          '?' but if anything else is passed to this function we do nothing.
+ *
+ * NOTE:    This function does not call a call usage() because that is
+ *	    specific to each tool.
+ *
+ * NOTE:    This function does NOT take an exit code because it is the caller's
+ *          responsibility to do this. This is because they must call usage()
+ *          which is specific to each tool.
+ */
+bool
+fchk_inval_opt(FILE *stream, char const *prog, int ch, int opt)
+{
+    /*
+     * firewall
+     */
+    if (stream == NULL) {
+	warn(__func__, "stream is NULL");
+	return true;
+    }
+    if (prog == NULL) {
+	warn(__func__, "prog is NULL");
+	return true;
+    }
+
+    /*
+     * unless value returned by getopt() is : (colon) or ? (question mark), nothing to do
+     */
+    if (ch != ':' && ch != '?') {
+        return false;
+    }
+
+    /*
+     * report to stderr, based on the value returned by getopt
+     */
+    switch (ch) {
+        case ':':
+            fprintf(stream, "%s: requires an argument -- %c\n\n", prog, (char)opt);
+            break;
+        case '?':
+            fprintf(stream, "%s: illegal option -- %c\n\n", prog, (char)opt);
+            break;
+        default: /* should never be reached but we include it anyway */
+            fprintf(stream, "%s: unexpected getopt() return value: 0x%02x == <%c>\n\n", prog, ch, (char)ch);
+            break;
+    }
+    return true;
+}

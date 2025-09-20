@@ -1,4 +1,5 @@
 # sort using: sort -d -u
+#
 ?
 *.[ao]
 *.dSYM/
@@ -14,6 +15,7 @@
 /man/man3/readline.3
 /man/man3/readline_dup.3
 /man/man3/vfpr.3
+/man/man3/fchk_inval_opt.3
 pr_test
 .*.swp
 /tags

@@ -244,7 +244,8 @@ PR_MAN3= man/man3/pr.3
 PR_MAN3_DUPS= \
 	man/man3/chk_stdio_printf_err.3 man/man3/para.3 man/man3/fpara.3 man/man3/vfpr.3 man/man3/fpr.3 \
 	man/man3/readline.3 man/man3/readline_dup.3 man/man3/read_all.3 man/man3/clearerr_or_fclose.3 \
-	man/man3/fprint_line_buf.3 man/man3/fprint_line_str.3 man/man3/open_dir_file.3
+	man/man3/fprint_line_buf.3 man/man3/fprint_line_str.3 man/man3/open_dir_file.3 \
+	man/man3/fchk_inval_opt.3
 MAN3_PAGES= ${PR_MAN3} ${PR_MAN3_DUPS}
 MAN8_PAGES=
 ALL_MAN_PAGES= ${MAN1_PAGES} ${MAN3_PAGES} ${MAN8_PAGES}
@@ -745,6 +746,7 @@ uninstall:
 	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/fprint_line_buf.3
 	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/fprint_line_str.3
 	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/open_dir_file.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/fchk_inval_opt.3
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

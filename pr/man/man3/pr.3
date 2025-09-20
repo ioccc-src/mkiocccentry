@@ -5,7 +5,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH pr 3  "19 September 2025" "pr"
+.TH pr 3 "20 September 2025" "pr"
 .SH NAME
 .BR chk_stdio_printf_err() \|,
 .BR para() \|,
@@ -19,7 +19,8 @@
 .BR clearerr_or_fclose() \|,
 .BR fprint_line_buf() \|,
 .BR fprint_line_str() \|,
-.BR open_dir_file()
+.BR open_dir_file() \|,
+.BR bool fcheck_invalid_option()
 \- stdio helper library
 .SH SYNOPSIS
 \fB#include "pr.h"\fP
@@ -61,6 +62,8 @@
 .B "ssize_t fprint_line_str(FILE *stream, char *str, size_t *retlen, int start, int end);"
 .sp
 .B "FILE *open_dir_file(char const *dir, char const *file);"
+.sp
+.B "bool fcheck_invalid_option(FILE *stream, char const *prog, int ch, int opt);"
 .SH DESCRIPTION
 XXX - add DESCRIPTION here - XXX
 .SH RETURN VALUE

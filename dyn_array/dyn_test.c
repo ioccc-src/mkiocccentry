@@ -149,6 +149,7 @@ static void ferrp_write(FILE *stream, int error_code, char const *caller,
 			char const *name, char const *fmt, va_list ap);
 static void fwarnp_write(FILE *stream, char const *caller, char const *name, char const *fmt, va_list ap);
 static void fusage_write(FILE *stream, int error_code, char const *caller, char const *fmt, va_list ap);
+static bool fchk_inval_opt(FILE *stream, char const *prog, int ch, int opt);
 
 bool dbg_allowed(int level);
 bool warn_allowed(void);
@@ -161,7 +162,6 @@ void err(int exitcode, char const *name, char const *fmt, ...);
 void errp(int exitcode, char const *name, char const *fmt, ...);
 void fprintf_usage(int exitcode, FILE *stream, char const *fmt, ...);
 int parse_verbosity(char const *optarg);
-void check_invalid_option(char const *prog, int ch, int opt);
 
 #endif /* !DBG_USE */
 
@@ -289,6 +289,7 @@ main(int argc, char *argv[])
     int ret;				/* dyn_array_heapsort() or dyn_array_mergesort() return */
 #endif /* NON_STANDARD_SORT */
     unsigned long seed = DEFAULT_SEED;	/* seed for random(3) */
+    bool opt_error = false;	/* fchk_inval_opt() return */
     int i;
 
     /*
@@ -327,9 +328,13 @@ main(int argc, char *argv[])
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
-	    check_invalid_option(program, i, optopt);
-	    usage(3, program, ""); /*ooo*/
-	    not_reached();
+	    opt_error = fchk_inval_opt(stderr, program, i, optopt);
+	    if (opt_error) {
+		usage(3, program, ""); /*ooo*/
+		not_reached();
+	    } else {
+		fwarn(stderr, __func__, "getopt() return: %c optopt: %c", (char)i, (char)optopt);
+	    }
 	    break;
 	}
     }
@@ -1948,54 +1953,72 @@ parse_verbosity(char const *optarg)
 }
 
 
+
 /*
- * check_invalid_option - check option error in getopt()
+ * fchk_inval_opt - check for option error in getopt()
  *
  * given:
  *
- *	prog	    - program name
- *	ch	    - value returned by getopt()
- *	opt	    - program's optopt (option triggering the error)
+ *	stream	    - open stream to write to, or NULL ==> just return length
+ *      prog        - program name
+ *      ch          - value returned by getopt()
+ *      opt         - program's optopt (option triggering the error)
  *
- * NOTE:    if prog is NULL we warn and then set to ((NULL prog)).
- * NOTE:    this function should only be called if getopt() returns a ':' or a
- *	    '?' but if anything else is passed to this function we do nothing.
- * NOTE:    this function does NOT take an exit code because it is the caller's
- *	    responsibility to do this. This is because they must call usage()
- *	    which is specific to each tool.
+ * return:
+ *	true ==> opt is : or ?, or stream is NULL, or prog is NULL,
+ *		 caller should call usage() as needed and exit as needed
+ *	false ==> no issue detected, nothing printed
+ *
+ * NOTE:    If prog is NULL we warn and then set to ((NULL prog)).
+ *
+ * NOTE:    This function should only be called if getopt() returns a ':' or a
+ *          '?' but if anything else is passed to this function we do nothing.
+ *
+ * NOTE:    This function does not call a call usage() because that is
+ *	    specific to each tool.
+ *
+ * NOTE:    This function does NOT take an exit code because it is the caller's
+ *          responsibility to do this. This is because they must call usage()
+ *          which is specific to each tool.
  */
-void
-check_invalid_option(char const *prog, int ch, int opt)
+static bool
+fchk_inval_opt(FILE *stream, char const *prog, int ch, int opt)
 {
     /*
      * firewall
      */
-    if (ch != ':' && ch != '?') {
-	return; /* do nothing */
+    if (stream == NULL) {
+	warn(__func__, "stream is NULL");
+	return true;
     }
     if (prog == NULL) {
-	warn(__func__, "prog is NULL, forcing it to be: ((NULL prog))");
-	prog = "((NULL prog))";
+	warn(__func__, "prog is NULL");
+	return true;
+    }
+
+    /*
+     * unless value returned by getopt() is : (colon) or ? (question mark), nothing to do
+     */
+    if (ch != ':' && ch != '?') {
+        return false;
     }
 
     /*
      * report to stderr, based on the value returned by getopt
      */
     switch (ch) {
-	case ':':
-	    fprintf(stderr, "%s: requires an argument -- %c\n\n", prog, opt);
-	    (void) usage(3, prog, ""); /*ooo*/
-	    break;
-	case '?':
-	    fprintf(stderr, "%s: illegal option -- %c\n\n", prog, opt);
-	    (void) usage(3, prog, ""); /*ooo*/
-	    break;
-	default: /* should never be reached but we include it anyway */
-	    fprintf(stderr, "%s: unexpected getopt() return value: 0x%02x == <%c>\n\n", prog, ch, ch);
-	    (void) usage(3, prog, ""); /*ooo*/
-	    break;
+        case ':':
+            fprintf(stream, "%s: requires an argument -- %c\n\n", prog, (char)opt);
+            break;
+        case '?':
+            fprintf(stream, "%s: illegal option -- %c\n\n", prog, (char)opt);
+            break;
+        default: /* should never be reached but we include it anyway */
+            fprintf(stream, "%s: unexpected getopt() return value: 0x%02x == <%c>\n\n", prog, ch, (char)ch);
+            break;
     }
-    return;
+    return true;
 }
+
 
 #endif /* !DBG_USE */

@@ -52,7 +52,7 @@
  */
 #define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
 #define PR_TEST_BASENAME "pr_test"
-#define PR_TEST_VERSION "1.0.0 2025-09-19"
+#define PR_TEST_VERSION "1.1.0 2025-09-20"
 
 
 /*
@@ -66,7 +66,6 @@ static const char * const usage_msg =
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
     "\t-V\t\tprint version string and exit\n"
-    "\n"
     "\n"
     "Exit codes:\n"
     "    0\tall is OK\n"
@@ -83,7 +82,6 @@ static const char * const usage_msg =
  * forward declarations
  */
 static void usage(int exitcode, char const *prog, char const *str);
-static void check_invalid_option(char const *prog, int ch, int opt);
 
 
 int
@@ -91,6 +89,7 @@ main(int argc, char *argv[])
 {
     char const *program = NULL;	/* our name */
     bool error = false;		/* true ==> test error found */
+    bool opt_error = false;	/* fchk_inval_opt() return */
     int i;
 
     /*
@@ -115,15 +114,20 @@ main(int argc, char *argv[])
 	    break;
 	case 'V':		/* -V - print version and exit */
 	    (void) printf("%s version: %s\n", PR_TEST_BASENAME, PR_TEST_VERSION);
+	    (void) printf("libpr version: %s\n", pr_version);
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
-	    check_invalid_option(program, i, optopt);
-	    usage(3, program, ""); /*ooo*/
-	    not_reached();
+	    opt_error = fchk_inval_opt(stderr, program, i, optopt);
+	    if (opt_error) {
+		usage(3, program, ""); /*ooo*/
+		not_reached();
+	    } else {
+		fwarn(stderr, __func__, "getopt() return: %c optopt: %c", (char)i, (char)optopt);
+	    }
 	    break;
 	}
     }
@@ -181,61 +185,9 @@ usage(int exitcode, char const *prog, char const *str)
     if (*str != '\0') {
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
-
     fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT,
 						     PR_TEST_BASENAME, PR_TEST_VERSION,
 						     dyn_array_version);
     exit(exitcode); /*ooo*/
     not_reached();
-}
-
-
-/*
- * check_invalid_option - check option error in getopt()
- *
- * given:
- *
- *      prog        - program name
- *      ch          - value returned by getopt()
- *      opt         - program's optopt (option triggering the error)
- *
- * NOTE:    if prog is NULL we warn and then set to ((NULL prog)).
- * NOTE:    this function should only be called if getopt() returns a ':' or a
- *          '?' but if anything else is passed to this function we do nothing.
- * NOTE:    this function does NOT take an exit code because it is the caller's
- *          responsibility to do this. This is because they must call usage()
- *          which is specific to each tool.
- */
-static void
-check_invalid_option(char const *prog, int ch, int opt)
-{
-    /*
-     * firewall
-     */
-    if (ch != ':' && ch != '?') {
-        return; /* do nothing */
-    }
-    if (prog == NULL) {
-        warn(__func__, "prog is NULL, forcing it to be: ((NULL prog))");
-        prog = "((NULL prog))";
-    }
-
-    /*
-     * report to stderr, based on the value returned by getopt
-     */
-    switch (ch) {
-        case ':':
-            fprintf(stderr, "%s: requires an argument -- %c\n\n", prog, opt);
-            (void) usage(3, prog, ""); /*ooo*/
-            break;
-        case '?':
-            fprintf(stderr, "%s: illegal option -- %c\n\n", prog, opt);
-            (void) usage(3, prog, ""); /*ooo*/
-            break;
-        default: /* should never be reached but we include it anyway */
-            fprintf(stderr, "%s: unexpected getopt() return value: 0x%02x == <%c>\n\n", prog, ch, ch);
-            (void) usage(3, prog, ""); /*ooo*/
-            break;
-    }
-    return;
 }
