@@ -82,7 +82,7 @@ To clone, make and install these dependencies:
 
 git clone https://github.com/lcn2/dbg
 cd dbg && make all
-suto make install
+sudo make install
 
 
 # clone, compile and install dyn_array:
@@ -90,7 +90,7 @@ suto make install
 git clone https://github.com/lcn2/dyn_array
 cd dyn_array
 make all
-suto make install
+sudo make install
 
 
 # clone, compile and install pr:
