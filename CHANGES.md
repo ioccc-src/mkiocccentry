@@ -1,6 +1,21 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.7.1 2025-09-21
+
+Moved some functions and macros from `soup/file_util.[ch]` to `soup/util.[ch]`
+as they are not strictly file related. This was arbitrarily done although most
+of the functions that are not strictly file related, if not all, have been
+moved.
+
+Synced jparse/. This included an important fix for the above which caused all
+sorts of problems - and if some functions or macros that are not in
+`soup/util.[ch]` when they should be (but are instead in `soup/file_util.[ch]`)
+this is why.
+
+Updated `SOUP_VERSION` to `"2.0.8 2025-09-21"`.
+
+
 ## Release 2.7.0 2025-09-20
 
 Added `pr/` as "imported" from the [pr repo](https://github.com/lcn2/pr).

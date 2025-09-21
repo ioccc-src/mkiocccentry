@@ -72,6 +72,11 @@
 #include "soup/foo.h"
 
 /*
+ * soup/util - soup pots, stock etc. :-)
+ */
+#include "soup/util.h"
+
+/*
  * macros
  */
 

@@ -430,6 +430,7 @@ extern bool is_optional_filename(char const *str);
 extern bool is_ignored_dirname(char const *str);
 extern bool is_executable_filename(char const *str);
 extern bool has_ignored_dirname(char const *path);
+extern size_t count_char(char const *str, int ch);
 
 
 #endif /* INCLUDE_ENTRY_UTIL_H */

@@ -1969,7 +1969,7 @@ chksubmit.o: chksubmit.c chksubmit.h dbg/c_bool.h dbg/c_compat.h dbg/dbg.h \
     soup/../dyn_array/dyn_array.h soup/chk_sem_auth.h soup/chk_sem_info.h \
     soup/chk_validate.h soup/default_handle.h soup/entry_util.h \
     soup/file_util.h soup/foo.h soup/limit_ioccc.h soup/location.h \
-    soup/sanity.h soup/soup.h soup/version.h
+    soup/sanity.h soup/soup.h soup/util.h soup/version.h
 iocccsize.o: dbg/c_bool.h dbg/c_compat.h dbg/dbg.h iocccsize.c iocccsize.h \
     jparse/../pr/../dbg/c_bool.h jparse/../pr/../dbg/c_compat.h \
     jparse/../pr/../dbg/dbg.h jparse/../pr/../dyn_array/dyn_array.h \
@@ -1988,7 +1988,8 @@ mkiocccentry.o: dbg/c_bool.h dbg/c_compat.h dbg/dbg.h iocccsize.h \
     soup/../dbg/dbg.h soup/../dyn_array/dyn_array.h soup/chk_sem_auth.h \
     soup/chk_sem_info.h soup/chk_validate.h soup/default_handle.h \
     soup/entry_util.h soup/file_util.h soup/limit_ioccc.h soup/location.h \
-    soup/random_answers.h soup/sanity.h soup/soup.h soup/version.h
+    soup/random_answers.h soup/sanity.h soup/soup.h soup/util.h \
+    soup/version.h
 txzchk.o: dbg/c_bool.h dbg/c_compat.h dbg/dbg.h \
     jparse/../pr/../dbg/c_bool.h jparse/../pr/../dbg/c_compat.h \
     jparse/../pr/../dbg/dbg.h jparse/../pr/../dyn_array/dyn_array.h \
@@ -1999,4 +2000,4 @@ txzchk.o: dbg/c_bool.h dbg/c_compat.h dbg/dbg.h \
     soup/chk_sem_auth.h soup/chk_sem_info.h soup/chk_validate.h \
     soup/default_handle.h soup/entry_util.h soup/file_util.h \
     soup/limit_ioccc.h soup/location.h soup/sanity.h soup/soup.h \
-    soup/version.h txzchk.c txzchk.h
+    soup/util.h soup/version.h txzchk.c txzchk.h
