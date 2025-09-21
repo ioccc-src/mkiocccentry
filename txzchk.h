@@ -91,6 +91,12 @@
 
 
 /*
+ * soup/util - certain utils we need
+ */
+#include "soup/util.h"
+
+
+/*
  * macros
  */
 

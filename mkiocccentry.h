@@ -123,9 +123,14 @@
 #include "soup/entry_util.h"
 
 /*
- * entry_util - utilities supporting mkiocccentry JSON files
+ * file_util - utilities for files
  */
-#include "soup/entry_util.h"
+#include "soup/file_util.h"
+
+/*
+ * util - various utils
+ */
+#include "soup/util.h"
 
 /*
  * random_answers - generate a random answer file for mkiocccentry

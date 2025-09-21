@@ -235,9 +235,9 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= chk_validate.c entry_util.c file_util.c location_util.c location_main.c sanity.c \
-       rule_count.c random_answers.c
+       rule_count.c random_answers.c util.c
 H_SRC= chk_validate.h soup.h entry_util.h file_util.h foo.h limit_ioccc.h location.h \
-	sanity.h default_handle.h version.h iocccsize_err.h random_answers.h
+	sanity.h default_handle.h version.h iocccsize_err.h random_answers.h util.h
 #
 PICKY_OPTIONS= -c -e -s -t8 -u -v -w132
 
@@ -273,7 +273,7 @@ LOCAL_DIR_TAGS= .local.dir.tags
 
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
-LIB_OBJS= chk_validate.o entry_util.o file_util.o location_util.o location_tbl.o sanity.o \
+LIB_OBJS= chk_validate.o entry_util.o util.o file_util.o location_util.o location_tbl.o sanity.o \
        foo.o rule_count.o random_answers.o \
        default_handle.o chk_sem_info.o chk_sem_auth.o
 
@@ -424,6 +424,9 @@ entry_util.o: entry_util.c
 
 file_util.o: file_util.c
 	${CC} ${CFLAGS} file_util.c -c
+
+util.o: util.c
+	${CC} ${CFLAGS} util.c -c
 
 location_util.o: location_util.c location.h
 	${CC} ${CFLAGS} location_util.c -c
@@ -1075,7 +1078,7 @@ entry_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
     ../jparse/json_util.h ../jparse/util.h ../jparse/verge.h \
     ../jparse/version.h entry_util.c entry_util.h file_util.h limit_ioccc.h \
-    location.h version.h
+    location.h util.h version.h
 file_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
     ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
@@ -1127,3 +1130,9 @@ sanity.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../jparse/util.h ../jparse/version.h chk_sem_auth.h chk_sem_info.h \
     chk_validate.h default_handle.h entry_util.h file_util.h limit_ioccc.h \
     location.h sanity.c sanity.h soup.h version.h
+util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
+    ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
+    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
+    ../jparse/../pr/../dbg/c_bool.h ../jparse/../pr/../dbg/c_compat.h \
+    ../jparse/../pr/../dbg/dbg.h ../jparse/../pr/../dyn_array/dyn_array.h \
+    ../jparse/../pr/pr.h ../jparse/util.h file_util.h util.c util.h

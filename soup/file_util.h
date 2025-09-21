@@ -55,9 +55,12 @@
 /*
  * dbg - info, debug, warning, error, and usage message facility
  * dyn_array - dynamic array facility
+ * util - various utils
+ * jparse/util - various other functions
  */
 #include "../dbg/dbg.h"
 #include "../dyn_array/dyn_array.h"
+
 
 /*
  * byte as octet constants
@@ -279,15 +282,11 @@ extern bool append_path(struct dyn_array **paths, char *str, bool unique, bool d
 extern void free_paths_array(struct dyn_array **paths, bool only_empty);
 extern char *find_path(char const *path, char *dir, int dirfd, int *cwd, bool abspath, struct fts *fts);
 extern struct dyn_array *find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath, struct fts *fts);
-extern void flush_tty(char const *name, bool flush_stdin, bool abort_on_error);
 extern off_t file_size(char const *path);
 extern off_t size_if_file(char const *path);
 extern bool is_empty(char const *path);
-extern char *cmdprintf(char const *format, ...);
-extern char *vcmdprintf(char const *format, va_list ap);
 extern char *resolve_path(char const *cmd);
-extern int shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *format, ...);
-extern FILE *pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *format, ...);
+extern void flush_tty(char const *name, bool flush_stdin, bool abort_on_error);
 extern size_t copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode);
 extern void touch(char const *path, mode_t mode);
 extern void touchat(char const *path, mode_t mode, char const *dir, int dirfd);
@@ -298,8 +297,5 @@ extern char const *path_sanity_name(enum path_sanity sanity);
 extern char const *path_sanity_error(enum path_sanity sanity);
 extern bool path_has_component(char const *path, char const *name);
 extern char *calloc_path(char const *dirname, char const *filename);
-
-/* other utility functions */
-extern bool sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_checkp, intmax_t *count_checkp);
 
 #endif				/* INCLUDE_FILE_UTIL_H */

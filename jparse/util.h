@@ -39,8 +39,8 @@
  */
 
 
-#if !defined(INCLUDE_UTIL_H)
-#    define  INCLUDE_UTIL_H
+#if !defined(INCLUDE_JPARSE_UTIL_H)
+#    define  INCLUDE_JPARSE_UTIL_H
 
 #include <float.h>      /* for long doubles */
 #include <inttypes.h>   /* uintmax_t and intmax_t and perhaps SIZE_MAX */
@@ -189,4 +189,4 @@ extern size_t count_char(char const *str, int ch);
 extern size_t find_text(char const *ptr, size_t len, char **first);
 extern size_t find_text_str(char const *str, char **first);
 
-#endif				/* INCLUDE_UTIL_H */
+#endif				/* INCLUDE_JPARSE_UTIL_H */

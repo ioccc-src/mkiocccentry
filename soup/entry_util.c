@@ -70,15 +70,11 @@
  */
 #include "file_util.h"
 
+
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
 #include "../dbg/dbg.h"
-
-/*
- * jparse - the parser
- */
-#include "../jparse/jparse.h"
 
 /*
  * verge - the functionality to test versions
@@ -94,6 +90,11 @@
  * limit_ioccc - IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"
+
+/*
+ * util - various util functions
+ */
+#include "util.h"
 
 /*
  * entry_util - utilities supporting mkiocccentry JSON files
@@ -5638,4 +5639,35 @@ is_executable_filename(char const *str)
     return false;
 }
 
+/*
+ * count_char - count the number of instances of a char in the string
+ *
+ * given:
+ *
+ *	str	string to search
+ *	ch	character to find
+ *
+ * NOTE: this function does not return on NULL pointer.
+ */
+size_t
+count_char(char const *str, int ch)
+{
+    size_t count = 0;	    /* number of ch in the string */
+    size_t i = 0;	    /* what character in str we're at */
 
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(155, __func__, "given NULL str");
+	not_reached();
+    }
+
+    for (count = 0, i = 0; str[i] != '\0'; ++i) {
+	if (str[i] == ch) {
+	    ++count;
+	}
+    }
+
+    return count;
+}
