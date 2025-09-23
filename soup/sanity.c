@@ -127,8 +127,8 @@ ioccc_sanity_chks(void)
      * elements and that the final element is in fact NULL. It also sets up the
      * length of the source and target strings.
      */
-    dbg(DBG_VVHIGH, "Running sanity checks on UTF-8 POSIX map ...");
-    check_default_handle_map();
+    dbg(DBG_VVHIGH, "Running sanity checks on handle map ...");
+    (void) default_handle(NULL);
     dbg(DBG_VVHIGH, "... all OK.");
 
     /*

@@ -982,3 +982,188 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      */
     return true;
 }
+
+
+/*
+ * safe_str - test if a string is safe
+ *
+ * A safe string contains ('+-._'), and either ANYcase alphanumeric or lowercase alphanumeric,
+ * depending on any_case, and perhaps '/' (slash) depending on slash_ok.
+ *
+ * given:
+ *	str	    string to test
+ *	any_case    true ==> UPPER CASE and lower case are allowed
+ *		    false ==> only lower case allowed
+ *	slash_ok    true ==> '/' (slash) allowed
+ *		    false ==> '/' (slash) are NOT allowed
+ *
+ * If any_case is true,  slash_ok is true,  then str must match: ^[/0-9A-Za-z._+-]+$
+ *
+ * If any_case is true,  slash_ok is false, then str must match: ^[0-9A-Za-z._+-]+$
+ *
+ * If any_case is false, slash_ok is true,  then str must match: ^[/0-9a-z._+-]+$
+ *
+ * If any_case is false, slash_ok is false, then str must match: ^[0-9a-z._+-]+$
+ *
+ * return:
+ *	true ==> str is safe
+ *	false ==> str is NOT safe, or str is an empty string, or str is NULL
+ */
+bool
+safe_str(char const *str, bool any_case, bool slash_ok)
+{
+    size_t len;		/* length of str */
+    size_t ret;		/* strspn() return - number of allowed characters in str */
+    char const *accept;	/* set of characters allowed in str */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn("%s: str is NULL", __func__);
+	return false;
+    }
+
+    /*
+     * empty strings are NOT safe
+     */
+    len = strlen(str);
+    if (len <= 0) {
+	return false;
+    }
+
+    /*
+     * determine the allowed character set
+     */
+    if (any_case) {
+	/* case: safe ('+-._'), '/' (slash) allowed, and ANYcase alphanumeric allowed */
+	if (slash_ok) {
+	    accept = "+-."
+		     "/"
+		     "0123456789"
+		     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		     "_"
+		     "abcdefghijklmnopqrstuvwxyz";
+	/* case: safe ('+-._'), but NOT '/' (slash) allowed, and ANYcase alphanumeric allowed */
+	} else {
+	    accept = "+-."
+		     "0123456789"
+		     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+		     "_"
+		     "abcdefghijklmnopqrstuvwxyz";
+	}
+    } else {
+	/* case: safe ('+-._'), '/' (slash) allowed, and lowercase alphanumeric allowed */
+	if (slash_ok) {
+	    accept = "+-."
+		     "/"
+		     "0123456789"
+		     "_"
+		     "abcdefghijklmnopqrstuvwxyz";
+	/* case: safe ('+-._'), but NOT '/' (slash) allowed, and lowercase alphanumeric allowed */
+	} else {
+	    accept = "+-."
+		     "0123456789"
+		     "_"
+		     "abcdefghijklmnopqrstuvwxyz";
+	}
+    }
+
+    /*
+     * determine if the string only contains allowed characters
+     */
+    ret = strspn(str, accept);
+
+    /*
+     * string is case if all characters in string are allowed
+     */
+    if (ret == len) {
+	return true;
+    }
+    return false;
+}
+
+
+/*
+ * safe_path_str - test if a path string is safe
+ *
+ * A path string starts with an ANYcase alphanumeric or lowercase alphanumeric character,
+ * depending on any_case, or '_' (underscore), or '-' (dash),
+ * or with '/' (slash) depending on slash_ok.
+ *
+ * After the 1st path character, a safe path string contains ('+-._'), and either
+ * ANYcase alphanumeric or lowercase alphanumeric characters, depending on any_case,
+ * and perhaps '/' (slash) depending on slash_ok.
+ *
+ * given:
+ *	path_str	    string to test
+ *	any_case    true ==> UPPER CASE and lower case are allowed
+ *		    false ==> only lower case allowed
+ *	slash_ok    true ==> '/' (slash) allowed
+ *		    false ==> '/' (slash) are NOT allowed
+ *
+ * If any_case is true,  slash_ok is true,  then str must match: ^[/0-9A-Za-z._][/0-9A-Za-z._+-]*$
+ *
+ * If any_case is true,  slash_ok is false, then str must match: ^[0-9A-Za-z._][0-9A-Za-z._+-]*$
+ *
+ * If any_case is false, slash_ok is true,  then str must match: ^[/0-9a-z._][/0-9a-z._+-]*$
+ *
+ * If any_case is false, slash_ok is false, then str must match: ^[0-9a-z._][0-9a-z._+-]*$
+ *
+ * return:
+ *	true ==> path_str is safe
+ *	false ==> path_str is NOT safe, or str is an empty string, or str is NULL
+ */
+bool
+safe_path_str(char const *path_str, bool any_case, bool slash_ok)
+{
+    bool safe;		/* if beyond 1st character is safe */
+
+    /*
+     * firewall
+     */
+    if (path_str == NULL) {
+	warn("%s: path_str is NULL", __func__);
+	return false;
+    }
+
+    /*
+     * test the first character
+     */
+    if (path_str[0] == '\0') {
+	/* empty string is not considered safe */
+	return false;
+    } else if (path_str[0] == '/' && slash_ok == false) {
+	/* string starts with '/' (slash), however slash_ok is false, thus is NOT safe */
+	return false;
+    } else if (!isascii(path_str[0])) {
+	/* string starts with a non-ASCII character, thus is NOT safe */
+	return false;
+    } else if (path_str[0] != '.' && path_str[0] != '_' &&
+	      any_case == true && !isalnum(path_str[0])) {
+	/* string does NOT start with a UPPERcase characterm NOR a lowercase character, NOR a digit, thus is NOT safe */
+	return false;
+    } else if (path_str[0] != '.' && path_str[0] != '_' &&
+	       any_case == false && !(islower(path_str[0]) || isdigit(path_str[0]))) {
+	/* string does NOT start with a lowercase character, NOR a digit, thus is NOT safe */
+	return false;
+    }
+    /* assertion: 1st character of path_str is safe */
+
+    /*
+     * if path_str is a single character, then path_str is safe
+     */
+    if (path_str[1] == '\0') {
+	return true;
+    }
+
+    /*
+     * determine if the rest of path_str is safe
+     */
+    safe = safe_str(path_str+1, any_case, slash_ok);
+
+    /*
+     * if rest of path_str is safe, then path_str is safe, otherwise it is NOT
+     */
+    return safe;
+}

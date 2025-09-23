@@ -56,6 +56,11 @@
 #include "../dbg/dbg.h"
 
 /*
+ * util - common utility functions
+ */
+#include "util.h"
+
+/*
  * limit_ioccc - IOCCC size and rule related limitations
  */
 #include "limit_ioccc.h"
@@ -68,15 +73,14 @@ struct default_handle_map
 {
     const char * const utf8_str;	/* UTF-8 string encode - use \x hex as needed */
     const char * const posix_str;	/* POSIX portable filenames plus + replacement for utf8_str */
-    int utf8_str_len;			/* length of utf8_str or -1 ==> needs computing by check_default_handle_map() */
-    int posix_str_len;			/* length of posix_str or -1 ==> needs computing by check_default_handle_map() */
+    int utf8_str_len;			/* length of utf8_str or -1 ==> needs computing */
+    int posix_str_len;			/* length of posix_str or -1 ==> needs computing */
 };
 
 
 /*
  * function prototypes
  */
-extern void check_default_handle_map(void);
 extern char *default_handle(char const *name);
 
 

@@ -2628,7 +2628,7 @@ test_author_handle(char const *str)
 	return false;
     }
     /* IOCCC author_handle must use POSIX portable filename and + chars */
-    test = posix_plus_safe(str, false, false, true);
+    test = safe_path_str(str, true, false); /* ^[0-9A-Za-z._][0-9A-Za-z._+-]*$ */
     if (test == false) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: author_handle does not match regexp: ^[0-9A-Za-z][0-9A-Za-z._+-]*$");
@@ -4940,6 +4940,7 @@ bool
 test_title(char const *str)
 {
     size_t length = 0;
+    bool test = false;		/* character test result */
 
     /*
      * firewall
@@ -4969,7 +4970,8 @@ test_title(char const *str)
 	return false;
     }
     /* check for valid title chars */
-    if (!posix_plus_safe(str, true, false, true)) {
+    test = safe_path_str(str, false, false); /* ^[0-9a-z_.][0-9a-z._+-]*$ */
+    if (test == false) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: title does not match regexp ^[0-9a-z][0-9a-z._+-]*$");
 	json_dbg(JSON_DBG_HIGH, __func__,

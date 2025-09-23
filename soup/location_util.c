@@ -49,7 +49,7 @@
 #include <strings.h> /* for strcasecmp */
 
 /*
- * location - location/country codes
+ * location - location/country codes and set the IOCCC locale
  */
 #include "location.h"
 
@@ -293,6 +293,8 @@ lookup_location_name_r(char const *code, size_t *idx, struct location **location
 	return p->name;
     }
 }
+
+
 /*
  * lookup_location_code_r - convert a ISO 3166-1 Alpha-2 into a location name, re-entrant version
  *
@@ -372,7 +374,6 @@ lookup_location_code_r(char const *location_name, size_t *idx, struct location *
     }
     return p->code;
 }
-
 
 
 /*

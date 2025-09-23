@@ -1,6 +1,58 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.7.2 2025-09-23
+
+Made `check_default_handle_map()` a static function.  When `default_handle(NULL)`
+is called, only `check_default_handle_map()` is performed.
+
+Make `file_type()`, `fts_cmp()`, `check_fts_info()`,
+static functions.  Removed unused `fts_rcmp()`.
+
+Clarified in `ioccc_sanity_chks()` that the sanity check is
+for the handle map, not the UTF-8 POSIX map.
+
+Replaced use `posix_plus_safe()` from `jparse/util.c`
+with `safe_str()` and `safe_path_str()` in `soup/util.c`.
+
+One new thing is that `safe_path_str()` allows the leading
+character to be '.' (dot) or '_' underscore.
+
+Added `posix_safe_chk()` a static function for use by
+`json_conv_string()` in `jparse/json_parse.c`.
+Make `decode_json_string()` a static function in `jparse/json_parse.c`.
+
+Improved top level `Makefile` to pass `${CFLAGS}` and `$(LDFLAGS}`
+to lower level makefiles.
+
+Ran `make rebuild_txzchk_test_errors` to rebuilt txzchk test errors.
+
+The `sane_relative_path()` function comments have been updated
+to reflect the new `safe_path_str()` function use.  Renamed
+final argument from `dot_slash_okay` to `ignore_leading_dot_slash`.
+
+When `ignore_leading_dot_slash` is true, leading "./"'s, and any extra
+"/"s that follow a leading "./" are ignored: especially for purposes
+of determining the depth of a path.  When `ignore_leading_dot_slash`
+is true, the path "././/.///foo" as a depth of 1.  The "./" is treated
+as an empty path when `ignore_leading_dot_slash` is true.  And ".////"
+is treated as an empty path hen `ignore_leading_dot_slash` is true.
+The `sane_relative_path()` function looks for path components of
+".." (dotdot) and returns the error `PATH_ERR_DOTODT` when any are found.
+We treat ".." (dotdot) as an error, in part because such a path could
+allow a reference of something beyond the top level directory, and in
+part because it overly complicates path depth checking.
+
+Updated `MKIOCCCENTRY_REPO_VERSION` to "2.7.2 2025-09-23".
+Updated `SOUP_VERSION` to "2.1.0 2025-09-23".
+Updated `MKIOCCCENTRY_VERSION` to "2.1.3 2025-09-23".
+Updated `LOCATION_VERSION` to "1.0.6 2025-09-23".
+Updated `FNAMCHK_VERSION` to "2.1.1 2025-09-23".
+Updated `FILE_UTIL_TEST_VERSION` to "2.0.3 2025-09-23".
+Updated `JPARSE_REPO_VERSION` to "2.4.1 2025-09-23".
+Updated `JPARSE_LIBRARY_VERSION` to "2.4.0 2025-09-23".
+
+
 ## Release 2.7.1 2025-09-21
 
 Moved some functions and macros from `soup/file_util.[ch]` to `soup/util.[ch]`

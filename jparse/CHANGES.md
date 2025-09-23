@@ -1,6 +1,23 @@
 # Significant changes in the JSON parser repo
 
 
+## Release 2.4.1 2025-09-23
+
+Removed `posix_plus_safe()` from `util.c`.
+
+Moved `posix_safe_chk()` from `util.c` to `json_parse.c`
+as a static function for use by `json_conv_string()`.
+
+Made `decode_json_string()` a static function in `json_parse.c`.
+
+Rename generic `INCLUDE_UTIL_H` to `INCLUDE_JPARSE_UTIL_H` to prevent problems
+with other projects not including code they need, if they have a similar
+structure.
+
+Updated `JPARSE_REPO_VERSION` to "2.4.1 2025-09-23".
+Updated `JPARSE_LIBRARY_VERSION` to "2.4.0 2025-09-23".
+
+
 ## Release 2.4.0 2025-09-20
 
 Now using stdio help function from the [pr repo](https://github.com/lcn2/pr).

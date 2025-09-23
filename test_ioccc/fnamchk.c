@@ -131,6 +131,7 @@ main(int argc, char *argv[])
     char *saveptr = NULL;	/* for strtok_r() */
     bool ignore_timestamp = false; /* true ==> ignore timestamp check result (for testing purposes) */
     bool opt_error = false;	/* fchk_inval_opt() return */
+    bool safe = true;		/* assume path is sane */
 
     /* IOCCC requires use of C locale */
     set_ioccc_locale();
@@ -355,16 +356,18 @@ main(int argc, char *argv[])
     /*
      * filepath must use only POSIX portable filename and + chars
      */
-    if (posix_plus_safe(filepath, false, true, false) == false) {
-	err(74, __func__, "filepath: posix_plus_safe(%s, false, true, false) is false", filepath);
+    safe = safe_str(filepath, true, true); /* ^[/0-9A-Za-z._+-]+$ */
+    if (safe == false) {
+	err(74, __func__, "filepath: safe_str(%s, true, true) is false", filepath);
 	not_reached();
     }
 
     /*
      * filename must use only lower case POSIX portable filename and + chars
      */
-    if (posix_plus_safe(filename, true, false, true) == false) {
-	err(75, __func__, "basename: posix_plus_safe(%s, true, false, true) is false", filename);
+    safe = safe_path_str(filename, false, false); /* ^[0-9a-z._][0-9a-z._+-]*$ */
+    if (safe == false) {
+	err(75, __func__, "basename: safe_path_str(%s, false, false) is false", filename);
 	not_reached();
     }
 

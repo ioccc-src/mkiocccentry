@@ -6,7 +6,6 @@ Warning: txzchk: found non-executable non-directory file test-0/../f with wrong 
 Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-3.9876543210.txt: file "test-0/../f" is not a sane relative path
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.9876543210.txt: found incorrect top level directory in filename test-0/../f
 Warning: txzchk: found non-executable non-directory file test-0/. with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-3.9876543210.txt: file "test-0/." is not a sane relative path
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.9876543210.txt: found non .auth.json and .info.json dot file: .
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.9876543210.txt: found file called '.' in path test-0/.
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.9876543210.txt: found incorrect top level directory in filename test-0/.
@@ -29,4 +28,4 @@ Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.9876543210.txt: file
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.9876543210.txt: filename test-0/.. (basename ..) not allowed
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.9876543210.txt: not all files in correct directory
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.9876543210.txt: found a total of 2 invalidly named dot files
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.9876543210.txt: found 30 feathers stuck in the tarball
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.9876543210.txt: found 29 feathers stuck in the tarball

@@ -6208,6 +6208,7 @@ get_title(struct info *infop)
     size_t len;			/* length of title */
     int ret;			/* libc function return */
     bool yorn = false;		/* response to a question */
+    bool safe = true;		/* if path is safe */
 
     /*
      * firewall
@@ -6314,7 +6315,8 @@ get_title(struct info *infop)
 	/*
 	 * verify that the title has only POSIX portable filename and + chars
 	 */
-	if (posix_plus_safe(title, true, false, true) == false) {
+	safe = safe_path_str(title, false, false); /* ^[0-9a-z._][0-9a-z._+-]*$ */
+	if (safe == false) {
 
 	    /*
 	     * reject invalid chars in title

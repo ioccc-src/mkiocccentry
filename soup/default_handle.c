@@ -1556,6 +1556,11 @@ static bool default_handle_map_checked = false;	/* true ==> check_default_handle
 static bool seeded = false;			/* true ==> default_handle() was seeded for random() */
 static char state[STATE_LEN+1];			/* random() state */
 
+/*
+ * static functions
+ */
+static void check_default_handle_map(void);
+
 
 /*
  * check_default_handle_map	- fill in string lengths and sanity check hmap[]
@@ -1565,10 +1570,11 @@ static char state[STATE_LEN+1];			/* random() state */
  * problem that has to be fixed. It also checks that the table is not empty and
  * additionally it sets the length of each utf8_str and posix_str in the table.
  */
-void
+static void
 check_default_handle_map(void)
 {
     size_t max = 0;		/* number of elements in hmap[] */
+    bool safe = true;		/* if path is safe */
     size_t i;
 
     /*
@@ -1609,10 +1615,13 @@ check_default_handle_map(void)
 	hmap[i].posix_str_len = (int)strlen(hmap[i].posix_str);
 
 	/* POSIX portable plus + check on posix_str if string is not empty */
-	if (hmap[i].posix_str_len > 0 && posix_plus_safe(hmap[i].posix_str, false, false, false) == false) {
-	    err(13, __func__, "hmap[%ju] = '%s' is not POSIX portable plus + safe; "
-			      "fix table in %s and recompile", (uintmax_t)i, hmap[i].posix_str, __FILE__);
-	    not_reached();
+	if (hmap[i].posix_str_len > 0) {
+	    safe = safe_str(hmap[i].posix_str, true, false); /* ^[0-9A-Za-z._+-]+$ */
+	    if (safe == false) {
+		err(13, __func__, "hmap[%ju] = '%s' is not POSIX portable plus + safe; "
+				  "fix table in %s and recompile", (uintmax_t)i, hmap[i].posix_str, __FILE__);
+		not_reached();
+	    }
 	}
     }
 
@@ -1644,12 +1653,12 @@ check_default_handle_map(void)
  * filename and + chars.
  *
  * given:
- *	name		- name of the author
+ *	name		- name of the author, or NULL ==> just check the handle map
  *
  * returns:
- *	allocated default handle
+ *	allocated default handle, or NULL is name was NULL
  *
- * Does not return on error nor NULL pointers nor invalid args.
+ * Does not return on error.
  */
 char *
 default_handle(char const *name)
@@ -1667,22 +1676,21 @@ default_handle(char const *name)
     size_t i;
 
     /*
-     * firewall
-     */
-    if (name == NULL) {
-	err(15, __func__, "passed NULL name");
-	not_reached();
-    }
-    namelen = strlen(name);
-    if (namelen <= 0) {
-	err(16, __func__, "empty name");
-	not_reached();
-    }
-
-    /*
      * setup hmap[] - OK to call if already set up
      */
     check_default_handle_map();
+    if (name == NULL) {
+	return NULL;
+    }
+
+    /*
+     * firewall
+     */
+    namelen = strlen(name);
+    if (namelen <= 0) {
+	err(15, __func__, "empty name");
+	not_reached();
+    }
 
     /*
      * determine length of default handle
@@ -1807,7 +1815,7 @@ default_handle(char const *name)
 	    errno = 0;		/* pre-clear errno for errp() */
 	    cret = gettimeofday(&tp, NULL);
 	    if (cret < 0) {
-		errp(17, __func__, "gettimeofday failed");
+		errp(16, __func__, "gettimeofday failed");
 		not_reached();
 	    }
 
@@ -1818,7 +1826,7 @@ default_handle(char const *name)
 	    errno = 0;		/* pre-clear errno for errp() */
 	    iret = initstate((unsigned)tmp, state, STATE_LEN);
 	    if (iret == NULL) {
-		errp(18, __func__, "initstate failed");
+		errp(17, __func__, "initstate failed");
 		not_reached();
 	    }
 
@@ -1842,7 +1850,7 @@ default_handle(char const *name)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = calloc(def_len+1, sizeof(char));
 	if (ret == NULL) {
-	    errp(19, __func__, "calloc failed for %ju bytes", (uintmax_t)(def_len+1));
+	    errp(18, __func__, "calloc failed for %ju bytes", (uintmax_t)(def_len+1));
 	    not_reached();
 	}
 
@@ -1851,7 +1859,7 @@ default_handle(char const *name)
 	 */
 	cret = snprintf(ret, def_len, "jrandom+%08lx%08lx%08lx", a, b, c);
 	if (cret <= 0) {
-	    errp(20, __func__, "snprintf failed, returned: %d", cret);
+	    errp(19, __func__, "snprintf failed, returned: %d", cret);
 	    not_reached();
 	}
 
@@ -1866,7 +1874,7 @@ default_handle(char const *name)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = calloc(def_len+1, sizeof(char));
 	if (ret == NULL) {
-	    errp(21, __func__, "calloc failed for %ju bytes", (uintmax_t)(def_len+1));
+	    errp(20, __func__, "calloc failed for %ju bytes", (uintmax_t)(def_len+1));
 	    not_reached();
 	}
 
@@ -1942,7 +1950,7 @@ default_handle(char const *name)
 		     * firewall - do not copy beyond end of allocated buffer
 		     */
 		    if (cur_len + (uintmax_t)m->posix_str_len > def_len) {
-			err(22, __func__, "attempt to copy to buf[%ju] %ju bytes: would go beyond allocated len: %ju",
+			err(21, __func__, "attempt to copy to buf[%ju] %ju bytes: would go beyond allocated len: %ju",
 					   (uintmax_t)cur_len, (uintmax_t)m->posix_str_len, (uintmax_t)def_len);
 			not_reached();
 		    }
@@ -1953,7 +1961,7 @@ default_handle(char const *name)
 		    errno = 0;		/* pre-clear errno for errp() */
 		    pret = strncpy(ret+cur_len, m->posix_str, (uintmax_t)m->posix_str_len);
 		    if (pret == NULL) {
-			errp(23, __func__, "strncpy() returned NULL");
+			errp(22, __func__, "strncpy() returned NULL");
 			not_reached();
 		    }
 
@@ -2002,7 +2010,7 @@ default_handle(char const *name)
      */
     len = strlen(ret);
     if (len <= 0) {
-	err(24, __func__, "default author handle length: %ju <= 0", (uintmax_t)len);
+	err(23, __func__, "default author handle length: %ju <= 0", (uintmax_t)len);
 	not_reached();
     }
     dbg(DBG_VVHIGH, "actual default handle length: %ju", (uintmax_t)len);
@@ -2011,7 +2019,7 @@ default_handle(char const *name)
      * sanity check: default author handle cannot be too long
      */
     if (len > MAX_HANDLE) {
-	err(25, __func__, "default author handle length: %ju > MAX_HANDLE: %d",
+	err(24, __func__, "default author handle length: %ju > MAX_HANDLE: %d",
 			   (uintmax_t)len, MAX_HANDLE);
 	not_reached();
     }
@@ -2020,9 +2028,9 @@ default_handle(char const *name)
      * sanity check: default author handle must have only POSIX portable safe
      * plus + chars
      */
-    safe = posix_plus_safe(ret, false, false, true);
+    safe = safe_str(ret, true, false); /* ^[0-9A-Za-z._+-]+$ */
     if (safe == false) {
-	err(26, __func__, "default author handle contains unsafe chars: <%s>", ret);
+	err(25, __func__, "default author handle contains unsafe chars: <%s>", ret);
 	not_reached();
     }
 

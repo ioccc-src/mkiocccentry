@@ -844,7 +844,7 @@ fnamchk.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../soup/../dbg/c_compat.h ../soup/../dbg/dbg.h \
     ../soup/../dyn_array/dyn_array.h ../soup/default_handle.h \
     ../soup/file_util.h ../soup/limit_ioccc.h ../soup/location.h \
-    ../soup/version.h fnamchk.c fnamchk.h
+    ../soup/util.h ../soup/version.h fnamchk.c fnamchk.h
 test_file_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
     ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
@@ -859,5 +859,6 @@ utf8_test.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
     ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
     ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
-    ../jparse/util.h ../jparse/version.h ../soup/default_handle.h \
-    ../soup/limit_ioccc.h ../soup/location.h ../soup/version.h utf8_test.c
+    ../jparse/util.h ../jparse/version.h ../soup/../dyn_array/dyn_array.h \
+    ../soup/default_handle.h ../soup/limit_ioccc.h ../soup/location.h \
+    ../soup/util.h ../soup/version.h utf8_test.c

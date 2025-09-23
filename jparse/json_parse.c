@@ -73,6 +73,8 @@ static char *decode_json_string(char const *ptr, size_t len, size_t mlen, size_t
 /* for json number strings */
 static bool json_process_decimal(struct json_number *item, char const *str, size_t len);
 static bool json_process_floating(struct json_number *item, char const *str, size_t len);
+/* for convert JSON encoded string to C string */
+static void posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool *first_alphanum, bool *upper);
 
 
 /*
@@ -1334,7 +1336,7 @@ chkbyte2asciistr(void)
  *
  * NOTE: this function is used by json_decode().
  */
-char *
+static char *
 decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 {
     char *ret = NULL;	    /* allocated encoding string or NULL */
@@ -3456,6 +3458,174 @@ json_conv_number_str(char const *str, size_t *retlen)
 
 
 /*
+ * posix_safe_chk - test a string for various POSIX related tests
+ *
+ * given:
+ *	str		- string to test
+ *	len		- length of str to test
+ *	*slash		- set to true ==> a / was found
+ *			  set to false ==> no / was found
+ *	*posix_safe	- set to true ==> all chars are POSIX portable safe plus +/
+ *			- set to false ==> one or more chars are not portable safe plus +/
+ *	*first_alphanum	- set to true ==> first char is alphanumeric
+ *			  set to false ==> first char is not alphanumeric
+ *	*upper		- set to true ==> UPPER case chars found
+ *			- set to false ==> no UPPER case chars found
+ *
+ * NOTE: This function does not return when given NULL ptr
+ */
+static void
+posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool *first_alphanum, bool *upper)
+{
+    bool found_unsafe = false;		/* true ==> found non-ASCII or non-POSIX portable safe plus +/ */
+    size_t i;
+
+    /*
+     * firewall
+     */
+    if (str == NULL || slash == NULL || posix_safe == NULL || first_alphanum == NULL || upper == NULL) {
+	err(15, __func__, "called with NULL arg(s)");
+	not_reached();
+    }
+
+    /*
+     * assume all tests will fail
+     */
+    *slash = false;
+    *posix_safe = false;
+    *first_alphanum = false;
+    *upper = false;
+
+    /*
+     * empty string fails all tests
+     */
+    if (len <= 0) {
+	dbg(DBG_VVHIGH, "posix_safe_chk(\"%s\", false, false, false, false) returning: str is an empty string", str);
+	return;
+    }
+
+    /*
+     * test first character
+     */
+    if (isascii(str[0])) {
+
+	/*
+	 * case: first character is /
+	 */
+	if (str[0] == '/') {
+	    *slash = true;
+	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is /: 0x%02x", (unsigned int)str[0]);
+
+	/*
+	 * case: first character is alphanumeric
+	 */
+	} else if (isalnum(str[0])) {
+	    *first_alphanum = true;
+	    if (isupper(str[0])) {
+		*upper = true;
+		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is UPPER CASE: 0x%02x", (unsigned int)str[0]);
+	    } else {
+		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is alphanumeric: 0x%02x", (unsigned int)str[0]);
+	    }
+
+	/*
+	 * case: first character is non-alphanumeric portable POSIX safe plus +
+	 */
+	} else if (str[0] == '.' || str[0] == '_' || str[0] == '+') {
+	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is ASCII non-alphanumeric POSIX portable safe plus +: 0x%02x",
+			     (unsigned int)str[0]);
+
+	/*
+	 * case: first character is not POSIX portable safe plus +
+	 */
+	} else {
+	    found_unsafe = true;
+	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is not POSIX portable safe plus +/: 0x%02x",
+			     (unsigned int)str[0]);
+	}
+
+    /*
+     * case: first character is not ASCII
+     */
+    } else {
+	found_unsafe = true;
+	dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is non-ASCII: 0x%02x",
+			 (unsigned int)str[0]);
+    }
+
+    /*
+     * examine second character through the last character
+     */
+    for (i=1; i < len; ++i) {
+
+	/*
+	 * test character
+	 */
+	if (isascii(str[i])) {
+
+	    /*
+	     * case: / check
+	     */
+	    if (str[i] == '/') {
+		if (*slash == false) {
+		    dbg(DBG_VVVHIGH, "posix_safe_chk(): found first / at str[%ju]: 0x%02x",
+				     (uintmax_t)i, (unsigned int)str[i]);
+		}
+		*slash = true;
+
+	    /*
+	     * case: character is alphanumeric
+	     */
+	    } else if (isalnum(str[i])) {
+		if (*upper == false && isupper(str[i])) {
+		    dbg(DBG_VVVHIGH, "posix_safe_chk(): found first UPPER CASE at str[%ju]: 0x%02x",
+				     (uintmax_t)i, (unsigned int)str[i]);
+		    *upper = true;
+		}
+
+	    /*
+	     * case: is not POSIX portable safe plus +
+	     */
+	    } else if (str[i] != '.' && str[i] != '_' && str[i] != '+' && str[i] != '-') {
+		if (found_unsafe == false) {
+		    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[%ju] found first non-POSIX portable safe plus +/: 0x%02x",
+				      (uintmax_t)i, (unsigned int)str[i]);
+		}
+		found_unsafe = true;
+	    }
+
+	/*
+	 * case: character is non-ASCII
+	 */
+	} else {
+	    if (found_unsafe == false) {
+		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[%ju] found first non-ASCII: 0x%02x",
+				  (uintmax_t)i, (unsigned int)str[i]);
+	    }
+	    found_unsafe = true;
+	}
+    }
+
+    /*
+     * report non-POSIX portable safe plus + maybe /
+     */
+    if (found_unsafe == false) {
+	*posix_safe = true;
+	dbg(DBG_VVHIGH, "posix_safe_chk(\"%s\", \"%s\", \"%s\", \"%s\", \"%s\"): string is NOT POSIX portable safe plus +/",
+		str, booltostr(slash), booltostr(posix_safe), booltostr(first_alphanum), booltostr(upper));
+
+    /*
+     * report POSIX portable safe plus + safe with maybe /
+     */
+    } else {
+	dbg(DBG_VVHIGH, "posix_safe_chk(\"%s\", \"%s\", \"%s\", \"%s\", \"%s\"): string is POSIX portable safe plus +/: \"%s\"",
+		str, booltostr(slash), booltostr(posix_safe), booltostr(first_alphanum), booltostr(upper), str);
+    }
+    return;
+}
+
+
+/*
  * json_conv_string - convert JSON encoded string to C string
  *
  * A JSON string is of the form:
@@ -3490,7 +3660,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
      */
     ret = json_alloc(JTYPE_STRING);
     if (ret == NULL) {
-	errp(15, __func__, "json_alloc(JTYPE_STRING) returned NULL");
+	errp(16, __func__, "json_alloc(JTYPE_STRING) returned NULL");
 	not_reached();
     }
 
@@ -3554,7 +3724,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(*(item->as_str)));
     if (item->as_str == NULL) {
-	errp(16, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(17, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     strncpy(item->as_str, ptr, len);
@@ -3639,7 +3809,7 @@ json_conv_string_str(char const *str, size_t *retlen, bool quote)
      */
     ret = json_conv_string(str, len, quote);
     if (ret == NULL) {
-	err(17, __func__, "json_conv_string() returned NULL");
+	err(18, __func__, "json_conv_string() returned NULL");
 	not_reached();
     }
 
@@ -3686,7 +3856,7 @@ json_conv_bool(char const *ptr, size_t len)
      */
     ret = json_alloc(JTYPE_BOOL);
     if (ret == NULL) {
-	errp(18, __func__, "json_alloc(JTYPE_BOOL) returned NULL");
+	errp(19, __func__, "json_alloc(JTYPE_BOOL) returned NULL");
 	not_reached();
     }
 
@@ -3721,7 +3891,7 @@ json_conv_bool(char const *ptr, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(*(item->as_str)));
     if (item->as_str == NULL) {
-	errp(19, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(20, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, ptr, len+1);
@@ -3795,7 +3965,7 @@ json_conv_bool_str(char const *str, size_t *retlen)
      */
     ret = json_conv_bool(str, len);
     if (ret == NULL) {
-	err(20, __func__, "json_conv_bool(%s, %jd) returned NULL", str, (uintmax_t)len);
+	err(21, __func__, "json_conv_bool(%s, %jd) returned NULL", str, (uintmax_t)len);
 	not_reached();
     }
 
@@ -3841,7 +4011,7 @@ json_conv_null(char const *ptr, size_t len)
      */
     ret = json_alloc(JTYPE_NULL);
     if (ret == NULL) {
-	errp(21, __func__, "json_alloc(JTYPE_NULL) returned NULL");
+	errp(22, __func__, "json_alloc(JTYPE_NULL) returned NULL");
 	not_reached();
     }
 
@@ -3876,7 +4046,7 @@ json_conv_null(char const *ptr, size_t len)
     errno = 0;			/* pre-clear errno for errp() */
     item->as_str = calloc(len+1+1, sizeof(*(item->as_str)));
     if (item->as_str == NULL) {
-	errp(22, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
+	errp(23, __func__, "calloc #1 error allocating %ju bytes", (uintmax_t)(len+1+1));
 	not_reached();
     }
     memcpy(item->as_str, ptr, len+1);
@@ -3946,7 +4116,7 @@ json_conv_null_str(char const *str, size_t *retlen)
      */
     ret = json_conv_null(str, len);
     if (ret == NULL) {
-	err(23, __func__, "json_conv_null() returned NULL");
+	err(24, __func__, "json_conv_null() returned NULL");
 	not_reached();
     }
 
@@ -4006,7 +4176,7 @@ json_conv_member(struct json *name, struct json *value)
      */
     ret = json_alloc(JTYPE_MEMBER);
     if (ret == NULL) {
-	errp(24, __func__, "json_alloc(JTYPE_MEMBER) returned NULL");
+	errp(25, __func__, "json_alloc(JTYPE_MEMBER) returned NULL");
 	not_reached();
     }
 
@@ -4079,13 +4249,13 @@ json_conv_member(struct json *name, struct json *value)
     item->name_as_str = item2->as_str;
     /* paranoia */
     if (item->name_as_str == NULL) {
-	err(25, __func__, "item->name_as_str is NULL");
+	err(26, __func__, "item->name_as_str is NULL");
 	not_reached();
     }
     item->name_str = item2->str;
     /* paranoia */
     if (item->name_str == NULL) {
-	err(26, __func__, "item->name_str is NULL");
+	err(27, __func__, "item->name_str is NULL");
 	not_reached();
     }
     item->name_as_str_len = item2->as_str_len;
@@ -4127,7 +4297,7 @@ json_create_object(void)
      */
     ret = json_alloc(JTYPE_OBJECT);
     if (ret == NULL) {
-	errp(27, __func__, "json_alloc(JTYPE_OBJECT) returned NULL");
+	errp(28, __func__, "json_alloc(JTYPE_OBJECT) returned NULL");
 	not_reached();
     }
 
@@ -4146,7 +4316,7 @@ json_create_object(void)
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(28, __func__, "dyn_array_create() returned NULL");
+	errp(29, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 
@@ -4200,20 +4370,20 @@ json_object_add_member(struct json *node, struct json *member)
      * firewall
      */
     if (node == NULL) {
-	err(29, __func__, "node is NULL");
+	err(30, __func__, "node is NULL");
 	not_reached();
     }
     if (member == NULL) {
-	err(30, __func__, "member is NULL");
+	err(31, __func__, "member is NULL");
 	not_reached();
     }
     if (node->type != JTYPE_OBJECT) {
-	err(31, __func__, "object node type expected to be JTYPE_OBJECT: %d found type: %d",
+	err(32, __func__, "object node type expected to be JTYPE_OBJECT: %d found type: %d",
 		           JTYPE_OBJECT, node->type);
 	not_reached();
     }
     if (member->type != JTYPE_MEMBER) {
-	err(32, __func__, "object member type expected to be JTYPE_MEMBER: %d found type: %d",
+	err(33, __func__, "object member type expected to be JTYPE_MEMBER: %d found type: %d",
 		           JTYPE_MEMBER, node->type);
 	not_reached();
     }
@@ -4223,7 +4393,7 @@ json_object_add_member(struct json *node, struct json *member)
      */
     item = &(node->item.object);
     if (item->s == NULL) {
-	err(33, __func__, "item->s is NULL");
+	err(34, __func__, "item->s is NULL");
 	not_reached();
     }
 
@@ -4280,7 +4450,7 @@ json_create_elements(void)
      */
     ret = json_alloc(JTYPE_ELEMENTS);
     if (ret == NULL) {
-	errp(34, __func__, "json_alloc(JTYPE_ELEMENTS) returned NULL");
+	errp(35, __func__, "json_alloc(JTYPE_ELEMENTS) returned NULL");
 	not_reached();
     }
 
@@ -4299,7 +4469,7 @@ json_create_elements(void)
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(35, __func__, "dyn_array_create() returned NULL");
+	errp(36, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 
@@ -4351,15 +4521,15 @@ json_elements_add_value(struct json *node, struct json *value)
      * firewall
      */
     if (node == NULL) {
-	err(36, __func__, "node is NULL");
+	err(37, __func__, "node is NULL");
 	not_reached();
     }
     if (value == NULL) {
-	err(37, __func__, "value is NULL");
+	err(38, __func__, "value is NULL");
 	not_reached();
     }
     if (node->type != JTYPE_ELEMENTS) {
-	err(38, __func__, "node type expected to be JTYPE_ELEMENTS: %d found type: %d",
+	err(39, __func__, "node type expected to be JTYPE_ELEMENTS: %d found type: %d",
 			   JTYPE_ELEMENTS, node->type);
 	not_reached();
     }
@@ -4375,11 +4545,11 @@ json_elements_add_value(struct json *node, struct json *value)
 	json_dbg(JSON_DBG_VHIGH, __func__, "JSON item type: %s", json_item_type_name(value));
 	break;
     case JTYPE_ELEMENTS:
-	err(39, __func__, "JSON type %s (type: %d) is invalid here",
+	err(40, __func__, "JSON type %s (type: %d) is invalid here",
 		json_item_type_name(node), JTYPE_ELEMENTS);
 	not_reached();
     default:
-	err(40, __func__, "expected JSON item, array, string, number, boolean or null, found type: %d",
+	err(41, __func__, "expected JSON item, array, string, number, boolean or null, found type: %d",
 			   value->type);
 	not_reached();
     }
@@ -4389,7 +4559,7 @@ json_elements_add_value(struct json *node, struct json *value)
      */
     item = &(node->item.elements);
     if (item->s == NULL) {
-	err(41, __func__, "item->s is NULL");
+	err(42, __func__, "item->s is NULL");
 	not_reached();
     }
 
@@ -4445,7 +4615,7 @@ json_create_array(void)
      */
     ret = json_alloc(JTYPE_ARRAY);
     if (ret == NULL) {
-	errp(42, __func__, "json_alloc(JTYPE_ARRAY) returned NULL");
+	errp(43, __func__, "json_alloc(JTYPE_ARRAY) returned NULL");
 	not_reached();
     }
 
@@ -4464,7 +4634,7 @@ json_create_array(void)
      */
     item->s = dyn_array_create(sizeof (struct json *), JSON_CHUNK, JSON_CHUNK, true);
     if (item->s == NULL) {
-	errp(43, __func__, "dyn_array_create() returned NULL");
+	errp(44, __func__, "dyn_array_create() returned NULL");
 	not_reached();
     }
 

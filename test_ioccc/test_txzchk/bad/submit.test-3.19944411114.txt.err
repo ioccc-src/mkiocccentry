@@ -1,7 +1,6 @@
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.19944411114.txt: found empty .auth.json file
 Warning: txzchk: found non-executable non-directory file test-3/.auth.json with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-3/prög.c with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-3.19944411114.txt: file "test-3/prög.c" is not a sane relative path
 Warning: txzchk: found non-executable non-directory file test-3/prog.c with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-3/.. with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-3.19944411114.txt: file "test-3/.." is not a sane relative path
@@ -30,4 +29,4 @@ Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.19944411114.txt: fou
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.19944411114.txt: no Makefile found
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.19944411114.txt: not all files in correct directory
 Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.19944411114.txt: found a total of 2 invalidly named dot files
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.19944411114.txt: found 31 feathers stuck in the tarball
+Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.19944411114.txt: found 30 feathers stuck in the tarball

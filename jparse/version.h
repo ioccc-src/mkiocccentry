@@ -55,7 +55,7 @@
  *
  * NOTE: this should match the latest Release string in CHANGES.md
  */
-#define JPARSE_REPO_VERSION "2.4.0 2025-09-20"		/* format: major.minor YYYY-MM-DD */
+#define JPARSE_REPO_VERSION "2.4.1 2025-09-23"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * official jparse version
@@ -65,7 +65,7 @@
 /*
  * official JSON parser version
  */
-#define JPARSE_LIBRARY_VERSION "2.3.1 2025-06-26"	/* library version format: major.minor YYYY-MM-DD */
+#define JPARSE_LIBRARY_VERSION "2.4.0 2025-09-23"	/* library version format: major.minor YYYY-MM-DD */
 
 /*
  * official utility functions (util.c) version

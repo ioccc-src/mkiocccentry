@@ -179,9 +179,6 @@ extern bool is_floating_notation(char const *ptr, size_t len);
 extern bool is_floating_notation_str(char const *str, size_t *retlen);
 extern bool is_e_notation(char const *str, size_t len);
 extern bool is_e_notation_str(char const *str, size_t *retlen);
-extern bool posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first);
-extern void posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe,
-			   bool *first_alphanum, bool *upper);
 
 extern size_t count_char(char const *str, int ch);
 

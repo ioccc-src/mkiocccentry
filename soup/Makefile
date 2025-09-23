@@ -1067,7 +1067,7 @@ default_handle.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
     ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
     ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
-    ../jparse/util.h default_handle.c default_handle.h limit_ioccc.h \
+    ../jparse/util.h default_handle.c default_handle.h limit_ioccc.h util.h \
     version.h
 entry_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
@@ -1084,7 +1084,7 @@ file_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
     ../jparse/util.h ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h \
     ../pr/../dbg/dbg.h ../pr/../dyn_array/dyn_array.h ../pr/pr.h \
-    file_util.c file_util.h
+    file_util.c file_util.h util.h
 foo.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h foo.c foo.h \
     oebxergfB.h
 location_main.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
@@ -1118,7 +1118,7 @@ random_answers.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
     ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
     ../jparse/util.h ../jparse/version.h default_handle.h limit_ioccc.h \
-    location.h random_answers.c random_answers.h version.h
+    location.h random_answers.c random_answers.h util.h version.h
 rule_count.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h ../iocccsize.h \
     iocccsize_err.h limit_ioccc.h rule_count.c version.h
 sanity.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
@@ -1129,7 +1129,7 @@ sanity.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
     ../jparse/util.h ../jparse/version.h chk_sem_auth.h chk_sem_info.h \
     chk_validate.h default_handle.h entry_util.h file_util.h limit_ioccc.h \
-    location.h sanity.c sanity.h soup.h version.h
+    location.h sanity.c sanity.h soup.h util.h version.h
 util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
     ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \

@@ -172,7 +172,7 @@ enum path_sanity
     PATH_ERR_UNKNOWN = 0,               /* unknown error code (default in switch) */
     PATH_OK,                            /* path (str) is a sane relative path */
     PATH_ERR_PATH_IS_NULL,              /* path string (str) is NULL */
-    PATH_ERR_PATH_EMPTY,                /* path string (str) is 0 length (empty) */
+    PATH_ERR_PATH_EMPTY,		/* path string (str) is 0 length (empty) */
     PATH_ERR_PATH_TOO_LONG,             /* path (str) > max_path_len */
     PATH_ERR_MAX_PATH_LEN_0,            /* max_path_len <= 0 */
     PATH_ERR_MAX_DEPTH_0,               /* max_depth is <= 0 */
@@ -180,7 +180,8 @@ enum path_sanity
     PATH_ERR_NAME_TOO_LONG,             /* path component > max_filename_len */
     PATH_ERR_MAX_NAME_LEN_0,            /* max filename length <= 0 */
     PATH_ERR_PATH_TOO_DEEP,             /* current depth > max_depth */
-    PATH_ERR_NOT_POSIX_SAFE             /* invalid/not sane path component */
+    PATH_ERR_NOT_POSIX_SAFE,            /* invalid/not sane path component */
+    PATH_ERR_DOTODT,			/* a .. (dotdot) path component was found */
 };
 
 /*
@@ -254,7 +255,6 @@ extern char *dir_name(char const *path, int level);
 extern size_t count_comps(char const *str, char comp, bool remove_all);
 extern size_t count_dirs(char const *path);
 extern bool exists(char const *path);
-extern enum file_type file_type(char const *path);
 extern bool is_mode(char const *path, mode_t mode);
 extern bool has_mode(char const *path, mode_t mode);
 extern bool is_file(char const *path);
@@ -270,13 +270,12 @@ extern bool is_write(char const *path);
 extern mode_t filemode(char const *path, bool printing);
 extern bool is_open_file_stream(FILE *stream);
 extern void reset_fts(struct fts *fts, bool free_ignored, bool free_match);
+/* XXX - remove after table driven walk code in in place - XXX */
 extern char *fts_path(FTSENT *ent);
-extern int fts_cmp(const FTSENT **a, const FTSENT **b);
-extern int fts_rcmp(const FTSENT **a, const FTSENT **b);
-extern bool check_fts_info(FTS *fts, FTSENT *ent);
 extern FTSENT *read_fts(char *dir, int dirfd, int *cwd, struct fts *fts);
 extern bool array_has_path(struct dyn_array *array, char *path, bool match_case, bool fn, intmax_t *idx);
 extern uintmax_t paths_in_array(struct dyn_array *array);
+/* XXX - remove after table driven walk code in in place - XXX */
 extern char *find_path_in_array(char *path, struct dyn_array *paths, bool match_case, bool fn, intmax_t *idx);
 extern bool append_path(struct dyn_array **paths, char *str, bool unique, bool duped, bool match_case, bool fn);
 extern void free_paths_array(struct dyn_array **paths, bool only_empty);
@@ -292,7 +291,7 @@ extern void touch(char const *path, mode_t mode);
 extern void touchat(char const *path, mode_t mode, char const *dir, int dirfd);
 extern int mkdirs(int dirfd, const char *str, mode_t mode);
 extern enum path_sanity sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filename_len,
-        uintmax_t max_depth, bool dot_slash_okay);
+        uintmax_t max_depth, bool ignore_leading_dot_slash);
 extern char const *path_sanity_name(enum path_sanity sanity);
 extern char const *path_sanity_error(enum path_sanity sanity);
 extern bool path_has_component(char const *path, char const *name);
