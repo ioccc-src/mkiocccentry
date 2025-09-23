@@ -1462,6 +1462,7 @@ open_dir_file(char const *dir, char const *file)
     struct stat dbuf;		/* dir status */
     struct stat fbuf;		/* file status */
     FILE *ret_stream = NULL;	/* open file stream to return */
+    int fd;			/* ret_stream as a file descriptor */
     int ret = 0;		/* libc function return */
     int cwd = -1;		/* current working directory */
 
@@ -1520,31 +1521,31 @@ open_dir_file(char const *dir, char const *file)
     }
 
     /*
-     * must be a readable file
-     */
-    errno = 0;
-    ret = stat(file, &fbuf);
-    if (ret < 0) {
-	errp(108, __func__, "file does not exist: %s", file);
-	not_reached();
-    }
-    if (!S_ISREG(fbuf.st_mode)) {
-	err(109, __func__, "file is not a regular file: %s", file);
-	not_reached();
-    }
-    ret = access(file, R_OK);
-    if (ret < 0) {
-	err(110, __func__, "file is not a readable file: %s", file);
-	not_reached();
-    }
-
-    /*
-     * open the readable file
+     * open the file
      */
     errno = 0;		/* pre-clear errno for errp() */
     ret_stream = fopen(file, "r");
     if (ret_stream == NULL) {
-	errp(111, __func__, "cannot open file: %s", file);
+	errp(108, __func__, "cannot open file: %s", file);
+	not_reached();
+    }
+    fd = fileno(ret_stream);
+    if (fd < 0) {
+	errp(109, __func__, "cannot determine fileno for open file: %s", file);
+	not_reached();
+    }
+
+    /*
+     * must be a readable file
+     */
+    errno = 0;
+    ret = fstat(fd, &fbuf);
+    if (ret < 0) {
+	errp(110, __func__, "file does not exist: %s", file);
+	not_reached();
+    }
+    if (!S_ISREG(fbuf.st_mode)) {
+	err(111, __func__, "file is not a regular file: %s", file);
 	not_reached();
     }
 
