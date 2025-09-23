@@ -102,6 +102,7 @@
 #define BITS_IN_BYTE (CHAR_BIT)	    /* assume 8 bit bytes */
 #define MAX_BYTE (0xff)		    /* maximum byte value */
 #define BYTE_VALUES (MAX_BYTE+1)    /* number of different combinations of bytes */
+#define PR_VERSION "1.1.2 2025-09-22"    /* format: major.minor YYYY-MM-DD */
 
 
 /*
