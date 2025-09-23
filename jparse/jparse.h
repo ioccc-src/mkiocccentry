@@ -31,14 +31,17 @@
   #include "../dbg/c_bool.h"
   #include "../dbg/c_compat.h"
   #include "../dbg/dbg.h"
+  #include "../pr/pr.h"
 #elif defined(INTERNAL_INCLUDE_2)
   #include "../dbg/c_bool.h"
   #include "../dbg/c_compat.h"
   #include "../dbg/dbg.h"
+  #include "../pr/pr.h"
 #else
   #include <c_bool.h>
   #include <c_compat.h>
   #include <dbg.h>
+  #include <pr.h>
 #endif
 
 /*

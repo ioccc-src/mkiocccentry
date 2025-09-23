@@ -56,7 +56,7 @@ foobar
 /jparse/test_jparse/jnum_test-*.tmp
 /jparse/test_jparse/jstr_test2.out
 /jparse/test_jparse/jstr_test.out
-/jparse/test_jparse/pr_jparse_test-*.tmp
+/jparse/test_jparse/test_jparse_test-*.tmp
 /jparse/test_jparse/sed*
 /jparse_test.log
 .jparse_test.stderr.*
@@ -85,7 +85,6 @@ random_answers.*
 /soup/c.tmpfile.*.c
 /soup/default_handle-*.tmp
 /soup/entry_util-*.tmp
-/soup/file_util-*.tmp
 /soup/foo-*.tmp
 /soup/.jsemcgen.out.*
 /soup/limit_ioccc.sh
@@ -102,8 +101,6 @@ random_answers.*
 /soup/tags
 .*.sw[a-zA-Z0-9]*
 /tags
-test_file_util.copy.c
-test_file_util.copy.o
 /test_ioccc/aa
 /test_ioccc/bb
 /test_ioccc/chksubmit_test.log
@@ -115,8 +112,6 @@ test_file_util.copy.o
 /test_ioccc/slot/good/build.out/
 /test_ioccc/slot/good/workdir/
 /test_ioccc/tags
-/test_ioccc/test_file_util
-/test_ioccc/test_file_util-*.tmp
 /test_ioccc/test_ioccc.log
 /test_ioccc/test_iocccsize/
 /test_ioccc/test_JSON/

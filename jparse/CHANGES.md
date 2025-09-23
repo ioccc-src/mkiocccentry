@@ -69,7 +69,7 @@ Updated `JSEMTBLGEN_VERSION` to "2.0.3 2025-09-08".
 Moved nearly all of the tree and file utility functions
 that were in `util.c` and `util.h` over to the
 [mkiocccentry toolkit repo](https://github.com/ioccc-src/mkiocccentry)
-files `soup/file_util.c` and `soup/file_util.h`.
+files `soup/file_util.c` and `pr.h`.
 The code that was moved was not needed for the JSON
 parser nor the parser's related utilities.
 Moving that code will both simplify the JSON

@@ -84,13 +84,13 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.7.1 2025-09-21"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.7.2 2025-09-23"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "2.0.8 2025-09-21"	/* format: major.minor YYYY-MM-DD */
+#define SOUP_VERSION "2.0.9 2025-09-23"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official iocccsize version
@@ -101,7 +101,7 @@
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "2.1.2 2025-08-30"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "2.1.3 2025-09-23"	/* format: major.minor YYYY-MM-DD */
 #define MIN_MKIOCCCENTRY_VERSION MKIOCCCENTRY_VERSION
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC29-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
@@ -126,7 +126,7 @@
 /*
  * official fnamchk version
  */
-#define FNAMCHK_VERSION "2.1.0 2025-08-10"	/* format: major.minor YYYY-MM-DD */
+#define FNAMCHK_VERSION "2.1.1 2025-09-23"	/* format: major.minor YYYY-MM-DD */
 #define MIN_FNAMCHK_VERSION FNAMCHK_VERSION
 
 /*
@@ -162,17 +162,18 @@
 
 
 /*
- * test_file_util - test common utility functions for file operations
- */
-#define FILE_UTIL_TEST_VERSION "2.0.2 2025-09-06" /* version format: major.minor YYYY-MM-DD */
-
-/*
  * debug version
  *
  * Because the dbg is a self contained system, we cannot define DBG_VERSION here.
  * See dbg/dbg.h for the DBG_VERSION value.
  */
 
+/*
+ * pr version
+ *
+ * Because the pr is a self contained system, we cannot define PR_VERSION here.
+ * See pr/pr.h for the PR_VERSION value.
+ */
 
 /*
  * dynamic array versions

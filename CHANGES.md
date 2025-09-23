@@ -1,6 +1,30 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.7.2 2025-09-23
+
+Moved `soup/file_util.[ch]` out to the `pr/` repo (a pull request was opened
+some minutes ago) as these functions are file related (hence the name :-) ) and
+it'll also make that library more useful (it already relied on `dyn_array` and
+`dbg` so this does not create new dependencies for any repo).
+
+This commit required MANY changes as A LOT of references to `file_util` were in
+the code.
+
+This commit removes the man pages for the old `file_util_test` code (under
+`test_ioccc/`) which has also been removed.
+
+IMPORTANT NOTE: `test_ioccc/ioccc_test.sh` has the `test_file_test` changed to
+`pr/pr_test` but due to how it functions it is commented out for now (we
+probably need a script `pr/pr_test.sh`) but as `make test` does a `make -C pr
+test` which does run `pr/pr_test` this is probably okay.
+
+Updated `MKIOCCCENTRY_VERSION` `"2.1.3 2025-09-23"`.
+Updated `FNAMCHK_VERSION` to `"2.1.1 2025-09-23"`.
+Updated `SOUP_VERSION` `"2.0.9 2025-09-23"`.
+Updated `IOCCC_TEST_VERSION` to `"2.1.3 2025-09-23"`.
+
+
 ## Release 2.7.1 2025-09-21
 
 Moved some functions and macros from `soup/file_util.[ch]` to `soup/util.[ch]`

@@ -49,9 +49,9 @@
 #include "soup.h"
 
 /*
- * file_util - common utility functions for file operations
+ * pr - common utility functions for file operations
  */
-#include "file_util.h"
+#include "../pr/pr.h"
 
 /*
  * jparse - the parser

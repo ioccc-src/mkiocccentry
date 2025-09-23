@@ -123,9 +123,9 @@
 #include "soup/entry_util.h"
 
 /*
- * file_util - utilities for files
+ * pr - utilities for files
  */
-#include "soup/file_util.h"
+#include "pr/pr.h"
 
 /*
  * util - various utils

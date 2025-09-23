@@ -135,8 +135,6 @@
  * definitions
  */
 #define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
-#define INITIAL_BUF_SIZE (8192)	/* initial size of buffer allocated by read_all */
-#define READ_ALL_CHUNK (65536)	/* grow this read_all by this amount when needed */
 #define TBLLEN(x) (sizeof(x)/sizeof((x)[0]))	/* number of elements in an initialized table array */
 #define UNUSED_ARG(x) (void)(x)			/* prevent compiler from complaining about an unused arg */
 
@@ -168,7 +166,6 @@
 /*
  * external function declarations
  */
-extern bool fd_is_ready(char const *name, bool open_test_only, int fd);
 extern bool is_string(char const * const ptr, size_t len);
 extern char const *strnull(char const * const str);
 extern bool string_to_intmax(char const *str, intmax_t *ret);
@@ -179,11 +176,6 @@ extern bool is_floating_notation(char const *ptr, size_t len);
 extern bool is_floating_notation_str(char const *str, size_t *retlen);
 extern bool is_e_notation(char const *str, size_t len);
 extern bool is_e_notation_str(char const *str, size_t *retlen);
-extern bool posix_plus_safe(char const *str, bool lower_only, bool slash_ok, bool first);
-extern void posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe,
-			   bool *first_alphanum, bool *upper);
-
-extern size_t count_char(char const *str, int ch);
 
 /* find non-whitespace text */
 extern size_t find_text(char const *ptr, size_t len, char **first);
