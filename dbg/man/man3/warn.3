@@ -12,7 +12,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH warn 3  "30 January 2023" "warn"
+.TH warn 3 "28 September 2025" "warn"
 .SH NAME
 .BR warn() \|,
 .BR vwarn() \|,
@@ -28,41 +28,65 @@
 .BR vsnwarnp()
 \- warning message facility
 .SH SYNOPSIS
-\fB#include "dbg.h"\fP
+\fB#include <dbg.h>\fP
 .sp
-\fB#define DBG_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
+\fB#define DBG_VERSION "..."                   /* format: major.minor YYYY-MM-DD */\fP
 .br
-\fBextern const char *const dbg_version;	/* library version format: major.minor YYYY-MM-DD */\fP
+\fBextern const char *const dbg_version;       /* library version format: major.minor YYYY-MM-DD */\fP
 .sp
-.B "extern int verbosity_level;		/* maximum debug level for debug messages */"
+.B "extern int verbosity_level;                 /* maximum debug level for debug messages */"
 .br
-.B "extern bool warn_output_allowed;		/* false ==> disable warning messages */"
+.B "extern bool warn_output_allowed;            /* false ==> disable warning messages */"
 .br
-.B "extern bool msg_warn_silent;		/* true ==> silence info & warnings if verbosity_level <= 0 */"
+.B "extern bool msg_warn_silent;                /* true ==> silence info & warnings if verbosity_level <= 0 */"
 .sp
-.B "void warn(const char *name, const char *fmt, ...);"
+.I void
 .br
-.B "void vwarn(char const *name, char const *fmt, va_list ap);"
-.br
-.B "void fwarn(FILE *stream, const char *name, const char *fmt, ...);"
-.br
-.B "void vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap);"
-.br
-.B "void snwarn(char *str, size_t size, char const *name, char const *fmt, ...);"
-.br
-.B "void vsnwarn(char *str, size_t size, char const *name, char const *fmt, va_list ap);"
+.B "warn(const char *name, const char *fmt, ...);"
 .sp
-.B "void warnp(const char *name, const char *fmt, ...);"
+.I void
 .br
-.B "void vwarnp(char const *name, char const *fmt, va_list ap);"
+.B "vwarn(char const *name, char const *fmt, va_list ap);"
+.sp
+.I void
 .br
-.B "void fwarnp(FILE *stream, const char *name, const char *fmt, ...);"
+.B "fwarn(FILE *stream, const char *name, const char *fmt, ...);"
+.sp
+.I void
 .br
-.B "void vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap);"
+.B "vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap);"
+.sp
+.I void
 .br
-.B "void snwarnp(char *str, size_t size, char const *name, char const *fmt, ...);"
+.B "snwarn(char *str, size_t size, char const *name, char const *fmt, ...);"
+.sp
+.I void
 .br
-.B "void vsnwarnp(char *str, size_t size, char const *name, char const *fmt, va_list ap);"
+.B "vsnwarn(char *str, size_t size, char const *name, char const *fmt, va_list ap);"
+.sp
+.I void
+.br
+.B "warnp(const char *name, const char *fmt, ...);"
+.sp
+.I void
+.br
+.B "vwarnp(char const *name, char const *fmt, va_list ap);"
+.sp
+.I void
+.br
+.B "fwarnp(FILE *stream, const char *name, const char *fmt, ...);"
+.sp
+.I void
+.br
+.B "vfwarnp(FILE *stream, char const *name, char const *fmt, va_list ap);"
+.sp
+.I void
+.br
+.B "snwarnp(char *str, size_t size, char const *name, char const *fmt, ...);"
+.sp
+.I void
+.br
+.B "vsnwarnp(char *str, size_t size, char const *name, char const *fmt, va_list ap);"
 .SH DESCRIPTION
 These functions provide a way to write warning messages to a stream such as
 .B stderr

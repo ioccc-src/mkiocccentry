@@ -9,11 +9,12 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH dyn_array 3  "08 September 2025" "dyn_array"
+.TH dyn_array 3 "26 September 2025" "dyn_array"
 .SH NAME
 .BR dyn_array_value() \|,
 .BR dyn_array_addr() \|,
 .BR dyn_array_tell() \|,
+.BR dyn_array_first() \|,
 .BR dyn_array_beyond() \|,
 .BR dyn_array_alloced() \|,
 .BR dyn_array_avail() \|,
@@ -25,7 +26,10 @@
 .BR dyn_array_concat_array() \|,
 .BR dyn_array_seek() \|,
 .BR dyn_array_clear() \|,
-.BR dyn_array_qsort()
+.BR dyn_array_qsort() \|,
+.BR dyn_array_push() \|,
+.BR dyn_array_top() \|,
+.BR dyn_array_pop()
 .\" NON_STANDARD_SORT .BR dyn_array_qsort_r() \|,
 .\" NON_STANDARD_SORT .BR dyn_array_heapsort() \|,
 .\" NON_STANDARD_SORT .BR dyn_array_mergesort()
@@ -35,43 +39,75 @@
 .sp
 \fB#define DYN_ARRAY_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
 .br
-.B "extern const char *const dyn_array_version;	/* library version format: major.minor YYYY-MM-DD */"
+.B "extern const char *const dyn_array_version; /* library version format: major.minor YYYY-MM-DD */"
 .sp
-.B "#define dyn_array_value(array, type, index) (((type *)(((struct dyn_array *)(array))->data))[(index)])"
+.B "#define dyn_array_value((struct dyn_array *) array, type, (intmax_t) index) ..."
 .br
-.B "#define dyn_array_addr(array, type, index) (((type *)(((struct dyn_array *)(array))->data))+(index))"
+.B "#define dyn_array_addr((struct dyn_array *) array, type, (intmax_t) index) ..."
 .br
-.B "#define dyn_array_tell(array) (((struct dyn_array *)(array))->count)"
+.B "#define dyn_array_tell((struct dyn_array *) array) ..."
 .br
-.B "#define dyn_array_beyond(array, type) (dyn_array_addr(array, type, dyn_array_tell(array)))"
+.B "#define dyn_array_first((struct dyn_array *) array, type) ..."
 .br
-.B "#define dyn_array_alloced(array) (((struct dyn_array *)(array))->allocated)"
+.B "#define dyn_array_beyond((struct dyn_array *) array, type) ..."
 .br
-.B "#define dyn_array_avail(array) (dyn_array_alloced(array) - dyn_array_tell(array))"
+.B "#define dyn_array_alloced((struct dyn_array *) array) ..."
 .br
-.B "#define dyn_array_rewind(array) (dyn_array_seek((struct dyn_array *)(array), 0, SEEK_SET))"
+.B "#define dyn_array_avail((struct dyn_array *) array) ..."
+.br
+.B "#define dyn_array_rewind((struct dyn_array *) array) ..."
+.br
+.B "#define dyn_array_push((struct dyn_array *) array, (type) value) ..."
 .sp
-.B "extern struct dyn_array *dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool zeroize);"
+.I "struct dyn_array *"
 .br
-.B "extern void dyn_array_free(struct dyn_array *array);"
-.br
-.B "extern bool dyn_array_append_value(struct dyn_array *array, void *value_to_add);"
-.br
-.B "extern bool dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t count_of_elements_to_add);"
-.br
-.B "extern bool dyn_array_concat_array(struct dyn_array *array, struct dyn_array *other);"
-.br
-.B "extern bool dyn_array_seek(struct dyn_array *array, off_t offset, int whence);"
-.br
-.B "extern void dyn_array_clear(struct dyn_array *array);"
+.B "dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool zeroize);"
 .sp
-.B "extern void dyn_array_qsort(struct dyn_array *array, int (*compar)(const void *, const void *));"
+.I void
+.br
+.B "dyn_array_free(struct dyn_array *array);"
+.sp
+.I void
+.br
+.B "dyn_array_append_value(struct dyn_array *array, void *value_to_add);"
+.sp
+.I bool
+.br
+.B "dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t count_of_elements_to_add);"
+.sp
+.I bool
+.br
+.B "dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t count_of_elements_to_add);"
+.sp
+.I bool
+.br
+.B "dyn_array_concat_array(struct dyn_array *array, struct dyn_array *other);"
+.sp
+.I bool
+.B "dyn_array_seek(struct dyn_array *array, off_t offset, int whence);"
+.sp
+.I void
+.br
+.B "dyn_array_clear(struct dyn_array *array);"
+.sp
+.I void
+.br
+.B "dyn_array_qsort(struct dyn_array *array, int (*compar)(const void *, const void *));"
+.sp
 .\" NON_STANDARD_SORT .br
-.\" NON_STANDARD_SORT .B "extern void dyn_array_qsort_r(struct dyn_array *array, void *thunk, int (*compar)(void *, const void *, const void *));"
+.\" NON_STANDARD_SORT .B "void dyn_array_qsort_r(struct dyn_array *array, void *thunk, int (*compar)(void *, const void *, const void *));"
 .\" NON_STANDARD_SORT .br
-.\" NON_STANDARD_SORT .B "extern int dyn_array_heapsort(struct dyn_array *array, int (*compar)(const void *, const void *));"
+.\" NON_STANDARD_SORT .B "int dyn_array_heapsort(struct dyn_array *array, int (*compar)(const void *, const void *));"
 .\" NON_STANDARD_SORT .br
-.\" NON_STANDARD_SORT .B "extern int dyn_array_mergesort(struct dyn_array *array, int (*compar)(const void *, const void *));"
+.\" NON_STANDARD_SORT .B "int dyn_array_mergesort(struct dyn_array *array, int (*compar)(const void *, const void *));"
+.\" NON_STANDARD_SORT .sp
+.I intmax_t
+.br
+.B "dyn_array_top(struct dyn_array *array, void *fetched_value);"
+.sp
+.I intmax_t
+.br
+.B "dyn_array_pop(struct dyn_array *array, void *fetched_value);"
 .SH DESCRIPTION
 These macros and functions provide a way to create, modify and manipulate general purpose dynamic arrays.
 .sp
@@ -122,6 +158,26 @@ If the address of the array of elements moved during
 .BR realloc (3)
 the function returns true.
 Otherwise it returns false.
+.sp
+.BR NOTE :
+.sp
+.in +0.5i
+Both
+.B dyn_array_append_value()
+and
+.B dyn_array_append_set()
+properly handle the case where the data being added is already in the dynamic array.
+The data will be added to the end of the dynamic array, even if the data being
+added overlaps (in part or on the while) with the data already in the dynamic array.
+Only dynamic array elements in the dynamic array are handled in this way.
+Dynamic array space allocated but not yet in use is treated a space to be used only.
+These functions also properly handle the case where an internal call to
+.BR realloc (3)
+moves the dynamic array storage.
+.sp
+In the usual case where data being added is outside of the dynamic array,
+data being added is simply appended to the dynamic array.
+.in -0.5i
 .sp
 The function
 .B dyn_array_concat_array()
@@ -188,46 +244,6 @@ first.
 The function does not free the
 .B struct dyn_array
 itself: it only frees any allocated storage.
-.SS Convenience macros
-.PP
-The following macros are available to help you with the dynamic arrays:
-.TP
-.B dyn_array_value()
-obtains the element (the value) of the dynamic array
-.I array
-of type
-.I type
-at index
-.I index
-.TP
-.B dyn_array_addr()
-obtains the address of the dynamic array
-.I array
-of an element of type
-.I type
-at index
-.IR index .
-.TP
-.B dyn_array_tell()
-returns the current element count of the dynamic array
-.IR array .
-.TP
-.B dyn_array_beyond()
-returns the address of the element just beyond the elements in use in the dynamic array
-.IR array .
-.TP
-.B dyn_array_alloced()
-returns the number of elements allocated in memory for the dynamic array
-.IR array .
-.TP
-.B dyn_array_avail()
-returns the number of elements available (allocated but not in use) of the dynamic array
-.IR array .
-.TP
-.B dyn_array_rewind()
-rewinds the dynamic array
-.I array
-back to zero elements.
 .SS The struct dyn_array
 .PP
 The
@@ -248,7 +264,7 @@ struct dyn_array
     void *data;                 /* allocated dynamic array of identical things or NULL */
 };
 .fi
-.in
+.in -4n
 .SS Version string
 The string
 .BR dyn_array_version ,
@@ -257,6 +273,180 @@ which points to
 is the current version of the
 .B dyn_array
 facility.
+.SH MACRO DESCRIPTION
+.PP
+The following macros are available to help you with the dynamic arrays:
+.TP
+.B dyn_array_value((struct dyn_array *) array, type, (intmax_t) index)
+obtains the element (the value) of the dynamic array
+.I array
+of type
+.I type
+at index
+.I index
+.TP
+.B dyn_array_addr((struct dyn_array *) array, type, (intmax_t) index)
+obtains the address of the dynamic array
+.I array
+of an element of type
+.I type
+at index
+.IR index .
+.TP
+.B dyn_array_tell((struct dyn_array *) array)
+returns the current element count of the dynamic array
+.IR array .
+.TP
+.B dyn_array_first((struct dyn_array *) array, type)
+returns the address pf the first element of the dynamic array
+.IR array ,
+case of a pointer to
+.IR type .
+.sp
+.BR WARNING :
+Do
+.B NOT
+deference the address returned by
+.B dyn_array_first(array, type)
+unless the dynamic array as 1 or more elements in it,
+or unless
+.BR "dyn_array_first(array, type) < dyn_array_beyond(array, type)" .
+.TP
+.B dyn_array_beyond((struct dyn_array *) array, type)
+returns the address of the element just beyond the elements in use in the dynamic array
+.IR array ,
+case of a pointer to
+.IR type .
+.sp
+The intent of this macro is to provide an address range limit
+.BR ONLY .
+.sp
+.BR WARNING :
+The value of the element that is just beyond the elements in use should be treated as
+.BR UNDEFINED .
+Because growing the dynamic array could cause
+.IR realloc (3)
+to move the data, the address returned by
+.B dyn_array_beyond()
+should
+.B NEVER
+be dereferenced.
+.sp
+The intent of
+.B dyn_array_first(array, type)
+and
+.B dyn_array_beyond(array, type)
+are to provide a bounds range of allocated dynamic array elements
+.BR ONLY .
+See the code in the
+.B EXAMPLE
+section below.
+.TP
+.B dyn_array_alloced((struct dyn_array *) array)
+returns the number of elements allocated in memory for the dynamic array
+.IR array .
+.TP
+.B dyn_array_avail((struct dyn_array *) array)
+returns the number of elements available (allocated but not in use) of the dynamic array
+.IR array .
+.TP
+.B dyn_array_rewind((struct dyn_array *) array)
+rewinds the dynamic array
+.I array
+back to zero elements.
+.TP
+.B dyn_array_push((struct dyn_array *) array, (type)value_to_push)
+Append a new element onto the end of a dynamic array.
+.sp
+The effect of this macro is to "push" the element,
+.I value_to_push
+of type
+.IR type ,
+"onto the stack".
+.SH STACK DESCRIPTION
+One may treat a dynamic array as a
+.I LIFO
+(Last in, First out) or "stack".
+Elements are "pushed onto the stack" by appending them to the dynamic array.
+The last element of the dynamic array may be considered as the "top of stack".
+Removing the last element ("top of stack") of the dynamic array,
+and decreasing the length of the dynamic array by 1 may be considered
+as a "pop the stack" operation.
+.sp
+Care must be taken to handle the case where the dynamic array is empty
+and one attempts to either access the "top of stack", or perform a
+"pop the stack" operation.
+.sp
+To support stack-like operations, a macro and two functions are provided.
+.TP
+.B dyn_array_push((struct dyn_array *) array, (type)value_to_push)
+The macro
+.B dyn_array_push
+will add a new element onto the end of a dynamic array.
+.sp
+The
+.B dyn_array_push()
+macro has the effect to "push onto the stack",
+the element
+.IR value_to_push .
+.sp
+.TP
+.B dyn_array_top(struct dyn_array *array, void *fetched_value)
+The function,
+.B dyn_array_top()
+will fetch the last element of the dynamic array, and optionally copy that element,
+.I fetched_value
+if the
+.I fetched_value
+pointer is non-NULL.
+.sp
+If the pointer
+.I fetched_value
+is NULL, no last element value is copied.
+.sp
+If the return value of
+.B dyn_array_top()
+is > 0, then it is the element count of the dynamic array.
+A return value of 0 indicates that the dynamic array is empty,
+and so the operation results in a "stack underflow" error.
+if the return value of
+.B dyn_array_top()
+is < 0, if the array is a NULL pointer, or if the byte size of a single element is invalid.
+.sp
+The
+.B dyn_array_top()
+function will "read the top of stack", if the
+.I fetched_value
+pointer is non-NULL.
+.TP
+.B dyn_array_pop(struct dyn_array *array, void *fetched_value)
+The function
+.B dyn_array_pop()
+will fetch the last element of the dynamic array, and optionally copy that element,
+.I fetched_value
+if the
+.I fetched_value
+pointer is non-NULL,
+and to reduce the dynamic array length by a single element.
+.sp
+If the return value of
+.B dyn_array_pop()
+is > 0, then it is the element count of the dynamic array.
+A return value of 0 indicates that the dynamic array is empty,
+and so the operation results in a "stack underflow" error.
+if the return value of
+.B dyn_array_pop()
+is < 0, if the array is a NULL pointer, or if the byte size of a single element is invalid.
+.sp
+The
+.B dyn_array_pop()
+function has the effect to "pop the stack", if the
+.I fetched_value
+pointer is non-NULL.
+.so
+See the code in the
+.B EXAMPLE
+section below for how to properly use these stack operations.
 .SH SORTING DESCRIPTION
 The function
 .B dyn_array_qsort()
@@ -389,9 +579,14 @@ The functions
 .BR dyn_array_append_value() \|,
 .BR dyn_array_append_set() \|,
 .BR dyn_array_concat_array() \|,
+.BR dyn_array_seek() \|,
+as well as the macro
+.B dyn_array_rewind() \|,
 and
-.B dyn_array_seek()
-return true if the address of the array of elements moved during
+.B dyn_array_push()
+all return
+.B true
+if the address of the array of elements moved during
 .BR realloc (3).
 Otherwise they return false.
 .PP
@@ -402,6 +597,79 @@ The function
 and
 .B dyn_array_free()
 return void.
+.PP
+The macro
+.B dyn_array_value()
+returns an element value of a given
+.IR type ,
+whereas the macro
+.B dyn_array_addr()
+returns an element pointer of a given
+.IR type .
+.PP
+The macros
+.BR dyn_array_tell() \|,
+.BR dyn_array_alloced() \|,
+and
+.B dyn_array_avail()
+all return the element count in the form of a
+.IR intmax_t .
+.sp
+To properly print an
+.I intmax_t
+value, the
+.B PRIdMAX
+macro should be used.
+For example:
+.sp
+.in +4n
+.nf
+struct dyn_array *array;    /* dynamic array */
+intmax_t len;               /* number of elements in the dynamic array */
+
+len = dyn_array_tell(array);
+printf("The number of element in the dynamic array is: %" PRIdMAX "\\n", len);
+.fi
+.in
+.PP
+Both
+.BR dyn_array_top() \|,
+and
+.B dyn_array_pop()
+return the element count if the return value is > 0.,
+A return value of 0 indicates an "stack underflow error".
+A return value of < 0 indicates that either the
+.I array
+pointer is NULL, or if the byte size of a single element is invalid.
+.PP
+Both
+.B dyn_array_first()
+and
+.B dyn_array_beyond()
+return an element pointer of a given
+.IR type .
+.sp
+In the case of
+.BR dyn_array_first() ,
+dereferencing the pointer of the 1st element of the dynamic array
+may not valid if the dynamic array is empty.
+In the case of
+.B dyn_array_beyond()
+dereferencing the pointer beyond the last element of the dynamic array
+will
+.B NEVER
+produce a valid element value and therefore should
+.B NOT
+be done.
+.sp
+See the code in the
+.B EXAMPLE
+section below for how to properly use
+both the
+.BR dyn_array_first() ,
+and the
+.B dyn_array_beyond()
+macros.
 .\" NON_STANDARD_SORT .PP
 .\" NON_STANDARD_SORT The functions
 .\" NON_STANDARD_SORT .BR dyn_array_heapsort() \|,
@@ -417,17 +685,320 @@ return void.
 .\" NON_STANDARD_SORT if a sorting error is encountered, and the underlying standard C function changes the global variable
 .\" NON_STANDARD_SORT to indicate the error.
 .SH EXAMPLE
-For an example program that uses the dynamic array facility see the files
+.sp
+The following uses a dynamic array to hold pointers to malloced strings:
+.sp
+.in +4n
+.nf
+/*
+ * example - allocate dynamic array, store malloced string pointers, print strings, free storage
+ *
+ * After installing dbg (see https://github.com/lcn2/dbg ),
+ * and after installing dyn_array (see https://github.com/lcn2/dyn_array ),
+ * compile this example via the command:
+ *
+ *     cc example.c -ldyn_array -ldbg -o example
+ *
+ * See also:
+ *
+ *      man 3 dyn_array
+ *
+ * Copyright (c) 2025 by Landon Curt Noll.  All Rights Reserved.
+ *
+ * Permission to use, copy, modify, and distribute this software and
+ * its documentation for any purpose and without fee is hereby granted,
+ * provided that the above copyright, this permission notice and text
+ * this comment, and the disclaimer below appear in all of the following:
+ *
+ *       supporting documentation
+ *       source copies
+ *       source works derived from this source
+ *       binaries derived from this source or from derived source
+ *
+ * LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+ * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
+ * EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+ * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
+ * USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+ * OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+ * PERFORMANCE OF THIS SOFTWARE.
+ *
+ * chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) ^oo^
+ *
+ * Share and enjoy! :-)
+ */
+
+#include <stdio.h>
+#include <inttypes.h>
+#include <dbg.h>                /* for message, debug and error messages */
+#include <dyn_array.h>          /* for dyn_array macros and function declarations */
+
+#define INITIAL_SIZE (32)       /* initially allocate this many pointers to strings */
+#define CHUNK_SIZE (8)          /* grow dynamic array by this many pointers at a time */
+
+int
+main(void)
+{
+    struct dyn_array *array;    /* dynamic array of pointers to strings */
+    char *p;                    /* dynamic array element */
+    char **q;                   /* address of a dynamic array string element */
+    char buf[BUFSIZ+1];         /* generic buffer */
+    char *str;                  /* strdup-ed (malloced) string pointer to add to the dynamic array */
+    intmax_t len;               /* length of the dynamic array in elements */
+    int *integer_p;             /* address of a dynamic array integer element */
+    int integer;                /* integer element value */
+    intmax_t i;
+
+    /*
+     * allocate an dynamic array of pointers to strings
+     */
+    msg("allocate an dynamic array of pointers to strings");
+    array = dyn_array_create(sizeof(char *), CHUNK_SIZE, INITIAL_SIZE, true);
+
+    /*
+     * grow the dynamic array by appending pointers to strings
+     *
+     * We grow the dynamic array of pointers to strings by appending pointers
+     * to successive strings.
+     */
+    msg("grow the dynamic array by appending pointers to strings");
+    str = strdup("this is the first string");
+    if (str == NULL) {
+        errp(10, "in %s: failed to strdup first string", __func__);
+        not_reached();
+    }
+    dyn_array_append_value(array, &str);    /* append pointer to the string, not the string itself */
+    /**/
+    buf[BUFSIZ] = '\\0'; /* paranoia */
+    for (i=0; i < 25; ++i) {
+
+        /* load a string number into the generic buffer */
+        snmsg(buf, BUFSIZ, "string number %" PRIdMAX, i);
+
+        /* duplicate generic buffer as a strdup-ed (malloced) string */
+        str = strdup(buf);
+        if (str == NULL) {
+            errp(11, "in %s: failed to strdup string for %" PRIdMAX, __func__, i);
+            not_reached();
+        }
+
+        /* append the pointer to the string onto the end of the dynamic array */
+        (void) dyn_array_append_value(array, &str);
+    }
+    /**/
+    str = strdup("this is the last string");
+    if (str == NULL) {
+        errp(12, "in %s: failed to strdup last string", __func__);
+        not_reached();
+    }
+    dyn_array_append_value(array, &str);    /* append pointer to the string, not the string itself */
+
+    /*
+     * print the dynamic array by using element indices
+     *
+     * We use a sequence of indexes where dyn_array_tell() is the count of dynamic array elements,
+     * and thus is beyond the last index we will process.  We use dyn_array_value(array, char *, i)
+     * to fetch the string pointer stored in the dynamic array at index i.
+     */
+    msg("print the dynamic array by using element indices");
+    for (i = 0, p = dyn_array_value(array, char *, i);
+         i < dyn_array_tell(array);
+         ++i, p = dyn_array_value(array, char *, i)) {
+        /* because indexes such as i are of type intmax_t, we must use PRIdMAX to format their value */
+        if (p == NULL) {
+            msg("    array[%" PRIdMAX "] is NULL", i); /* paranoia */
+        } else {
+            msg("    array[%" PRIdMAX "]: %s", i, p);
+        }
+    }
+
+    /*
+     * free the strdup-ed (malloced) strings that were stored in the dynamic array
+     *
+     * As a demo to show a different way to process the pointers stored in the dynamic array, we
+     * start with the dyn_array_first() address, and free up to, but not including dyn_array_beyond().
+     * Notice that q is a char **, because we are referencing the address of the string pointer that
+     * is stored in the dynamic array.
+     */
+    msg("free the strdup-ed (malloced) strings that were stored in the dynamic array");
+    for (q = dyn_array_first(array, char *); q < dyn_array_beyond(array, char *); ++q) {
+        if (q != NULL && *q != NULL) {
+            free(*q);       /* free the strdup-ed (malloced) string */
+        }
+    }
+
+    /*
+     * free the dynamic array structure
+     *
+     * NOTE: Because the dynamic array was allocated with a zeroize value true,
+     *       the array of pointers to strings will be zeroized before the
+     *       dynamic array structure if finally freed.
+     */
+    msg("free the dynamic array structure");
+    dyn_array_free(array);
+
+    /*
+     * allocate an dynamic array of integers
+     */
+    msg("\nallocate an dynamic array of integers");
+    array = dyn_array_create(sizeof(int), CHUNK_SIZE, INITIAL_SIZE, true);
+
+    /*
+     * push integers onto the dynamic array
+     */
+    msg("push 3 integers onto the dynamic array stack");
+    integer = 10;
+    (void) dyn_array_push(array, integer);
+    integer = 20;
+    (void) dyn_array_push(array, integer);
+    integer = 30;
+    (void) dyn_array_push(array, integer);
+
+    /*
+     * print the stack
+     */
+    msg("print dynamic array stack of integer values");
+    for (integer_p = dyn_array_first(array, int); integer_p < dyn_array_beyond(array, int); ++integer_p) {
+        if (integer_p == NULL) {
+            msg("    integer stack pointer is NULL"); /* paranoia */
+        } else {
+            msg("    stack value: %d", *integer_p);
+        }
+    }
+
+    /*
+     * read the top of stack
+     */
+    len = dyn_array_top(array, &integer);
+    if (len > 0) {
+        msg("top of integer stack: %d", integer);
+    } else {
+        warn("%s: stack underflow error #0", __func__);
+    }
+
+    /*
+     * pop the stack and toss the value
+     */
+    msg("pop the stack and toss the value");
+    (void) dyn_array_pop(array, NULL);
+
+    /*
+     * pop the stack and print the popped value
+     */
+    msg("pop the stack and print the popped value");
+    len = dyn_array_pop(array, &integer);
+    if (len > 0) {
+        msg("top of integer stack: %d", integer);
+    } else {
+        warn("%s: stack underflow error #1", __func__);
+    }
+
+    /*
+     * print the stack again
+     */
+    msg("the dynamic array stack of integer values is now");
+    for (integer_p = dyn_array_first(array, int); integer_p < dyn_array_beyond(array, int); ++integer_p) {
+        if (integer_p == NULL) {
+            msg("    integer stack pointer is NULL"); /* paranoia */
+        } else {
+            msg("    stack value: %d", *integer_p);
+        }
+    }
+
+    /*
+     * free the dynamic array structure
+     *
+     * NOTE: Because the dynamic array was allocated with a zeroize value true,
+     *       the array of pointers to strings will be zeroized before the
+     *       dynamic array structure if finally freed.
+     */
+    msg("free the dynamic array structure");
+    dyn_array_free(array);
+
+    /*
+     * exit 0
+     */
+    return 0;
+}
+.fi
+.in
+.sp
+See also
 .I dyn_test.h
 and
-.IR dyn_test.c .
+.I dyn_test.c
+in the dyn_array Github repo
+.IR https://github.com/lcn2/dyn_array .
+.sp
+.BR "PLEASE NOTE" :
+because
+.I dyn_test.c
+needs to be a standalone test,
+the code had to "import" macros and functions the
+the dbg repo.
+As such, code that is excluded unless
+.B USE_DBG
+is defined
+should be
+.B ignored
+from the perspective of an example.
 .SH SEE ALSO
+.BR calloc (3),
+.BR dbg (3),
+.BR err (3),
+.BR errp (3),
+.BR free (3),
 .\" NON_STANDARD_SORT .BR heapsort (3),
 .BR memset (3),
+.BR msg (3),
 .\" NON_STANDARD_SORT .BR mergesort (3),
 .BR qsort (3),
 .\" NON_STANDARD_SORT .BR qsort_r (3),
 and
-.BR realloc (3).
+.BR realloc (3),
+.BR strdup (3),
+.BR warn (3).
+.sp
+For the latest code, see the
+.I master
+branch of both the dyn_array GitHub repo
+.IR https://github.com/lcn2/dyn_array ,
+and the dbg GitHub repo
+.IR https://github.com/lcn2/dbg .
+.SH BUGS
+When
+.BR realloc (3)
+fails, the
+.BR errp (3)
+function is called and the resulting dynamic array function does
+.B NOT
+return.
+On the other hand, when the storage allocator fails to allocate new memory,
+the is little that can be done beyond that point.
+.sp
+In the case of data corruption such that
+pointers become
+.BR NULL ,
+the dynamic array function does
+.B NOT
+return.
+On the other hand, when something like the stack becomes corrupted,
+there is nil useful things the code can do beyond that point.
+.sp
+In the words of
+.B "Sandra Lee Harris"
+(1971 at Digital Equipment Corporation):
+.BR "it's not a bug, it's a feature" !
+.sp
+The are probably slightly more than zero bugs in this code.
+If you find one of them, please open up a
+.B Bug\ reourt
+via:
+.IR https://github.com/lcn2/dyn_array/issues/new/choose ,
+or better yet please issue a pull request via
+.I https://github.com/lcn2/dyn_array/pulls
+to fix the bug.
 .SH HISTORY
-The dyn_array facility was first written by Landon Curt Noll in 2014 for use in tools such as STS (see the https://github.com/arcetri/STS GitHub repo).
+The dyn_array facility was first written by Landon Curt Noll in 2014 for use in tools such as STS (see the
+.I https://github.com/arcetri/STS
+GitHub repo ).

@@ -86,6 +86,11 @@ static int thunk_dbl_cmp(void *pthunk, const void *pa, const void *pb);
 static void usage(int exitcode, char const *str, char const *prog) __attribute__((noreturn));
 
 
+/*
+ * ******************************************************************************************************
+ * PLEASE NOTE: For purposes of reading an example, please IGNORE the following !defined(DBG_USE) section
+ * ******************************************************************************************************
+ */
 #if !defined(DBG_USE)
 
 /*
@@ -164,6 +169,11 @@ void fprintf_usage(int exitcode, FILE *stream, char const *fmt, ...);
 int parse_verbosity(char const *optarg);
 
 #endif /* !DBG_USE */
+/*
+ * **************************************************************
+ * For purposes of an example, end of !DBG_USE section to ignore.
+ * **************************************************************
+ */
 
 
 /*
@@ -738,6 +748,11 @@ usage(int exitcode, char const *prog, char const *str)
 }
 
 
+/*
+ * ******************************************************************************************************
+ * PLEASE NOTE: For purposes of reading an example, please IGNORE the following !defined(DBG_USE) section
+ * ******************************************************************************************************
+ * */
 #if !defined(DBG_USE)
 
 /*
@@ -2022,3 +2037,8 @@ fchk_inval_opt(FILE *stream, char const *prog, int ch, int opt)
 
 
 #endif /* !DBG_USE */
+/*
+ * **************************************************************
+ * For purposes of an example, end of !DBG_USE section to ignore.
+ * **************************************************************
+ */

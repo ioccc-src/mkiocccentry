@@ -12,7 +12,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH printf_usage 3  "30 January 2023" "printf_usage"
+.TH printf_usage 3 "26 September 2025" "printf_usage"
 .SH NAME
 .BR printf_usage() \|,
 .BR vprintf_usage() \|,
@@ -20,21 +20,29 @@
 .BR vfprintf_usage()
 \- usage message facility
 .SH SYNOPSIS
-\fB#include "dbg.h"\fP
+\fB#include <dbg.h>\fP
 .sp
-\fB#define DBG_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
+\fB#define DBG_VERSION "..."                   /* format: major.minor YYYY-MM-DD */\fP
 .br
-\fBextern const char *const dbg_version;	/* library version format: major.minor YYYY-MM-DD */\fP
+\fBextern const char *const dbg_version;       /* library version format: major.minor YYYY-MM-DD */\fP
 .sp
-.B "extern bool usage_output_allowed;		/* false ==> disable usage messages */"
+.B "extern bool usage_output_allowed;           /* false ==> disable usage messages */"
+.sp
+.I void
 .br
-.B "void printf_usage(int exitcode, const char *fmt, ...) __attribute__((format(printf, 2, 3))); /* 2=format 3=params */"
+.B "printf_usage(int exitcode, const char *fmt, ...);"
+.sp
+.I void
 .br
-.B "void vprintf_usage(int exitcode, char const *fmt, va_list ap);"
+.B "vprintf_usage(int exitcode, char const *fmt, va_list ap);"
+.sp
+.I void
 .br
-.BI "void fprintf_usage(int exitcode, FILE *stream, const char *fmt, ...)  __attribute__((format(printf, 3, 4))); /* 3=format 4=params */"
+.BI "fprintf_usage(int exitcode, FILE *stream, const char *fmt, ...);"
+.sp
+.I void
 .br
-.B "void vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap);"
+.B "vfprintf_usage(int exitcode, FILE *stream, char const *fmt, va_list ap);"
 .SH DESCRIPTION
 These functions provide a way to write a usage message to a stream such as
 .BR stderr .

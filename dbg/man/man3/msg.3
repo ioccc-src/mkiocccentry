@@ -12,7 +12,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH msg 3  "30 January 2023" "msg"
+.TH msg 3 "26 September 2025" "msg"
 .SH NAME
 .BR msg() \|,
 .BR vmsg() \|,
@@ -22,29 +22,41 @@
 .BR vsnmsg()
 \- info message facility
 .SH SYNOPSIS
-\fB#include "dbg.h"\fP
+\fB#include <dbg.h>\fP
 .sp
-\fB#define DBG_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
+\fB#define DBG_VERSION "..."                   /* format: major.minor YYYY-MM-DD */\fP
 .br
-\fBextern const char *const dbg_version;	/* library version format: major.minor YYYY-MM-DD */\fP
+\fBextern const char *const dbg_version;       /* library version format: major.minor YYYY-MM-DD */\fP
 .sp
-.B "extern int verbosity_level;		/* maximum debug level for debug messages */"
+.B "extern int verbosity_level;                 /* maximum debug level for debug messages */"
 .br
-.B "extern bool msg_output_allowed;		/* false ==> disable informational messages */"
+.B "extern bool msg_output_allowed;             /* false ==> disable informational messages */"
 .br
-.B "extern bool msg_warn_silent;		/* true ==> silence info & warnings if verbosity_level <= 0 */"
+.B "extern bool msg_warn_silent;                /* true ==> silence info & warnings if verbosity_level <= 0 */"
 .sp
-.B "void msg(const char *fmt, ...);"
+.I void
 .br
-.B "void vmsg(char const *fmt, va_list ap);"
+.B "msg(const char *fmt, ...);"
+.sp
+.I void
 .br
-.B "void fmsg(FILE *stream, const char *fmt, ...);"
+.B "vmsg(char const *fmt, va_list ap);"
+.sp
+.I void
 .br
-.B "void vfmsg(FILE *stream, char const *fmt, va_list ap);"
+.B "fmsg(FILE *stream, const char *fmt, ...);"
+.sp
+.I void
 .br
-.B "void snmsg(char *str, size_t size, char const *fmt, ...);"
+.B "vfmsg(FILE *stream, char const *fmt, va_list ap);"
+.sp
+.I void
 .br
-.B "void vsnmsg(char *str, size_t size, char const *fmt, va_list ap);"
+.B "snmsg(char *str, size_t size, char const *fmt, ...);"
+.sp
+.I void
+.br
+.B "vsnmsg(char *str, size_t size, char const *fmt, va_list ap);"
 .SH DESCRIPTION
 These functions provide a way to write informative messages to a stream such as
 .B stderr

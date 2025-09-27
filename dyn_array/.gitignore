@@ -4,6 +4,8 @@
 .DS_Store
 *.dSYM/
 dyn_test
+example
+example.o
 /.local.dir.tags
 /makefile.local
 /Makefile.local
@@ -16,11 +18,15 @@ dyn_test
 /man/man3/dyn_array_clear.3
 /man/man3/dyn_array_concat_array.3
 /man/man3/dyn_array_create.3
+/man/man3/dyn_array_first.3
 /man/man3/dyn_array_free.3
+/man/man3/dyn_array_pop.3
+/man/man3/dyn_array_push.3
 /man/man3/dyn_array_qsort.3
 /man/man3/dyn_array_rewind.3
 /man/man3/dyn_array_seek.3
 /man/man3/dyn_array_tell.3
+/man/man3/dyn_array_top.3
 /man/man3/dyn_array_value.3
 /NOTES
 .*.swp

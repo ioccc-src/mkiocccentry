@@ -1855,3 +1855,114 @@ dyn_array_mergesort(struct dyn_array *array, int (*compar)(const void *, const v
 }
 
 #endif /* NON_STANDARD_SORT */
+
+
+/*
+ * dyn_array_top - obtain the last element ("top of stack"), if dynamic array isn't empty
+ *
+ * given:
+ *      array           - pointer to the dynamic array
+ *      fetched_value   - NULL ==> do not store the last element,
+ *			  != NULL ==> where to copy the value of the last element
+ *
+ * returns:
+ *	>0 ==> element count of the dynamic array
+ *	0 ==> stack underflow, stack was empty
+ *	<0 ==> array is NULL, or invalid array byte size of a single element
+ */
+intmax_t
+dyn_array_top(struct dyn_array *array, void *fetched_value)
+{
+    uint8_t *last;		/* pointer to 1st byte of the last element */
+
+    /*
+     * Check preconditions (firewall) - sanity check args
+     */
+    if (array == NULL) {
+	warn("%s: array is NULL", __func__);
+	return -1;
+    }
+    if (array->elm_size <= 0) {
+	warn("%s: array element size <= 0", __func__);
+	return -1;
+    }
+
+    /*
+     * firewall - check for stack underflow
+     */
+    if (array->count <= 0) {
+	/* report stack underflow */
+	return 0;
+    }
+
+    /*
+     * copy the last element if value_to_add is non-NULL
+     */
+    if (fetched_value != NULL) {
+	last = (uint8_t *)(array->data) + ((array->count-1) * (intmax_t)array->elm_size);
+	memmove(fetched_value, last, array->elm_size);
+    }
+
+    /*
+     * return current count of the dynamic array
+     */
+    return array->count;
+}
+
+
+/*
+ * dyn_array_pop - remove the last element ("pop the stack"), if dynamic array isn't empty
+ *
+ * given:
+ *      array           - pointer to the dynamic array
+ *      fetched_value   - NULL ==> do not store the last element,
+ *			  != NULL ==> where to copy the value of the last element
+ *
+ * returns:
+ *	>0 ==> element count of the dynamic array
+ *	0 ==> stack underflow, stack was empty
+ *	<0 ==> array is NULL, or invalid array byte size of a single element
+ */
+intmax_t
+dyn_array_pop(struct dyn_array *array, void *fetched_value)
+{
+    uint8_t *last;		/* pointer to 1st byte of the last element */
+
+    /*
+     * Check preconditions (firewall) - sanity check args
+     */
+    if (array == NULL) {
+	warn("%s: array is NULL", __func__);
+	return -1;
+    }
+    if (array->elm_size <= 0) {
+	warn("%s: array element size <= 0", __func__);
+	return -1;
+    }
+
+    /*
+     * firewall - check for stack underflow
+     */
+    if (array->count <= 0) {
+	/* report stack underflow */
+	return 0;
+    }
+
+    /*
+     * copy the last element if value_to_add is non-NULL
+     */
+    if (fetched_value != NULL) {
+	last = (uint8_t *)(array->data) + ((array->count-1) * (intmax_t)array->elm_size);
+	memmove(fetched_value, last, array->elm_size);
+    }
+
+    /*
+     * decrement stack size
+     */
+    --array->count;
+
+    /*
+     * return current count of the dynamic array
+     */
+    return array->count;
+}

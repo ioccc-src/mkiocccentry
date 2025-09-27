@@ -12,7 +12,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH err 3  "30 January 2023" "err"
+.TH err 3 "26 September 2025" "err"
 .SH NAME
 .BR err() \|,
 .BR verr() \|,
@@ -24,27 +24,43 @@
 .BR vferrp()
 \- fatal error message facility
 .SH SYNOPSIS
-\fB#include "dbg.h"\fP
+\fB#include <dbg.h>\fP
 .sp
-\fB#define DBG_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
+\fB#define DBG_VERSION "..."                   /* format: major.minor YYYY-MM-DD */\fP
 .br
-\fBextern const char *const dbg_version;	/* library version format: major.minor YYYY-MM-DD */\fP
+\fBextern const char *const dbg_version;       /* library version format: major.minor YYYY-MM-DD */\fP
 .sp
-.B "extern bool err_output_allowed;		/* false ==> disable error messages */"
+.B "extern bool err_output_allowed;             /* false ==> disable error messages */"
 .sp
-.B "void err(int exitcode, const char *name, const char *fmt, ...);"
+.I void
 .br
-.B "void verr(int exitcode, char const *name, char const *fmt, va_list ap);"
-.br
-.B "void ferr(int exitcode, FILE *stream, const char *name, const char *fmt, ...);"
-.br
-.B "void vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.B "err(int exitcode, const char *name, const char *fmt, ...);"
 .sp
-.B "void errp(int exitcode, const char *name, const char *fmt, ...);"
+.I void
 .br
-.B "void verrp(int exitcode, char const *name, char const *fmt, va_list ap);"
+.B "verr(int exitcode, char const *name, char const *fmt, va_list ap);"
+.sp
+.I void
 .br
-.B "void ferrp(int exitcode, FILE *stream, const char *name, const char *fmt, ...);"
+.B "ferr(int exitcode, FILE *stream, const char *name, const char *fmt, ...);"
+.sp
+.I void
+.br
+.B "vferr(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.sp
+.I void
+.br
+.B "errp(int exitcode, const char *name, const char *fmt, ...);"
+.sp
+.I void
+.br
+.B "verrp(int exitcode, char const *name, char const *fmt, va_list ap);"
+.sp
+.I void
+.br
+.B "ferrp(int exitcode, FILE *stream, const char *name, const char *fmt, ...);"
+.sp
+.I void
 .br
 .B "void vferrp(int exitcode, FILE *stream, char const *name, char const *fmt, va_list ap);"
 .SH DESCRIPTION

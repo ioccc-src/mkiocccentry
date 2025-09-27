@@ -211,7 +211,7 @@ PICKY_OPTIONS= -c -e -s -t8 -u -v -w132
 
 # source files that do not conform to strict picky standards
 #
-LESS_PICKY_CSRC=
+LESS_PICKY_CSRC= example.c
 LESS_PICKY_HSRC=
 #
 LESS_PICKY_OPTIONS= -8 -c -e -s -t8 -u -v -w
@@ -233,6 +233,7 @@ DYN_ARRAY_MAN3_DUPS= \
 	man/man3/dyn_array_concat_array.3 man/man3/dyn_array_avail.3 man/man3/dyn_array_clear.3 \
 	man/man3/dyn_array_tell.3 man/man3/dyn_array_beyond.3 man/man3/dyn_array_addr.3 \
 	man/man3/dyn_array_alloced.3 man/man3/dyn_array_create.3 man/man3/dyn_array_qsort.3 \
+	man/man3/dyn_array_first.3 man/man3/dyn_array_push.3 man/man3/dyn_array_top.3 man/man3/dyn_array_pop.3 \
 # NON_STANDARD_SORT	man/man3/dyn_array_alloced.3 man/man3/dyn_array_create.3 man/man3/dyn_array_qsort.3
 
 MAN3_PAGES= ${DYN_ARRAY_MAN3} ${DYN_ARRAY_MAN3_DUPS}
@@ -778,3 +779,5 @@ dyn_array.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h dyn_array.c \
     dyn_array.h
 dyn_test.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h dyn_array.h \
     dyn_test.c dyn_test.h
+example.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h dyn_array.h \
+    example.c

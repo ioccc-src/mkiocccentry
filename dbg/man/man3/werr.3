@@ -12,7 +12,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH werr 3  "30 January 2023" "werr"
+.TH werr 3 "28 September 2025" "werr"
 .SH NAME
 .BR werr() \|,
 .BR vwerr() \|,
@@ -28,37 +28,61 @@
 .BR vsnwerrp()
 \- non-fatal error messages facility
 .SH SYNOPSIS
-\fB#include "dbg.h"\fP
+\fB#include <dbg.h>\fP
 .sp
-\fB#define DBG_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
+\fB#define DBG_VERSION "..."                   /* format: major.minor YYYY-MM-DD */\fP
 .br
-\fBextern const char *const dbg_version;	/* library version format: major.minor YYYY-MM-DD */\fP
+\fBextern const char *const dbg_version;       /* library version format: major.minor YYYY-MM-DD */\fP
 .sp
-.B "extern bool err_output_allowed;		/* false ==> disable error messages */"
+.B "extern bool err_output_allowed;             /* false ==> disable error messages */"
 .sp
-.B "void werr(int error_code, const char *name, const char *fmt, ...);"
+.I void
 .br
-.B "void vwerr(int error_code, char const *name, char const *fmt, va_list ap);"
-.br
-.B "void fwerr(int error_code, FILE *stream, const char *name, const char *fmt, ...);"
-.br
-.B "void vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);"
-.br
-.B "void snwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);"
-.br
-.B "void vsnwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap);"
+.B "werr(int error_code, const char *name, const char *fmt, ...);"
 .sp
-.B "void werrp(int error_code, const char *name, const char *fmt, ...);"
+.I void
 .br
-.B "void vwerrp(int error_code, char const *name, char const *fmt, va_list ap);"
+.B "vwerr(int error_code, char const *name, char const *fmt, va_list ap);"
+.sp
+.I void
 .br
-.B "void fwerrp(int error_code, FILE *stream, const char *name, const char *fmt, ...);"
+.B "fwerr(int error_code, FILE *stream, const char *name, const char *fmt, ...);"
+.sp
+.I void
 .br
-.B "void vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.B "vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.sp
+.I void
 .br
-.B "void snwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);"
+.B "snwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);"
+.sp
+.I void
 .br
-.B "void vsnwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap);"
+.B "vsnwerr(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap);"
+.sp
+.I void
+.br
+.B "werrp(int error_code, const char *name, const char *fmt, ...);"
+.sp
+.I void
+.br
+.B "vwerrp(int error_code, char const *name, char const *fmt, va_list ap);"
+.sp
+.I void
+.br
+.B "fwerrp(int error_code, FILE *stream, const char *name, const char *fmt, ...);"
+.sp
+.I void
+.br
+.B "vfwerrp(int error_code, FILE *stream, char const *name, char const *fmt, va_list ap);"
+.sp
+.I void
+.br
+.B "snwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, ...);"
+.sp
+.I void
+.br
+.B "vsnwerrp(int error_code, char *str, size_t size, char const *name, char const *fmt, va_list ap);"
 .SH DESCRIPTION
 These functions provide a way to write non-fatal error messages to a stream such as
 .BR stderr .

@@ -22,6 +22,8 @@ dbg_test.out
 /dyn_array/dyn_array-*.tmp
 /dyn_array/dyn_test
 /dyn_array/dyn_test-*.tmp
+/dyn_array/example
+/dyn_array/example-*.tmp
 /dyn_array/.github
 /.exit_code.*
 foobar

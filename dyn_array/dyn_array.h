@@ -68,7 +68,7 @@
 /*
  * official version
  */
-#define DYN_ARRAY_VERSION "2.4.0 2024-09-08"	/* format: major.minor YYYY-MM-DD */
+#define DYN_ARRAY_VERSION "2.5.0 2024-09-26"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -95,12 +95,23 @@
  *
  *	pos = dyn_array_tell(array);
  *
+ * Address of the first element:
+ *
+ *	struct dyn_array *array;
+ *	struct json_member *next;
+ *
+ *	next = dyn_array_first(array, struct json_member);
+ *
+ *	WARNING: Do NOT reference unless the dynamic array contains 1 or more elements.
+ *
  * Address of the element just beyond the elements in use:
  *
  *	struct dyn_array *array;
  *	struct json_member *next;
  *
  *	next = dyn_array_beyond(array, struct json_member);
+ *
+ *	WARNING: Do NOT reference this this address.
  *
  * Number of elements allocated in memory for the dynamic array:
  *
@@ -121,14 +132,24 @@
  *	struct dyn_array *array;
  *
  *	dyn_array_rewind(array);
+ *
+ * Append a new element onto the end of a dynamic array ("push on the stack"):
+ *
+ *	struct dyn_array *array;
+ *	bool data_moved;
+ *	type value;
+ *
+ *	data_moved = dyn_array_push(array, value);
  */
 #define dyn_array_value(array, type, index) (((type *)(((struct dyn_array *)(array))->data))[(index)])
 #define dyn_array_addr(array, type, index) (((type *)(((struct dyn_array *)(array))->data))+(index))
 #define dyn_array_tell(array) (((struct dyn_array *)(array))->count)
+#define dyn_array_first(array, type) (dyn_array_addr(array, type, 0))
 #define dyn_array_beyond(array, type) (dyn_array_addr(array, type, dyn_array_tell(array)))
 #define dyn_array_alloced(array) (((struct dyn_array *)(array))->allocated)
 #define dyn_array_avail(array) (dyn_array_alloced(array) - dyn_array_tell(array))
 #define dyn_array_rewind(array) (dyn_array_seek((struct dyn_array *)(array), 0, SEEK_SET))
+#define dyn_array_push(array, value_to_push) (dyn_array_append_value((array), ((void *)&(value_to_push))))
 
 
 /*
@@ -173,6 +194,9 @@ extern void dyn_array_clear(struct dyn_array *array);
 extern void dyn_array_free(struct dyn_array *array);
 /**/
 extern void dyn_array_qsort(struct dyn_array *array, int (*compar)(const void *, const void *));
+/**/
+extern intmax_t dyn_array_top(struct dyn_array *array, void *fetched_value);
+extern intmax_t dyn_array_pop(struct dyn_array *array, void *fetched_value);
 
 
 #if defined(NON_STANDARD_SORT)

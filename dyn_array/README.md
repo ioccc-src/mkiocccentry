@@ -89,9 +89,20 @@ For an overview of all the functions and macros, please see the man page
 man ./dyn_array/dyn_array.3
 ```
 
-An example program making use of some of the functions is `dyn_test.c`. How to
-use this example will be added once the facility does not depend on the `dbg`
-facility.
+A good example of making use of the dynamic array facility is
+[example.c](blob/master/example.c).
+In that example, a dynamic array of pointers to strings is
+created, added to, then the entire list of strings are
+printed, and finally freed.
+
+An another example program making use of some of the functions is
+[dyn_test.c](blob/master/dyn_test.c).
+
+**PLEASE NOTE**: because `dyn_test.c` needs to be a standalone test,
+the code had to "import" macros and functions the
+[dbg repo](https://github.com/lcn2/dbg).
+As such, code that is excluded unless **USE_DBG** is defined
+should be **ignored** from the perspective of an example.
 
 
 ## Source Code History
