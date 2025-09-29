@@ -168,7 +168,6 @@
 /*
  * external function declarations
  */
-extern bool fd_is_ready(char const *name, bool open_test_only, int fd);
 extern bool is_string(char const * const ptr, size_t len);
 extern char const *strnull(char const * const str);
 extern bool string_to_intmax(char const *str, intmax_t *ret);

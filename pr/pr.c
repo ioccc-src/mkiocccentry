@@ -1643,3 +1643,295 @@ fchk_inval_opt(FILE *stream, char const *prog, int ch, int opt)
     }
     return true;
 }
+
+
+/*
+ * fd_is_ready - test if a file descriptor is ready for I/O
+ *
+ * Perform a non-blocking test to determine of a given file descriptor is ready
+ * for I/O (reading or writing).  If the file descriptor is NOT open, return false.
+ *
+ * The open_test_only flag effects if the test includes a test of the we can read or write
+ * the file descriptor.  When open_test_only is true, we only return true if the file descriptor
+ * is valid and open and not in an error state.  When open_test_only is is false, we also test
+ * if the file descriptor has data ready to be read or can be written into.
+ *
+ * given:
+ *	name		name of the calling function
+ *	open_test_only	true ==>  do not test if we can read or write, only test if open & valid
+ *			false ==> unless descriptor is ready to read or write.
+ *	fd		file descriptor on which to perform an I/O test
+ *
+ * returns:
+ *	true	if open_test_only == true:  file descriptor is open and not in an error state
+ *		if open_test_only == false: file descriptor is open, not in an error state, and
+ *					    has data ready to be read or can be written into
+ *	false	if open_test_only == true:  file descriptor is closed or in an error state, or
+ *					    file descriptor < 0
+ *		if open_test_only == false: file descriptor is closed or in an error state, or
+ *					    file descriptor is open but lacks data to read, or
+ *					    file descriptor is open cannot be written info, or
+ *					    file descriptor < 0
+ */
+bool
+fd_is_ready(char const *name, bool open_test_only, int fd)
+{
+    struct pollfd fds;		/* poll selector */
+    int ret;			/* return code holder */
+
+    /*
+     * firewall - fd < 0 returns false
+     */
+    if (fd < 0) {
+	dbg(DBG_VVHIGH, "%s: called via %s: fd: %d < 0, returning false", __func__, name, fd);
+	return false;
+    } else if (isatty(fd)) {
+	dbg(DBG_VVHIGH, "%s: called via %s: fd: isatty(%d) == 1, returning true", __func__, name, fd);
+	return true;
+    }
+
+    /*
+     * setup the poll selector for the file descriptor
+     *
+     * We look for all known poll events we are allowed to mark.  Some events are output only,
+     * such as POLLERR, POLLHUP and POLLNVAL (are ignored in events) so we do not set them.
+     */
+    fds.fd = fd;
+    fds.events = 0;
+    if (open_test_only == false){
+	fds.events |= POLLIN | POLLOUT | POLLPRI;
+    }
+#if defined(_GNU_SOURCE)
+    fds.events |= POLLRDHUP;
+#endif /* _GNU_SOURCE */
+#if defined(_XOPEN_SOURCE)
+    if (open_test_only == false) {
+	fds.events |= POLLRDNORM | POLLRDBAND | POLLWRNORM | POLLWRBAND;
+    }
+#endif /* _XOPEN_SOURCE */
+    dbg(DBG_VVHIGH, "%s: called via %s: poll for %d: events set to: %d", __func__, name, fd, fds.events);
+    fds.revents = 0;
+
+    /*
+     * poll the file descriptor without blocking
+     */
+    errno = 0;			/* pre-clear errno for dbg() */
+    ret = poll(&fds, 1, 0);
+    if (ret < 0) {
+	warn(__func__, "called via %s: poll on %d failed: %s, returning false", name, fd, strerror(errno));
+	return false;
+
+    /*
+     * case: file descriptor has an event to check
+     */
+    } else if (ret == 1) {
+
+	/*
+	 * case: POLLNVAL
+	 *
+	 * The fd is not open.
+	 */
+	if (fds.revents & POLLNVAL) {
+	    dbg(DBG_VVHIGH, "%s: called via %s: poll on %d found POLLNVAL revents: %x, returning false",
+			    __func__, name, fd, fds.revents);
+	    return false;
+
+	/*
+	 * case: POLLHUP
+	 *
+	 * Note that when reading from a channel such as a pipe or a
+         * stream socket, this event merely indicates that the peer
+         * closed its end of the channel.  Subsequent reads from the
+         * channel will return 0 (end of file) only after all
+         * outstanding data in the channel has been consumed.
+	 */
+	} else if (fds.revents & POLLHUP) {
+	    dbg(DBG_VVHIGH, "%s: called via %s: poll on %d found POLLHUP revents: %x, returning false",
+			    __func__, name, fd, fds.revents);
+	    return false;
+
+	/*
+	 * case: POLLERR
+	 *
+	 * This bit is also set for a file descriptor referring to the write end of a pipe
+	 * when the read end has been closed.
+	 */
+	} else if (fds.revents & POLLERR) {
+	    dbg(DBG_VVHIGH, "%s: called via %s: poll on %d found POLLERR revents: %x, returning false",
+			    __func__, name, fd, fds.revents);
+	    return false;
+
+#if defined(_GNU_SOURCE)
+	/*
+	 * case: POLLRDHUP
+	 *
+	 * Stream socket peer closed connection, or shut down writing half of connection.
+	 */
+	} else if (fds.revents & POLLRDHUP) {
+	    dbg(DBG_VVHIGH, "%s: called via %s: poll on %d found POLLRDHUP revents: %x, returning false",
+			    __func__, name, fd, fds.revents);
+	    return false;
+#endif /* _GNU_SOURCE */
+	}
+
+	/*
+	 * cases: all other cases the file descriptor is considered ready
+	 *
+	 * These cases include:
+	 *
+	 * POLLIN - There is data to read.
+	 * POLLPRI - some exceptional condition on the file descriptor such as:
+	 *		out-of-band data on a TCP socket
+	 *		pseudoterminal master in packet mode has seen a state change on the slave
+	 *		cgroup.events file has been modified
+	 * POLLOUT - Writing is now possible.
+	 *
+	 * And if defined(_XOPEN_SOURCE):
+	 *
+	 * POLLRDNORM - Equivalent to POLLIN.
+	 * POLLRDBAND - Priority band data can be read.
+	 * POLLWRNORM - Equivalent to POLLOUT.
+	 * POLLWRBAND - Priority data may be written.
+	 */
+	dbg(DBG_VVHIGH, "%s: called via %s: poll on %d revents: %x such that we return true",
+			__func__, name, fd, fds.revents);
+	return true;
+
+    /*
+     * case: file descriptor has no events, return false
+     *
+     * When descriptors are have events, we assume that the file descriptor is valid (open non-error).
+     *
+     * If open_test_only is true: because we ignore events related to being able to read or write,
+     *				  we can safely assume file descriptor is not suitable for I/O actions.
+     * If open_test_only is false: we assume file descriptor cannot also be read from or written into.
+     *
+     * In either case we declare the file descriptors not ready.
+     */
+    } else if (ret == 0) {
+	dbg(DBG_VVHIGH, "%s: called via %s: poll on %d found no events, returning false",
+			__func__, name, fd);
+	return false;
+    }
+
+    /*
+     * unexpected poll return, return false
+     */
+    warn(__func__, "called via %s: poll on %d returned %d: expected 0 or 1, returning false", name, fd, ret);
+    return false;
+}
+
+
+/*
+ * flush_tty - flush stdin, stdout and stderr
+ *
+ * We flush all pending stdio data if they are open.
+ * We ignore the flush of they are not open.
+ *
+ * given:
+ *	name		- name of the calling function
+ *	flush_stdin	- true ==> stdin should be flushed as well as stdout and stderr,
+ *			  false ==> only flush stdout and stderr
+ *	abort_on_error	- false ==> return exit code if able to successfully call system(), or
+ *			            return EXIT_CALLOC_FAILED calloc() failure,
+ *			            return EXIT_FFLUSH_FAILED on fflush failure,
+ *			            return EXIT_SYSTEM_FAILED if system() failed,
+ *			            return EXIT_NULL_ARGS if NULL pointers were passed
+ *			  true ==> return exit code if able to successfully call system(), or
+ *			           call errp() (and thus exit) if unsuccessful
+ *
+ * IMPORTANT: If write_mode == true, then pending stdin will be flushed.
+ *	      If this process has not read all pending data on stdin, then
+ *	      such pending data will be lost by the internal call to fflush(stdin).
+ *	      It is the responsibility of the calling function to have read all stdin
+ *	      OR accept that such pending stdin data will be lost.
+ *
+ * NOTE: This function does not return on error (such as a stdio related error).
+ */
+void
+flush_tty(char const *name, bool flush_stdin, bool abort_on_error)
+{
+    int ret;			/* return code holder */
+
+    /*
+     * case: flush_stdin is true
+     */
+    if (flush_stdin == true) {
+
+	/*
+	 * pre-flush stdin, if open, to avoid buffered stdio issues with the child process
+	 *
+	 * We do not want the child process to "inherit" buffered stdio stdin data
+	 * waiting to be read as this could result in data being read twice or worse.
+	 *
+	 * NOTE: If this process has not read all pending data on stdin, this
+	 *	     next fflush() will cause that data to be lost.
+	 */
+	if (fd_is_ready(name, true, fileno(stdin))) {
+	    clearerr(stdin);		/* pre-clear ferror() status */
+	    errno = 0;			/* pre-clear errno for errp() */
+	    ret = fflush(stdin);
+	    if (ret < 0) {
+		/* exit or error return depending on abort_on_error */
+		if (abort_on_error) {
+		    errp(114, name, "fflush(stdin): error code: %d", ret);
+		    not_reached();
+		} else {
+		    dbg(DBG_HIGH, "%s: called via %s: fflush(stdin) failed: %s", __func__, name, strerror(errno));
+		    return;
+		}
+	    }
+	} else {
+	    dbg(DBG_VHIGH, "%s: called via %s: stdin is NOT open, flush request ignored", __func__, name);
+	}
+    }
+
+    /*
+     * pre-flush stdout, if open, to avoid buffered stdio issues with the child process
+     *
+     * We do not want the child process to "inherit" buffered stdio stdout data
+     * waiting to be written as this could result in data being written twice or worse.
+     */
+    if (fd_is_ready(name, true, fileno(stdout))) {
+	clearerr(stdout);		/* pre-clear ferror() status */
+	errno = 0;			/* pre-clear errno for errp() */
+	ret = fflush(stdout);
+	if (ret < 0) {
+	    /* exit or error return depending on abort_on_error */
+	    if (abort_on_error) {
+		errp(115, name, "fflush(stdout): error code: %d", ret);
+		not_reached();
+	    } else {
+		dbg(DBG_HIGH, "%s: called from %s: fflush(stdout) failed: %s", __func__, name, strerror(errno));
+		return;
+	    }
+	}
+    } else {
+	dbg(DBG_VHIGH, "%s: called via %s: stdout is NOT open, flush request ignored", __func__, name);
+    }
+
+    /*
+     * pre-flush stderr, if open, to avoid buffered stdio issues with the child process
+     *
+     * We do not want the child process to "inherit" buffered stdio stderr data
+     * waiting to be written as this could result in data being written twice or worse.
+     */
+    if (fd_is_ready(name, true, fileno(stderr))) {
+	clearerr(stderr);		/* pre-clear ferror() status */
+	errno = 0;			/* pre-clear errno for errp() */
+	ret = fflush(stderr);
+	if (ret < 0) {
+	    /* exit or error return depending on abort_on_error */
+	    if (abort_on_error) {
+		errp(116, name, "fflush(stderr): error code: %d", ret);
+		not_reached();
+	    } else {
+		dbg(DBG_HIGH, "%s: called from %s: fflush(stderr) failed: %s", __func__, name, strerror(errno));
+		return;
+	    }
+	}
+    } else {
+	dbg(DBG_VHIGH, "%s: called via %s: stderr is NOT open, flush request ignored", __func__, name);
+    }
+    return;
+}

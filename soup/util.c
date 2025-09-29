@@ -53,7 +53,6 @@
 #include <limits.h>
 #include <errno.h>
 #include <stdarg.h>
-#include <poll.h>
 #include <fcntl.h>		/* for open() */
 /*
  * util - our functions

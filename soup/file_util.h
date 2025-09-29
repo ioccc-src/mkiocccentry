@@ -285,7 +285,6 @@ extern off_t file_size(char const *path);
 extern off_t size_if_file(char const *path);
 extern bool is_empty(char const *path);
 extern char *resolve_path(char const *cmd);
-extern void flush_tty(char const *name, bool flush_stdin, bool abort_on_error);
 extern size_t copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode);
 extern void touch(char const *path, mode_t mode);
 extern void touchat(char const *path, mode_t mode, char const *dir, int dirfd);

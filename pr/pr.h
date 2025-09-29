@@ -57,6 +57,7 @@
 #include <ctype.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <poll.h>
 
 
 /*
@@ -78,7 +79,7 @@
 /*
  * official version
  */
-#define PR_VERSION "1.1.2 2025-09-22"    /* format: major.minor YYYY-MM-DD */
+#define PR_VERSION "1.1.3 2025-09-28"    /* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -124,6 +125,8 @@ extern ssize_t fprint_line_buf(FILE *stream, const void *buf, size_t len, int st
 extern ssize_t fprint_line_str(FILE *stream, char *str, size_t *retlen, int start, int end);
 extern FILE *open_dir_file(char const *dir, char const *file);
 extern bool fchk_inval_opt(FILE *stream, char const *prog, int ch, int opt);
+extern bool fd_is_ready(char const *name, bool open_test_only, int fd);
+extern void flush_tty(char const *name, bool flush_stdin, bool abort_on_error);
 
 
 #endif				/* INCLUDE_PR_H */

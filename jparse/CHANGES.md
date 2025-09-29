@@ -1,6 +1,16 @@
 # Significant changes in the JSON parser repo
 
 
+## Release 2.4.2 2025-09-28
+
+Moved the `fd_is_ready()` function and the `flush_tty()` function
+to the [pr repo](https://github.com/lcn2/pr).
+
+Updated `JPARSE_REPO_VERSION` to "2.4.2 2025-09-28".
+Updated `JPARSE_LIBRARY_VERSION` to "2.4.1 2025-09-28".
+Updated `JPARSE_UTILS_VERSION` to "2.1.4 2025-09-28".
+
+
 ## Release 2.4.1 2025-09-23
 
 Removed `posix_plus_safe()` from `util.c`.
