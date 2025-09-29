@@ -116,9 +116,80 @@
 /*
  * static functions
  */
+static size_t private_strlcat(char *dst, const char *src, size_t dsize);
 static enum file_type file_type(char const *path);
 static int fts_cmp(const FTSENT **a, const FTSENT **b);
 static bool check_fts_info(FTS *fts, FTSENT *ent);
+
+
+/*
+ * private_strlcat - private copy of bounded string concatenation
+ *
+ * given:
+ *	dst	    string destination of concatenation
+ *	src	    string to to concatenate onto dst
+ *	dsize	    limit dst to dsize-1 characters followed by a NUL byte
+ *
+ * returns:
+ *	total length of the concatenated string
+ *
+ *	If the return value is >= dstsize, the output string has been truncated.
+ *
+ * Appends src to string dst of size dsize (unlike strncat, dsize is the
+ * full size of dst, not space left).  At most dsize-1 characters
+ * will be copied.  Always NUL terminates (unless dsize <= strlen(dst)).
+ * Returns strlen(src) + MIN(dsize, strlen(initial dst)).
+ * If retval >= dsize, truncation occurred.
+ *
+ * This function is from:
+ *
+ *	https://github.com/libressl/openbsd/blob/master/src/lib/libc/string/strlcat.c
+ *
+ * This function is:
+ *
+ * Copyright (c) 1998, 2015 Todd C. Miller <millert@openbsd.org>
+ *
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+static size_t
+private_strlcat(char *dst, const char *src, size_t dsize)
+{
+    const char *odst = dst;
+    const char *osrc = src;
+    size_t n = dsize;
+    size_t dlen;
+
+    /* Find the end of dst and adjust bytes left but don't go past end. */
+    while (n-- != 0 && *dst != '\0') {
+	dst++;
+    }
+    dlen = dst - odst;
+    n = dsize - dlen;
+
+    if (n-- == 0) {
+	return(dlen + strlen(src));
+    }
+    while (*src != '\0') {
+	if (n != 0) {
+	    *dst++ = *src;
+	    n--;
+	}
+	src++;
+    }
+    *dst = '\0';
+
+    return(dlen + (src - osrc));	/* count does not include NUL */
+}
 
 
 /*
@@ -4839,6 +4910,7 @@ canon_path(char const *orig_path, uintmax_t max_path_len, uintmax_t max_filename
     uintmax_t i = 0;		/* path component number */
     bool test = true;		/* true ==> passed test, false == failed test */
     char *ret_path = NULL;	/* malloced canonicalized path to return */
+    size_t strlcpy_ret = 0;	/* private_strlcpy() return value */
 
     /*
      * firewall
@@ -5053,7 +5125,7 @@ canon_path(char const *orig_path, uintmax_t max_path_len, uintmax_t max_filename
 
 	    /* NULL component pointer */
 	    report_canon_err(PATH_ERR_NULL_COMPONENT, sanity_p, len_p, depth_p, path, array);
-	    dbg(DBG_HIGH, "%s: error %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
+	    dbg(DBG_HIGH, "%s: error #0 %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
 	    return NULL;
 	}
 
@@ -5169,7 +5241,7 @@ canon_path(char const *orig_path, uintmax_t max_path_len, uintmax_t max_filename
 
 	    /* NULL component pointer */
 	    report_canon_err(PATH_ERR_NULL_COMPONENT, sanity_p, len_p, depth_p, path, array);
-	    dbg(DBG_HIGH, "%s: error %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
+	    dbg(DBG_HIGH, "%s: error #1 %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
 	    return NULL;
 	}
 
@@ -5195,14 +5267,21 @@ canon_path(char const *orig_path, uintmax_t max_path_len, uintmax_t max_filename
 	}
 
 	/* append component from stack */
-	(void) strlcat(ret_path, *q, path_len+1);
+	strlcpy_ret = private_strlcat(ret_path, *q, path_len+1);
+	if (strlcpy_ret >= path_len+1) {
+
+	    /* canonicalized path length mis-calculation */
+	    report_canon_err(PATH_ERR_WRONG_LEN, sanity_p, len_p, depth_p, path, array);
+	    dbg(DBG_HIGH, "%s: error #0 %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
+	    return NULL;
+	}
     }
     /* canonicalized path length sanity check */
     if (path_len != strlen(ret_path)) {
 
 	/* canonicalized path length mis-calculation */
 	report_canon_err(PATH_ERR_WRONG_LEN, sanity_p, len_p, depth_p, path, array);
-	dbg(DBG_HIGH, "%s: error %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
+	dbg(DBG_HIGH, "%s: error #1 %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
 	return NULL;
     }
     ret_path[path_len] = '\0'; /* end of string paranoia */
