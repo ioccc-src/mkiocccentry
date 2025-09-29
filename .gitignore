@@ -4,6 +4,8 @@
 *.[ao]
 /bug-report*.txt
 *build.log*
+cpath
+cpath-*.tmp
 /chkentry
 /chkentry-*.tmp
 /chksubmit

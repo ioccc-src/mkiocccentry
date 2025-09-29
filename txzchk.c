@@ -747,13 +747,9 @@ check_txz_file(char const *tarball_path, char const *dirname, struct txz_file *f
     if (!allowed_dot_file) {
         /*
          * filename must use only POSIX portable filename and + chars plus /
-         *
-         * NOTE: we check for sane relative paths here only if the file is not a
-         * valid dot file. This is because if it is a valid dot file the
-         * sane_relative_path() will still flag it as invalid as it has a '.' in
-         * it.
          */
-        sanity = sane_relative_path(file->filename, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, false);
+	(void) canon_path(file->filename, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
+			  &sanity, NULL, NULL, true, true, true);
         if (sanity != PATH_OK) {
             ++tarball.total_feathers; /* report it once and consider it only one feather */
             ++tarball.unsafe_chars;

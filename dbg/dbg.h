@@ -41,7 +41,7 @@
 /*
  * definitions
  */
-#define DBG_VERSION "3.2 2023-09-16"            /* format: major.minor YYYY-MM-DD */
+#define DBG_VERSION "3.2.1 2023-09-28"          /* format: major.minor YYYY-MM-DD */
 
 /*
  * dbg basename
@@ -88,10 +88,19 @@
 #define DBG_MED (3)		/* somewhat more debugging */
 #define DBG_HIGH (5)		/* verbose debugging */
 #define DBG_VHIGH (7)		/* very verbose debugging */
+#define DBG_V1_HIGH (DBG_VHIGH)
 #define DBG_VVHIGH (9)		/* very very verbose debugging */
+#define DBG_V2_HIGH (DBG_VVHIGH)
 #define DBG_VVVHIGH (11)	/* very very very verbose debugging */
+#define DBG_V3_HIGH (DBG_VVVHIGH)
 #define DBG_VVVVHIGH (13)	/* very very very very verbose debugging */
+#define DBG_V4_HIGH (DBG_VVVVHIGH)
 #define DBG_VVVVVHIGH (15)	/* very very very very very verbose debugging */
+#define DBG_V5_HIGH (DBG_VVVVVHIGH)
+#define DBG_VVVVVVHIGH (17)	/* very very very very very very verbose debugging */
+#define DBG_V6_HIGH (DBG_VVVVVVHIGH)
+#define DBG_VVVVVVVHIGH (19)	/* very very very very very very very verbose debugging */
+#define DBG_V7_HIGH (DBG_VVVVVVVHIGH)
 
 #define DBG_DEFAULT (DBG_NONE)	/* default debugging level */
 #define DBG_INVALID (-1)	/* invalid debug level - returned by parse_verbosity() on error */

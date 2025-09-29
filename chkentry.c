@@ -555,7 +555,7 @@ main(int argc, char *argv[])
              * in winning mode we must also ignore certain filenames. The list,
              * like all the others, can be updated if necessary. We only do this
              * in winning mode as these files are dot files that are part of a
-             * winning entry which would be picked up by sane_relative_path() as
+             * winning entry which could be picked up by canon_path() as
              * an error.
              */
             for (c = 0; ignored_filenames[c] != NULL; ++c) {
@@ -698,7 +698,8 @@ main(int argc, char *argv[])
                          * relative path and that the permissions are correct
                          * based on the filename.
                          */
-                        if (sane_relative_path(u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, false) != PATH_OK) {
+			if (canon_path(u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
+					  NULL, NULL, NULL, true, true, true) == NULL) {
                             werr(1, __func__, "%s: not a sane relative path with max path len, filename len and depth "/*ooo*/
                                     "of %ju, %ju, %ju ", u, (uintmax_t)MAX_PATH_LEN, (uintmax_t)MAX_FILENAME_LEN,
                                     (uintmax_t)MAX_PATH_DEPTH);
@@ -933,7 +934,8 @@ main(int argc, char *argv[])
                          * relative path and that the permissions are correct
                          * based on the filename.
                          */
-                        if (sane_relative_path(u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, false) != PATH_OK) {
+			if (canon_path(u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
+					  NULL, NULL, NULL, true, true, true) == NULL) {
                             werr(1, __func__, "%s: not a sane relative path with max path len, filename len and depth "/*ooo*/
                                     "of %ju, %ju, %ju ", u, (uintmax_t)MAX_PATH_LEN, (uintmax_t)MAX_FILENAME_LEN,
                                     (uintmax_t)MAX_PATH_DEPTH);

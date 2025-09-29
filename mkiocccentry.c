@@ -1351,7 +1351,7 @@ check_ent(FTS *fts, FTSENT *ent)
  * NOTE: if a path that is not a sane relative path is found it is an error
  *       (this is not the same thing as an unsafe filename or dirname).
  * NOTE: a sane relative path is a path that does not start with a '/' (however,
- *       see comment below about the function sane_relative_path()) and where
+ *       see comment below about the function canon_path()) and where
  *       each component of the path (between the '/' or if no '/' found then the
  *       string itself) matches the regexp: '^[0-9A-Za-z]+[0-9A-Za-z_+.-]*$'
  *       (w/o quotes). In other words it is POSIX plus + safe only characters
@@ -1431,7 +1431,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
     }
     /*
      * list of unsafe (not POSIX plus + safe chars only) filenames to show to
-     * user (i.e.  sane_relative_path() returns PATH_ERR_NOT_POSIX_SAFE and not
+     * user (i.e., canon_path() sets sanity to PATH_ERR_NOT_POSIX_SAFE and not
      * another error condition)
      */
     infop->unsafe_files = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
@@ -1441,7 +1441,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
     }
     /*
      * list of unsafe (not POSIX plus + safe chars only) directory names to show
-     * to user (i.e.  sane_relative_path() returns PATH_ERR_NOT_POSIX_SAFE and
+     * to user (i.e., canon_path() sets sanity to PATH_ERR_NOT_POSIX_SAFE and
      * not another error condition)
      */
     infop->unsafe_dirs = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
@@ -1734,14 +1734,11 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
 
             /*
              * NOTE: when traversing the directory "." the filenames found under
-             * it will all start with "./" (as noted above). This is why the
-             * last arg to sane_relative_path() is true: it allows the first two
-             * characters to be "./" (this does NOT mean that ".//" is okay and
-             * it does NOT mean that "././" is okay) (although technically we
-             * could just do fts_path + 2 but the functionality was needed
-             * anyway).
+             * it will all start with "./" (as noted above).   However canon_path()
+	     * will ignore any such "./".
              */
-            sanity = sane_relative_path(ent->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true);
+	    (void) canon_path(ent->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
+			      &sanity, NULL, NULL, true, true, true);
             switch (sanity) {
                 case PATH_ERR_NAME_TOO_LONG: /* last component too long */
                     err(4, __func__, "%s: name too long: strlen(\"%s\"): %ju > %ju", ent->fts_name, ent->fts_name,/*ooo*/
@@ -1832,13 +1829,6 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                     break;
                 case PATH_ERR_UNKNOWN: /* unknown error */
                 case PATH_ERR_PATH_IS_NULL: /* path is NULL (should never happen) */
-                case PATH_ERR_PATH_EMPTY: /* path is empty (should never happen) */
-                case PATH_ERR_MAX_PATH_LEN_0: /* max path length <= 0 (should never happen) */
-                case PATH_ERR_MAX_DEPTH_0: /* max depth <= 0 (should never happen) */
-                case PATH_ERR_MAX_NAME_LEN_0: /* max name length <= 0 (should never happen) */
-                    err(4, __func__, "%s: %s", ent->fts_path + 2, path_sanity_error(sanity));/*ooo*/
-                    not_reached();
-                    break;
                 case PATH_OK: /* sane relative path */
                     break;
                 default: /* should never be reached */
@@ -2857,7 +2847,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
  * the path to the Makefile as we must have it in the submission directory after
  * copy_topdir().
  * NOTE: a sane relative path is a path that does not start with a '/' (however,
- * see comment below about the function sane_relative_path()) and where each
+ * see comment below about the function canon_path()) and where each
  * component of the path (between the '/' or if no '/' found then the string
  * itself) matches the regexp: '^[0-9A-Za-z]+[0-9A-Za-z_+.-]*$' (w/o quotes). In
  * other words it is POSIX plus + safe only characters and not a dot file.
@@ -3094,14 +3084,11 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
             }
             /*
              * NOTE: when traversing the directory "." the filenames found under
-             * it will all start with "./" (as noted above). This is why the
-             * last arg to sane_relative_path() is true: it allows the first two
-             * characters to be "./" (this does NOT mean that ".//" is okay and
-             * it does NOT mean that "././" is okay) (although technically we
-             * could just do fts_path + 2 but the functionality was needed
-             * anyway).
+             * it will all start with "./" (as noted above).   However canon_path()
+	     * will ignore any such "./".
              */
-            sanity = sane_relative_path(ent->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH, true);
+	    (void) canon_path(ent->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
+			      &sanity, NULL, NULL, true, true, true);
             switch (sanity) {
                 case PATH_ERR_NAME_TOO_LONG: /* last component too long */
                     err(4, __func__, "%s: name too long: strlen(\"%s\"): %ju > %ju", ent->fts_name, ent->fts_name,/*ooo*/
@@ -3128,13 +3115,6 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
                     break;
                 case PATH_ERR_UNKNOWN: /* unknown error */
                 case PATH_ERR_PATH_IS_NULL: /* path is NULL (should never happen) */
-                case PATH_ERR_PATH_EMPTY: /* path is empty (should never happen) */
-                case PATH_ERR_MAX_PATH_LEN_0: /* max path length <= 0 (should never happen) */
-                case PATH_ERR_MAX_DEPTH_0: /* max depth <= 0 (should never happen) */
-                case PATH_ERR_MAX_NAME_LEN_0: /* max name length <= 0 (should never happen) */
-                    err(4, __func__, "%s: %s", ent->fts_path + 2, path_sanity_error(sanity));/*ooo*/
-                    not_reached();
-                    break;
                 case PATH_OK: /* sane relative path */
                     break;
                 default: /* should never be reached */

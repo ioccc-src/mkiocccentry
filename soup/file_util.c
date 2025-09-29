@@ -80,6 +80,40 @@
 #include "../jparse/util.h"
 
 /*
+ * report a path canonicalization error - used by canon_path()
+ *
+ * Set *sanity_p to path_err if sanity_p is non-NULL
+ * Set *len_p to path_len if path_len is non-NULL
+ * Set *depth_p to deep if path_len is non-NULL
+ * Free path if path is non-NULL
+ * Free array if array is non-NULL
+ */
+#define report_canon_err(path_err, sanity_p, len_p, depth_p, path, array) \
+    { \
+	if ((sanity_p) != NULL) { \
+	    *(enum path_sanity *)(sanity_p) = (enum path_sanity)(path_err); \
+	} \
+	if ((len_p) != NULL) { \
+	    *(uintmax_t *)(len_p) = path_len; \
+	} \
+	if ((depth_p) != NULL) { \
+	    *(uintmax_t *)(depth_p) = deep; \
+	} \
+	if ((array) != NULL) { \
+	    dyn_array_free(array); \
+	    (array) = NULL; \
+	} \
+	if ((path) != NULL) { \
+	    free(path); \
+	    (path) = NULL; \
+	} \
+    }
+
+
+#define PATH_INITIAL_SIZE (16)	/* initially allocate this many pointers */
+#define PATH_CHUNK_SIZE (8)	/* grow dynamic array by this many pointers at a time */
+
+/*
  * static functions
  */
 static enum file_type file_type(char const *path);
@@ -433,7 +467,7 @@ dir_name(char const *path, int level)
                 not_reached();
             }
 
-            dbg(DBG_VHIGH, "#4: dir_name(\"%s\", %d): %s", path, level, ret);
+            dbg(DBG_V1_HIGH, "#4: dir_name(\"%s\", %d): %s", path, level, ret);
             return ret;
         } else {
             /*
@@ -443,7 +477,7 @@ dir_name(char const *path, int level)
                 free(ret);
                 ret = NULL;
             }
-            dbg(DBG_VHIGH, "#5: dir_name(\"%s\", %d): %s", path, level, copy);
+            dbg(DBG_V1_HIGH, "#5: dir_name(\"%s\", %d): %s", path, level, copy);
             return copy;
         }
     }
@@ -553,7 +587,7 @@ count_comps(char const *str, char comp, bool remove_all)
 	not_reached();
     }
 
-    dbg(DBG_VVVHIGH, "#0: count_comps(\"%s\", %c, \"%s\")", str, comp, booltostr(remove_all));
+    dbg(DBG_V3_HIGH, "#0: count_comps(\"%s\", %c, \"%s\")", str, comp, booltostr(remove_all));
 
     /*
      * case: empty string is 0
@@ -569,7 +603,7 @@ count_comps(char const *str, char comp, bool remove_all)
      * remove any multiple trailing delimiter chars except the last one
      */
     if (remove_all) {
-	dbg(DBG_VHIGH, "#2: string before removing any multiple trailing delimiter chars '%c's: %s", comp, copy);
+	dbg(DBG_V1_HIGH, "#2: string before removing any multiple trailing delimiter chars '%c's: %s", comp, copy);
         for (i = len - 1; i > 0; --i) {
             if (copy[i] == comp) {
                 if (i > 0 && copy[i-1] != comp) {
@@ -604,7 +638,7 @@ count_comps(char const *str, char comp, bool remove_all)
         /*
          * string is empty
          */
-	dbg(DBG_VHIGH, "#5: count_comps(\"%s\", '%c', \"%s\") == 0", str, comp, booltostr(remove_all));
+	dbg(DBG_V1_HIGH, "#5: count_comps(\"%s\", '%c', \"%s\") == 0", str, comp, booltostr(remove_all));
         if (copy != NULL) {
             free(copy);
             copy = NULL;
@@ -628,7 +662,7 @@ count_comps(char const *str, char comp, bool remove_all)
              * We know this because we have removed all successive component chars
              * at the end of the string.
              */
-            dbg(DBG_VHIGH, "#6: count_comps(\"%s\", '%c', \"%s\") == 1", str, comp, booltostr(remove_all));
+            dbg(DBG_V1_HIGH, "#6: count_comps(\"%s\", '%c', \"%s\") == 1", str, comp, booltostr(remove_all));
             return 1;
         } else {
             /*
@@ -759,7 +793,7 @@ exists(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
     return true;
 }
 
@@ -920,7 +954,7 @@ is_mode(char const *path, mode_t mode)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
     switch (file_type(path)) {
         case FILE_TYPE_ERR:
@@ -957,7 +991,7 @@ is_mode(char const *path, mode_t mode)
         return false;
     }
 
-    dbg(DBG_VHIGH, "path %s mode is %o", path, mode);
+    dbg(DBG_V1_HIGH, "path %s mode is %o", path, mode);
 
     return true;
 }
@@ -1002,7 +1036,7 @@ has_mode(char const *path, mode_t mode)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
     if (buf.st_mode & mode) {
         dbg(DBG_HIGH, "path %s mode %o has %o set: %o & %o == %o", path, buf.st_mode, mode,
@@ -1010,7 +1044,7 @@ has_mode(char const *path, mode_t mode)
         return true;
     }
 
-    dbg(DBG_VHIGH, "path %s mode %o does not have %o set: %o & %o == %o", path, buf.st_mode,
+    dbg(DBG_V1_HIGH, "path %s mode %o does not have %o set: %o & %o == %o", path, buf.st_mode,
             mode, buf.st_mode, mode, buf.st_mode & mode);
 
     return false;
@@ -1052,7 +1086,7 @@ is_file(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
     /*
      * test if path is a regular file
@@ -1061,7 +1095,7 @@ is_file(char const *path)
 	dbg(DBG_HIGH, "path %s is not a regular file", path);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s is a regular file", path);
+    dbg(DBG_V1_HIGH, "path %s is a regular file", path);
     return true;
 }
 
@@ -1101,7 +1135,7 @@ is_dir(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
     /*
      * test if path is a regular directory
@@ -1110,7 +1144,7 @@ is_dir(char const *path)
 	dbg(DBG_HIGH, "path %s is not a directory", path);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s is a directory", path);
+    dbg(DBG_V1_HIGH, "path %s is a directory", path);
     return true;
 }
 
@@ -1150,7 +1184,7 @@ is_symlink(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
     /*
      * test if path is a symlink
@@ -1159,7 +1193,7 @@ is_symlink(char const *path)
 	dbg(DBG_HIGH, "path %s is not a symlink", path);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s is a symlink", path);
+    dbg(DBG_V1_HIGH, "path %s is a symlink", path);
     return true;
 }
 
@@ -1199,7 +1233,7 @@ is_socket(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
     /*
      * test if path is a socket
@@ -1208,7 +1242,7 @@ is_socket(char const *path)
 	dbg(DBG_HIGH, "path %s is not a socket", path);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s is a socket", path);
+    dbg(DBG_V1_HIGH, "path %s is a socket", path);
     return true;
 }
 
@@ -1247,7 +1281,7 @@ is_chardev(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
     /*
      * test if path is a character device
@@ -1256,7 +1290,7 @@ is_chardev(char const *path)
 	dbg(DBG_HIGH, "path %s is not a character device", path);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s is a character device", path);
+    dbg(DBG_V1_HIGH, "path %s is a character device", path);
     return true;
 }
 
@@ -1296,7 +1330,7 @@ is_blockdev(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
     /*
      * test if path is a block device
@@ -1305,7 +1339,7 @@ is_blockdev(char const *path)
 	dbg(DBG_HIGH, "path %s is not a block device", path);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s is a block device", path);
+    dbg(DBG_V1_HIGH, "path %s is a block device", path);
     return true;
 }
 
@@ -1345,7 +1379,7 @@ is_fifo(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
     /*
      * test if path is a FIFO
@@ -1354,7 +1388,7 @@ is_fifo(char const *path)
 	dbg(DBG_HIGH, "path %s is not a FIFO", path);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s is a FIFO", path);
+    dbg(DBG_V1_HIGH, "path %s is a FIFO", path);
     return true;
 }
 
@@ -1395,9 +1429,9 @@ is_exec(char const *path)
 	return false;
     }
     if (S_ISDIR(buf.st_mode)) {
-	dbg(DBG_VHIGH, "path is a directory: %s size: %jd", path, (intmax_t)buf.st_size);
+	dbg(DBG_V1_HIGH, "path is a directory: %s size: %jd", path, (intmax_t)buf.st_size);
     } else {
-	dbg(DBG_VHIGH, "path is a file: %s size: %jd", path, (intmax_t)buf.st_size);
+	dbg(DBG_V1_HIGH, "path is a file: %s size: %jd", path, (intmax_t)buf.st_size);
     }
 
     /*
@@ -1413,9 +1447,9 @@ is_exec(char const *path)
 	return false;
     }
     if (S_ISDIR(buf.st_mode)) {
-	dbg(DBG_VHIGH, "path %s is searchable", path);
+	dbg(DBG_V1_HIGH, "path %s is searchable", path);
     } else {
-	dbg(DBG_VHIGH, "path %s is executable", path);
+	dbg(DBG_V1_HIGH, "path %s is executable", path);
     }
     return true;
 }
@@ -1457,7 +1491,7 @@ is_read(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
     /*
      * test if we are allowed to execute it
@@ -1467,7 +1501,7 @@ is_read(char const *path)
 	dbg(DBG_HIGH, "path %s is not readable", path);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s is readable", path);
+    dbg(DBG_V1_HIGH, "path %s is readable", path);
     return true;
 }
 
@@ -1508,7 +1542,7 @@ is_write(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
 
     /*
      * test if we are allowed to execute it
@@ -1518,7 +1552,7 @@ is_write(char const *path)
 	dbg(DBG_HIGH, "path %s is not writable", path);
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s is writable", path);
+    dbg(DBG_V1_HIGH, "path %s is writable", path);
     return true;
 }
 
@@ -1609,7 +1643,7 @@ filemode(char const *path, bool printing)
         }
     }
 
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
     dbg(DBG_HIGH, "path %s is mode %o (printing: %s)", path, st_mode, booltostr(printing));
     return st_mode;
 }
@@ -3095,13 +3129,13 @@ find_path(char const *path, char *dir, int dirfd, int *cwd, bool abspath, struct
         not_reached();
     }
 
-    dbg(DBG_VHIGH, "FTS_LOGICAL: %s", booltostr(fts->logical));
-    dbg(DBG_VHIGH, "basename search: %s", booltostr(fts->base));
-    dbg(DBG_VHIGH, "FTS_SEEDOT: %s", booltostr(fts->seedot));
-    dbg(DBG_VHIGH, "case-sensitive: %s", booltostr(fts->match_case));
-    dbg(DBG_VHIGH, "depth: %d", fts->depth);
-    dbg(DBG_VHIGH, "count: %d", fts->count);
-    dbg(DBG_VHIGH, "absolute path: %s", booltostr(abspath));
+    dbg(DBG_V1_HIGH, "FTS_LOGICAL: %s", booltostr(fts->logical));
+    dbg(DBG_V1_HIGH, "basename search: %s", booltostr(fts->base));
+    dbg(DBG_V1_HIGH, "FTS_SEEDOT: %s", booltostr(fts->seedot));
+    dbg(DBG_V1_HIGH, "case-sensitive: %s", booltostr(fts->match_case));
+    dbg(DBG_V1_HIGH, "depth: %d", fts->depth);
+    dbg(DBG_V1_HIGH, "count: %d", fts->count);
+    dbg(DBG_V1_HIGH, "absolute path: %s", booltostr(abspath));
 
 
     /*
@@ -3365,13 +3399,13 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath
     }
 
 
-    dbg(DBG_VHIGH, "FTS_LOGICAL: %s", booltostr(fts->logical));
-    dbg(DBG_VHIGH, "basename search: %s", booltostr(fts->base));
-    dbg(DBG_VHIGH, "FTS_SEEDOT: %s", booltostr(fts->seedot));
-    dbg(DBG_VHIGH, "case-sensitive: %s", booltostr(fts->match_case));
-    dbg(DBG_VHIGH, "depth: %d", fts->depth);
-    dbg(DBG_VHIGH, "count: %d", fts->count);
-    dbg(DBG_VHIGH, "absolute path: %s", booltostr(abspath));
+    dbg(DBG_V1_HIGH, "FTS_LOGICAL: %s", booltostr(fts->logical));
+    dbg(DBG_V1_HIGH, "basename search: %s", booltostr(fts->base));
+    dbg(DBG_V1_HIGH, "FTS_SEEDOT: %s", booltostr(fts->seedot));
+    dbg(DBG_V1_HIGH, "case-sensitive: %s", booltostr(fts->match_case));
+    dbg(DBG_V1_HIGH, "depth: %d", fts->depth);
+    dbg(DBG_V1_HIGH, "count: %d", fts->count);
+    dbg(DBG_V1_HIGH, "absolute path: %s", booltostr(abspath));
 
     /*
      * first open the stream and get the first entry
@@ -3635,7 +3669,7 @@ file_size(char const *path)
     /*
      * return file size
      */
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
     return buf.st_size;
 }
 
@@ -3675,7 +3709,7 @@ size_if_file(char const *path)
     ret = stat(path, &buf);
     if (ret < 0) {
 	/* non-existent paths are treated as 0 length */
-	dbg(DBG_VHIGH, "non-existent path, return path %s size: 0", path);
+	dbg(DBG_V1_HIGH, "non-existent path, return path %s size: 0", path);
 	return 0;
     }
 
@@ -3684,7 +3718,7 @@ size_if_file(char const *path)
      */
     if (!S_ISREG(buf.st_mode)) {
 	/* non-regular file are treated as 0 length */
-	dbg(DBG_VHIGH, "not a regular file, return path %s size: 0", path);
+	dbg(DBG_V1_HIGH, "not a regular file, return path %s size: 0", path);
 	return 0;
     }
 
@@ -3727,17 +3761,17 @@ is_empty(char const *path)
     size = file_size(path);
 
     if (size < 0) {
-        dbg(DBG_VHIGH, "path %s does not exist", path);
+        dbg(DBG_V1_HIGH, "path %s does not exist", path);
         return true;
     } else if (size == 0) {
-        dbg(DBG_VHIGH, "path %s is empty", path);
+        dbg(DBG_V1_HIGH, "path %s is empty", path);
         return true;
     }
 
     /*
      * return not empty
      */
-    dbg(DBG_VHIGH, "path %s is not empty, size: %jd", path, (intmax_t)size);
+    dbg(DBG_V1_HIGH, "path %s is not empty, size: %jd", path, (intmax_t)size);
     return false;
 }
 
@@ -4433,7 +4467,7 @@ mkdirs(int dirfd, const char *str, mode_t mode)
         not_reached();
     }
 
-    dbg(DBG_VVVHIGH, "%s: making directories: \"%s\"", __func__, dup);
+    dbg(DBG_V3_HIGH, "%s: making directories: \"%s\"", __func__, dup);
 
     /*
      * note the current directory so we can restore it later, after we're done
@@ -4613,478 +4647,6 @@ mkdirs(int dirfd, const char *str, mode_t mode)
 
 
 /*
- * sane_relative_path - test if each component if a path is posix plus safe
- *
- * for each component of the relative path, we determine if each
- * component of a relative path is safe via:
- *
- *	safe_path_str(str, false, false)
- *
- * in other words, each component matches:
- *
- *	^[0-9A-Za-z._][0-9A-Za-z._+-]*$
- *
- * By relative we mean that the path cannot start with a '/'.
- *
- * If ignore_leading_dot_slash is true and the string starts with one or more  "./" we
- * have to skip such pairs of characters. Only after this can we check for an absolute
- * path and the length.  If there are multiple "/"'s after, such as ".//",
- * we also remove those "/"'s.
- *
- * An empty path, or a path consisting of one or more "./"'s (followed by zero of more /"'s)
- * is treated as just ".".
- *
- * given:
- *	str			    - string to test
- *      max_path_len		    - max path length (length of str)
- *	max_filename_len	    - max length of each component of path
- *      max_depth		    - max depth of subdirectory tree
- *      ignore_leading_dot_slash    - true ==> ignore all leading "./"'s (or ".//"'s, etc.)
- *				      false ==> leading "./"'s (or ".//"'s, etc.) count for depth
- *
- * returns:
- *      if a relative sane path: PATH_OK, otherwise another one of the enum
- *      path_sanity depending on what went wrong (see below for a table).
- *
- * NOTE: If str is NULL we return PATH_ERR_PATH_IS_NULL rather than
- *	 make it an actual error that terminates the program.
- *
- * NOTE: Depth is defined in the same way as the find(1) tool. For instance,
- *       given the below directory tree:
- *
- *      foo/bar/baz/zab/rab/oof
- *
- * the directory names and depths are as follows:
- *
- *      depth                   path
- *      -----                   ----
- *      0                       .
- *      1                       ./foo
- *      2                       ./foo/bar
- *      3                       ./foo/bar/baz
- *      4                       ./foo/bar/baz/zab
- *      5                       ./foo/bar/baz/zab/rab
- *      6                       ./foo/bar/baz/zab/rab/oof
- *
- * The following table shows the error conditions and the respective enum
- * path_sanity value:
- *
- *      condition                       path_sanity enum value
- *
- *      relative, sane                  PATH_OK
- *      str == NULL                     PATH_ERR_PATH_IS_NULL
- *      empty path (str)		PATH_ERR_PATH_EMPTY
- *      path starts with '/'            PATH_ERR_NOT_RELATIVE
- *      max_depth <= 0                  PATH_ERR_DEPTH_0
- *      max_path_len <= 0               PATH_ERR_PATH_LEN_0
- *      path (str) too long             PATH_ERR_PATH_TOO_LONG
- *      path component name too long    PATH_ERR_NAME_TOO_LONG
- *      max_filename_len <= 0           PATH_ERR_MAX_NAME_LEN_0
- *      depth > max_depth               PATH_ERR_PATH_TOO_DEEP
- *      path component not sane         PATH_ERR_NOT_POSIX_SAFE
- *      path component is '..' (dotdot)	PATH_ERR_DOTODT
- *
- * NOTE: We MUST use strdup() on the string because we need to use strtok_r() to
- *	 extract the '/'s in the string. This strdup()d char * will be freed prior to
- *	 calling, unless an error occurs.
- */
-enum path_sanity
-sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filename_len,
-        uintmax_t max_depth, bool ignore_leading_dot_slash)
-{
-    size_t len;		    /* length of str */
-    size_t n;
-    uintmax_t depth = 1;    /* to check max depth */
-    char *p = NULL;         /* first '/' */
-    char *saveptr = NULL;   /* for strtok_r() */
-    char *dup = NULL;       /* we need to strdup() the string */
-    bool sane = true;       /* assume path is sane */
-
-    /*
-     * firewall
-     */
-    /*
-     * the path string (str) must not be NULL
-     *
-     * NOTE: we check for length 0 later down below as we have to first check if
-     * the first two characters need to be skipped (if ignore_leading_dot_slash is true
-     * AND the first two characters are "./").
-     */
-    if (str == NULL) {
-	dbg(DBG_VVHIGH, "%s: str is NULL", __func__);
-
-        return PATH_ERR_PATH_IS_NULL;
-    }
-
-    /*
-     * if the max path length <= 0 we can't do anything else
-     */
-    if (max_path_len <= (uintmax_t)0) {
-        dbg(DBG_VVHIGH, "%s: max_path_len %ju <= 0", __func__, max_path_len);
-
-        return PATH_ERR_MAX_PATH_LEN_0;
-    }
-
-    /*
-     * if the max filename length <= 0 we can't do anything else
-     */
-    if (max_filename_len <= (uintmax_t)0) {
-        dbg(DBG_VVHIGH, "%s: max_filename_len %ju <= 0", __func__, max_filename_len);
-
-        return PATH_ERR_MAX_NAME_LEN_0;
-    }
-
-    /*
-     * if the max depth is <= 0 there's nothing we can do
-     */
-    if (max_depth <= (uintmax_t)0) {
-        dbg(DBG_VVHIGH, "%s: max depth %ju <= 0", __func__, (uintmax_t)max_depth);
-        return PATH_ERR_MAX_DEPTH_0;
-    }
-
-    /*
-     * debug output max values
-     */
-    dbg(DBG_VVVHIGH, "%s: max_filename_len: %ju", __func__, (uintmax_t)max_filename_len);
-    dbg(DBG_VVVHIGH, "%s: max_depth: %ju", __func__, (uintmax_t)max_depth);
-    dbg(DBG_VVVHIGH, "%s: max_path_len: %ju", __func__, (uintmax_t)max_path_len);
-    dbg(DBG_VVVHIGH, "%s: ignore_leading_dot_slash: %s", __func__, booltostr(ignore_leading_dot_slash));
-
-    /*
-     * If ignore_leading_dot_slash is true and the string starts with one or more "./" we
-     * have to skip such pairs of characters. Only after this can we check for an absolute
-     * path and the length.  If there are multiple "/"'s after, such as ".//",
-     * we also remove those "/"'s.
-     */
-    if (ignore_leading_dot_slash) {
-	while (str[0] == '.' && str[1] == '/') {
-	    str += 2;
-	    while (str[0] == '/') {
-		/*  "/"'s after a "./" are also removed */
-		++str;
-	    }
-	}
-    }
-
-    /*
-     * If multiple leading "/"'s, convert to just a leading "/".
-     */
-    while (str[0] == '/' && str[1] == '/') {
-	++str;
-    }
-
-    /*
-     * Prepare to remove trailing "/", unless the path is just a single character
-     */
-    len = strlen(str);
-    while (len > 1 && str[len-1] == '/') {
-	/* we will remove trailing "/" later in the duplicated string */
-	--len;
-    }
-
-    /*
-     * determine if the path is absolute
-     *
-     * NOTE: An absolute path is a path that starts with "/".
-     *
-     * XXX - add flag to allow for absolute paths
-     */
-    if (*str == '/') {
-        dbg(DBG_VVVVVHIGH, "%s: \"%s\" first char is '/'", __func__, str);
-        dbg(DBG_VVVHIGH, "\"%s\" is not a relative path", str);
-
-        return PATH_ERR_NOT_RELATIVE;
-    }
-
-    /*
-     * case: empty path
-     */
-    if (len <= 0) {
-
-	dbg(DBG_VVHIGH, "%s: str is an empty string", __func__);
-	return PATH_ERR_PATH_EMPTY;
-
-    /*
-     * case: length of path too long
-     */
-    } else if (len > max_path_len) {
-
-	dbg(DBG_VVVVHIGH, "%s: \"%s\" length %ju > max %ju", __func__, str, len, max_path_len);
-        dbg(DBG_VVVHIGH, "\"%s\" is not a relative, sane path", str);
-        return PATH_ERR_PATH_TOO_LONG;
-
-    /*
-     * Before we can do anything else, we have to duplicate the string. If
-     * this fails, it is an error because we can't do anything more.
-     *
-     * NOTE: as this will terminate the program we do not need an error code in
-     * the path_sanity enum.
-     */
-    } else {
-
-	/*
-	 * We only duplicate the first len chars, which may be shorted
-	 * than the length of the original str if, for example, we
-	 * removed trailing "/"s, or for example, we skipped over
-	 * leading "./"s with optional "/"s that follow.
-	 */
-	errno = 0; /* pre-clear errno for errp() */
-	dup = strndup(str, len);
-	if (dup == NULL) {
-	    errp(198, __func__, "duplicating \"%s\" failed", str);
-	    not_reached();
-	}
-    }
-
-    /*
-     * show the string we're checking, if debug level high enough
-     */
-    dbg(DBG_VVVHIGH, "%s: parsing string: \"%s\"", __func__, dup);
-
-    /*
-     * If we get here we KNOW it's a relative path so we must extract each
-     * component and use safe_path_str(dup, true, false) as well as
-     * run checks on the depth (as each path component is extracted) and the
-     * length of each component itself, with the max_depth and max_filename_len
-     * parameters.
-     */
-
-    /*
-     * ensure depth is set to 1 first
-     */
-    depth = 1;
-
-    /*
-     * We already know it's a relative path so we can begin parsing the string.
-     */
-    p = strtok_r(dup, "/", &saveptr);
-    if (p == NULL) {
-
-        /*
-         * In the case of no '/' found at all, the initial string is tested by itself.
-         *
-         * NOTE: we do not need to check the depth here because we KNOW the max_depth is >= 1!
-         */
-        dbg(DBG_VVVHIGH, "%s: \"%s\" has no '/'", __func__, dup);
-
-        /*
-         * obtain length of the entire path as we have no '/'.
-         */
-        n = strlen(dup);
-        dbg(DBG_VVVHIGH, "%s: \"%s\" length %ju", __func__, dup, (uintmax_t)n);
-
-        /*
-         * Here we have to verify that the path is not longer than the max filename
-         * length, whereas if there is a '/' we check this against each
-         * component. This check mean that even if the total length of the
-         * path is not too long, if passed an invalid max filename length, the
-         * check here could end up declaring the path is not a sane relative
-         * path.
-         */
-        if (n > max_filename_len) {
-
-	    /*
-	     * path is too long
-	     */
-            dbg(DBG_VVVVHIGH, "%s: \"%s\" length %ju > max %ju", __func__, dup, (uintmax_t)n, (uintmax_t)max_filename_len);
-            return PATH_ERR_NAME_TOO_LONG;
-
-        } else {
-
-	    /*
-	     * firewall - disallow ".." (dotdot)
-	     *
-	     * We treat ".." (dotdot) as an error, in part because such a path could allow a reference
-	     * of something beyond the top level directory, and in part because it overly complicates
-	     * path depth checking.
-	     */
-            dbg(DBG_VVVVHIGH, "%s: \"%s\" length %ju <= max %ju", __func__, dup, (uintmax_t)n, (uintmax_t)max_filename_len);
-	    if (strcmp(dup, "..") == 0) {
-                dbg(DBG_VVVHIGH, "%s: \"%s\" is is dotdot", __func__, dup);
-		return PATH_ERR_DOTODT;
-	    }
-
-            /*
-             * we know that the filename length (in this case the entire path)
-             * is not too long but we still have to check for POSIX plus safe
-             * chars on the entire string (instead of a component).
-             */
-            dbg(DBG_VVVHIGH, "%s: about to call: safe_path_str(\"%s\", true, false)", __func__, dup);
-	    sane = safe_path_str(dup, true, false); /* ^[0-9A-Za-z._][0-9A-Za-z._+-]*$ */
-            if (sane != PATH_OK) {
-                dbg(DBG_VVVHIGH, "%s: \"%s\" is not POSIX plus + safe chars", __func__, dup);
-                return PATH_ERR_NOT_POSIX_SAFE;
-            } else {
-                dbg(DBG_VVVHIGH, "%s: \"%s\" is POSIX plus + safe chars", __func__, dup);
-            }
-        }
-
-    } else {
-
-        /*
-         * here we actually have at least one '/' so the checks above are done
-         * for each component, rather than the entire path in str.
-         */
-        dbg(DBG_VVVVHIGH, "%s: testing first component \"%s\"", __func__, p);
-
-        /*
-         * like for the check when there is no '/' we need to check the filename
-         * length, except that the filename is the component (which might be a
-         * subdirectory name).
-         */
-        n = strlen(p);
-        dbg(DBG_VVVHIGH, "%s: first component \"%s\" length %ju", __func__, p, (uintmax_t)n);
-        if (n > max_filename_len) {
-
-            /*
-             * if the first component is too long we won't bother with the rest of them
-             */
-            dbg(DBG_VVVVHIGH, "%s: first component \"%s\" length %ju > max %ju", __func__, p, (uintmax_t)n,
-                    (uintmax_t)max_filename_len);
-
-            return PATH_ERR_NAME_TOO_LONG;
-
-        } else {
-
-            /*
-             * we first report, if debug level is high enough, that the first
-             * component length is not too long according to max_filename_len.
-             */
-            dbg(DBG_VVVVHIGH, "%s: first component \"%s\" length %ju <= max %ju", __func__, p, n, max_filename_len);
-
-	    /*
-	     * firewall - disallow ".." (dotdot)
-	     *
-	     * We treat ".." (dotdot) as an error, in part because such a path could allow a reference
-	     * of something beyond the top level directory, and in part because it overly complicates
-	     * path depth checking.
-	     */
-	    if (strcmp(p, "..") == 0) {
-                dbg(DBG_VVVHIGH, "%s: \"%s\" is is dotdot", __func__, dup);
-		return PATH_ERR_DOTODT;
-	    }
-
-            /*
-             * before we check for further components we have to verify that the
-             * first component (before the first '/') is POSIX plus + safe
-             * chars.
-	     *
-             * also report, if debug level high enough, that we're about to test
-             * the POSIX plus + safe chars on the first component.
-             */
-            dbg(DBG_VVVHIGH, "%s: about to call: safe_path_str(\"%s\", true, false)", __func__, dup);
-	    sane = safe_path_str(dup, true, false); /* ^[0-9A-Za-z._][0-9A-Za-z._+-]*$ */
-
-            /*
-             * if the first component is sane (safe), we have to check any
-             * additional components for sanity (safety), doing the same steps
-             * as above.
-             */
-            if (sane != PATH_ERR_UNKNOWN) {
-
-                /*
-                 * here we extract the remaining components of the path (after
-                 * the first '/'), by looking for the next path separator
-                 */
-                for (p = strtok_r(NULL, "/", &saveptr), ++depth; p != NULL && sane; p = strtok_r(NULL, "/", &saveptr), ++depth) {
-
-                    /*
-                     * show additional debug information here as here we have to
-                     * check depths too
-                     */
-                    dbg(DBG_VVVHIGH, "%s: testing component \"%s\" (depth %ju)", __func__, p, (uintmax_t)depth);
-
-		    /*
-		     * firewall - disallow ".." (dotdot)
-		     *
-		     * We treat ".." (dotdot) as an error, in part because such a path could allow a reference
-		     * of something beyond the top level directory, and in part because it overly complicates
-		     * path depth checking.
-		     */
-		    if (strcmp(p, "..") == 0) {
-			dbg(DBG_VVVHIGH, "%s: \"%s\" is is dotdot", __func__, dup);
-			return PATH_ERR_DOTODT;
-		    }
-
-                    /*
-                     * Before we can do anything else we have to check the depth
-                     */
-                    if (depth > max_depth) {
-                        /*
-                         * if we have gone beyond the max depth, we won't bother
-                         * to continue so just report it (if verbosity level
-                         * high enough), flag the path as not sane and break out
-                         * of the loop (return the error code).
-                         */
-                        dbg(DBG_VVVHIGH, "%s: depth %ju > max depth %ju", __func__, (uintmax_t)depth, (uintmax_t)max_depth);
-
-                        return PATH_ERR_PATH_TOO_DEEP;
-                    } else {
-                        dbg(DBG_VVVVHIGH, "%s: depth %ju <= max depth %ju", __func__, (uintmax_t)depth, (uintmax_t)max_depth);
-                    }
-
-                    /*
-                     * whereas earlier in this function we checked the full
-                     * string (as there was no '/') here we check just this
-                     * component, just like the first component before this loop
-                     */
-                    n = strlen(p);
-                    if (n > max_filename_len) {
-                        dbg(DBG_VVVVHIGH, "%s: component \"%s\" length %ju > max %ju", __func__, p, (uintmax_t)n,
-                                (uintmax_t)max_filename_len);
-
-                        return PATH_ERR_NAME_TOO_LONG;
-                    } else {
-                        dbg(DBG_VVVVHIGH, "%s: component \"%s\" length %ju <= max %ju", __func__, p, (uintmax_t)n,
-                                (uintmax_t)max_filename_len);
-                    }
-
-                    /*
-                     * as long as the depth is not > the max depth and the
-                     * current component length is not > the max length, we can
-                     * do the POSIX plus + safe chars checks
-                     */
-		    dbg(DBG_VVVHIGH, "%s: about to call: safe_path_str(\"%s\", true, false)", __func__, dup);
-		    sane = safe_path_str(dup, true, false); /* ^[0-9A-Za-z._][0-9A-Za-z._+-]*$ */
-                    if (sane == PATH_OK) {
-                        dbg(DBG_VVVHIGH, "%s: component \"%s\" is POSIX plus + safe chars", __func__, p);
-                    } else {
-                        dbg(DBG_VVVHIGH, "%s: component \"%s\" is not POSIX plus + safe chars", __func__, p);
-
-                        return PATH_ERR_NOT_POSIX_SAFE;
-                    }
-                }
-            } else {
-
-                /*
-                 * when we get here, the first component is not safe so we don't
-                 * do anything else but report, if verbosity level high enough,
-                 * that the component is not POSIX plus safe, and then return
-                 * that it's not safe.
-                 */
-                dbg(DBG_VVVHIGH, "%s: component \"%s\" is not POSIX plus + safe chars", __func__, p);
-                return PATH_ERR_NOT_POSIX_SAFE;
-            }
-        }
-    }
-
-    /*
-     * free dup, if not NULL (and it never should be)
-     */
-    if (dup != NULL) {
-        free(dup);
-        dup = NULL;
-    }
-
-    /*
-     * return that the path is POSIX plus + safe chars only
-     */
-    dbg(DBG_VVVHIGH, "%s is a relative, sane path", str);
-    return PATH_OK;
-}
-
-
-/*
  * path_sanity_name
  *
  * Returns read-only string representation of path sanity enum value.
@@ -5110,20 +4672,11 @@ path_sanity_name(enum path_sanity sanity)
         case PATH_ERR_PATH_TOO_LONG:
             str = "PATH_ERR_PATH_TOO_LONG";
             break;
-        case PATH_ERR_MAX_PATH_LEN_0:
-            str = "PATH_ERR_MAX_PATH_LEN_0";
-            break;
-        case PATH_ERR_MAX_DEPTH_0:
-            str = "PATH_ERR_MAX_DEPTH_0";
-            break;
         case PATH_ERR_NOT_RELATIVE:
             str = "PATH_ERR_NOT_RELATIVE";
             break;
         case PATH_ERR_NAME_TOO_LONG:
             str = "PATH_ERR_NAME_TOO_LONG";
-            break;
-        case PATH_ERR_MAX_NAME_LEN_0:
-            str = "PATH_ERR_MAX_NAME_LEN_0";
             break;
         case PATH_ERR_PATH_TOO_DEEP:
             str = "PATH_ERR_PATH_TOO_DEEP";
@@ -5131,8 +4684,17 @@ path_sanity_name(enum path_sanity sanity)
         case PATH_ERR_NOT_POSIX_SAFE:
             str = "PATH_ERR_NOT_POSIX_SAFE";
             break;
-        case PATH_ERR_DOTODT:
-            str = "PATH_ERR_DOTODT";
+        case PATH_ERR_DOTDOT_OVER_TOPDIR:
+            str = "PATH_ERR_DOTDOT_OVER_TOPDIR";
+            break;
+        case PATH_ERR_MALLOC:
+            str = "PATH_ERR_MALLOC";
+            break;
+        case PATH_ERR_NULL_COMPONENT:
+            str = "PATH_ERR_NULL_COMPONENT";
+            break;
+        case PATH_ERR_WRONG_LEN:
+            str = "PATH_ERR_WRONG_LEN";
             break;
         default:
         case PATH_ERR_UNKNOWN:
@@ -5159,22 +4721,16 @@ path_sanity_error(enum path_sanity sanity)
 
     switch (sanity) {
         case PATH_OK:
-            str = "path is a sane relative path";
+            str = "path is a sane path";
             break;
         case PATH_ERR_PATH_IS_NULL:
             str = "path string is NULL";
             break;
         case PATH_ERR_PATH_EMPTY:
-            str = "path string is empty";
+            str = "path string length <= 0";
             break;
         case PATH_ERR_PATH_TOO_LONG:
             str = "path string length > max path length";
-            break;
-        case PATH_ERR_MAX_PATH_LEN_0:
-            str = "max path length <= 0";
-            break;
-        case PATH_ERR_MAX_DEPTH_0:
-            str = "max path depth <= 0";
             break;
         case PATH_ERR_NOT_RELATIVE:
             str = "path not a relative path";
@@ -5182,17 +4738,23 @@ path_sanity_error(enum path_sanity sanity)
         case PATH_ERR_NAME_TOO_LONG:
             str = "a path component > max filename length";
             break;
-        case PATH_ERR_MAX_NAME_LEN_0:
-            str = "max filename length is <= 0";
-            break;
         case PATH_ERR_PATH_TOO_DEEP:
             str = "depth > max depth";
             break;
         case PATH_ERR_NOT_POSIX_SAFE:
-            str = "path component invalid";
+            str = "path component unsafe";
             break;
-        case PATH_ERR_DOTODT:
-            str = "path component is ..";
+        case PATH_ERR_DOTDOT_OVER_TOPDIR:
+            str = "'..' (dotdot) path component moved above topdir";
+            break;
+        case PATH_ERR_MALLOC:
+            str = "malloc related failure during path processing";
+            break;
+        case PATH_ERR_NULL_COMPONENT:
+            str = "component on path stack is NULL";
+            break;
+        case PATH_ERR_WRONG_LEN:
+            str = "constructed canonical path has the wrong length";
             break;
         default:
             str = "invalid path_sanity value";
@@ -5203,77 +4765,476 @@ path_sanity_error(enum path_sanity sanity)
 }
 
 
-#if 0 /* XXX - under development - XXX */
 /*
  * canon_path - canonicalize a path
  *
  * given:
  *	orig_path	    - path to canonicalize
- *      max_path_len        - max path length (length of str)
- *	max_filename_len    - max length of each component of path
- *      max_depth           - max depth of subdirectory tree
+ *      max_path_len        - max canonicalized path length, 0 ==> no limit
+ *	max_filename_len    - max length of each component of path, 0 ==> no limit
+ *      max_depth           - max depth of subdirectory tree, 0 ==> no limit
+ *      sanity_p	    - NULL ==> don't save canon_path path_sanity error, or PATH_OK
+ *			      != NULL ==> save enum path_sanity in *sanity_p
+ *      len_p		    - NULL ==> don't save canonical path length,
+ *		              != NULL ==> save canonical path length in *len_p
+ *      depth_p		    - NULL ==> don't save canonical depth,
+ *			      != NULL ==> record canonical depth in *depth_p
+ *      rel_only	    - true ==> path from "/" (slash) NOT allowed, path depth counted from implied "." (dot)
+ *			      false ==> path from "/" (slash) allowed, path depth counted from /
+ *	any_case	    - true ==> don't change path case
+ *			      false ==> convert UPPER CASE to lower case during canonicalization
+ *	safe_chk	    - true ==> test each canonical path component using safe_path_str(str, any_case, false)
+ *			      false ==> do not perform path safety tests on the path
+ *
+ * Examples of path depths are as follows:
+ *
+ *      depth                   path
+ *      -----                   ----
+ *      0                       .
+ *      0                       /
+ *      0                       foo/..
+ *
+ *      1                       /foo
+ *      1                       ./foo
+ *      1                       foo
+ *
+ *      2                       /foo/bar
+ *      2                       ./foo/bar
+ *      2                       foo/bar
+ *
+ *      2                       foo/bar/../baz
+ *      2                       ./foo/bar/curds/../../baz
+ *      2                       /foo/bar/baz/..
+ *
+ *      3                       /foo/bar/baz
+ *      3                       ./foo/bar/baz
+ *      3                       foo/bar/baz
+ *
+ *      4                       /foo/bar/baz/zab
+ *      4                       ./foo/bar/baz/zab
+ *      4                       foo/bar/baz/zab
+ *
+ *      5                       /foo/bar/baz/zab/rab
+ *      5                       ./foo/bar/baz/zab/rab
+ *      5                       foo/bar/baz/zab/rab
  *
  * returns:
- *	NULL ==> sane_relative_path() failed, internal error, or NULL pointer used
- *	!= NULL ==> malloced path that has been canonicalized, AND
- *		    passes the sane_relative_path() tests.
+ *	NULL ==> invalid path, internal error, or NULL pointer used
+ *	!= NULL ==> malloced path that has been canonicalized
  */
 char *
-canon_path(char const *orig_path, uintmax_t max_path_len, uintmax_t max_filename_len, uintmax_t max_depth)
+canon_path(char const *orig_path, uintmax_t max_path_len, uintmax_t max_filename_len, uintmax_t max_depth,
+	   enum path_sanity *sanity_p, uintmax_t *len_p, uintmax_t *depth_p, bool rel_only, bool any_case, bool safe_chk)
 {
     char *path = NULL;		/* duplicated orig_path to be/that has been canonicalized */
-    enum path_sanity sanity;	/* result of sane_relative_path tests */
+    uintmax_t path_len = 0;	/* full path length */
+    uintmax_t tmp_len = 0;	/* temporary path length */
+    uintmax_t comp_len = 0;	/* path component length */
+    enum path_sanity sanity = PATH_OK;	/* canon_path path_sanity error, or PATH_OK */
+    bool relative = true;	/* true ==> path is relative to "." (dot), false ==> path is absolute */
+    struct dyn_array *array = NULL;    /* dynamic array of pointers to strings - path component stack */
+    char *p = NULL;		/* path component */
+    char **q = NULL;		/* address of a dynamic array string element */
+    intmax_t deep = 0;		/* dynamic array stack depth */
+    uintmax_t i = 0;		/* path component number */
+    bool test = true;		/* true ==> passed test, false == failed test */
+    char *ret_path = NULL;	/* malloced canonicalized path to return */
 
     /*
      * firewall
      */
     if (orig_path == NULL) {
-	warn("%s: called with NULL orig_path", __func__);
-	return NULL;
-    }
-    if (max_path_len <= (uintmax_t)0) {
-	warn("%s: called with max_path_len %" PRIuMAX "<= 0", __func__, max_path_len);
-	return NULL;
-    }
-    if (max_filename_len <= (uintmax_t)0) {
-	warn("%s: called with max_filename_len %" PRIuMAX "<= 0", __func__, max_filename_len);
-	return NULL;
-    }
-    if (max_depth <= (uintmax_t)0) {
-	warn("%s: called with max_depth %" PRIuMAX "<= 0", __func__, max_depth);
+
+	/* orig_path is NULL error */
+	report_canon_err(PATH_ERR_PATH_IS_NULL, sanity_p, len_p, depth_p, path, array);
+	dbg(DBG_HIGH, "%s: error %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
 	return NULL;
     }
 
     /*
-     * canonicalize pathname
+     * case: empty path
      */
-    errno = 0;		/* pre-clear errno for warnp() */
-    path = realpath(orig_path, NULL);
+    if (orig_path[0] == '\0') {
+
+	/* orig_path is an empty string error */
+	report_canon_err(PATH_ERR_PATH_EMPTY, sanity_p, len_p, depth_p, path, array);
+	dbg(DBG_HIGH, "%s: error %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
+	return NULL;
+
+    /*
+     * case: orig_path is absolute
+     */
+    } else if (orig_path[0] == '/') {
+	if (rel_only) {
+
+	    /* orig_path is absolute, but rel_only is true */
+	    report_canon_err(PATH_ERR_NOT_RELATIVE, sanity_p, len_p, depth_p, path, array);
+	    dbg(DBG_HIGH, "%s: error %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
+	    return NULL;
+
+	} else {
+
+	    /* orig_path is absolute and allowed to be absolute */
+	    relative = false;
+	}
+    }
+
+    /*
+     * duplicate orig_path so that we can modify it as needed as we parse it
+     */
+    path = strdup(orig_path);
     if (path == NULL) {
-	warnp("%s: realpath(%s) failed", __func__, path);
+
+	/* strdup failure */
+	report_canon_err(PATH_ERR_MALLOC, sanity_p, len_p, depth_p, path, array);
+	dbg(DBG_HIGH, "%s: error #0 %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
 	return NULL;
     }
 
     /*
-     * perform the sane_relative_path tests
+     * Remove trailing "/", unless the path is just a single character
      */
-    sanity = sane_relative_path(path, max_path_len, max_filename_len, max_depth, false);
-    if (sanity != PATH_OK) {
+    tmp_len = strlen(path);
+    dbg(DBG_VVHIGH, "%s: initial path: %s", __func__, path);
+    while (tmp_len > 1 && path[tmp_len-1] == '/') {
+	path[--tmp_len] = '\0';
+    }
+    dbg(DBG_V3_HIGH, "%s: path with trailing /'s removed: %s", __func__, path);
+
+    /*
+     * create path component stack
+     */
+    array = dyn_array_create(sizeof(char *), PATH_CHUNK_SIZE, PATH_INITIAL_SIZE, true);
+
+    /*
+     * process each path component
+     *
+     * The strtok(3) function will skip over 1 or more "/" (slash)'s and turn the
+     * next path component into a NUL byte terminated string.
+     */
+    for (i=0, p=strtok(path, "/"); p != NULL; p=strtok(NULL, "/"), ++i) {
+
+	/*
+	 * check for "." (dot)
+	 */
+	dbg(DBG_V3_HIGH, "%s: path component[%" PRIdMAX "]: %s", __func__, i, p);
+	comp_len = strlen(p);
+	if (strcmp(p, ".") == 0) {
+
+	    /*
+	     * ignore "." (dot)
+	     */
+	    dbg(DBG_V3_HIGH, "%s: skipping . path component", __func__);
+
+	/*
+	 * if ".." (dotdot), attempt to pop the path component stack
+	 */
+	} else if (strcmp(p, "..") == 0) {
+
+	    /*
+	     * pop the component stack due to ..
+	     */
+	    if (dyn_array_tell(array) <= 0) {
+
+		/* path component stack underflow */
+		report_canon_err(PATH_ERR_DOTDOT_OVER_TOPDIR, sanity_p, len_p, depth_p, path, array);
+		dbg(DBG_HIGH, "%s: path component stack underflow error %s: %s",
+		    __func__, path_sanity_name(sanity), path_sanity_error(sanity));
+		return NULL;
+	    }
+	    deep = dyn_array_pop(array, NULL);
+	    dbg(DBG_V3_HIGH, "%s: .. component stack pop, stack depth: %" PRIdMAX, __func__, deep);
+
+	/*
+	 * process this path component
+	 */
+	} else {
+
+	    /*
+	     * check path component if max_filename_len > 0
+	     */
+	    if (max_filename_len > 0) {
+
+		/*
+		 * be sure that the path component is not too long
+		 */
+		if (comp_len > max_filename_len) {
+
+		    /* path component too long */
+		    dbg(DBG_V3_HIGH, "%s: path component length: %" PRIuMAX "> max_filename_len: %" PRIuMAX,
+			__func__, comp_len, max_filename_len);
+		    report_canon_err(PATH_ERR_NAME_TOO_LONG, sanity_p, len_p, depth_p, path, array);
+		    dbg(DBG_HIGH, "%s: path component too long %s: %s",
+			__func__, path_sanity_name(sanity), path_sanity_error(sanity));
+		    return NULL;
+		}
+	    }
+
+	    /*
+	     * check if path string is safe
+	     */
+	    if (safe_chk) {
+
+		/*
+		 * We will perform a test if a path string is safe
+		 *
+		 * We will set any_case as true because either any_case == true,
+		 *	in which case ANY case is OK,
+		 * or any_case == false, in which case we need to convert to lower case,
+		 * and converting to lower case means that beforehand, ANY case is OK.
+		 *
+		 * We will set slash_ok to false because this is a path component
+		 * and strtok(3) should never let "/" (slash) be present.
+		 */
+		test = safe_path_str(p, true, false);
+		if (! test) {
+
+		    /* path component is unsafe */
+		    report_canon_err(PATH_ERR_NOT_POSIX_SAFE, sanity_p, len_p, depth_p, path, array);
+		    dbg(DBG_HIGH, "%s: path component is not safe", __func__);
+		    return NULL;
+		}
+	    }
+
+	    /*
+	     * convert to lower case if not any_case
+	     */
+	    if (! any_case) {
+
+		/*
+		 * convert UPPER case to lower case
+		 */
+		for (i=0; i < comp_len; ++i) {
+		    p[i] = tolower(p[i]);
+		}
+		dbg(DBG_V3_HIGH, "%s: lower case path component[%" PRIdMAX "]: %s", __func__, i, p);
+	    }
+
+	    /*
+	     * push component into the path stack
+	     */
+	    test = dyn_array_push(array, p);
+	    deep = dyn_array_tell(array);
+	    dbg(DBG_V3_HIGH, "%s: pushed path component on stack, depth: %" PRIdMAX, __func__, deep);
+	    dbg(DBG_V4_HIGH, "%s: data moved: %s", __func__, booltostr(test));
+	}
+    }
+
+    /* assertion: the path stack contains the component of the canonicalized stack */
+
+    /*
+     * check depth if max_depth > 0
+     */
+    if (max_depth > 0 && deep > (intmax_t)max_depth) {
+
+	/* path component too deep */
+	dbg(DBG_V3_HIGH, "%s: path depth: %" PRIdMAX "> max_depth: %" PRIdMAX,
+	    __func__, deep, (intmax_t)max_depth);
+	report_canon_err(PATH_ERR_PATH_TOO_DEEP, sanity_p, len_p, depth_p, path, array);
+	dbg(DBG_HIGH, "%s: path component too long %s: %s",
+	    __func__, path_sanity_name(sanity), path_sanity_error(sanity));
+	return NULL;
+    }
+
+    /*
+     * determine canonicalized path length
+     *
+     * If orig_path is an allowed absolute path, then the canonicalized path length
+     * is the sum of the lengths of the canonicalized stack plus a 1 for each path level.
+     *
+     * If orig_path is a relative path, then the canonicalized path length is one less than if
+     * it were a absolute path because the canonicalized path length doesn't start with "/" (slash).
+     */
+    path_len = (relative) ? (deep>0 ? deep-1 : 0) : deep;
+    for (q = dyn_array_first(array, char *); q < dyn_array_beyond(array, char *); ++q) {
+
+	/* paranoia */
+	if (q == NULL || *q == NULL) {
+
+	    /* NULL component pointer */
+	    report_canon_err(PATH_ERR_NULL_COMPONENT, sanity_p, len_p, depth_p, path, array);
+	    dbg(DBG_HIGH, "%s: error %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
+	    return NULL;
+	}
+
+	/* sum component length */
+	path_len += strlen(*q);
+    }
+
+    /*
+     * check canonicalized path length if max_path_len > 0
+     */
+    if (max_path_len > 0 && path_len > max_path_len) {
+
+	/* path too long */
+	report_canon_err(PATH_ERR_PATH_TOO_LONG, sanity_p, len_p, depth_p, path, array);
+	dbg(DBG_HIGH, "%s: error %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
+	return NULL;
+    }
+
+    /*
+     * special case: path is "." (dot) or "/" (slash) or empty path
+     *
+     * If we have no components on the path stack, then we have just the topdir,
+     * which will be "/" (slash) is path is absolute, or "." (dot) otherwise.
+     */
+    if (deep <= 0 || path_len <= 0) {
+
+	/*
+	 * case: path is relative, return "." (dot)
+	 */
+	if (relative) {
+
+	    /* return "." (dot) */
+	    ret_path = strdup(".");
+	    if (ret_path == NULL) {
+
+		/* strdup failure */
+		report_canon_err(PATH_ERR_MALLOC, sanity_p, len_p, depth_p, path, array);
+		dbg(DBG_HIGH, "%s: error #1 %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
+		return NULL;
+	    }
+
+	/*
+	 * case: path is absolute, return "/" (slash)
+	 */
+	} else {
+
+	    /* return "/" (slash) */
+	    ret_path = strdup("/");
+	    if (ret_path == NULL) {
+
+		/* strdup failure */
+		report_canon_err(PATH_ERR_MALLOC, sanity_p, len_p, depth_p, path, array);
+		dbg(DBG_HIGH, "%s: error #2 %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
+		return NULL;
+	    }
+	}
+
+	/*
+	 * fill in return stats as required
+	 */
+	if (sanity_p != NULL) {
+	    *sanity_p = PATH_OK;
+	}
+	if (len_p != NULL) {
+	    *len_p = 1;
+	}
+	if (depth_p != NULL) {
+	    *depth_p = 0;
+	}
+
+	/*
+	 * free stack storage
+	 */
 	if (path != NULL) {
 	    free(path);
 	    path = NULL;
 	}
-	warn("%s: sane_relative_path((\"%s\", %" PRIuMAX ", %" PRIuMAX ", %" PRIuMAX ", false) PATH_OK, got: %s",
-	     path, max_path_len, max_filename_len, max_depth, path_sanity_name(sanity));
+	dyn_array_free(array);
+	array = NULL;
+
+	/*
+	 * return special canonicalized path
+	 */
+	return ret_path;
+    }
+
+    /*
+     * allocate canonicalized path to return
+     *
+     * NOTE: The special case of a "/" (slash) or a "." (dot) canonicalized path
+     *	     has been already handled above.
+     */
+    ret_path = calloc(1, path_len+1+1);	/* +1 for trailing NUL, +1 for paranoia */
+    if (ret_path == NULL) {
+
+	/* malloc failure */
+	report_canon_err(PATH_ERR_MALLOC, sanity_p, len_p, depth_p, path, array);
+	dbg(DBG_HIGH, "%s: error #3 %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
 	return NULL;
     }
+    ret_path[path_len+1] = '\0';    /* paranoia */
+
+    /*
+     * load canonicalized path from path stack components with "/"s (slash) as needed
+     *
+     * NOTE: The special case of a "/" (slash) or a "." (dot) canonicalized path
+     *	     has been already handled above.
+     */
+    for (q = dyn_array_first(array, char *); q < dyn_array_beyond(array, char *); ++q) {
+
+	/* paranoia */
+	if (q == NULL || *q == NULL) {
+
+	    /* NULL component pointer */
+	    report_canon_err(PATH_ERR_NULL_COMPONENT, sanity_p, len_p, depth_p, path, array);
+	    dbg(DBG_HIGH, "%s: error %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
+	    return NULL;
+	}
+
+	/*
+	 * append "/"s (slash) as needed
+	 */
+	if (q == dyn_array_first(array, char *)) {
+
+	    /*
+	     * case: on first component of the canonicalized path
+	     *
+	     * We prep the start of canonicalized path.
+	     * An absolute canonicalized path starts with "/" (slash)
+	     */
+	    ret_path[0] = (relative) ? '\0' : '/';
+
+	} else {
+
+	    /*
+	     * case: a subsequent component of the canonicalized path
+	     */
+	    strcat(ret_path, "/");
+	}
+
+	/* append component from stack */
+	(void) strlcat(ret_path, *q, path_len+1);
+    }
+    /* canonicalized path length sanity check */
+    if (path_len != strlen(ret_path)) {
+
+	/* canonicalized path length mis-calculation */
+	report_canon_err(PATH_ERR_WRONG_LEN, sanity_p, len_p, depth_p, path, array);
+	dbg(DBG_HIGH, "%s: error %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
+	return NULL;
+    }
+    ret_path[path_len] = '\0'; /* end of string paranoia */
+
+    /*
+     * fill in return stats as required
+     */
+    if (sanity_p != NULL) {
+	*sanity_p = PATH_OK;
+    }
+    if (len_p != NULL) {
+	*len_p = 1;
+    }
+    if (depth_p != NULL) {
+	*depth_p = 0;
+    }
+
+    /*
+     * free stack storage
+     */
+    if (path != NULL) {
+	free(path);
+	path = NULL;
+    }
+    dyn_array_free(array);
+    array = NULL;
 
     /*
      * return a sand and canonical path
      */
-    return path;
+    return ret_path;
 }
-#endif /* XXX - under development - XXX */
 
 
 /*
@@ -5298,18 +5259,18 @@ path_has_component(char const *path, char const *name)
      * firewall
      */
     if (path == NULL) {
-        err(199, __func__, "path is NULL");
+        err(198, __func__, "path is NULL");
         not_reached();
     }
     if (name == NULL) {
-        err(200, __func__, "name is NULL");
+        err(199, __func__, "name is NULL");
         not_reached();
     }
 
     errno = 0;      /* pre-clear errno for errp() */
     path_dup = strdup(path);
     if (path_dup == NULL) {
-        errp(201, __func__, "duplicating %s failed", path);
+        errp(200, __func__, "duplicating %s failed", path);
         not_reached();
     }
 
@@ -5364,7 +5325,7 @@ calloc_path(char const *dirname, char const *filename)
      * firewall
      */
     if (filename == NULL) {
-	err(202, __func__, "filename is NULL");
+	err(201, __func__, "filename is NULL");
 	not_reached();
     }
 
@@ -5381,7 +5342,7 @@ calloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	buf = strdup(filename);
 	if (buf == NULL) {
-	    errp(203, __func__, "strdup of filename failed: %s", filename);
+	    errp(202, __func__, "strdup of filename failed: %s", filename);
 	    not_reached();
 	}
 
@@ -5399,7 +5360,7 @@ calloc_path(char const *dirname, char const *filename)
 	buf = calloc(len+2, sizeof(*buf));	/* + 1 for paranoia padding */
 	errno = 0;		/* pre-clear errno for errp() */
 	if (buf == NULL) {
-	    errp(204, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
+	    errp(203, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
 	    not_reached();
 	}
 
@@ -5419,7 +5380,7 @@ calloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = snprintf(buf, len, "%s/%s", dirname, filename);
 	if (ret < 0) {
-	    errp(205, __func__, "snprintf returned: %zu < 0", len);
+	    errp(204, __func__, "snprintf returned: %zu < 0", len);
 	    not_reached();
 	}
     }
@@ -5428,7 +5389,7 @@ calloc_path(char const *dirname, char const *filename)
      * return calloc path
      */
     if (buf == NULL) {
-	errp(206, __func__, "function attempted to return NULL");
+	errp(205, __func__, "function attempted to return NULL");
 	not_reached();
     }
     return buf;

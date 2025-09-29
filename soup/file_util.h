@@ -174,14 +174,14 @@ enum path_sanity
     PATH_ERR_PATH_IS_NULL,              /* path string (str) is NULL */
     PATH_ERR_PATH_EMPTY,		/* path string (str) is 0 length (empty) */
     PATH_ERR_PATH_TOO_LONG,             /* path (str) > max_path_len */
-    PATH_ERR_MAX_PATH_LEN_0,            /* max_path_len <= 0 */
-    PATH_ERR_MAX_DEPTH_0,               /* max_depth is <= 0 */
     PATH_ERR_NOT_RELATIVE,              /* path (str) not relative (i.e. it starts with a '/') */
     PATH_ERR_NAME_TOO_LONG,             /* path component > max_filename_len */
-    PATH_ERR_MAX_NAME_LEN_0,            /* max filename length <= 0 */
     PATH_ERR_PATH_TOO_DEEP,             /* current depth > max_depth */
     PATH_ERR_NOT_POSIX_SAFE,            /* invalid/not sane path component */
-    PATH_ERR_DOTODT,			/* a .. (dotdot) path component was found */
+    PATH_ERR_DOTDOT_OVER_TOPDIR,	/* '..' (dotdot) path component moved above topdir */
+    PATH_ERR_MALLOC,			/* malloc related failure during path processing */
+    PATH_ERR_NULL_COMPONENT,		/* component on path stack is NULL */
+    PATH_ERR_WRONG_LEN,			/* constructed canonical path has the wrong length */
 };
 
 /*
@@ -289,10 +289,11 @@ extern size_t copyfile(char const *src, char const *dest, bool copy_mode, mode_t
 extern void touch(char const *path, mode_t mode);
 extern void touchat(char const *path, mode_t mode, char const *dir, int dirfd);
 extern int mkdirs(int dirfd, const char *str, mode_t mode);
-extern enum path_sanity sane_relative_path(char const *str, uintmax_t max_path_len, uintmax_t max_filename_len,
-        uintmax_t max_depth, bool ignore_leading_dot_slash);
 extern char const *path_sanity_name(enum path_sanity sanity);
 extern char const *path_sanity_error(enum path_sanity sanity);
+extern char *canon_path(char const *orig_path, uintmax_t max_path_len, uintmax_t max_filename_len, uintmax_t max_depth,
+			enum path_sanity *sanity_p, uintmax_t *len_p, uintmax_t *depth_p,
+			bool rel_only, bool any_case, bool safe_chk);
 extern bool path_has_component(char const *path, char const *name);
 extern char *calloc_path(char const *dirname, char const *filename);
 

@@ -179,14 +179,14 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
     }
     array->data = data;
     array->allocated = new_allocated;
-    if (moved == true && dbg_allowed(DBG_VVVVHIGH)) {
-	dbg(DBG_VVVVHIGH, "in %s(array, %jd): moved-place: allocated: %jd elements of size: %ju in use: %jd",
+    if (moved == true && dbg_allowed(DBG_V5_HIGH)) {
+	dbg(DBG_V5_HIGH, "in %s(array, %jd): moved-place: allocated: %jd elements of size: %ju in use: %jd",
 			  __func__, elms_to_allocate,
 			  dyn_array_alloced(array),
 			  (uintmax_t)array->elm_size,
 			  dyn_array_tell(array));
-    } else if (dbg_allowed(DBG_VVVVVHIGH)) {
-	dbg(DBG_VVVVVHIGH, "in %s(array, %jd): in-place: allocated: %jd elements of size: %ju in use: %jd",
+    } else if (dbg_allowed(DBG_V6_HIGH)) {
+	dbg(DBG_V6_HIGH, "in %s(array, %jd): in-place: allocated: %jd elements of size: %ju in use: %jd",
 			   __func__, elms_to_allocate,
 			   dyn_array_alloced(array),
 			   (uintmax_t)array->elm_size,
@@ -327,8 +327,8 @@ determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *
 	err(62, __func__, "last_add arg is NULL");
 	not_reached();
     }
-    if (dbg_allowed(DBG_VVVVHIGH)) {
-	dbg(DBG_VVVVHIGH, "in %s: first_alloc: %p last_alloc: %p first_add: %p last_add: %p",
+    if (dbg_allowed(DBG_V5_HIGH)) {
+	dbg(DBG_V5_HIGH, "in %s: first_alloc: %p last_alloc: %p first_add: %p last_add: %p",
 		      __func__, first_alloc, last_alloc, first_add, last_add);
     }
     if (first_alloc > last_alloc) {
@@ -350,24 +350,24 @@ determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *
 	/*
 	 * case: data to add starts before allocated
 	 */
-	if (dbg_allowed(DBG_VVVVHIGH)) {
-	    dbg(DBG_VVVVHIGH, "in %s: first_add: %p < first_alloc: %p",
+	if (dbg_allowed(DBG_V5_HIGH)) {
+	    dbg(DBG_V5_HIGH, "in %s: first_add: %p < first_alloc: %p",
 			   __func__, first_add, first_alloc);
 	}
 	switch (compare_addr(last_add, first_alloc)) {
 
 	case PTR_BELOW_ADDR:	/* all of data is before allocated */
 	    ret = MOVE_CASE_OUTSIDE;
-	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "in %s: ret #0: %s: last_add: %p < first_alloc: %p",
+	    if (dbg_allowed(DBG_V5_HIGH)) {
+		dbg(DBG_V5_HIGH, "in %s: ret #0: %s: last_add: %p < first_alloc: %p",
 			       __func__, move_case_name(ret), last_add, first_alloc);
 	    }
 	    break;
 
 	case PTR_EQ:		/* only last byte of data is allocated */
 	    ret = MOVE_CASE_BEFORE_INTO;
-	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "in %s: ret #1: %s: last_add: %p == first_alloc: %p",
+	    if (dbg_allowed(DBG_V5_HIGH)) {
+		dbg(DBG_V5_HIGH, "in %s: ret #1: %s: last_add: %p == first_alloc: %p",
 			       __func__, move_case_name(ret), last_add, first_alloc);
 	    }
 	    break;
@@ -377,44 +377,44 @@ determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *
 	    /*
 	     * case: data to add starts before allocated AND last byte to add is beyond first allocated
 	     */
-	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "in %s: last_add: %p > first_alloc: %p",
+	    if (dbg_allowed(DBG_V5_HIGH)) {
+		dbg(DBG_V5_HIGH, "in %s: last_add: %p > first_alloc: %p",
 			       __func__, last_add, first_alloc);
 	    }
 	    switch (compare_addr(last_add, last_alloc)) {
 
 	    case PTR_BELOW_ADDR:	/* data ends before end of allocated */
-		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "in %s: last_add: %p < last_alloc: %p",
+		if (dbg_allowed(DBG_V5_HIGH)) {
+		    dbg(DBG_V5_HIGH, "in %s: last_add: %p < last_alloc: %p",
 				  __func__, last_add, last_alloc);
 		}
 		ret = MOVE_CASE_BEFORE_INTO;
-		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "in %s: ret #2: %s: last_add: %p < last_alloc: %p",
+		if (dbg_allowed(DBG_V5_HIGH)) {
+		    dbg(DBG_V5_HIGH, "in %s: ret #2: %s: last_add: %p < last_alloc: %p",
 				  __func__, move_case_name(ret), last_add, last_alloc);
 		}
 		break;
 
 	    case PTR_EQ:		/* end of data matches end of allocated */
-		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "in %s: last_add: %p == last_alloc: %p",
+		if (dbg_allowed(DBG_V5_HIGH)) {
+		    dbg(DBG_V5_HIGH, "in %s: last_add: %p == last_alloc: %p",
 				  __func__, last_add, last_alloc);
 		}
 		ret = MOVE_CASE_BEFORE_INTO;
-		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "in %s: ret #3: %s: last_add: %p == last_alloc: %p",
+		if (dbg_allowed(DBG_V5_HIGH)) {
+		    dbg(DBG_V5_HIGH, "in %s: ret #3: %s: last_add: %p == last_alloc: %p",
 				  __func__, move_case_name(ret), last_add, last_alloc);
 		}
 		break;
 
 	    case PTR_ABOVE_ADDR:	/* data ends beyond end of allocated */
-		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "in %s: last_add: %p > last_alloc: %p",
+		if (dbg_allowed(DBG_V5_HIGH)) {
+		    dbg(DBG_V5_HIGH, "in %s: last_add: %p > last_alloc: %p",
 				  __func__, last_add, last_alloc);
 		}
 		ret = MOVE_CASE_BEFORE_IN_BEYOND;
-		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "in %s: ret #4: %s: last_add: %p > last_alloc: %p",
+		if (dbg_allowed(DBG_V5_HIGH)) {
+		    dbg(DBG_V5_HIGH, "in %s: ret #4: %s: last_add: %p > last_alloc: %p",
 				  __func__, move_case_name(ret), last_add, last_alloc);
 		}
 		break;
@@ -436,44 +436,44 @@ determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *
 	/*
 	 * case: data starts at beginning of allocated
 	 */
-	if (dbg_allowed(DBG_VVVVHIGH)) {
-	    dbg(DBG_VVVVHIGH, "in %s: first_add: %p == first_alloc: %p",
+	if (dbg_allowed(DBG_V5_HIGH)) {
+	    dbg(DBG_V5_HIGH, "in %s: first_add: %p == first_alloc: %p",
 			  __func__, first_add, first_alloc);
 	}
 	switch (compare_addr(last_add, last_alloc)) {
 
 	case PTR_BELOW_ADDR:	/* data ends before end of allocated */
-	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "in %s: last_add: %p < last_alloc: %p",
+	    if (dbg_allowed(DBG_V5_HIGH)) {
+		dbg(DBG_V5_HIGH, "in %s: last_add: %p < last_alloc: %p",
 			      __func__, last_add, last_alloc);
 	    }
 	    ret = MOVE_CASE_INSIDE;
-	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "in %s: ret #5: %s: last_add: %p < last_alloc: %p",
+	    if (dbg_allowed(DBG_V5_HIGH)) {
+		dbg(DBG_V5_HIGH, "in %s: ret #5: %s: last_add: %p < last_alloc: %p",
 			      __func__, move_case_name(ret), last_add, last_alloc);
 	    }
 	    break;
 
 	case PTR_EQ:		/* data ends at end of allocated */
-	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "in %s: last_add: %p == last_alloc: %p",
+	    if (dbg_allowed(DBG_V5_HIGH)) {
+		dbg(DBG_V5_HIGH, "in %s: last_add: %p == last_alloc: %p",
 			      __func__, last_add, last_alloc);
 	    }
 	    ret = MOVE_CASE_INSIDE;
-	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "in %s: ret #6: %s: last_add: %p == last_alloc: %p",
+	    if (dbg_allowed(DBG_V5_HIGH)) {
+		dbg(DBG_V5_HIGH, "in %s: ret #6: %s: last_add: %p == last_alloc: %p",
 			       __func__, move_case_name(ret), last_add, last_alloc);
 	    }
 	    break;
 
 	case PTR_ABOVE_ADDR:	/* data ends beyond end of allocated */
-	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "in %s: last_add: %p > last_alloc: %p",
+	    if (dbg_allowed(DBG_V5_HIGH)) {
+		dbg(DBG_V5_HIGH, "in %s: last_add: %p > last_alloc: %p",
 			      __func__, last_add, last_alloc);
 	    }
 	    ret = MOVE_CASE_IN_BEYOND;
-	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "in %s: ret #7: %s: last_add: %p > last_alloc: %p",
+	    if (dbg_allowed(DBG_V5_HIGH)) {
+		dbg(DBG_V5_HIGH, "in %s: ret #7: %s: last_add: %p > last_alloc: %p",
 			      __func__, move_case_name(ret), last_add, last_alloc);
 	    }
 	    break;
@@ -489,50 +489,50 @@ determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *
 	/*
 	 * case: data to add starts after allocated starts
 	 */
-	if (dbg_allowed(DBG_VVVVHIGH)) {
-	    dbg(DBG_VVVVHIGH, "in %s: first_add: %p > first_alloc: %p",
+	if (dbg_allowed(DBG_V5_HIGH)) {
+	    dbg(DBG_V5_HIGH, "in %s: first_add: %p > first_alloc: %p",
 			  __func__, first_add, first_alloc);
 	}
 	switch (compare_addr(first_add, last_alloc)) {
 
 	case PTR_BELOW_ADDR:	/* data starts before end of allocated */
-	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "in %s: first_add: %p < last_alloc: %p",
+	    if (dbg_allowed(DBG_V5_HIGH)) {
+		dbg(DBG_V5_HIGH, "in %s: first_add: %p < last_alloc: %p",
 			      __func__, first_add, last_alloc);
 	    }
 	    switch (compare_addr(last_add, last_alloc)) {
 	    case PTR_BELOW_ADDR:	/* data ends before end of allocated */
-		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "in %s: last_add: %p < last_alloc: %p",
+		if (dbg_allowed(DBG_V5_HIGH)) {
+		    dbg(DBG_V5_HIGH, "in %s: last_add: %p < last_alloc: %p",
 				  __func__, last_add, last_alloc);
 		}
 		ret = MOVE_CASE_INSIDE;
-		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "in %s: ret #8: %s: last_add: %p < last_alloc: %p",
+		if (dbg_allowed(DBG_V5_HIGH)) {
+		    dbg(DBG_V5_HIGH, "in %s: ret #8: %s: last_add: %p < last_alloc: %p",
 				   __func__, move_case_name(ret), last_add, last_alloc);
 		}
 		break;
 
 	    case PTR_EQ:		/* data ends matches end of allocated */
-		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "in %s: last_add: %p == last_alloc: %p",
+		if (dbg_allowed(DBG_V5_HIGH)) {
+		    dbg(DBG_V5_HIGH, "in %s: last_add: %p == last_alloc: %p",
 				  __func__, last_add, last_alloc);
 		}
 		ret = MOVE_CASE_INSIDE;
-		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "in %s: ret #9: %s: last_add: %p == last_alloc: %p",
+		if (dbg_allowed(DBG_V5_HIGH)) {
+		    dbg(DBG_V5_HIGH, "in %s: ret #9: %s: last_add: %p == last_alloc: %p",
 				   __func__, move_case_name(ret), last_add, last_alloc);
 		}
 		break;
 
 	    case PTR_ABOVE_ADDR:	/* data ends beyond end of allocated */
-		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "in %s: last_add: %p > last_alloc: %p",
+		if (dbg_allowed(DBG_V5_HIGH)) {
+		    dbg(DBG_V5_HIGH, "in %s: last_add: %p > last_alloc: %p",
 				  __func__, last_add, last_alloc);
 		}
 		ret = MOVE_CASE_IN_BEYOND;
-		if (dbg_allowed(DBG_VVVVHIGH)) {
-		    dbg(DBG_VVVVHIGH, "in %s: ret #10: %s: last_add: %p > last_alloc: %p",
+		if (dbg_allowed(DBG_V5_HIGH)) {
+		    dbg(DBG_V5_HIGH, "in %s: ret #10: %s: last_add: %p > last_alloc: %p",
 				   __func__, move_case_name(ret), last_add, last_alloc);
 		}
 		break;
@@ -545,20 +545,20 @@ determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *
 
 	case PTR_EQ:		/* data start matches end of allocated */
 	    ret = MOVE_CASE_INSIDE;
-	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "in %s: ret #11: %s: first_add: %p == last_alloc: %p",
+	    if (dbg_allowed(DBG_V5_HIGH)) {
+		dbg(DBG_V5_HIGH, "in %s: ret #11: %s: first_add: %p == last_alloc: %p",
 			       __func__, move_case_name(ret), first_add, last_alloc);
 	    }
 	    break;
 
 	case PTR_ABOVE_ADDR:	/* data start beyond end of allocated */
-	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "in %s: first_add: %p > last_alloc: %p",
+	    if (dbg_allowed(DBG_V5_HIGH)) {
+		dbg(DBG_V5_HIGH, "in %s: first_add: %p > last_alloc: %p",
 			      __func__, first_add, last_alloc);
 	    }
 	    ret = MOVE_CASE_OUTSIDE;
-	    if (dbg_allowed(DBG_VVVVHIGH)) {
-		dbg(DBG_VVVVHIGH, "in %s: ret #12: %s: first_add: %p > last_alloc: %p",
+	    if (dbg_allowed(DBG_V5_HIGH)) {
+		dbg(DBG_V5_HIGH, "in %s: ret #12: %s: first_add: %p > last_alloc: %p",
 			      __func__, move_case_name(ret), first_add, last_alloc);
 	    }
 	    break;
@@ -713,8 +713,8 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
     /*
      * Return newly allocated array
      */
-    if (dbg_allowed(DBG_VVVVHIGH)) {
-	dbg(DBG_VVVVHIGH, "in %s(%ju, %jd, %jd, %s): initialized empty dynamic array, allocated: %jd elements of size: %ju",
+    if (dbg_allowed(DBG_V5_HIGH)) {
+	dbg(DBG_V5_HIGH, "in %s(%ju, %jd, %jd, %s): initialized empty dynamic array, allocated: %jd elements of size: %ju",
 		      __func__, (uintmax_t)elm_size, chunk, start_elm_count,
 		      booltostr(zeroize),
 		      dyn_array_alloced(ret), (uintmax_t)ret->elm_size);
@@ -875,27 +875,27 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 	/*
 	 * determine our move case
 	 */
-	if (dbg_allowed(DBG_VVVHIGH)) {
-	    dbg(DBG_VVVHIGH, "in %s(array: %p, array_to_add_p: %p, %jd)", __func__,
+	if (dbg_allowed(DBG_V4_HIGH)) {
+	    dbg(DBG_V4_HIGH, "in %s(array: %p, array_to_add_p: %p, %jd)", __func__,
 			 (void *)array, (void *)array_to_add_p, count_of_elements_to_add);
 	}
 	last_add_byte = (uint8_t *)(array_to_add_p) + (data_size - 1);
 	last_alloc_byte = (uint8_t *)(array->data) + (alloc_size - 1);
 	data_first_offset = (uint8_t *)(array_to_add_p) - (uint8_t *)(array->data);
 	data_last_offset = (uint8_t *)(last_add_byte) - (uint8_t *)(array->data);
-	if (dbg_allowed(DBG_VVVVHIGH)) {
-	    dbg(DBG_VVVVHIGH, "in %s: array->data: %p", __func__, (void *)array->data);
-	    dbg(DBG_VVVVHIGH, "in %s: alloc_size: %jd", __func__, alloc_size);
-	    dbg(DBG_VVVVHIGH, "in %s: last_alloc_byte: %p", __func__, (void *)last_alloc_byte);
-	    dbg(DBG_VVVVHIGH, "in %s: array_to_add_p: %p", __func__, (void *)array_to_add_p);
-	    dbg(DBG_VVVVHIGH, "in %s: data_size: %jd", __func__, data_size);
-	    dbg(DBG_VVVVHIGH, "in %s: last_add_byte: %p", __func__, (void *)last_add_byte);
-	    dbg(DBG_VVVVHIGH, "in %s: data_first_offset: %ju", __func__, data_first_offset);
-	    dbg(DBG_VVVVHIGH, "in %s: data_last_offset: %ju", __func__, data_last_offset);
+	if (dbg_allowed(DBG_V5_HIGH)) {
+	    dbg(DBG_V5_HIGH, "in %s: array->data: %p", __func__, (void *)array->data);
+	    dbg(DBG_V5_HIGH, "in %s: alloc_size: %jd", __func__, alloc_size);
+	    dbg(DBG_V5_HIGH, "in %s: last_alloc_byte: %p", __func__, (void *)last_alloc_byte);
+	    dbg(DBG_V5_HIGH, "in %s: array_to_add_p: %p", __func__, (void *)array_to_add_p);
+	    dbg(DBG_V5_HIGH, "in %s: data_size: %jd", __func__, data_size);
+	    dbg(DBG_V5_HIGH, "in %s: last_add_byte: %p", __func__, (void *)last_add_byte);
+	    dbg(DBG_V5_HIGH, "in %s: data_first_offset: %ju", __func__, data_first_offset);
+	    dbg(DBG_V5_HIGH, "in %s: data_last_offset: %ju", __func__, data_last_offset);
 	}
 	mv_case = determine_move_case(array->data, last_alloc_byte, array_to_add_p, last_add_byte);
-	if (dbg_allowed(DBG_VVVVHIGH)) {
-	    dbg(DBG_VVVVHIGH, "in %s: move case: %s", __func__, move_case_name(mv_case));
+	if (dbg_allowed(DBG_V5_HIGH)) {
+	    dbg(DBG_V5_HIGH, "in %s: move case: %s", __func__, move_case_name(mv_case));
 	}
 
 	/*
@@ -967,8 +967,8 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 
 	    /* append the entire chunk of data */
 	    new_array_to_add_p = (uint8_t *)(array->data) + data_first_offset;	/* new starting location */
-	    if (dbg_allowed(DBG_VVVHIGH)) {
-		dbg(DBG_VVVHIGH, "mv_case: %s special "
+	    if (dbg_allowed(DBG_V4_HIGH)) {
+		dbg(DBG_V4_HIGH, "mv_case: %s special "
 			     "memmove(beyond: %p, new_array_to_add_p: %p, data_size: %ju)",
 			     move_case_name(mv_case),
 			     (void *)beyond, (void *)new_array_to_add_p, data_size);
@@ -998,8 +998,8 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 	    }
 
 	    /* append data that is before the dynamic array allocated data */
-	    if (dbg_allowed(DBG_VVVHIGH)) {
-		dbg(DBG_VVVHIGH, "mv_case: %s special "
+	    if (dbg_allowed(DBG_V4_HIGH)) {
+		dbg(DBG_V4_HIGH, "mv_case: %s special "
 			     "memmove(beyond: %p, new_array_to_add_p: %p, pre_length: %ju)",
 			     move_case_name(mv_case),
 			     (void *)beyond, (void *)new_array_to_add_p, pre_length);
@@ -1007,8 +1007,8 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 	    memmove((void *)beyond, (void *)array_to_add_p, pre_length);
 
 	    /* append data that moved with the dynamic array allocated data */
-	    if (dbg_allowed(DBG_VVVHIGH)) {
-		dbg(DBG_VVVHIGH, "mv_case: %s special "
+	    if (dbg_allowed(DBG_V4_HIGH)) {
+		dbg(DBG_V4_HIGH, "mv_case: %s special "
 			     "memmove(beyond: %p, array->data: %p, in_length: %ju)",
 			     move_case_name(mv_case),
 			     (void *)beyond, array->data, in_length);
@@ -1042,8 +1042,8 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 	    }
 
 	    /* append data that is before the dynamic array allocated data */
-	    if (dbg_allowed(DBG_VVVHIGH)) {
-		dbg(DBG_VVVHIGH, "mv_case: %s special "
+	    if (dbg_allowed(DBG_V4_HIGH)) {
+		dbg(DBG_V4_HIGH, "mv_case: %s special "
 			     "memmove(beyond: %p array_to_add_p: %p, pre_length: %ju)",
 			     move_case_name(mv_case),
 			     (void *)beyond, (void *)array_to_add_p, pre_length);
@@ -1051,8 +1051,8 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 	    memmove((void *)beyond, (void *)array_to_add_p, pre_length);
 
 	    /* append the section that was part of the previous dynamic array allocated data */
-	    if (dbg_allowed(DBG_VVVHIGH)) {
-		dbg(DBG_VVVHIGH, "mv_case: %s special "
+	    if (dbg_allowed(DBG_V4_HIGH)) {
+		dbg(DBG_V4_HIGH, "mv_case: %s special "
 			     "memmove(beyond: %p array->data: %p, alloc_size: %ju)",
 			     move_case_name(mv_case),
 			     (void *)beyond, array->data, alloc_size);
@@ -1060,8 +1060,8 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 	    memmove((void *)beyond, array->data, alloc_size);
 
 	    /* append the data that was beyond the end of the previous dynamic array allocated data */
-	    if (dbg_allowed(DBG_VVVHIGH)) {
-		dbg(DBG_VVVHIGH, "mv_case: %s special "
+	    if (dbg_allowed(DBG_V4_HIGH)) {
+		dbg(DBG_V4_HIGH, "mv_case: %s special "
 			     "memmove(beyond: %p array_to_add_p+pre_length+data_size: %p, post_length: %ju)",
 			     move_case_name(mv_case),
 			     (void *)beyond, (void *)((uint8_t *)(array_to_add_p) + pre_length+data_size), post_length);
@@ -1092,8 +1092,8 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 
 	    /* append the data that stated inside the previous dynamic array allocated data */
 	    new_array_to_add_p = (uint8_t *)(array->data) + data_first_offset;	/* new stating location */
-	    if (dbg_allowed(DBG_VVVHIGH)) {
-		dbg(DBG_VVVHIGH, "mv_case: %s special "
+	    if (dbg_allowed(DBG_V4_HIGH)) {
+		dbg(DBG_V4_HIGH, "mv_case: %s special "
 			     "memmove(beyond: %p new_array_to_add_p: %p, in_length: %ju)",
 			     move_case_name(mv_case),
 			     (void *)beyond, (void *)new_array_to_add_p, in_length);
@@ -1101,8 +1101,8 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 	    memmove((void *)beyond, (void *)new_array_to_add_p, in_length);
 
 	    /* append the data that was beyond the end of the previous dynamic array allocated data */
-	    if (dbg_allowed(DBG_VVVHIGH)) {
-		dbg(DBG_VVVHIGH, "mv_case: %s special "
+	    if (dbg_allowed(DBG_V4_HIGH)) {
+		dbg(DBG_V4_HIGH, "mv_case: %s special "
 			     "memmove(beyond: %p array_to_add_p+in_length: %p, post_length: %ju)",
 			     move_case_name(mv_case),
 			     (void *)beyond, (void *)((uint8_t *)(array_to_add_p) + in_length), post_length);
@@ -1121,8 +1121,8 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
      * increase the amount of data that is in use, in the dynamic array
      */
     array->count += count_of_elements_to_add;
-    if (dbg_allowed(DBG_VVVVVHIGH)) {
-	dbg(DBG_VVVVVHIGH, "in %s(array: %p, array_to_add_p %p, %jd): %s: allocated: %jd elements of size: %ju in use: %jd",
+    if (dbg_allowed(DBG_V6_HIGH)) {
+	dbg(DBG_V6_HIGH, "in %s(array: %p, array_to_add_p %p, %jd): %s: allocated: %jd elements of size: %ju in use: %jd",
 		       __func__, (void *)array, (void *)array_to_add_p,
 		       (intmax_t)count_of_elements_to_add,
 		       (moved == true ? "moved" : "in-place"),
@@ -1398,8 +1398,8 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
 
     /* set new in use count */
     array->count = setpoint;
-    if (dbg_allowed(DBG_VVVVVHIGH)) {
-	dbg(DBG_VVVVVHIGH, "in %s(array, %jd, %s): %s: allocated: %jd elements of size: %ju in use: %jd",
+    if (dbg_allowed(DBG_V6_HIGH)) {
+	dbg(DBG_V6_HIGH, "in %s(array, %jd, %s): %s: allocated: %jd elements of size: %ju in use: %jd",
 		       __func__,
 		       (intmax_t)offset,
 		       (whence == SEEK_SET ? "SEEK_SET" : (whence == SEEK_CUR ? "SEEK_CUR" : "SEEK_END")),
@@ -1476,8 +1476,8 @@ dyn_array_clear(struct dyn_array *array)
      * Set the number of elements in the array to zero
      */
     array->count = 0;
-    if (dbg_allowed(DBG_VVHIGH)) {
-	dbg(DBG_VVHIGH, "in %s(array) not-moved: allocated: %jd elements of size: %ju in use: %jd",
+    if (dbg_allowed(DBG_V3_HIGH)) {
+	dbg(DBG_V3_HIGH, "in %s(array) not-moved: allocated: %jd elements of size: %ju in use: %jd",
 		     __func__,
 		     dyn_array_alloced(array),
 		     (uintmax_t)array->elm_size,
@@ -1537,8 +1537,8 @@ dyn_array_free(struct dyn_array *array)
     array->count = 0;
     array->allocated = 0;
     array->chunk = 0;
-    if (dbg_allowed(DBG_VVVHIGH)) {
-	dbg(DBG_VVVHIGH, "in %s(array)", __func__);
+    if (dbg_allowed(DBG_V4_HIGH)) {
+	dbg(DBG_V4_HIGH, "in %s(array)", __func__);
     }
 
     free(array);

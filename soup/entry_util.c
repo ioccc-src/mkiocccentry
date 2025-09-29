@@ -199,10 +199,6 @@ char *ignored_dirnames[] =
 
 /*
  * filenames that should be ignored
- *
- * NOTE: as these are dot files they are implicitly ignored by mkiocccentry(1)
- * due to sane_relative_path() thus we don't need to use it for mkiocccentry(1);
- * it is for chkentry(1) in particular for -w mode (for judges only!).
  */
 char *ignored_filenames[] =
 {
@@ -418,14 +414,12 @@ free_info(struct info *infop)
     free_paths_array(&infop->forbidden_files, false);
     infop->forbidden_files = NULL;
     /*
-     * unsafe files (those that sane_relative_path() returns
-     * PATH_ERR_NOT_POSIX_SAFE)
+     * unsafe files: canon_path() sets sanity to PATH_ERR_NOT_POSIX_SAFE
      */
     free_paths_array(&infop->unsafe_files, false);
     infop->unsafe_files = NULL;
     /*
-     * unsafe directories (those that sane_relative_path() returns
-     * PATH_ERR_NOT_POSIX_SAFE)
+     * unsafe directories: canon_path() sets sanity to PATH_ERR_NOT_POSIX_SAFE
      */
     free_paths_array(&infop->unsafe_dirs, false);
     infop->unsafe_dirs = NULL;
@@ -3132,6 +3126,8 @@ test_submit_slot(int submit_slot)
 bool
 test_extra_filename(char const *str)
 {
+    enum path_sanity sanity = PATH_OK;  /* canon_path path_sanity error, or PATH_OK */
+
     /*
      * firewall
      */
@@ -3146,15 +3142,14 @@ test_extra_filename(char const *str)
 
     /*
      * validate that the filename is POSIX portable safe plus + chars
-     *
-     * NOTE: here the last arg to sane_relative_path() is false because the
-     * extra files should not be saved as "./".
      */
-    if (sane_relative_path(str, MAX_FILENAME_LEN, MAX_PATH_LEN, MAX_PATH_DEPTH, false) != PATH_OK) {
+    (void) canon_path(str, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
+		      &sanity, NULL, NULL, true, true, true);
+    if (sanity != PATH_OK) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: sane_relative_path check on extra_file failed");
+		 "invalid: canon_path safely check on extra_file failed");
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: sane_relative_path check on extra_file failed: <%s>", str);
+		 "invalid: canon_path safely check on extra_file failed: <%s>", str);
 	return false;
     }
 

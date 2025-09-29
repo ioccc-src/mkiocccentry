@@ -254,7 +254,7 @@ CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= mkiocccentry.c iocccsize.c txzchk.c chkentry.c chksubmit.c
+C_SRC= mkiocccentry.c iocccsize.c txzchk.c chkentry.c chksubmit.c cpath.c
 H_SRC= mkiocccentry.h iocccsize.h txzchk.h chkentry.h chksubmit.h
 #
 PICKY_OPTIONS= -c -e -s -t8 -u -v -w132
@@ -344,7 +344,7 @@ EXTERN_H=
 EXTERN_O=
 EXTERN_MAN=
 EXTERN_LIBA=
-EXTERN_PROG= bug_report.sh chkentry chksubmit iocccsize mkiocccentry txzchk
+EXTERN_PROG= bug_report.sh chkentry chksubmit iocccsize mkiocccentry txzchk cpath
 
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
@@ -368,11 +368,11 @@ SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS= mkiocccentry iocccsize txzchk chkentry chksubmit
+PROG_TARGETS= mkiocccentry iocccsize txzchk chkentry chksubmit cpath
 
 # directories sometimes built under macOS and removed by clobber
 #
-DSYMDIRS= mkiocccentry.dSYM iocccsize.dSYM txzchk.dSYM chkentry.dSYM chksubmit.dSYM
+DSYMDIRS= mkiocccentry.dSYM iocccsize.dSYM txzchk.dSYM chkentry.dSYM chksubmit.dSYM cpath.dSYM
 
 # logs for testing
 #
@@ -527,6 +527,12 @@ chksubmit.o: chksubmit.c
 
 chksubmit: chksubmit.o soup/soup.a pr/libpr.a jparse/libjparse.a dyn_array/libdyn_array.a dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
+
+cpath.o: cpath.c
+	${CC} ${CFLAGS} cpath.c -c
+
+cpath: cpath.o soup/soup.a pr/libpr.a dyn_array/libdyn_array.a dbg/libdbg.a
+	${CC} ${CFLAGS} -DINTERNAL_INCLUDE $^ -lm -o $@
 
 
 #########################################################
@@ -1970,6 +1976,10 @@ chksubmit.o: chksubmit.c chksubmit.h dbg/c_bool.h dbg/c_compat.h dbg/dbg.h \
     soup/chk_validate.h soup/default_handle.h soup/entry_util.h \
     soup/file_util.h soup/foo.h soup/limit_ioccc.h soup/location.h \
     soup/sanity.h soup/soup.h soup/util.h soup/version.h
+cpath.o: cpath.c dbg/c_bool.h dbg/c_compat.h dbg/dbg.h \
+    dyn_array/dyn_array.h pr/../dbg/c_bool.h pr/../dbg/c_compat.h \
+    pr/../dbg/dbg.h pr/../dyn_array/dyn_array.h pr/pr.h \
+    soup/../dyn_array/dyn_array.h soup/file_util.h
 iocccsize.o: dbg/c_bool.h dbg/c_compat.h dbg/dbg.h iocccsize.c iocccsize.h \
     jparse/../pr/../dbg/c_bool.h jparse/../pr/../dbg/c_compat.h \
     jparse/../pr/../dbg/dbg.h jparse/../pr/../dyn_array/dyn_array.h \
