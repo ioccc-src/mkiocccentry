@@ -67,6 +67,7 @@ static struct json_sem_val_err sem_null_ptr =
     false	/* true ==> struct json_sem_val_err was calloced */
 		/* false ==> this is a static struct json_sem_val_err */
 };
+
 /* calloc failure */
 static struct json_sem_val_err sem_calloc_err =
 {
@@ -78,6 +79,7 @@ static struct json_sem_val_err sem_calloc_err =
     false	/* true ==> struct json_sem_val_err was calloced */
 		/* false ==> this is a static struct json_sem_val_err */
 };
+
 /* strdup failure */
 static struct json_sem_val_err sem_strdup_err =
 {
@@ -89,6 +91,7 @@ static struct json_sem_val_err sem_strdup_err =
     false	/* true ==> struct json_sem_val_err was calloced */
 		/* false ==> this is a static struct json_sem_val_err */
 };
+
 /* validation failure w/o json_sem_val_err */
 static struct json_sem_val_err sem_val_err_NULL =
 {
@@ -604,7 +607,7 @@ sem_node_valid(struct json const *node, unsigned int depth, struct json_sem *sem
 	    /* JTYPE_OBJECT specific sanity checks */
 	    if (item->len < 0) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(35, node, depth, sem, name, "JTYPE_OBJECT node: len: %ju < 0",
+		    *val_err = werr_sem_val(35, node, depth, sem, name, "JTYPE_OBJECT node: len: %zu < 0",
 					    item->len);
 		}
 		return false;
@@ -639,7 +642,7 @@ sem_node_valid(struct json const *node, unsigned int depth, struct json_sem *sem
 	    /* JTYPE_ARRAY specific sanity checks */
 	    if (item->len < 0) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(39, node, depth, sem, name, "JTYPE_ARRAY node: len: %ju < 0",
+		    *val_err = werr_sem_val(39, node, depth, sem, name, "JTYPE_ARRAY node: len: %zu < 0",
 					    item->len);
 		}
 		return false;
@@ -674,7 +677,7 @@ sem_node_valid(struct json const *node, unsigned int depth, struct json_sem *sem
 	    /* JTYPE_ELEMENTS specific sanity checks */
 	    if (item->len < 0) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(43, node, depth, sem, name, "JTYPE_ELEMENTS node: len: %ju < 0",
+		    *val_err = werr_sem_val(43, node, depth, sem, name, "JTYPE_ELEMENTS node: len: %zu < 0",
 					    item->len);
 		}
 		return false;
@@ -708,7 +711,6 @@ sem_node_valid(struct json const *node, unsigned int depth, struct json_sem *sem
      */
     return true;
 }
-
 
 
 /*
@@ -1641,7 +1643,7 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
      */
     if (item->len < 0) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(82, node, depth, sem, name, "JTYPE_OBJECT set length: %ju < 0", item->len);
+	    *val_err = werr_sem_val(82, node, depth, sem, name, "JTYPE_OBJECT set length: %zu < 0", item->len);
 	}
 	return NULL;
     } else if (item->len == 0) {
@@ -1650,7 +1652,7 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
     }
     if (item->set == NULL) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(83, node, depth, sem, name, "JTYPE_OBJECT len: %ju > 0 and set is NULL", item->len);
+	    *val_err = werr_sem_val(83, node, depth, sem, name, "JTYPE_OBJECT len: %zu > 0 and set is NULL", item->len);
 	}
 	return NULL;
     }

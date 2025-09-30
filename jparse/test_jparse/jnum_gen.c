@@ -436,7 +436,7 @@ is_file(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %lld", path, (long long)buf.st_size);
 
     /*
      * test if path is a regular file
@@ -487,7 +487,7 @@ is_read(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %lld", path, (long long)buf.st_size);
 
     /*
      * test if we are allowed to execute it
@@ -554,12 +554,12 @@ fpr_number(FILE *stream, struct json_number *item)
     /*
      * print JSON string lengths
      */
-    fprint(stream, "\t%ju,\t"
+    fprint(stream, "\t%zu,\t"
 		   "\t/* length of as_str */\n",
-		   (uintmax_t)item->as_str_len);
-    fprint(stream, "\t%ju,\t"
+		   item->as_str_len);
+    fprint(stream, "\t%zu,\t"
 		   "\t/* length of JSON number, w/o leading or trailing whitespace and NUL bytes */\n",
-		   (uintmax_t)item->number_len);
+		   item->number_len);
     fprstr(stream, "\n");
 
     /*

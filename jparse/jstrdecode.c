@@ -284,7 +284,7 @@ jstrdecode_stream(FILE *in_stream, bool ignore_nl, bool quote, bool json_parse)
 	warn(__func__, "error while reading data from input stream");
 	return NULL;
     }
-    dbg(DBG_MED, "stream read length: %ju", (uintmax_t)inputlen);
+    dbg(DBG_MED, "stream read length: %zu", inputlen);
 
     /*
      * if -N, remove all newlines from data
@@ -346,7 +346,7 @@ jstrdecode_stream(FILE *in_stream, bool ignore_nl, bool quote, bool json_parse)
 
     jstr = add_decoded_string(buf, bufsiz);
     if (jstr == NULL) {
-	warn(__func__, "failed to allocate jstring of size %ju", bufsiz);
+	warn(__func__, "failed to allocate jstring of size %zu", bufsiz);
 	return NULL;
     }
 
@@ -528,7 +528,7 @@ main(int argc, char **argv)
 		 */
 		jstr = jstrdecode_stream(stdin, ignore_nl, quote, json_parse);
 		if (jstr != NULL) {
-		    dbg(DBG_MED, "decode length: %ju", jstr->bufsiz);
+		    dbg(DBG_MED, "decode length: %zu", jstr->bufsiz);
 		} else {
 		    warn(__func__, "failed to decode string from stdin");
 		    success = false;
@@ -541,7 +541,7 @@ main(int argc, char **argv)
 		 */
 		inputlen = strlen(input);
 		dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, input);
-		dbg(DBG_MED, "arg length: %ju", (uintmax_t)inputlen);
+		dbg(DBG_MED, "arg length: %zu", inputlen);
 
 		/*
 		 * If -N, and newlines in arg, remove them
@@ -562,7 +562,7 @@ main(int argc, char **argv)
 		     */
 		    input = dup_input;
 		    dbg(DBG_VHIGH, "-N and arg is now: %d: <%s>", i-optind, input);
-		    dbg(DBG_VHIGH, "-N and arg length is now: %ju", (uintmax_t)inputlen);
+		    dbg(DBG_VHIGH, "-N and arg length is now: %zu", inputlen);
 		}
 
                 /*
@@ -591,13 +591,13 @@ main(int argc, char **argv)
 		 * append decoded buffer to decoded JSON strings list
 		 */
 		} else {
-		    dbg(DBG_MED, "decode length: %ju", bufsiz);
+		    dbg(DBG_MED, "decode length: %zu", bufsiz);
 		    jstr = add_decoded_string(buf, bufsiz);
 		    if (jstr == NULL) {
 			warn(__func__, "error adding decoded string to list");
 			success = false;
 		    } else {
-			dbg(DBG_MED, "added string of size %ju to decoded strings list", bufsiz);
+			dbg(DBG_MED, "added string of size %zu to decoded strings list", bufsiz);
 		    }
 		}
 
@@ -623,7 +623,7 @@ main(int argc, char **argv)
 	jstr = jstrdecode_stream(stdin, ignore_nl, quote, json_parse);
 
 	if (jstr != NULL) {
-	    dbg(DBG_MED, "decode length: %ju", jstr->bufsiz);
+	    dbg(DBG_MED, "decode length: %zu", jstr->bufsiz);
 	} else {
 		warn(__func__, "error while decoding processing stdin");
 		success = false;
@@ -646,7 +646,7 @@ main(int argc, char **argv)
      * now write each processed arg to stdout
      */
     for (jstr = json_decoded_strings; jstr != NULL; jstr = jstr->next) {
-	dbg(DBG_MED, "processing decoded JSON string of size: %ju", jstr->bufsiz);
+	dbg(DBG_MED, "processing decoded JSON string of size: %zu", jstr->bufsiz);
 	/*
 	 * write starting escaped quote if requested
 	 */
@@ -655,12 +655,12 @@ main(int argc, char **argv)
 	}
 	buf = jstr->jstr;
 	bufsiz = (uintmax_t)jstr->bufsiz;
-	dbg(DBG_MED, "bufsiz: %ju", bufsiz);
+	dbg(DBG_MED, "bufsiz: %zu", bufsiz);
 	errno = 0;		/* pre-clear errno for warnp() */
 	outputlen = fwrite(buf, 1, bufsiz, stdout);
 	if (outputlen != bufsiz) {
-	    warnp(__func__, "error: wrote %ju bytes out of expected %jd bytes",
-			    (uintmax_t)outputlen, (uintmax_t)bufsiz);
+	    warnp(__func__, "error: wrote %zu bytes out of expected %zd bytes",
+			    outputlen, bufsiz);
 	    success = false;
 	}
 

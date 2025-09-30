@@ -93,6 +93,7 @@ static const char * const usage_msg =
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 
+
 int
 main(int argc, char **argv)
 {
@@ -192,8 +193,8 @@ main(int argc, char **argv)
             if (string_flag_used == true) {
 
                 /* parse arg as a block of json input */
-                dbg(DBG_HIGH, "Calling parse_json_str(%s, %ju, &valid_json):",
-                              input, (uintmax_t)strlen(input));
+                dbg(DBG_HIGH, "Calling parse_json_str(%s, %zu, &valid_json):",
+                              input, strlen(input));
 
                 tree = parse_json_str(input, strlen(input), &valid_json);
                 if (tree == NULL || !valid_json) {

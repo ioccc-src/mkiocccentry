@@ -126,7 +126,7 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(53, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(53, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
@@ -156,10 +156,9 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
      * firewall - check if new_bytes fits in a size_t variable
      */
     if ((double)new_bytes > (double)SIZE_MAX) {
-	err(57, __func__, "the total number of bytes occupied by %jd elements of size %ju is too big "
-			  "and does not fit the bounds of a size_t [%jd,%jd]",
-			  new_allocated, (uintmax_t)array->elm_size,
-			  (intmax_t)SIZE_MIN, (intmax_t)SIZE_MAX);
+	err(57, __func__, "the total number of bytes occupied by %jd elements of size %zu is too big "
+			  "and does not fit the bounds of a size_t [%zu,%zu]",
+			  new_allocated, array->elm_size, SIZE_MIN, SIZE_MAX);
 	not_reached();
     }
 
@@ -180,16 +179,16 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
     array->data = data;
     array->allocated = new_allocated;
     if (moved == true && dbg_allowed(DBG_V5_HIGH)) {
-	dbg(DBG_V5_HIGH, "in %s(array, %jd): moved-place: allocated: %jd elements of size: %ju in use: %jd",
+	dbg(DBG_V5_HIGH, "in %s(array, %jd): moved-place: allocated: %jd elements of size: %zu in use: %jd",
 			  __func__, elms_to_allocate,
 			  dyn_array_alloced(array),
-			  (uintmax_t)array->elm_size,
+			  array->elm_size,
 			  dyn_array_tell(array));
     } else if (dbg_allowed(DBG_V6_HIGH)) {
-	dbg(DBG_V6_HIGH, "in %s(array, %jd): in-place: allocated: %jd elements of size: %ju in use: %jd",
+	dbg(DBG_V6_HIGH, "in %s(array, %jd): in-place: allocated: %jd elements of size: %zu in use: %jd",
 			   __func__, elms_to_allocate,
 			   dyn_array_alloced(array),
-			   (uintmax_t)array->elm_size,
+			   array->elm_size,
 			   dyn_array_tell(array));
     }
 
@@ -653,7 +652,7 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
      * Check preconditions (firewall) - sanity check args
      */
     if (elm_size <= 0) {
-	err(71, __func__, "elm_size must be > 0: %ju", (uintmax_t)elm_size);
+	err(71, __func__, "elm_size must be > 0: %zu", elm_size);
 	not_reached();
     }
     if (chunk <= 0) {
@@ -671,8 +670,7 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(struct dyn_array));
     if (ret == NULL) {
-	errp(74, __func__, "cannot calloc %ju bytes for a struct dyn_array",
-			   (uintmax_t)sizeof(struct dyn_array));
+	errp(74, __func__, "cannot calloc %zu bytes for a struct dyn_array", sizeof(struct dyn_array));
 	not_reached();
     }
 
@@ -698,8 +696,8 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
     ret->data = malloc((size_t)number_of_bytes);
     if (ret->data == NULL) {
 	/* +chunk for guard chunk */
-	errp(75, __func__, "cannot malloc %jd elements of %ju bytes each for dyn_array->data",
-			   (ret->allocated+chunk), (uintmax_t)elm_size);
+	errp(75, __func__, "cannot malloc %jd elements of %zu bytes each for dyn_array->data",
+			   (ret->allocated+chunk), elm_size);
 	not_reached();
     }
 
@@ -714,10 +712,10 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
      * Return newly allocated array
      */
     if (dbg_allowed(DBG_V5_HIGH)) {
-	dbg(DBG_V5_HIGH, "in %s(%ju, %jd, %jd, %s): initialized empty dynamic array, allocated: %jd elements of size: %ju",
-		      __func__, (uintmax_t)elm_size, chunk, start_elm_count,
+	dbg(DBG_V5_HIGH, "in %s(%zu, %jd, %jd, %s): initialized empty dynamic array, allocated: %jd elements of size: %zu",
+		      __func__, elm_size, chunk, start_elm_count,
 		      booltostr(zeroize),
-		      dyn_array_alloced(ret), (uintmax_t)ret->elm_size);
+		      dyn_array_alloced(ret), ret->elm_size);
     }
     return ret;
 }
@@ -766,7 +764,7 @@ dyn_array_append_value(struct dyn_array *array, void *value_to_add)
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(79, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(79, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
@@ -847,7 +845,7 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(86, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(86, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
@@ -1122,12 +1120,12 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
      */
     array->count += count_of_elements_to_add;
     if (dbg_allowed(DBG_V6_HIGH)) {
-	dbg(DBG_V6_HIGH, "in %s(array: %p, array_to_add_p %p, %jd): %s: allocated: %jd elements of size: %ju in use: %jd",
+	dbg(DBG_V6_HIGH, "in %s(array: %p, array_to_add_p %p, %jd): %s: allocated: %jd elements of size: %zu in use: %jd",
 		       __func__, (void *)array, (void *)array_to_add_p,
-		       (intmax_t)count_of_elements_to_add,
+		       count_of_elements_to_add,
 		       (moved == true ? "moved" : "in-place"),
 		       dyn_array_alloced(array),
-		       (uintmax_t)array->elm_size,
+		       array->elm_size,
 		       dyn_array_tell(array));
     }
 
@@ -1188,7 +1186,7 @@ dyn_array_concat_array(struct dyn_array *array, struct dyn_array *other)
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(107, __func__, "array->elm_size in first dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(107, __func__, "array->elm_size in first dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
@@ -1213,7 +1211,7 @@ dyn_array_concat_array(struct dyn_array *array, struct dyn_array *other)
 	not_reached();
     }
     if (other->elm_size <= 0) {
-	err(112, __func__, "other->elm_size in second dynamic array must be > 0: %ju", (uintmax_t)other->elm_size);
+	err(112, __func__, "other->elm_size in second dynamic array must be > 0: %zu", other->elm_size);
 	not_reached();
     }
     if (other->chunk <= 0) {
@@ -1399,13 +1397,13 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
     /* set new in use count */
     array->count = setpoint;
     if (dbg_allowed(DBG_V6_HIGH)) {
-	dbg(DBG_V6_HIGH, "in %s(array, %jd, %s): %s: allocated: %jd elements of size: %ju in use: %jd",
+	dbg(DBG_V6_HIGH, "in %s(array, %lld, %s): %s: allocated: %jd elements of size: %zu in use: %jd",
 		       __func__,
-		       (intmax_t)offset,
+		       (long long)offset,
 		       (whence == SEEK_SET ? "SEEK_SET" : (whence == SEEK_CUR ? "SEEK_CUR" : "SEEK_END")),
 		       (moved == true ? "moved" : "in-place"),
 		       dyn_array_alloced(array),
-		       (uintmax_t)array->elm_size,
+		       array->elm_size,
 		       dyn_array_tell(array));
     }
 
@@ -1448,7 +1446,7 @@ dyn_array_clear(struct dyn_array *array)
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(125, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(125, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
@@ -1477,11 +1475,8 @@ dyn_array_clear(struct dyn_array *array)
      */
     array->count = 0;
     if (dbg_allowed(DBG_V3_HIGH)) {
-	dbg(DBG_V3_HIGH, "in %s(array) not-moved: allocated: %jd elements of size: %ju in use: %jd",
-		     __func__,
-		     dyn_array_alloced(array),
-		     (uintmax_t)array->elm_size,
-		     dyn_array_tell(array));
+	dbg(DBG_V3_HIGH, "in %s(array) not-moved: allocated: %jd elements of size: %zu in use: %jd",
+		     __func__, dyn_array_alloced(array), array->elm_size, dyn_array_tell(array));
     }
     return;
 }
@@ -1586,7 +1581,7 @@ dyn_array_qsort(struct dyn_array *array, int (*compar)(const void *, const void 
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(134, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(134, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
@@ -1670,7 +1665,7 @@ dyn_array_qsort_r(struct dyn_array *array, void *thunk, int (*compar)(void *, co
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(141, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(141, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
@@ -1745,7 +1740,7 @@ dyn_array_heapsort(struct dyn_array *array, int (*compar)(const void *, const vo
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(148, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(148, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
@@ -1822,7 +1817,7 @@ dyn_array_mergesort(struct dyn_array *array, int (*compar)(const void *, const v
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(155, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(155, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {

@@ -120,7 +120,6 @@ static void fprarray(FILE *stream, struct json_array *item);
 static void fprelements(FILE *stream, struct json_elements *item);
 
 
-
 /*
  * json_dbg_allowed - determine if verbosity level allows for JSON debug messages are allowed
  *
@@ -932,6 +931,7 @@ json_item_type_name(const struct json *node)
     return name;
 }
 
+
 /*
  * json_get_type_str - print a struct json string (original match in scanner/parser)
  *
@@ -1083,6 +1083,7 @@ open_json_dir_file(char const *dir, char const *filename)
     }
     return tree;
 }
+
 
 /*
  * json_free - free storage of a single JSON parse tree node
@@ -1618,6 +1619,7 @@ fprnumber(FILE *stream, char *prestr, struct json_number *item, char *midstr, ch
     return;
 }
 
+
 /*
  * fprstring - print information about a json_string on a stream
  *
@@ -1652,7 +1654,7 @@ fprstring(FILE *stream, struct json_string *item)
          * https://github.com/xexyl/jparse/blob/master/jparse_library_README.md
          * for how to parse the string.
          */
-        fprint(stream, "\tlen{%s%s%s%s%s%s%s%s%s}: %ju\tvalue:\t",
+        fprint(stream, "\tlen{%s%s%s%s%s%s%s%s%s}: %zu\tvalue:\t",
                         PARSED_JSON_NODE(item)?"p":"",
                         CONVERTED_PARSED_JSON_NODE(item)?",":":",
                         CONVERTED_PARSED_JSON_NODE(item)?"c:":"",
@@ -1662,7 +1664,7 @@ fprstring(FILE *stream, struct json_string *item)
                         item->posix_safe ? "P" : "",
                         item->first_alphanum ? "a" : "",
                         item->upper ? "U" : "",
-                        (uintmax_t)item->str_len);
+                        item->str_len);
         (void) fprint_line_buf(stream, item->str, item->str_len, '"', '"');
 
     /*
@@ -1682,6 +1684,7 @@ fprstring(FILE *stream, struct json_string *item)
                         CONVERTED_PARSED_JSON_NODE(item)?"c":"");
     }
 }
+
 
 /*
  * fprboolean - print information about a json_boolean on a stream
@@ -1733,6 +1736,7 @@ fprboolean(FILE *stream, struct json_boolean *item)
     }
 }
 
+
 /*
  * fprnull - print information about a json_null on a stream
  *
@@ -1781,6 +1785,7 @@ fprnull(FILE *stream, struct json_null *item)
                         CONVERTED_PARSED_JSON_NODE(item)?"c":"");
     }
 }
+
 
 /*
  * fprmember - print information about a json_member on a stream
@@ -1875,6 +1880,7 @@ fprmember(FILE *stream, struct json_member *item)
     }
 }
 
+
 /*
  * fprobject - print information about a json_object on a stream
  *
@@ -1902,7 +1908,7 @@ fprobject(FILE *stream, struct json_object *item)
      */
     if (CONVERTED_PARSED_JSON_NODE(item)) {
 
-        fprint(stream, "\t{%s%s}len: %ju",
+        fprint(stream, "\t{%s%s}len: %zu",
                        PARSED_JSON_NODE(item)?"p":"",
                        CONVERTED_PARSED_JSON_NODE(item)?"c":"",
                        item->len);
@@ -1931,6 +1937,7 @@ fprobject(FILE *stream, struct json_object *item)
     }
 
 }
+
 
 /*
  * fprarray - print information about a json_array on a stream
@@ -1959,7 +1966,7 @@ fprarray(FILE *stream, struct json_array *item)
      */
     if (CONVERTED_PARSED_JSON_NODE(item)) {
 
-        fprint(stream, "\t{%s%s}len: %ju",
+        fprint(stream, "\t{%s%s}len: %zu",
                        PARSED_JSON_NODE(item)?"p":"",
                        CONVERTED_PARSED_JSON_NODE(item)?"c":"",
                        item->len);
@@ -1989,6 +1996,7 @@ fprarray(FILE *stream, struct json_array *item)
 
 
 }
+
 
 /*
  * fprelements - print information about a json_element on a stream
@@ -2017,7 +2025,7 @@ fprelements(FILE *stream, struct json_elements *item)
      */
     if (CONVERTED_PARSED_JSON_NODE(item)) {
 
-        fprint(stream, "\t{%s%s}len: %ju",
+        fprint(stream, "\t{%s%s}len: %zu",
                        PARSED_JSON_NODE(item)?"p":"",
                        CONVERTED_PARSED_JSON_NODE(item)?"c":"",
                        item->len);
@@ -2045,6 +2053,7 @@ fprelements(FILE *stream, struct json_elements *item)
                         CONVERTED_PARSED_JSON_NODE(item)?"c":"");
     }
 }
+
 
 /*
  * vjson_fprint - print a line about a JSON parse tree node in va_list form
@@ -2662,6 +2671,7 @@ vjson_tree_walk(struct json *node, unsigned int max_depth, unsigned int depth, b
     return;
 }
 
+
 /*
  * json_util_parse_number_range	- parse a number ranges
  *
@@ -2791,6 +2801,7 @@ json_util_parse_number_range(const char *option, char *optarg, bool allow_negati
     return true;
 }
 
+
 /*
  * json_util_number_in_range   - check if number is in required range
  *
@@ -2862,6 +2873,7 @@ json_util_number_in_range(intmax_t number, intmax_t total_matches, struct json_u
     return false; /* no match */
 }
 
+
 /*
  * json_util_parse_st_level_option    - parse -L [num]{s,t}/-b level option
  *
@@ -2932,6 +2944,7 @@ json_util_parse_st_level_option(char *optarg, uintmax_t *num_level_spaces, bool 
     }
 }
 
+
 /*
  * json_util_parse_match_types	- parse -t types list
  *
@@ -2997,6 +3010,7 @@ json_util_parse_match_types(char *optarg)
     return type;
 }
 
+
 /*
  * json_util_match_none	- if no types should match
  *
@@ -3013,6 +3027,7 @@ json_util_match_none(uintmax_t types)
 {
     return types == JSON_UTIL_MATCH_TYPE_NONE;
 }
+
 
 /*
  * json_util_match_int	- if ints should match
@@ -3041,6 +3056,8 @@ json_util_match_int(uintmax_t types)
 {
     return (types & JSON_UTIL_MATCH_TYPE_INT) != 0;
 }
+
+
 /*
  * json_util_match_float	- if floats should match
  *
@@ -3068,6 +3085,8 @@ json_util_match_float(uintmax_t types)
 {
     return (types & JSON_UTIL_MATCH_TYPE_FLOAT) != 0;
 }
+
+
 /*
  * json_util_match_exp	- if exponents should match
  *
@@ -3095,6 +3114,8 @@ json_util_match_exp(uintmax_t types)
 {
     return (types & JSON_UTIL_MATCH_TYPE_EXP) != 0;
 }
+
+
 /*
  * json_util_match_num	- if numbers of any type should match
  *
@@ -3123,6 +3144,8 @@ json_util_match_num(uintmax_t types)
     return ((types & JSON_UTIL_MATCH_TYPE_NUM)||(types & JSON_UTIL_MATCH_TYPE_INT) || (types & JSON_UTIL_MATCH_TYPE_FLOAT) ||
 	    (types & JSON_UTIL_MATCH_TYPE_EXP))!= 0;
 }
+
+
 /*
  * json_util_match_bool	- if booleans should match
  *
@@ -3150,6 +3173,8 @@ json_util_match_bool(uintmax_t types)
 {
     return (types & JSON_UTIL_MATCH_TYPE_BOOL) != 0;
 }
+
+
 /*
  * json_util_match_string	    - if strings should match
  *
@@ -3177,6 +3202,8 @@ json_util_match_string(uintmax_t types)
 {
     return (types & JSON_UTIL_MATCH_TYPE_STR) != 0;
 }
+
+
 /*
  * json_util_match_null	- if null should match
  *
@@ -3204,6 +3231,8 @@ json_util_match_null(uintmax_t types)
 {
     return (types & JSON_UTIL_MATCH_TYPE_NULL) != 0;
 }
+
+
 /*
  * json_util_match_simple	- if simple types should match
  *

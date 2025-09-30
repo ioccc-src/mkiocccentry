@@ -357,7 +357,7 @@ main(int argc, char *argv[])
      * create dynamic array
      */
     array = dyn_array_create(sizeof(double), CHUNK, CHUNK, true);
-    dbg(DBG_MED, "created array of size %ju", (uintmax_t)CHUNK);
+    dbg(DBG_MED, "created array of size %d", CHUNK);
 
     /*
      * load a million doubles
@@ -385,10 +385,10 @@ main(int argc, char *argv[])
     dbg(DBG_HIGH, "determining size of array");
     len = dyn_array_tell(array);
     if (len != 1000000) {
-	warn(__func__, "dyn_array_tell(array): %jd != %jd", len, (intmax_t)1000000);
+	warn(__func__, "dyn_array_tell(array): %jd != %d", len, 1000000);
 	error = true;
     }
-    dbg(DBG_VHIGH, "array size is %ju", (uintmax_t)len);
+    dbg(DBG_VHIGH, "array size is %jd", len);
 
     /*
      * qsort array that is already sorted
@@ -499,7 +499,7 @@ main(int argc, char *argv[])
     dbg(DBG_HIGH, "determining new size of array");
     len = dyn_array_tell(array);
     if (len != 2000000) {
-	warn(__func__, "dyn_array_tell(array): %jd != %jd", len, (intmax_t)2000000);
+	warn(__func__, "dyn_array_tell(array): %jd != %d", len, 2000000);
 	error = true;
     }
     dbg(DBG_VHIGH, "new size of array is %ju", (uintmax_t)len);

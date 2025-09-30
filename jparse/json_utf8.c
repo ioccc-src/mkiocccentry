@@ -45,6 +45,7 @@
 #include <ctype.h>
 #include "json_utf8.h"
 
+
 /*
  * count_utf8_bytes	- count bytes needed to decode/encode in str
  *
@@ -76,18 +77,18 @@ utf8len(const char *str, int32_t surrogate)
 	x = surrogate;
 	if (x < 0x80) {
 	    len = 1;
-	    dbg(DBG_VVHIGH, "%X length %jd", x, (intmax_t)len);
+	    dbg(DBG_VVHIGH, "%X length %zd", x, len);
 	} else if (x < 0x800) {
 	    len = 2;
-	    dbg(DBG_VVHIGH, "%X length %jd", x, (intmax_t)len);
+	    dbg(DBG_VVHIGH, "%X length %zd", x, len);
 	} else if (x < 0x10000) {
 	    len = 3;
-	    dbg(DBG_VVHIGH, "%X length %jd", x, (intmax_t)len);
+	    dbg(DBG_VVHIGH, "%X length %zd", x, len);
 	} else if (x < 0x110000) {
 	    len = 4;
-	    dbg(DBG_VVHIGH, "%X length %jd", x, (intmax_t)len);
+	    dbg(DBG_VVHIGH, "%X length %zd", x, len);
 	} else {
-	    warn(__func__, "%X: illegal value, len: %jd\n", x, (intmax_t)len);
+	    warn(__func__, "%X: illegal value, len: %zd\n", x, len);
 	    len = -1;
 	}
 
@@ -133,24 +134,25 @@ utf8len(const char *str, int32_t surrogate)
 	 */
 	if (x < 0x80) {
 	    len = 1;
-	    dbg(DBG_VVHIGH, "%X length %jd", x, (intmax_t)len);
+	    dbg(DBG_VVHIGH, "%X length %zd", x, len);
 	} else if (x < 0x800) {
 	    len = 2;
-	    dbg(DBG_VVHIGH, "%X length %jd", x, (intmax_t)len);
+	    dbg(DBG_VVHIGH, "%X length %zd", x, len);
 	} else if (x < 0x10000) {
 	    len = 3;
-	    dbg(DBG_VVHIGH, "%X length %jd", x, (intmax_t)len);
+	    dbg(DBG_VVHIGH, "%X length %zd", x, len);
 	} else if (x < 0x110000) {
 	    len = 4;
-	    dbg(DBG_VVHIGH, "%X length %jd", x, (intmax_t)len);
+	    dbg(DBG_VVHIGH, "%X length %zd", x, len);
 	} else {
-	    warn(__func__, "%X: illegal value, len %jd\n", x, (intmax_t)len);
+	    warn(__func__, "%X: illegal value, len %zd\n", x, len);
 	    len = -1;
 	}
     }
 
     return len;
 }
+
 
 /*
  * surrogate_pair_to_codepoint - convert surrogate pair to a single codepoint
@@ -193,9 +195,10 @@ surrogate_pair_to_codepoint(int32_t hi, int32_t lo)
 	return -1;
     }
     codepoint = ((hi - 0xD800) << 10) + (lo - 0xDC00) + 0x10000;
-    dbg(DBG_VVHIGH, "codepoint: %jd", (intmax_t)codepoint);
+    dbg(DBG_VVHIGH, "codepoint: %d", codepoint);
     return codepoint;
 }
+
 
 /*
  * codepoint_to_unicode - convert a codepoint to Unicode
@@ -313,6 +316,7 @@ codepoint_to_unicode(char *output, unsigned int codepoint)
     return len;
 }
 
+
 /*
  * utf8_to_codepoint - convert UTF-8 byte(s) to a codepoint
  *
@@ -348,6 +352,7 @@ uint32_t utf8_to_codepoint(const char *str)
     warn(__func__, "invalid UTF-8 sequence");
     return 0;
 }
+
 
 /*
  * is_surrogate_pair    - detect if valid surrogate pair

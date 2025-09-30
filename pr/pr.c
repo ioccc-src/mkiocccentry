@@ -649,7 +649,7 @@ readline(char **linep, FILE * stream)
 	(*linep)[ret - 1] = '\0';	/* clear newline */
 	--ret;
     }
-    dbg(DBG_VVVHIGH, "read %jd bytes + newline into %ju byte buffer", (intmax_t)ret, (uintmax_t)linecap);
+    dbg(DBG_VVVHIGH, "read %zd bytes + newline into %zu byte buffer", ret, linecap);
 
     /*
      * return length of line without the trailing newline
@@ -706,7 +706,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
 	 */
 	return NULL;
     }
-    dbg(DBG_VVHIGH, "readline returned %jd bytes", (intmax_t)len);
+    dbg(DBG_VVHIGH, "readline returned %zd bytes", len);
 
     /*
      * duplicate the line
@@ -714,7 +714,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc((size_t)len+1+1, sizeof(*ret));
     if (ret == NULL) {
-	errp(100, __func__, "calloc of read line of %jd bytes failed", (intmax_t)len+1+1);
+	errp(100, __func__, "calloc of read line of %zd bytes failed", len+1+1);
 	not_reached();
     }
     memcpy(ret, *linep, (size_t)len);
@@ -736,7 +736,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
 		}
 	    }
 	}
-	dbg(DBG_VVHIGH, "readline, after trailing whitespace stripped, is %jd bytes", (intmax_t)len);
+	dbg(DBG_VVHIGH, "readline, after trailing whitespace stripped, is %zd bytes", len);
     }
     if (lenp != NULL) {
 	*lenp = (size_t)len;
@@ -871,8 +871,8 @@ read_all(FILE *stream, size_t *psize)
 	errno = 0;			/* pre-clear errno for warnp() */
 	last_read = fread(read_buf, sizeof(uint8_t), READ_ALL_CHUNK, stream);
 	fread_errno = errno;	/* save errno from fread() call for later reporting if needed */
-	dbg(DBG_VVHIGH, "%s: fread(read_buf, %ju, %d, stream) read cycle: %ld returned: %jd",
-			 __func__, (uintmax_t)sizeof(uint8_t), READ_ALL_CHUNK, read_cycle, (intmax_t)last_read);
+	dbg(DBG_VVHIGH, "%s: fread(read_buf, %zu, %d, stream) read cycle: %ld returned: %zd",
+			 __func__, sizeof(uint8_t), READ_ALL_CHUNK, read_cycle, last_read);
 	++read_cycle;
 
 	/*
@@ -906,14 +906,14 @@ read_all(FILE *stream, size_t *psize)
 
 	    /* report the I/O condition */
 	    if (feof(stream)) {
-		dbg(DBG_HIGH, "fread returned: %ju normal EOF reading stream at: %jd bytes",
-			      (uintmax_t)last_read, used);
+		dbg(DBG_HIGH, "fread returned: %zu normal EOF reading stream at: %jd bytes",
+			      last_read, used);
 	    } else if (ferror(stream)) {
-		warnp(__func__, "fread returned: %ju I/O error detected while reading stream at: %jd bytes",
-			        (uintmax_t)last_read, used);
+		warnp(__func__, "fread returned: %zu I/O error detected while reading stream at: %jd bytes",
+			        last_read, used);
 	    } else {
-		warnp(__func__, "fread returned %ju although neither the EOF nor ERROR flag were set: "
-				"assuming EOF anyway", (uintmax_t)last_read);
+		warnp(__func__, "fread returned %jd although neither the EOF nor ERROR flag were set: "
+				"assuming EOF anyway", last_read);
 	    }
 
 	    /*
@@ -922,9 +922,9 @@ read_all(FILE *stream, size_t *psize)
 	    break;
 	}
     } while (true);
-    dbg(DBG_VVHIGH, "%s(stream, psize): last_read: %ju total bytes: %jd allocated: %jd "
+    dbg(DBG_VVHIGH, "%s(stream, psize): last_read: %jd total bytes: %jd allocated: %jd "
 		    "read_cycle: %ld move_cycle: %ld seek_cycle: %ld",
-		    __func__, (uintmax_t)last_read, dyn_array_tell(array), dyn_array_alloced(array),
+		    __func__, last_read, dyn_array_tell(array), dyn_array_alloced(array),
 		    read_cycle, move_cycle, dyn_array_seek_cycle);
 
     /*

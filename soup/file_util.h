@@ -291,8 +291,8 @@ extern void touchat(char const *path, mode_t mode, char const *dir, int dirfd);
 extern int mkdirs(int dirfd, const char *str, mode_t mode);
 extern char const *path_sanity_name(enum path_sanity sanity);
 extern char const *path_sanity_error(enum path_sanity sanity);
-extern char *canon_path(char const *orig_path, uintmax_t max_path_len, uintmax_t max_filename_len, uintmax_t max_depth,
-			enum path_sanity *sanity_p, uintmax_t *len_p, uintmax_t *depth_p,
+extern char *canon_path(char const *orig_path, size_t max_path_len, size_t max_filename_len, int32_t max_depth,
+			enum path_sanity *sanity_p, size_t *len_p, int32_t *depth_p,
 			bool rel_only, bool any_case, bool safe_chk);
 extern bool path_has_component(char const *path, char const *name);
 extern char *calloc_path(char const *dirname, char const *filename);

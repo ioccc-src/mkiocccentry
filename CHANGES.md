@@ -1,6 +1,60 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## release 2.7.3 2025-09-29
+
+Updates from [dbg repo](https://github.com/lcn2/dbg).
+
+Updates from [dyn_array repo](https://github.com/lcn2/dyn_array).
+
+Updates from [pr repo](https://github.com/lcn2/pr).
+
+Improved portability of formatting certain types.
+
+Clean up use of `PRIdMAX` and `PRIuMAX`.
+Clean up use of `intmax_t` and `uintmax_t`.
+Clean up use of `size_t`, `ssize_t` and `off_t`.
+
+- Where `intmax_t` is used, format with `%jd`
+- Where `uintmax_t` is used, format with `%ju`
+- Where `off_t` is used, format with `%lld` with (long long) cast.
+- Where `size_t` is used, format with `%zu`
+- Where `ssize_t` is used, format with `%zd`
+- Where `ptrdiff_t` is used, format with `%td`
+- Where `int32_t` is used, format with `%d`
+- Where `uint32_t` is used, format with `%u`
+
+While `PRIdMAX` and `PRIuMAX are deemed more portable by some, they only impact
+C **PRIOR to C99** as C99 standard helps here as it defines new `%z`,
+`%j`, and `%t` formats for printing `size_t`, `intmax_t`, and `ptrdiff_t`
+sizes respectively.
+
+Use `size_t` type for path and path item lengths.
+
+Use `int32_t` type for tree depths, and reserve depths >0 for future use.
+
+Changed `CHKENTRY_VERSION` from "2.1.0 2025-08-28"
+to "2.1.1 2025-09-29".
+
+Changed `IOCCCSIZE_VERSION` from "29.0 2025-08-16"
+to "29.0.1 2025-09-29".
+
+Changed `FNAMCHK_VERSION` from "2.1.1 2025-09-23"
+to "2.1.2 2025-09-29".
+
+Changed `TXZCHK_VERSION` from "2.0.6 2025-08-30"
+to "2.0.7 2025-09-29".
+
+Changed `FILE_UTIL_TEST_VERSION` from "2.0.3 2025-09-27"
+to "2.0.4 2025-09-29".
+
+Changed `SOUP_VERSION` from "2.1.0 2025-09-27"
+to "2.1.1 2025-09-29".
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "2.7.2 2025-09-27"
+to "2.7.3 2025-09-29".
+
+
 ## Release 2.7.2 2025-09-23
 
 Made `check_default_handle_map()` a static function.  When `default_handle(NULL)`

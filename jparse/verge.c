@@ -220,6 +220,7 @@ vercmp(char *ver1, char *ver2)
     return 0;
 }
 
+
 /*
  * allocate_vers - convert version string into an allocated array or version numbers
  *
@@ -340,8 +341,8 @@ allocate_vers(char *str, intmax_t **pvers)
 	    ++dot_count;
 	} else {
 	    /* report invalid version string */
-	    dbg(DBG_HIGH, "trimmed version string contains non-version character: wstr[%ju] = <%c>: <%s>",
-			 (uintmax_t)i, wstr[i], wstr);
+	    dbg(DBG_HIGH, "trimmed version string contains non-version character: wstr[%zu] = <%c>: <%s>",
+			 i, wstr[i], wstr);
 	    /* free strdup()d string if != NULL */
 	    if (wstr_start != NULL) {
 		free(wstr_start);
@@ -351,7 +352,7 @@ allocate_vers(char *str, intmax_t **pvers)
 	}
     }
     dbg(DBG_HIGH, "trimmed version string is valid format: <%s>", wstr);
-    dbg(DBG_VHIGH, "trimmed version string has %ju '.'s in it: <%s>", (uintmax_t)dot_count, wstr);
+    dbg(DBG_VHIGH, "trimmed version string has %zu '.'s in it: <%s>", dot_count, wstr);
 
     /*
      * we now know the version string is valid format: ([0-9]+\.)*[0-9]+
@@ -361,7 +362,7 @@ allocate_vers(char *str, intmax_t **pvers)
     errno = 0;		/* pre-clear errno for errp() */
     *pvers = (intmax_t *)calloc(dot_count+1+1, sizeof(**pvers));
     if (*pvers == NULL) {
-	errp(59, __func__, "cannot calloc %ju intmax_ts", (uintmax_t)dot_count+1+1);
+	errp(59, __func__, "cannot calloc %zu intmax_ts", dot_count+1+1);
 	not_reached();
     }
 
@@ -372,9 +373,9 @@ allocate_vers(char *str, intmax_t **pvers)
          i <= dot_count && word != NULL;
 	 ++i, word=strtok_r(NULL, ".", &brkt)) {
 	/* word is the next version string - convert to integer */
-	dbg(DBG_VVVHIGH, "version level %ju word: <%s>", (uintmax_t)i, word);
+	dbg(DBG_VVVHIGH, "version level %zu word: <%s>", i, word);
 	(void) string_to_intmax(word, &(*pvers)[i]);
-	dbg(DBG_VVHIGH, "version level %ju: %jd", (uintmax_t)i, (*pvers)[i]);
+	dbg(DBG_VVHIGH, "version level %zu: %jd", i, (*pvers)[i]);
     }
 
     /* we no longer need the duplicated string */

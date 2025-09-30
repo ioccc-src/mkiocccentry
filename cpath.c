@@ -139,7 +139,7 @@ static int exit_code = 0;		/* exit with this code */
 /*
  * forward declarations
  */
-static void process_sanity(char const *cpath, enum path_sanity sanity, uintmax_t path_len, uintmax_t deep);
+static void process_sanity(char const *cpath, enum path_sanity sanity, size_t path_len, int32_t deep);
 static void usage(int exitcode, char const *prog, char const *str);
 
 
@@ -148,14 +148,14 @@ main(int argc, char *argv[])
 {
     char const *program = NULL;	/* our name */
     bool opt_error = false;	/* fchk_inval_opt() return */
-    uintmax_t max_path_len = 0;	/* max canonicalized path length, 0 ==> no limit */
-    uintmax_t max_filename_len = 0; /* max length of each component of path, 0 ==> no limit */
-    uintmax_t max_depth = 0;	/* max canonicalized path depth where 0 is the topdir, 0 ==> no limit */
+    size_t max_path_len = 0;	/* max canonicalized path length, 0 ==> no limit */
+    size_t max_filename_len = 0; /* max length of each component of path, 0 ==> no limit */
+    int32_t max_depth = 0;	/* max canonicalized path depth where 0 is the topdir, 0 ==> no limit */
     bool only_relative = false;	/* true ==> true ==> path from "/" (slash) NOT allowed, false ==> absolute paths allowed */
     bool any_case = true;	/* true ==> don't change path case, false ==> convert UPPER CASE to lower case */
     bool safe_chk = false;	/* true ==> safety test each canonical path component, false ==> don't check */
-    uintmax_t path_len = 0;     /* full path length */
-    uintmax_t deep = 0;         /* dynamic array stack depth */
+    size_t path_len = 0;     /* full path length */
+    int32_t deep = 0;         /* dynamic array stack depth */
     enum path_sanity sanity = PATH_OK;	/* canon_path() error code, or PATH_OK */
     char *line = NULL;		/* stdin readline() buffer */
     ssize_t readline_ret = 0;	/* return from readline() */
@@ -192,25 +192,25 @@ main(int argc, char *argv[])
 	    break;
 	case 'm':
 	    errno = 0;
-	    max_path_len = strtoumax(optarg, NULL, 0);
+	    max_path_len = (size_t) strtoumax(optarg, NULL, 0);
 	    if (errno != 0) {
-		errp(3, program, "unable to convert -m %s into a uintmax_t", optarg); /*ooo*/
+		errp(3, program, "unable to convert -m %s into a size_t", optarg); /*ooo*/
 		not_reached();
 	    }
 	    break;
 	case 'M':
 	    errno = 0;
-	    max_filename_len = strtoumax(optarg, NULL, 0);
+	    max_filename_len = (size_t) strtoumax(optarg, NULL, 0);
 	    if (errno != 0) {
-		errp(3, program, "unable to convert -M %s into a uintmax_t", optarg); /*ooo*/
+		errp(3, program, "unable to convert -M %s into a size_t", optarg); /*ooo*/
 		not_reached();
 	    }
 	    break;
 	case 'd':
 	    errno = 0;
-	    max_depth = strtoumax(optarg, NULL, 0);
+	    max_depth = (int32_t) strtol(optarg, NULL, 0);
 	    if (errno != 0) {
-		errp(3, program, "unable to convert -d %s into a uintmax_t", optarg); /*ooo*/
+		errp(3, program, "unable to convert -d %s into a int32_t", optarg); /*ooo*/
 		not_reached();
 	    }
 	    break;
@@ -243,17 +243,17 @@ main(int argc, char *argv[])
      * debugging - print conditions
      */
     if (max_path_len > 0) {
-	dbg(DBG_MED, "max canonicalized path length: %" PRIuMAX, max_path_len);
+	dbg(DBG_MED, "max canonicalized path length: %zu", max_path_len);
     } else {
 	dbg(DBG_MED, "max canonicalized path length is unlimited");
     }
     if (max_filename_len > 0) {
-	dbg(DBG_MED, "max length of each component: %" PRIuMAX, max_filename_len);
+	dbg(DBG_MED, "max length of each component: %zu", max_filename_len);
     } else {
 	dbg(DBG_MED, "max length of each component is unlimited");
     }
     if (max_depth > 0) {
-	dbg(DBG_MED, "max canonicalized path depth: %" PRIuMAX, max_depth);
+	dbg(DBG_MED, "max canonicalized path depth: %d", max_depth);
     } else {
 	dbg(DBG_MED, "max canonicalized path depth is unlimited");
     }
@@ -352,7 +352,7 @@ main(int argc, char *argv[])
  *	deep	    dynamic array stack depth
  */
 static void
-process_sanity(char const *cpath, enum path_sanity sanity, uintmax_t path_len, uintmax_t deep)
+process_sanity(char const *cpath, enum path_sanity sanity, size_t path_len, int32_t deep)
 {
 
     /*
@@ -362,8 +362,8 @@ process_sanity(char const *cpath, enum path_sanity sanity, uintmax_t path_len, u
     case PATH_OK:
 
 	/* debugging - print results */
-	dbg(DBG_MED, "canonicalized path length: %" PRIuMAX, path_len);
-	dbg(DBG_MED, "canonicalized path depth: %" PRIuMAX, deep);
+	dbg(DBG_MED, "canonicalized path length: %zu", path_len);
+	dbg(DBG_MED, "canonicalized path depth: %d", deep);
 
 	/* print canonical path on stdout */
 	if (cpath == NULL) {

@@ -146,7 +146,6 @@ main(int argc, char **argv)
     struct dyn_array *paths = NULL;     /* to test find_paths() */
     struct dyn_array *paths_found = NULL;   /* to test find_paths() */
     uintmax_t len = 0;                 /* length of arrays */
-    uintmax_t j = 0;                   /* for arrays */
     intmax_t idx = 0;                  /* for find_path_in_array() */
     struct fts fts;		        /* for read_fts(), find_path() and find_paths() */
     off_t size1 = 0;			/* for checking size_if_file() */
@@ -154,6 +153,7 @@ main(int argc, char **argv)
     struct json *tree = NULL;           /* check that the jparse.json file is valid JSON */
     int ret;
     int i;
+    uintmax_t j = 0;                   /* for arrays */
 
     /*
      * use default locale based on LANG
@@ -1233,7 +1233,7 @@ main(int argc, char **argv)
     relpath = "foo/bar/baz";
     comps = count_dirs(relpath);
     if (comps != 2) {
-        err(91, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
+        err(91, __func__, "count_dirs(\"%s\"): %zu != 2", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 2", relpath);
@@ -1245,7 +1245,7 @@ main(int argc, char **argv)
     relpath = "foo//baz";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(92, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(92, __func__, "count_dirs(\"%s\"): %zu != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -1257,7 +1257,7 @@ main(int argc, char **argv)
     relpath = "///";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(93, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(93, __func__, "count_dirs(\"%s\"): %zu != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -1269,7 +1269,7 @@ main(int argc, char **argv)
     relpath = "/";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(94, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(94, __func__, "count_dirs(\"%s\"): %zu != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -1281,7 +1281,7 @@ main(int argc, char **argv)
     relpath = "foo///";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(95, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(95, __func__, "count_dirs(\"%s\"): %zu != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -1293,7 +1293,7 @@ main(int argc, char **argv)
     relpath = "";
     comps = count_dirs(relpath);
     if (comps != 0) {
-        err(96, __func__, "count_dirs(\"%s\"): %ju != 0", relpath, comps);
+        err(96, __func__, "count_dirs(\"%s\"): %zu != 0", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 0", relpath);
@@ -1305,7 +1305,7 @@ main(int argc, char **argv)
     relpath = "foo/..//foo";
     comps = count_dirs(relpath);
     if (comps != 2) {
-        err(97, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
+        err(97, __func__, "count_dirs(\"%s\"): %zu != 2", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 2", relpath);
@@ -1317,7 +1317,7 @@ main(int argc, char **argv)
     relpath = "foo/..//foo/3/";
     comps = count_dirs(relpath);
     if (comps != 4) {
-        err(98, __func__, "count_dirs(\"%s\"): %ju != 4", relpath, comps);
+        err(98, __func__, "count_dirs(\"%s\"): %zu != 4", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 4", relpath);
@@ -1329,7 +1329,7 @@ main(int argc, char **argv)
     relpath = "foo/../foo";
     comps = count_dirs(relpath);
     if (comps != 2) {
-        err(99, __func__, "count_dirs(\"%s\"): %ju != 2", relpath, comps);
+        err(99, __func__, "count_dirs(\"%s\"): %zu != 2", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 2", relpath);
@@ -1341,7 +1341,7 @@ main(int argc, char **argv)
     relpath = "foo/../foo/3/";
     comps = count_dirs(relpath);
     if (comps != 4) {
-        err(100, __func__, "count_dirs(\"%s\"): %ju != 4", relpath, comps);
+        err(100, __func__, "count_dirs(\"%s\"): %zu != 4", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 4", relpath);
@@ -1353,7 +1353,7 @@ main(int argc, char **argv)
     relpath = "foo//foo";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(101, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(101, __func__, "count_dirs(\"%s\"): %zu != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -1365,7 +1365,7 @@ main(int argc, char **argv)
     relpath = "foo//foo/3/";
     comps = count_dirs(relpath);
     if (comps != 3) {
-        err(102, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
+        err(102, __func__, "count_dirs(\"%s\"): %zu != 3", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 3", relpath);
@@ -1377,7 +1377,7 @@ main(int argc, char **argv)
     relpath = "foo/foo";
     comps = count_dirs(relpath);
     if (comps != 1) {
-        err(103, __func__, "count_dirs(\"%s\"): %ju != 1", relpath, comps);
+        err(103, __func__, "count_dirs(\"%s\"): %zu != 1", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 1", relpath);
@@ -1389,7 +1389,7 @@ main(int argc, char **argv)
     relpath = "foo/foo/3/";
     comps = count_dirs(relpath);
     if (comps != 3) {
-        err(104, __func__, "count_dirs(\"%s\"): %ju != 3", relpath, comps);
+        err(104, __func__, "count_dirs(\"%s\"): %zu != 3", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_dirs(\"%s\") == 3", relpath);
@@ -1405,7 +1405,7 @@ main(int argc, char **argv)
     relpath = "foo,bar,,,";
     comps = count_comps(relpath, ',', true);
     if (comps != 2) {
-        err(105, __func__, "count_comps(\"%s\", ',', true): %ju != 2", relpath, comps);
+        err(105, __func__, "count_comps(\"%s\", ',', true): %zu != 2", relpath, comps);
         not_reached();
     } else {
         fdbg(stderr, DBG_MED, "count_comps(\"%s\", ',', true) == 2", relpath);
@@ -1473,7 +1473,7 @@ main(int argc, char **argv)
             not_reached();
         }
         bytes = copyfile(relpath, "test_file_util.copy.c", true, 0);
-        fdbg(stderr, DBG_MED, "copyfile(\"%s\", \"test_file_util.copy.c\", true, 0): %ju bytes", relpath, (uintmax_t)bytes);
+        fdbg(stderr, DBG_MED, "copyfile(\"%s\", \"test_file_util.copy.c\", true, 0): %zu bytes", relpath, bytes);
         errno = 0; /* pre-clear errno for errp() */
         if (stat("test_file_util.copy.c", &out_st) != 0) {
             errp(112, __func__, "couldn't stat file test_file_util.copy.c");
@@ -1520,8 +1520,8 @@ main(int argc, char **argv)
     relpath = calloc_path("test_ioccc", __FILE__);
     if (relpath != NULL) {
         bytes = copyfile(relpath, "test_file_util.copy.c", false, S_IRUSR|S_IWUSR);
-        fdbg(stderr, DBG_MED, "copyfile(\"%s\", \"test_file_util.copy.c\", false, S_IRUSR|S_IWUSR): %ju bytes", relpath,
-                (uintmax_t)bytes);
+        fdbg(stderr, DBG_MED, "copyfile(\"%s\", \"test_file_util.copy.c\", false, S_IRUSR|S_IWUSR): %zu bytes",
+		relpath, bytes);
 
         /*
          * verify that the st_mode is correct
@@ -1569,7 +1569,7 @@ main(int argc, char **argv)
      */
     relpath = calloc_path("test_ioccc", "test_file_util.o");
     bytes = copyfile(relpath, "test_file_util.copy.o", true, 0);
-    fdbg(stderr, DBG_MED, "copyfile(\"%s\", \"test_file_util.copy.c\", true, 0): %ju bytes", relpath, (uintmax_t)bytes);
+    fdbg(stderr, DBG_MED, "copyfile(\"%s\", \"test_file_util.copy.c\", true, 0): %zu bytes", relpath, bytes);
 
     /*
      * make sure test_file_util.o st_mode is the same as test_file_util.copy.o
@@ -2289,7 +2289,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(164, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(164, __func__, "found NULL pointer at paths_found[%ju]", j);
                 not_reached();
             }
 
@@ -2298,13 +2298,13 @@ main(int argc, char **argv)
              */
             if (dbg_allowed(DBG_MED)) {
                 if (is_dir(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", j, name);
                 } else if (is_file(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", j, name);
                 } else if (is_symlink(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", j, name);
                 } else {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", j, name);
                 }
             }
         }
@@ -2348,7 +2348,7 @@ main(int argc, char **argv)
         for (j = 0; j < len; ++j) {
             char *u = dyn_array_value(paths_found, char *, j);
             if (u == NULL) {
-                err(166, __func__, "NULL found in paths_found[%ju]", (uintmax_t)j);
+                err(166, __func__, "NULL found in paths_found[%ju]", j);
                 not_reached();
             }
         }
@@ -2391,7 +2391,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(168, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(168, __func__, "found NULL pointer at paths_found[%ju]", j);
                 not_reached();
             }
 
@@ -2400,13 +2400,13 @@ main(int argc, char **argv)
              */
             if (dbg_allowed(DBG_MED)) {
                 if (is_dir(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", j, name);
                 } else if (is_file(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", j, name);
                 } else if (is_symlink(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", j, name);
                 } else {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", j, name);
                 }
             }
         }
@@ -2452,7 +2452,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(170, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(170, __func__, "found NULL pointer at paths_found[%ju]", j);
                 not_reached();
             }
 
@@ -2461,13 +2461,13 @@ main(int argc, char **argv)
              */
             if (dbg_allowed(DBG_MED)) {
                 if (is_dir(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", j, name);
                 } else if (is_file(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", j, name);
                 } else if (is_symlink(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", j, name);
                 } else {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", j, name);
                 }
             }
         }
@@ -2513,7 +2513,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(172, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(172, __func__, "found NULL pointer at paths_found[%ju]", j);
                 not_reached();
             }
 
@@ -2522,13 +2522,13 @@ main(int argc, char **argv)
              */
             if (dbg_allowed(DBG_MED)) {
                 if (is_dir(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", j, name);
                 } else if (is_file(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", j, name);
                 } else if (is_symlink(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", j, name);
                 } else {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", j, name);
                 }
             }
         }
@@ -2578,7 +2578,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(174, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(174, __func__, "found NULL pointer at paths_found[%ju]", j);
                 not_reached();
             }
 
@@ -2587,13 +2587,13 @@ main(int argc, char **argv)
              */
             if (dbg_allowed(DBG_MED)) {
                 if (is_dir(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", j, name);
                 } else if (is_file(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", j, name);
                 } else if (is_symlink(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", j, name);
                 } else {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", j, name);
                 }
             }
         }
@@ -2705,7 +2705,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(178, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(178, __func__, "found NULL pointer at paths_found[%ju]", j);
                 not_reached();
             }
 
@@ -2714,25 +2714,24 @@ main(int argc, char **argv)
              */
             if (dbg_allowed(DBG_MED)) {
                 if (is_dir(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", j, name);
                     ++dirs;
                 } else if (is_file(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a regular file", j, name);
                     ++files;
                 } else if (is_symlink(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a symlink", j, name);
                     ++symlinks;
                 } else {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s", j, name);
                     ++others;
                 }
             }
         }
-        fdbg(stderr, DBG_MED, "a total of %ju director%s in paths_found", (uintmax_t)dirs, dirs==1?"y":"ies");
-        fdbg(stderr, DBG_MED, "a total of %ju file%s in paths_found", (uintmax_t)files, files==1?"":"s");
-        fdbg(stderr, DBG_MED, "a total of %ju symlink%s in paths_found", (uintmax_t)symlinks, symlinks==1?"":"s");
-        fdbg(stderr, DBG_MED, "a total of %ju other file type%s in paths_found", (uintmax_t)others,
-                others==1?"":"s");
+        fdbg(stderr, DBG_MED, "a total of %zu director%s in paths_found", dirs, dirs==1?"y":"ies");
+        fdbg(stderr, DBG_MED, "a total of %zu file%s in paths_found", files, files==1?"":"s");
+        fdbg(stderr, DBG_MED, "a total of %zu symlink%s in paths_found", symlinks, symlinks==1?"":"s");
+        fdbg(stderr, DBG_MED, "a total of %zu other file type%s in paths_found", others, others==1?"":"s");
     }
 
     /*
@@ -2780,7 +2779,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(180, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(180, __func__, "found NULL pointer at paths_found[%ju]", j);
                 not_reached();
             }
 
@@ -2789,13 +2788,13 @@ main(int argc, char **argv)
              */
             if (dbg_allowed(DBG_MED)) {
                 if (is_dir(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", j, name);
                     ++dirs;
                 }
             }
         }
-        fdbg(stderr, DBG_MED, "a total of %ju director%s in paths_found under test_ioccc with min/max depth of 4/5",
-            (uintmax_t)dirs, dirs==1?"y":"ies");
+        fdbg(stderr, DBG_MED, "a total of %zu director%s in paths_found under test_ioccc with min/max depth of 4/5",
+            dirs, dirs==1?"y":"ies");
     }
 
     /*
@@ -2843,7 +2842,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(182, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(182, __func__, "found NULL pointer at paths_found[%ju]", j);
                 not_reached();
             }
 
@@ -2852,13 +2851,13 @@ main(int argc, char **argv)
              */
             if (dbg_allowed(DBG_MED)) {
                 if (is_dir(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", j, name);
                     ++dirs;
                 }
             }
         }
-        fdbg(stderr, DBG_MED, "a total of %ju director%s in paths_found under test_ioccc with min/max depth of 0/3",
-            (uintmax_t)dirs, dirs==1?"y":"ies");
+        fdbg(stderr, DBG_MED, "a total of %zu director%s in paths_found under test_ioccc with min/max depth of 0/3",
+            dirs, dirs==1?"y":"ies");
     }
 
     /*
@@ -2907,7 +2906,7 @@ main(int argc, char **argv)
             /* get next string pointer */
             name = dyn_array_value(paths_found, char *, j);
             if (name == NULL) {	/* paranoia */
-                err(184, __func__, "found NULL pointer at paths_found[%ju]", (uintmax_t)j);
+                err(184, __func__, "found NULL pointer at paths_found[%ju]", j);
                 not_reached();
             }
 
@@ -2916,13 +2915,13 @@ main(int argc, char **argv)
              */
             if (dbg_allowed(DBG_MED)) {
                 if (is_dir(name)) {
-                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", (uintmax_t)j, name);
+                    fdbg(stderr, DBG_MED, "paths_found[%ju]: %s is a directory", j, name);
                     ++dirs;
                 }
             }
         }
-        fdbg(stderr, DBG_MED, "a total of %ju director%s in paths_found under test_ioccc with min/max depth of 0/0",
-            (uintmax_t)dirs, dirs==1?"y":"ies");
+        fdbg(stderr, DBG_MED, "a total of %zu director%s in paths_found under test_ioccc with min/max depth of 0/0",
+            dirs, dirs==1?"y":"ies");
     }
 
     /*

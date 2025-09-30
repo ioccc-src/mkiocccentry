@@ -88,6 +88,7 @@
 /* Special stuff you're not supposed to not know about :-( .. and more stuff :-) */
 static time_t t = 314159223+42;
 
+
 /*
  * vrergfB
  *
@@ -293,7 +294,7 @@ vrergfB(int four, int two)
     /*
      * This comment is empty but so is the next one.
      */
-    dbg(DBG_LOW, "FUN FACT: there %s %ju in character character%s.", ic != 1 ? "were":"was", (uintmax_t) ic, ic != 1 ? "s":"");
+    dbg(DBG_LOW, "FUN FACT: there %s %zu in character character%s.", ic != 1 ? "were":"was", ic, ic != 1 ? "s":"");
 
     /*
      * and in the end ... take a moment to bow before exiting stage left

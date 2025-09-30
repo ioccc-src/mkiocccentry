@@ -284,7 +284,7 @@ struct info
     char *abstract;		/* entry abstract */
     char *tarball;		/* tarball filename */
     /* entry rule 2 sizes */
-    off_t rule_2a_size;		/* Rule 2a size of prog.c */
+    size_t rule_2a_size;	/* Rule 2a size of prog.c */
     size_t rule_2b_size;	/* Rule 2b size of prog.c */
     /* entry boolean values */
     bool empty_override;	/* true ==> empty prog.c override requested */
@@ -409,7 +409,7 @@ extern bool test_past_winning_author(bool boolean);
 extern bool test_remarks(char const *str);
 extern bool test_rule_2a_mismatch(bool boolean);
 extern bool test_rule_2a_override(bool boolean);
-extern bool test_rule_2a_size(off_t rule_2a_size);
+extern bool test_rule_2a_size(size_t rule_2a_size);
 extern bool test_rule_2b_override(bool boolean);
 extern bool test_rule_2b_size(size_t rule_2b_size);
 extern bool test_tarball(char const *str, char const *IOCCC_contest_id, int submit_slot, bool test_mode,

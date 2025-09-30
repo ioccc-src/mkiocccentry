@@ -372,27 +372,27 @@ show_tarball_info(char const *tarball_path)
 
 	dbg(DBG_MED, "%s %s a .info.json", tarball_path, HAS_DOES_NOT_HAVE(tarball.has_info_json));
 	dbg(DBG_HIGH, "%s %s an empty .info.json", tarball_path, HAS_DOES_NOT_HAVE(tarball.empty_info_json));
-	dbg(DBG_HIGH, "%s .info.json size is %jd", tarball_path, (intmax_t)tarball.info_json_size);
+	dbg(DBG_HIGH, "%s .info.json size is %lld", tarball_path, (long long)tarball.info_json_size);
 	dbg(DBG_MED, "%s %s a .auth.json", tarball_path, HAS_DOES_NOT_HAVE(tarball.has_auth_json));
 	dbg(DBG_HIGH, "%s %s an empty .auth.json", tarball_path, HAS_DOES_NOT_HAVE(tarball.empty_auth_json));
-	dbg(DBG_HIGH, "%s .auth.json size is %jd", tarball_path, (intmax_t)tarball.auth_json_size);
+	dbg(DBG_HIGH, "%s .auth.json size is %lld", tarball_path, (long long)tarball.auth_json_size);
 	dbg(DBG_MED, "%s %s a prog.c", tarball_path, HAS_DOES_NOT_HAVE(tarball.has_prog_c));
 	dbg(DBG_HIGH, "%s %s an empty prog.c", tarball_path, HAS_DOES_NOT_HAVE(tarball.empty_prog_c));
-	dbg(DBG_HIGH, "%s prog.c size is %jd", tarball_path, (intmax_t)tarball.prog_c_size);
+	dbg(DBG_HIGH, "%s prog.c size is %lld", tarball_path, (long long)tarball.prog_c_size);
 	dbg(DBG_MED, "%s %s a remarks.md", tarball_path, HAS_DOES_NOT_HAVE(tarball.has_remarks_md));
 	dbg(DBG_HIGH, "%s %s an empty remarks.md", tarball_path, HAS_DOES_NOT_HAVE(tarball.empty_remarks_md));
-	dbg(DBG_HIGH, "%s remarks.md size is %jd", tarball_path, (intmax_t)tarball.remarks_md_size);
+	dbg(DBG_HIGH, "%s remarks.md size is %lld", tarball_path, (long long)tarball.remarks_md_size);
 	dbg(DBG_MED, "%s %s a Makefile", tarball_path, HAS_DOES_NOT_HAVE(tarball.has_Makefile));
 	dbg(DBG_HIGH, "%s %s an empty Makefile", tarball_path, HAS_DOES_NOT_HAVE(tarball.empty_Makefile));
-	dbg(DBG_HIGH, "%s Makefile size is %jd", tarball_path, (intmax_t)tarball.Makefile_size);
-	dbg(DBG_MED, "%s tarball size is %jd according to stat(2)", tarball_path, (intmax_t)tarball.size);
-	dbg(DBG_MED, "%s total file size is %jd", tarball_path, (intmax_t)tarball.files_size);
+	dbg(DBG_HIGH, "%s Makefile size is %lld", tarball_path, (long long)tarball.Makefile_size);
+	dbg(DBG_MED, "%s tarball size is %lld according to stat(2)", tarball_path, (long long)tarball.size);
+	dbg(DBG_MED, "%s total file size is %lld", tarball_path, (long long)tarball.files_size);
 	dbg(DBG_HIGH, "%s shrunk in files size %ju time%s", tarball_path, tarball.files_size_shrunk,
 		SINGULAR_OR_PLURAL(tarball.files_size_shrunk));
 	dbg(DBG_HIGH, "%s went below 0 in all files size %ju time%s", tarball_path, tarball.negative_files_size,
 		SINGULAR_OR_PLURAL(tarball.negative_files_size));
-	dbg(DBG_HIGH, "%s went above max files size %ju %ju time%s", tarball_path,
-		(uintmax_t)MAX_SUM_FILELEN, (uintmax_t)tarball.files_size_too_big,
+	dbg(DBG_HIGH, "%s went above max files size %d %ju time%s", tarball_path,
+		MAX_SUM_FILELEN, tarball.files_size_too_big,
 		SINGULAR_OR_PLURAL(tarball.files_size_too_big));
 
 	if (tarball.correct_directories < tarball.total_files) {
@@ -416,30 +416,30 @@ show_tarball_info(char const *tarball_path)
                 tarball.directories == 1 ? "y":"ies");
         if (MAX_EXTRA_DIR_COUNT > 0) {
             if (tarball.directories > MAX_EXTRA_DIR_COUNT) {
-                dbg(DBG_MED, "%s has %ju extra director%s > max %ju: %ju - %ju == %ju",
+                dbg(DBG_MED, "%s has %ju extra director%s > max %d: %ju - %d == %ju",
                         tarball_path,
-                        (uintmax_t)(tarball.directories - MAX_EXTRA_DIR_COUNT),
-                        (uintmax_t)(tarball.directories - MAX_EXTRA_DIR_COUNT) == 1 ? "y" : "ies",
-                        (uintmax_t)MAX_EXTRA_DIR_COUNT, (uintmax_t)tarball.directories, (uintmax_t)MAX_EXTRA_DIR_COUNT,
-                        (uintmax_t)(tarball.directories - MAX_EXTRA_DIR_COUNT));
+                        (tarball.directories - MAX_EXTRA_DIR_COUNT),
+                        (tarball.directories - MAX_EXTRA_DIR_COUNT) == 1 ? "y" : "ies",
+                        MAX_EXTRA_DIR_COUNT, tarball.directories, MAX_EXTRA_DIR_COUNT,
+                        (tarball.directories - MAX_EXTRA_DIR_COUNT));
             } else if (tarball.directories < MAX_EXTRA_DIR_COUNT) {
-                dbg(DBG_MED, "%s has %ju fewer extra director%s than max %ju: %ju - %ju == %ju", tarball_path,
-                    (uintmax_t)(MAX_EXTRA_DIR_COUNT-tarball.directories),
-                    (uintmax_t)(MAX_EXTRA_DIR_COUNT-tarball.directories) == 1 ? "y" : "ies",
-                    (uintmax_t)MAX_EXTRA_DIR_COUNT, (uintmax_t)MAX_EXTRA_DIR_COUNT, (uintmax_t)tarball.directories,
-                    (uintmax_t)MAX_EXTRA_DIR_COUNT - (uintmax_t)tarball.directories);
+                dbg(DBG_MED, "%s has %ju fewer extra director%s than max %d: %d - %ju == %ju", tarball_path,
+                    (MAX_EXTRA_DIR_COUNT - tarball.directories),
+                    (MAX_EXTRA_DIR_COUNT - tarball.directories) == 1 ? "y" : "ies",
+                    MAX_EXTRA_DIR_COUNT, MAX_EXTRA_DIR_COUNT, tarball.directories,
+                    MAX_EXTRA_DIR_COUNT - tarball.directories);
             } else if (tarball.directories == MAX_EXTRA_DIR_COUNT) {
-                dbg(DBG_MED, "%s has the same number of extra directories than max %ju: %ju - %ju == %ju", tarball_path,
-                    (uintmax_t)MAX_EXTRA_DIR_COUNT, (uintmax_t)tarball.directories, (uintmax_t)MAX_EXTRA_DIR_COUNT,
-                    (uintmax_t)(tarball.directories - MAX_EXTRA_DIR_COUNT));
+                dbg(DBG_MED, "%s has the same number of extra directories than max %d: %ju - %d == %ju", tarball_path,
+                    MAX_EXTRA_DIR_COUNT, tarball.directories, MAX_EXTRA_DIR_COUNT,
+                    (tarball.directories - MAX_EXTRA_DIR_COUNT));
             }
         }
 
-        dbg(DBG_MED, "%s has a total of %ju invalid directory name%s", tarball_path, (uintmax_t)tarball.invalid_dirnames,
+        dbg(DBG_MED, "%s has a total of %ju invalid directory name%s", tarball_path, tarball.invalid_dirnames,
                 SINGULAR_OR_PLURAL(tarball.invalid_dirnames));
-        dbg(DBG_MED, "%s has a total of %ju directory depth error%s", tarball_path, (uintmax_t)tarball.depth_errors,
+        dbg(DBG_MED, "%s has a total of %ju directory depth error%s", tarball_path, tarball.depth_errors,
                 SINGULAR_OR_PLURAL(tarball.depth_errors));
-        dbg(DBG_MED, "%s has a total of %ju invalid director%s", tarball_path, (uintmax_t)tarball.invalid_directories,
+        dbg(DBG_MED, "%s has a total of %ju invalid director%s", tarball_path, tarball.invalid_directories,
                 SINGULAR_OR_PLURAL(tarball.invalid_directories));
 
         dbg(DBG_MED, "%s has %ju extra filename%s", tarball_path, tarball.extra_filenames,
@@ -906,15 +906,15 @@ check_all_txz_files(void)
             ++tarball.total_feathers;
             continue;
         } else if (!test_filename_len(file->basename)) {
-            warn("txzchk", "%s: filename length: %ju not in range of > 0 && <= MAX_FILENAME_LEN %ju", file->basename,
-                    (uintmax_t)len, (uintmax_t)MAX_FILENAME_LEN);
+            warn("txzchk", "%s: filename length: %zu not in range of > 0 && <= MAX_FILENAME_LEN %d",
+		    file->basename, len, MAX_FILENAME_LEN);
             ++tarball.invalid_filename_lengths;
             ++tarball.total_feathers;
         }
 
 	if (file->count > 1) {
-	    warn("txzchk", "%s: found a total of %ju files with the name %s in the same directory", tarball_path,
-                    file->count, file->basename);
+	    warn("txzchk", "%s: found a total of %ju files with the name %s in the same directory",
+		    tarball_path, file->count, file->basename);
 	    tarball.total_feathers += file->count - 1;
 	}
 
@@ -1054,8 +1054,7 @@ check_all_txz_files(void)
              * depth, not the number of directories, so we have to do + 1.
              */
             if (dirs + 1 > MAX_PATH_DEPTH) {
-                warn("txzchk", "%s: depth too deep: %ju > %ju", file->filename, (uintmax_t)(dirs+1),
-                        (uintmax_t)MAX_PATH_DEPTH);
+                warn("txzchk", "%s: depth too deep: %zu > %d", file->filename, (dirs+1), MAX_PATH_DEPTH);
                 ++tarball.depth_errors;
                 ++tarball.total_feathers;
             }
@@ -1134,8 +1133,8 @@ check_all_txz_files(void)
      * if MAX_EXTRA_DIR_COUNT > 0 and directories > MAX_EXTRA_DIR_COUNT then it is an issue.
      */
     if (MAX_EXTRA_DIR_COUNT > 0 && tarball.directories > MAX_EXTRA_DIR_COUNT) {
-        warn("txzchk", "%s: %ju extra directories > max %ju: %ju > %ju", tarball_path, (uintmax_t)tarball.directories,
-                (uintmax_t)MAX_EXTRA_DIR_COUNT, (uintmax_t)tarball.directories, (uintmax_t)MAX_EXTRA_DIR_COUNT);
+        warn("txzchk", "%s: %ju extra directories > max %d: %ju > %d", tarball_path, tarball.directories,
+                MAX_EXTRA_DIR_COUNT, tarball.directories, MAX_EXTRA_DIR_COUNT);
         ++tarball.directories;
         ++tarball.total_feathers;
     }
@@ -1379,8 +1378,8 @@ count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t
 	warn("txzchk", "%s: total file size went below 0: %jd", tarball_path, *sum);
 	if (*sum < tarball.previous_files_size) {
 	    ++tarball.files_size_shrunk;
-	    warn("txzchk", "%s: total files size %jd < previous file size %jd", tarball_path, *sum,
-		(intmax_t)tarball.previous_files_size);
+	    warn("txzchk", "%s: total files size %jd < previous file size %lld", tarball_path, *sum,
+		(long long)tarball.previous_files_size);
 	}
     }
     /* check for sum of total file lengths being too big */
@@ -1405,8 +1404,8 @@ count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t
     if (*count - (intmax_t)tarball.extra_filenames > MAX_EXTRA_FILE_COUNT) {
 	++tarball.total_feathers;
 	++tarball.invalid_files_count;
-	warn("txzchk", "%s: too many files: %jd > %jd", tarball_path,
-	    *count - (intmax_t)tarball.extra_filenames, (intmax_t)MAX_EXTRA_FILE_COUNT);
+	warn("txzchk", "%s: too many files: %jd > %d", tarball_path,
+	    *count - (intmax_t)tarball.extra_filenames, MAX_EXTRA_FILE_COUNT);
     }
 }
 
@@ -1875,15 +1874,15 @@ check_tarball(char const *tar, char const *fnamchk)
               "The compressed tarball exceeds the maximum allowed size, sorry.",
               "",
               NULL);
-	    warn("txzchk", "%s: the compressed tarball size %jd > %jd",
-		     tarball_path, (intmax_t)tarball.size, (intmax_t)MAX_TARBALL_LEN);
+	    warn("txzchk", "%s: the compressed tarball size %lld > %d", tarball_path, (long long)tarball.size, MAX_TARBALL_LEN);
     } else if (verbosity_level) {
 	errno = 0;		/* pre-clear errno for warnp() */
-	ret = printf("txzchk: %s size of %jd bytes OK\n", tarball_path, (intmax_t) tarball.size);
-	if (ret <= 0)
+	ret = printf("txzchk: %s size of %lld bytes OK\n", tarball_path, (long long) tarball.size);
+	if (ret <= 0) {
 	    warnp("txzchk", "unable to tell user how big the tarball %s is", tarball_path);
+	}
     }
-    dbg(DBG_MED, "txzchk: %s size in bytes: %jd", tarball_path, (intmax_t)tarball.size);
+    dbg(DBG_MED, "txzchk: %s size in bytes: %lld", tarball_path, (long long)tarball.size);
 
     /*
      * if txzchk -T we need to open it as a text file: for test mode
@@ -2431,6 +2430,7 @@ add_txz_file_to_list(struct txz_file *txzfile)
     txz_files = txzfile;
 }
 
+
 /*
  * free_txz_file        - free a struct txz_file
  *
@@ -2478,6 +2478,7 @@ free_txz_file(struct txz_file **file)
     free(*file);
     *file = NULL;
 }
+
 
 /*
  * free_txz_files_list  - free the txz_files linked list

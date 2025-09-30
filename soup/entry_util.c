@@ -124,6 +124,7 @@ char *mandatory_filenames[] =
     REMARKS_FILENAME,
     NULL /* MUST BE LAST!! */
 };
+
 /*
  * forbidden files that must NOT exist in the submission top level directory.
  *
@@ -223,30 +224,37 @@ static char const *poison_mkiocccentry_versions[] =
 {
     NULL /* MUST BE LAST!! */
 };
+
 static char const *poison_txzchk_versions[] =
 {
     NULL /* MUST BE LAST!! */
 };
+
 static char const *poison_iocccsize_versions[] =
 {
     NULL /* MUST BE LAST!! */
 };
+
 static char const *poison_info_versions[] =
 {
     NULL /* MUST BE LAST!! */
 };
+
 static char const *poison_auth_versions[] =
 {
     NULL /* MUST BE LAST!! */
 };
+
 static char const *poison_fnamchk_versions[] =
 {
     NULL /* MUST BE LAST!! */
 };
+
 static char const *poison_chksubmit_versions[] =
 {
     NULL /* MUST BE LAST!! */
 };
+
 
 /*
  * free_auth - free auto and related sub-elements
@@ -2051,7 +2059,7 @@ form_tar_filename(char const *IOCCC_contest_id, int submit_slot, bool test_mode,
     errno = 0;			/* pre-clear errno for warnp() */
     tarball_filename = (char *)calloc(tarball_len + 1, sizeof(*tarball_filename));
     if (tarball_filename == NULL) {
-	warnp(__func__, "malloc #1 of %ju bytes failed", (uintmax_t)(tarball_len + 1));
+	warnp(__func__, "malloc #1 of %zu bytes failed", (tarball_len + 1));
 	return NULL;
     }
     tarball_filename[tarball_len] = '\0';	/* paranoia */
@@ -2083,6 +2091,7 @@ form_tar_filename(char const *IOCCC_contest_id, int submit_slot, bool test_mode,
      */
     return tarball_filename;
 }
+
 
 /*
  * test_version - test if a version is >= a minimum version
@@ -2140,6 +2149,7 @@ test_version(char const *str, char const *min)
     return false;
 }
 
+
 /*
  * test_poisons - test if a version is a so-called poison version
  *
@@ -2172,7 +2182,6 @@ test_poison(char const *str, char const **poisons)
 
     return false;
 }
-
 
 
 /*
@@ -2452,7 +2461,7 @@ test_abstract(char const *str)
 	return false;
     } else if (length > MAX_ABSTRACT_LEN) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: abstract length %ju > max %d", (uintmax_t)length, MAX_ABSTRACT_LEN);
+		 "invalid: abstract length %zu > max %d", length, MAX_ABSTRACT_LEN);
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: abstract: <%s> is invalid", str);
 	return false;
@@ -2499,7 +2508,7 @@ test_affiliation(char const *str)
     length = strlen(str);
     if (length > MAX_AFFILIATION_LEN) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: affiliation length %ju > max %d", (uintmax_t)length, MAX_AFFILIATION_LEN);
+		 "invalid: affiliation length %zu > max %d", length, MAX_AFFILIATION_LEN);
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: affiliation: <%s> is invalid", str);
 	return false;
@@ -2616,7 +2625,7 @@ test_author_handle(char const *str)
 	return false;
     } else if (length > MAX_HANDLE) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: author_handle length %ju > max %d", (uintmax_t)length, MAX_HANDLE);
+		 "invalid: author_handle length %zu > max %d", length, MAX_HANDLE);
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: author_handle: <%s> is invalid", str);
 	return false;
@@ -3217,19 +3226,20 @@ test_filename_len(char const *str)
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: filename length <= 0");
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: filename: %s length is <= 0: %ju", str, (uintmax_t)len);
+		 "invalid: filename: %s length is <= 0: %zu", str, len);
 	return false;
     } else if (len > MAX_FILENAME_LEN) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: filename length > MAX_FILENAME_LEN");
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: filename: %s length %ju > %ju", str, (uintmax_t)len, (uintmax_t)MAX_FILENAME_LEN);
+		 "invalid: filename: %s length %zu > %d", str, len, MAX_FILENAME_LEN);
 	return false;
     }
 
     json_dbg(JSON_DBG_MED, __func__, "filename length is valid");
     return true;
 }
+
 
 /*
  * test_fnamchk_version - test if fnamchk_version is valid
@@ -3461,7 +3471,6 @@ test_found_clobber_rule(bool boolean)
     json_dbg(JSON_DBG_MED, __func__, "found_clobber_rule is %s", booltostr(boolean));
     return true;
 }
-
 
 
 /*
@@ -3749,6 +3758,7 @@ test_location_code(char const *str)
     return true;
 }
 
+
 /*
  * check_manifest_path
  *
@@ -3820,6 +3830,7 @@ check_manifest_path(char *path, char const *name, mode_t mode)
 
     return ret;
 }
+
 
 /*
  * test_manifest_path
@@ -4450,12 +4461,8 @@ test_name(char const *str)
 		 "invalid: empty name");
 	return false;
     } else if (length > MAX_NAME_LEN) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: name length > max length: %ju",
-		 (uintmax_t)MAX_NAME_LEN);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: name <%s> length %ju > max length: %ju",
-		 str, (uintmax_t)length, (uintmax_t)MAX_NAME_LEN);
+	json_dbg(JSON_DBG_MED, __func__, "invalid: name length > max length: %d", MAX_NAME_LEN);
+	json_dbg(JSON_DBG_HIGH, __func__, "invalid: name <%s> length %zu > max length: %d", str, length, MAX_NAME_LEN);
 	return false;
     }
 
@@ -4507,6 +4514,7 @@ test_no_comment(char const *str)
     return true;
 
 }
+
 
 /*
  * test_past_winning_author - test if past_winning_author is valid
@@ -4638,20 +4646,16 @@ test_rule_2a_override(bool boolean)
  *	false ==> rule_2a_size is NOT valid, or some internal error
  */
 bool
-test_rule_2a_size(off_t rule_2a_size)
+test_rule_2a_size(size_t rule_2a_size)
 {
     /* test lower bound */
     if (rule_2a_size <= 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "warning: rule_2a_size <= 0");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "warning: rule_2a_size: %jd <= 0", (intmax_t)rule_2a_size);
+	json_dbg(JSON_DBG_MED, __func__, "warning: rule_2a_size <= 0");
+	json_dbg(JSON_DBG_HIGH, __func__, "warning: rule_2a_size: %zu <= 0", rule_2a_size);
     /* test upper bound */
     } else if (rule_2a_size > RULE_2A_SIZE) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "warning: rule_2a_size > %jd", (intmax_t)RULE_2A_SIZE);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "warning: rule_2a_size: %jd > %jd", (intmax_t)rule_2a_size, (intmax_t)RULE_2A_SIZE);
+	json_dbg(JSON_DBG_MED, __func__, "warning: rule_2a_size > %d", RULE_2A_SIZE);
+	json_dbg(JSON_DBG_HIGH, __func__, "warning: rule_2a_size: %zu > %d", rule_2a_size, RULE_2A_SIZE);
     } else {
 	/* rule_2a_size is valid */
 	json_dbg(JSON_DBG_MED, __func__,
@@ -4710,20 +4714,15 @@ test_rule_2b_size(size_t rule_2b_size)
 {
     /* test lower bound */
     if (rule_2b_size <= 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "warning: rule_2b_size <= 0");
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "warning: rule_2b_size: %ju <= 0", (uintmax_t)rule_2b_size);
+	json_dbg(JSON_DBG_MED, __func__, "warning: rule_2b_size <= 0");
+	json_dbg(JSON_DBG_HIGH, __func__, "warning: rule_2b_size: %zu <= 0", rule_2b_size);
     /* test upper bound */
     } else if (rule_2b_size > RULE_2B_SIZE) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "warning: rule_2b_size > %ju", (uintmax_t)RULE_2B_SIZE);
-	json_dbg(JSON_DBG_HIGH, __func__,
-		 "warning: rule_2b_size: %ju > %ju", (uintmax_t)rule_2b_size, (uintmax_t)RULE_2B_SIZE);
+	json_dbg(JSON_DBG_MED, __func__, "warning: rule_2b_size > %d", RULE_2B_SIZE);
+	json_dbg(JSON_DBG_HIGH, __func__, "warning: rule_2b_size: %zu > %d", rule_2b_size, RULE_2B_SIZE);
     } else {
 	/* rule_2b_size is valid */
-	json_dbg(JSON_DBG_MED, __func__,
-		"valid: rule_2b_size");
+	json_dbg(JSON_DBG_MED, __func__, "valid: rule_2b_size");
     }
     return true;
 }
@@ -4959,7 +4958,7 @@ test_title(char const *str)
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: title length > max %d", MAX_TITLE_LEN);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: title length %ju > max %d: <%s>", (uintmax_t)length, MAX_TITLE_LEN, str);
+		 "invalid: title length %zu > max %d: <%s>", length, MAX_TITLE_LEN, str);
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: title: <%s> is invalid", str);
 	return false;
@@ -5048,7 +5047,7 @@ test_mastodon(char const *str)
     length = strlen(str);
     if (length > MAX_MASTODON_LEN) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: mastodon length %ju > max %d: <%s>", (uintmax_t)length, MAX_MASTODON_LEN, str);
+		 "invalid: mastodon length %zu > max %d: <%s>", length, MAX_MASTODON_LEN, str);
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: mastodon: <%s> is invalid", str);
 	return false;
@@ -5216,7 +5215,7 @@ test_alt_url(char const *str)
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: alt_url length > max %d: <%s>", MAX_URL_LEN, str);
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: alt_url length %ju > max %d: <%s>", (uintmax_t)length, MAX_URL_LEN, str);
+		 "invalid: alt_url length %zu > max %d: <%s>", length, MAX_URL_LEN, str);
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: alt_url: <%s> is invalid", str);
 	return false;
@@ -5327,7 +5326,7 @@ test_url(char const *str)
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: url length > max %d", MAX_URL_LEN);
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: url length %ju > max %d: <%s>", (uintmax_t)length, MAX_URL_LEN, str);
+		 "invalid: url length %zu > max %d: <%s>", length, MAX_URL_LEN, str);
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: url: <%s> is invalid", str);
 	return false;
@@ -5444,6 +5443,7 @@ is_mandatory_filename(char const *str)
     return false;
 }
 
+
 /*
  * is_forbidden_filename  - check if str is a forbidden filename
  *
@@ -5481,6 +5481,7 @@ is_forbidden_filename(char const *str)
 
     return false;
 }
+
 
 /*
  * is_optional_filename  - check if str is a optional filename
@@ -5543,6 +5544,7 @@ is_ignored_dirname(char const *str)
     return false;
 }
 
+
 /*
  * has_ignored_dirname   - check if path has ignored dirname in it
  *
@@ -5573,6 +5575,7 @@ has_ignored_dirname(char const *path)
 
     return false;
 }
+
 
 /*
  * is_executable_filename  - check if str is a filename that should be 0555
@@ -5635,6 +5638,7 @@ is_executable_filename(char const *str)
 
     return false;
 }
+
 
 /*
  * count_char - count the number of instances of a char in the string

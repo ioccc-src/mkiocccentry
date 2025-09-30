@@ -84,17 +84,17 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.7.2 2025-09-27"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.7.3 2025-09-29"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "2.1.0 2025-09-27"	/* format: major.minor YYYY-MM-DD */
+#define SOUP_VERSION "2.1.1 2025-09-29"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official iocccsize version
  */
-#define IOCCCSIZE_VERSION "29.0 2025-08-16"	/* format: major.minor YYYY-MM-DD */
+#define IOCCCSIZE_VERSION "29.0.1 2025-09-29"	/* format: major.minor YYYY-MM-DD */
 #define MIN_IOCCCSIZE_VERSION IOCCCSIZE_VERSION
 
 /*
@@ -125,19 +125,19 @@
 /*
  * official fnamchk version
  */
-#define FNAMCHK_VERSION "2.1.1 2025-09-23"	/* format: major.minor YYYY-MM-DD */
+#define FNAMCHK_VERSION "2.1.2 2025-09-29"	/* format: major.minor YYYY-MM-DD */
 #define MIN_FNAMCHK_VERSION FNAMCHK_VERSION
 
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "2.0.6 2025-08-30"	/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "2.0.7 2025-09-29"	/* format: major.minor YYYY-MM-DD */
 #define MIN_TXZCHK_VERSION TXZCHK_VERSION
 
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "2.1.0 2025-08-28"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "2.1.1 2025-09-29"	/* format: major.minor YYYY-MM-DD */
 #define MIN_CHKENTRY_VERSION CHKENTRY_VERSION
 
 /*
@@ -161,7 +161,7 @@
 /*
  * test_file_util - test common utility functions for file operations
  */
-#define FILE_UTIL_TEST_VERSION "2.0.3 2025-09-27" /* version format: major.minor YYYY-MM-DD */
+#define FILE_UTIL_TEST_VERSION "2.0.4 2025-09-29" /* version format: major.minor YYYY-MM-DD */
 
 
 /*

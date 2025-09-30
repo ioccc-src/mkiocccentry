@@ -89,8 +89,8 @@ static const char * const usage_msg =
     "     0\t\tall OK\n"
     "     2\t\t-h and help string printed or -V and version string printed\n"
     "     3\t\tcommand line error\n"
-    "     4\t\t\"submit.test-\" separated token length != %ju\n"
-    "     5\t\t\"submit.UUID-\" token length != %ju\n"
+    "     4\t\t\"submit.test-\" separated token length != %d\n"
+    "     5\t\t\"submit.UUID-\" token length != %zu\n"
     "     >=10\tinternal error\n"
     "\n"
     "%s version: %s\n"
@@ -126,12 +126,12 @@ main(int argc, char *argv[])
     intmax_t timestamp;		/* fifth .-separated token as a timestamp */
     char *extension;		/* sixth .-separated token as a filename extension */
     char *ext = "txz";		/* user supplied extension (def: txz): used for testing purposes only */
-    int i;
     bool test_mode = false;	/* true ==> force check to test if it's a test submit filename */
     char *saveptr = NULL;	/* for strtok_r() */
     bool ignore_timestamp = false; /* true ==> ignore timestamp check result (for testing purposes) */
     bool opt_error = false;	/* fchk_inval_opt() return */
     bool safe = true;		/* assume path is sane */
+    int i;
 
     /* IOCCC requires use of C locale */
     set_ioccc_locale();
@@ -248,8 +248,8 @@ main(int argc, char *argv[])
 	 * txzchk_test.sh script has a test file where it expects this error.
 	 */
 	if (len != LITLEN("test-")+MAX_SUBMIT_SLOT_CHARS) {
-	    err(4, __func__, "\"submit.test-\" separated token length: %ju != %ju: %s", /*ooo*/
-			     (uintmax_t)len, (uintmax_t)(LITLEN("test-")+MAX_SUBMIT_SLOT_CHARS), filepath);
+	    err(4, __func__, "\"submit.test-\" separated token length: %zu != %zu: %s", /*ooo*/
+			     len, (LITLEN("test-")+MAX_SUBMIT_SLOT_CHARS), filepath);
 	    not_reached();
 	}
 	ret = sscanf(uuid, "test-%d%c", &submit_slot, &guard);
@@ -286,8 +286,8 @@ main(int argc, char *argv[])
 	 * txzchk_test.sh script has a test file where it expects this error.
 	 */
 	if (len != UUID_LEN+1+MAX_SUBMIT_SLOT_CHARS) {
-	    err(5, __func__, "\"submit.UUID-\" separated token length: %ju != %ju: %s", /*ooo*/
-			     (uintmax_t)len, (uintmax_t)(UUID_LEN+1+MAX_SUBMIT_SLOT_CHARS), filepath); /*ooo*/
+	    err(5, __func__, "\"submit.UUID-\" separated token length: %zu != %d: %s", /*ooo*/
+			     len, (UUID_LEN+1+MAX_SUBMIT_SLOT_CHARS), filepath); /*ooo*/
 	    not_reached();
 	}
 	ret = sscanf(uuid, "%8x-%4x-%1x%3x-%1x%3x-%8x%4x-%d%c", &a, &b, &version, &c, &variant,
@@ -436,8 +436,8 @@ usage(int exitcode, char const *prog, char const *str)
 	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
     }
 
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, (uintmax_t)(UUID_LEN+1+MAX_SUBMIT_SLOT_CHARS),
-	    (uintmax_t)(LITLEN("test-")+MAX_SUBMIT_SLOT_CHARS), FNAMCHK_BASENAME, FNAMCHK_VERSION,
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, (UUID_LEN+1+MAX_SUBMIT_SLOT_CHARS),
+	    (LITLEN("test-")+MAX_SUBMIT_SLOT_CHARS), FNAMCHK_BASENAME, FNAMCHK_VERSION,
 	    JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();

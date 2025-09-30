@@ -1582,7 +1582,7 @@ check_default_handle_map(void)
      */
     max = TBLLEN(hmap);
     if (default_handle_map_checked == true) {
-	dbg(DBG_VVVHIGH, "hmap[0..%ju] was already setup, returning", (uintmax_t)(max-1));
+	dbg(DBG_VVVHIGH, "hmap[0..%zu] was already setup, returning", (max-1));
 	return;
     }
 
@@ -1591,22 +1591,22 @@ check_default_handle_map(void)
      * and fill in table lengths
      */
     if (max <= 0) {
-	err(10, __func__, "bogus hmap length: %ju <= 0", (uintmax_t)max);
+	err(10, __func__, "bogus hmap length: %zu <= 0", max);
 	not_reached();
     }
     for (i = 0; i < max - 1; ++i) {
 
 	/* non-NULL check */
 	if (hmap[i].utf8_str == NULL) {
-	    err(11, __func__, "found utf8_str NULL pointer not at end (hmap[%ju]) of hmap[%ju]; "
+	    err(11, __func__, "found utf8_str NULL pointer not at end (hmap[%zu]) of hmap[%zu]; "
 			      "fix table in %s and recompile",
-			      (uintmax_t)max, (uintmax_t)i, __FILE__);
+			      max, i, __FILE__);
 	    not_reached();
 	}
 	if (hmap[i].posix_str == NULL) {
-	    err(12, __func__, "found posix_str NULL pointer not at end (hmap[%ju]) of hmap[%ju]; "
+	    err(12, __func__, "found posix_str NULL pointer not at end (hmap[%zu]) of hmap[%zu]; "
 			      "fix table in %s and recompile",
-			      (uintmax_t)max, (uintmax_t)i, __FILE__);
+			      max, i, __FILE__);
 	    not_reached();
 	}
 
@@ -1618,8 +1618,8 @@ check_default_handle_map(void)
 	if (hmap[i].posix_str_len > 0) {
 	    safe = safe_str(hmap[i].posix_str, true, false); /* ^[0-9A-Za-z._+-]+$ */
 	    if (safe == false) {
-		err(13, __func__, "hmap[%ju] = '%s' is not POSIX portable plus + safe; "
-				  "fix table in %s and recompile", (uintmax_t)i, hmap[i].posix_str, __FILE__);
+		err(13, __func__, "hmap[%zu] = '%s' is not POSIX portable plus + safe; "
+				  "fix table in %s and recompile", i, hmap[i].posix_str, __FILE__);
 		not_reached();
 	    }
 	}
@@ -1629,11 +1629,11 @@ check_default_handle_map(void)
      * check final NULL at end of table
      */
     if (hmap[max-1].utf8_str != NULL || hmap[max-1].posix_str != NULL) {
-	err(14, __func__, "no final NULL element at hmap[%ju]; fix table in %s and recompile", (uintmax_t)(max-1), __FILE__);
+	err(14, __func__, "no final NULL element at hmap[%zu]; fix table in %s and recompile", (max-1), __FILE__);
 	not_reached();
     }
     default_handle_map_checked = true;
-    dbg(DBG_VVHIGH, "hmap[0..%ju] sane and ready in %s", (uintmax_t)(max-1), __FILE__);
+    dbg(DBG_VVHIGH, "hmap[0..%zu] sane and ready in %s", (max-1), __FILE__);
     return;
 }
 

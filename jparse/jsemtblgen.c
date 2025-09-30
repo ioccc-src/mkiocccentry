@@ -273,6 +273,7 @@ static Word *find_member(Word *table, const char *string);
 static bool test_reserved(const char *string);
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 
+
 int
 main(int argc, char **argv)
 {
@@ -434,8 +435,8 @@ main(int argc, char **argv)
     if (string_flag_used == true) {
 
 	/* parse arg as a block of json input */
-	dbg(DBG_HIGH, "Calling parse_json(\"%s\", %ju, NULL, &valid_json):",
-		      argv[argc-1], (uintmax_t)strlen(argv[argc-1]));
+	dbg(DBG_HIGH, "Calling parse_json(\"%s\", %zu, NULL, &valid_json):",
+		      argv[argc-1], strlen(argv[argc-1]));
 	tree = parse_json(argv[argc-1], strlen(argv[argc-1]), NULL, &valid_json);
 
     /*
@@ -865,7 +866,7 @@ alloc_c_funct_name(char const *prefix, char const *str)
     len += strlen(str) + (str_is_reserved ? 1 : 0) + 1;	/* + 1 for NUL */
     ret = calloc(len + 1, sizeof(*ret));		/* + 1 for guard byte paranoia */
     if (ret == NULL) {
-	errp(20, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
+	errp(20, __func__, "calloc of %zu bytes failed", len);
 	not_reached();
     }
     p = ret;
@@ -1114,9 +1115,9 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	print("  { %u,\t%s,\t1,", p->depth, json_type_name(p->type));
 	/* print max, count, sem_index, name_len, */
 	if (p->count == INF) {
-	    print("\tINF,\t%u,\t%ju,\t%ju,", p->count, i, (uintmax_t)p->name_len);
+	    print("\tINF,\t%u,\t%ju,\t%zu,", p->count, i, p->name_len);
 	} else {
-	    print("\t%u,\t%u,\t%ju,\t%ju,", p->count, p->count, i, (uintmax_t)p->name_len);
+	    print("\t%u,\t%u,\t%ju,\t%zu,", p->count, p->count, i, p->name_len);
 	}
 
 	/*

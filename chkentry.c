@@ -121,6 +121,7 @@ static const char * const usage_msg =
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 static void add_ignore_subpath(char *path, struct fts *fts);
 
+
 /*
  * usage - print usage to stderr
  *
@@ -345,6 +346,7 @@ add_ignore_subpath(char *path, struct fts *fts)
      */
     append_path(&(fts->ignore), path, true, false, false, false);
 }
+
 
 int
 main(int argc, char *argv[])
@@ -701,8 +703,7 @@ main(int argc, char *argv[])
 			if (canon_path(u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
 					  NULL, NULL, NULL, true, true, true) == NULL) {
                             werr(1, __func__, "%s: not a sane relative path with max path len, filename len and depth "/*ooo*/
-                                    "of %ju, %ju, %ju ", u, (uintmax_t)MAX_PATH_LEN, (uintmax_t)MAX_FILENAME_LEN,
-                                    (uintmax_t)MAX_PATH_DEPTH);
+                                    "of %d, %d, %d ", u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH);
                             ++all_extra_err_count;
                         }
                         if (!ignore_permissions) {
@@ -937,8 +938,7 @@ main(int argc, char *argv[])
 			if (canon_path(u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
 					  NULL, NULL, NULL, true, true, true) == NULL) {
                             werr(1, __func__, "%s: not a sane relative path with max path len, filename len and depth "/*ooo*/
-                                    "of %ju, %ju, %ju ", u, (uintmax_t)MAX_PATH_LEN, (uintmax_t)MAX_FILENAME_LEN,
-                                    (uintmax_t)MAX_PATH_DEPTH);
+                                    "of %d, %d, %d ", u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH);
                             ++all_extra_err_count;
                         }
                         if (!ignore_permissions) {
@@ -1106,7 +1106,7 @@ main(int argc, char *argv[])
                 /*
                  * directories must be the right permissions.
                  */
-                werr(1, __func__, "directory %s depth > max %ju", u, (uintmax_t)MAX_PATH_DEPTH);/*ooo*/
+                werr(1, __func__, "directory %s depth > max %d", u, MAX_PATH_DEPTH); /*ooo*/
                 ++all_extra_err_count;
             }
             /*

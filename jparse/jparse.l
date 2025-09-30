@@ -226,8 +226,8 @@ JSON_COMMA		","
                              * (depending on if the JSON debug level was high
                              * enough).
 			     */
-			    (void) json_dbg(JSON_DBG_VVHIGH, __func__, "\nignoring %ju whitespace%s\n",
-							     (uintmax_t)yyleng, yyleng==1?"":"s");
+			    (void) json_dbg(JSON_DBG_VVHIGH, __func__, "\nignoring %d whitespace%s\n",
+							     yyleng, yyleng==1?"":"s");
 			}
 
 {JSON_NL}		{
@@ -998,15 +998,15 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
          * report invalid bytes
          */
 	if (low_bytes > 0 && nul_bytes > 0) {
-	    werr(48, __func__, "%ju low byte%s and %ju NUL byte%s detected: data block is NOT valid JSON",
-		    (uintmax_t)low_bytes, low_bytes > 1 ? "s":"",
-		    (uintmax_t)nul_bytes, nul_bytes > 1 ? "s":"");
+	    werr(48, __func__, "%zu low byte%s and %zu NUL byte%s detected: data block is NOT valid JSON",
+		    low_bytes, low_bytes > 1 ? "s":"",
+		    nul_bytes, nul_bytes > 1 ? "s":"");
 	} else if (low_bytes > 0) {
-	    werr(49, __func__, "%ju low byte%s detected: data block is NOT valid JSON",
-		    (uintmax_t)low_bytes, low_bytes > 1 ? "s":"");
+	    werr(49, __func__, "%zu low byte%s detected: data block is NOT valid JSON",
+		    low_bytes, low_bytes > 1 ? "s":"");
 	} else if (nul_bytes > 0) {
-	    werr(50, __func__, "%ju NUL byte%s detected: data block is NOT valid JSON",
-		    (uintmax_t)nul_bytes, nul_bytes > 1 ? "s":"");
+	    werr(50, __func__, "%zu NUL byte%s detected: data block is NOT valid JSON",
+		    nul_bytes, nul_bytes > 1 ? "s":"");
 	}
 
 	/*
@@ -1034,7 +1034,7 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
      * if JSON debug level is high enough we will log the call with the length
      */
     if (json_dbg_allowed(JSON_DBG_HIGH)) {
-        json_dbg(JSON_DBG_HIGH, __func__, "calling parse_json on data block with length %ju:", (uintmax_t)len);
+        json_dbg(JSON_DBG_HIGH, __func__, "calling parse_json on data block with length %zu:", len);
     }
 
     /*
@@ -1099,7 +1099,7 @@ exists(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %lld", path, (long long)buf.st_size);
     return true;
 }
 
@@ -1140,7 +1140,7 @@ is_file(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %lld", path, (long long)buf.st_size);
 
     /*
      * test if path is a regular file
@@ -1191,7 +1191,7 @@ is_read(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_VHIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_VHIGH, "path %s size: %lld", path, (long long)buf.st_size);
 
     /*
      * test if we are allowed to execute it

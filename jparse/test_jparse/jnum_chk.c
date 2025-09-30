@@ -103,6 +103,7 @@ static const char * const usage_msg =
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
 
+
 int
 main(int argc, char *argv[])
 {
@@ -198,8 +199,8 @@ main(int argc, char *argv[])
 	 */
 	node = json_conv_number_str(test_set[i], &len);
 	if (node == NULL) {
-	    warn(__func__, "json_conv_number_str(\"%s\", &%ju) returned NULL",
-			   test_set[i], (uintmax_t)len);
+	    warn(__func__, "json_conv_number_str(\"%s\", &%zu) returned NULL",
+			   test_set[i], len);
 	    error = true;
 	    break;
 	}
@@ -214,8 +215,8 @@ main(int argc, char *argv[])
 	 */
 	test = chk_test(i, item, &test_result[i], len, strict);
 	if (test == false) {
-	    warn(__func__, "test: chk_test(%d, item, &test_result[%d], %ju, %s) failed",
-			   i, i, (uintmax_t)len, (strict ? "true" : "false"));
+	    warn(__func__, "test: chk_test(%d, item, &test_result[%d], %zu, %s) failed",
+			   i, i, len, (strict ? "true" : "false"));
 	    error = true;
 	}
 
@@ -280,7 +281,7 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
 	return false;
     }
     if (len != test->number_len) {
-	warn(__func__, "len: %ju != test->number_len: %ju", (uintmax_t)len, (uintmax_t)test->number_len);
+	warn(__func__, "len: %zu != test->number_len: %zu", len, test->number_len);
 	return false;
     }
 
@@ -334,20 +335,20 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
      * test string lengths
      */
     if (test_result[testnum].as_str_len != item->as_str_len) {
-	dbg(DBG_VHIGH, "ERROR: test_result[%d].as_str_len: %ju != item->as_str_len: %ju",
-		       testnum, (uintmax_t)test_result[testnum].as_str_len, (uintmax_t)item->as_str_len);
+	dbg(DBG_VHIGH, "ERROR: test_result[%d].as_str_len: %zu != item->as_str_len: %zu",
+		       testnum, test_result[testnum].as_str_len, item->as_str_len);
 	test_error = true;
     } else {
-	dbg(DBG_VVHIGH, "OK: test_result[%d].as_str_len: %ju == item->as_str_len: %ju",
-		        testnum, (uintmax_t)test_result[testnum].as_str_len, (uintmax_t)item->as_str_len);
+	dbg(DBG_VVHIGH, "OK: test_result[%d].as_str_len: %zu == item->as_str_len: %zu",
+		        testnum, test_result[testnum].as_str_len, item->as_str_len);
     }
     if (test_result[testnum].number_len != item->number_len) {
-	dbg(DBG_VHIGH, "ERROR: test_result[%d].number_len: %ju != item->number_len: %ju",
-		       testnum, (uintmax_t)test_result[testnum].number_len, (uintmax_t)item->number_len);
+	dbg(DBG_VHIGH, "ERROR: test_result[%d].number_len: %zu != item->number_len: %zu",
+		       testnum, test_result[testnum].number_len, item->number_len);
 	test_error = true;
     } else {
-	dbg(DBG_VVHIGH, "OK: test_result[%d].number_len: %ju == item->number_len: %ju",
-		        testnum, (uintmax_t)test_result[testnum].number_len, (uintmax_t)item->number_len);
+	dbg(DBG_VVHIGH, "OK: test_result[%d].number_len: %zu == item->number_len: %zu",
+		        testnum, test_result[testnum].number_len, item->number_len);
     }
 
     /*

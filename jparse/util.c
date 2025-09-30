@@ -54,6 +54,7 @@
 #include <errno.h>
 #include <stdarg.h>
 #include <fcntl.h>		/* for open() */
+#include <stddef.h>		/* for ptrdiff_t */
 
 /*
  * util - common utility functions for the JSON parser
@@ -100,22 +101,19 @@ is_string(char const * const ptr, size_t len)
      * process the result of the NUL byte search
      */
     if (nul_found == NULL) {
-	dbg(DBG_VVHIGH, "is_string: no NUL found from ptr through ptr[%jd]",
-			(intmax_t)(len-1));
+	dbg(DBG_VVHIGH, "is_string: no NUL found from ptr through ptr[%zu]", (len-1));
 	return false;
     }
-    if ((intmax_t)(nul_found-ptr) != (intmax_t)(len-1)) {
-	dbg(DBG_VVHIGH, "is_string: found NUL at ptr[%jd] != ptr[%jd]",
-			(intmax_t)(nul_found-ptr),
-			(intmax_t)(len-1));
+    if ((nul_found-ptr) != (ptrdiff_t)(len-1)) {
+	dbg(DBG_VVHIGH, "is_string: found NUL at ptr[%td] != ptr[%zu]",
+			(nul_found-ptr), (len-1));
 	return false;
     }
 
     /*
      * report that ptr is a C-style string of length len
      */
-    dbg(DBG_VVVHIGH, "is_string: is a C-style string of length: %jd",
-		     (intmax_t)len);
+    dbg(DBG_VVVHIGH, "is_string: is a C-style string of length: %zu", len);
     return true;
 }
 
@@ -253,7 +251,7 @@ string_to_uintmax(char const *str, uintmax_t *ret)
 	warnp(__func__, "error converting string \"%s\" to uintmax_t", str);
 	return false;
     } else if (num <= 0 || num >= UINTMAX_MAX) {
-	warn(__func__, "number %s out of range for uintmax_t (must be >= %jd && < %jd)", str, (uintmax_t)0, UINTMAX_MAX);
+	warn(__func__, "number %s out of range for uintmax_t (must be >= %d && < %jd)", str, 0, UINTMAX_MAX);
 	return false;
     }
 
@@ -315,7 +313,7 @@ is_decimal(char const *ptr, size_t len)
 	return false;
     }
     if (len <= 0) {
-	warn(__func__, "len <= 0: %ju", (intmax_t)len);
+	warn(__func__, "len <= 0: %zu", len);
 	return false;
     }
 
@@ -444,7 +442,7 @@ is_floating_notation(char const *str, size_t len)
 	return false;
     }
     if (len <= 0) {
-	warn(__func__, "len <= 0: %ju", (intmax_t)len);
+	warn(__func__, "len <= 0: %zu", len);
 	return false;
     }
     if (str[0] == '\0') {
@@ -453,13 +451,13 @@ is_floating_notation(char const *str, size_t len)
     }
 
     if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
-	warn(__func__, "str[%ju-1] is not an ASCII digit: 0x%02x for str: %s", (uintmax_t)len, (int)str[len-1], str);
+	warn(__func__, "str[%zu-1] is not an ASCII digit: 0x%02x for str: %s", len, (int)str[len-1], str);
 	return false;	/* processing failed */
     }
 
     str_len = strlen(str);
     if (str_len < len) {
-	warn(__func__, "strlen(\"%s\"): %ju < len arg: %ju", str, (uintmax_t)str_len, (uintmax_t)len);
+	warn(__func__, "strlen(\"%s\"): %zu < len arg: %zu", str, str_len, len);
 	return false;	/* processing failed */
     /*
      * JSON spec detail: floating point numbers cannot end with .
@@ -595,7 +593,7 @@ is_e_notation(char const *str, size_t len)
 	return false;
     }
     if (len <= 0) {
-	warn(__func__, "len <= 0: %ju", (intmax_t)len);
+	warn(__func__, "len <= 0: %zu", len);
 	return false;
     }
     if (str[0] == '\0') {
@@ -604,13 +602,13 @@ is_e_notation(char const *str, size_t len)
     }
 
     if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
-	warn(__func__, "str[%ju-1] is not an ASCII digit: 0x%02x for str: %s", (uintmax_t)len, (int)str[len-1], str);
+	warn(__func__, "str[%zu-1] is not an ASCII digit: 0x%02x for str: %s", len, (int)str[len-1], str);
 	return false;	/* processing failed */
     }
 
     str_len = strlen(str);
     if (str_len < len) {
-	warn(__func__, "strlen(\"%s\"): %ju < len arg: %ju", str, (uintmax_t)str_len, (uintmax_t)len);
+	warn(__func__, "strlen(\"%s\"): %zu < len arg: %zu", str, str_len, len);
 	return false;	/* processing failed */
     }
 

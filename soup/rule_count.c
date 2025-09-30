@@ -425,7 +425,7 @@ rule_count(FILE *fp_in)
 				/* Count keyword as 1. */
 				counts.rule_2b_size = counts.rule_2b_size - wordi + 1;
 				counts.keywords++;
-				iocccsize_dbg(1, "~~keyword %ju \"%s\"", (uintmax_t)counts.keywords, word);
+				iocccsize_dbg(1, "~~keyword %zu \"%s\"", counts.keywords, word);
 			}
 			word[wordi = 0] = '\0';
 		}

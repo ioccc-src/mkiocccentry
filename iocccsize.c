@@ -209,10 +209,9 @@ main(int argc, char **argv)
 	/* The Count - 1 Muha .. 2 Muhaha .. 3 Muhahaha ... */
 	count = rule_count(fp);
 	if (verbosity_level == 0) {
-		(void) printf("%ju\n", (uintmax_t)count.rule_2b_size);
+		(void) printf("%zu\n", count.rule_2b_size);
 	} else {
-		(void) printf("%ju %ju %ju\n", (uintmax_t)count.rule_2b_size, (uintmax_t)count.rule_2a_size,
-					       (uintmax_t)count.keywords);
+		(void) printf("%zu %zu %zu\n", count.rule_2b_size, count.rule_2a_size, count.keywords);
 	}
 
 	/*
@@ -234,12 +233,12 @@ main(int argc, char **argv)
 		iocccsize_warnx("Warning: ungetc error: @SirWumpus goofed. The count on stdout may be invalid under rule 2!");
 	}
 	if (count.rule_2a_size > RULE_2A_SIZE) {
-		iocccsize_warnx("Warning: your source under Rule 2a: %ju exceeds Rule 2a limit: %ju: Rule 2a violation!\n",
-			        (uintmax_t)count.rule_2a_size, (uintmax_t)RULE_2A_SIZE);
+		iocccsize_warnx("Warning: your source under Rule 2a: %zu exceeds Rule 2a limit: %d: Rule 2a violation!\n",
+			        count.rule_2a_size, RULE_2A_SIZE);
 	}
 	if (count.rule_2b_size > RULE_2B_SIZE) {
-		iocccsize_warnx("Warning: your source under Rule 2b: %ju exceeds Rule 2b limit: %ju: Rule 2b violation!\n",
-				(uintmax_t)count.rule_2b_size, (uintmax_t)RULE_2B_SIZE);
+		iocccsize_warnx("Warning: your source under Rule 2b: %zu exceeds Rule 2b limit: %d: Rule 2b violation!\n",
+				count.rule_2b_size, RULE_2B_SIZE);
 	}
 
 	/*

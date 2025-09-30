@@ -77,6 +77,7 @@
  */
 #include "../jparse/util.h"
 
+
 /*
  * vcmdprintf - calloc a safer shell command line for use with system() and popen() in va_list form
  *
@@ -178,7 +179,7 @@ vcmdprintf(char const *fmt, va_list ap)
     errno = 0;			    /* pre-clear errno for warnp() */
     cmd = (char *)calloc(1, size);  /* NOTE: the trailing NUL byte is included in size */
     if (cmd == NULL) {
-	warnp(__func__, "calloc from vcmdprintf of %ju bytes failed", (uintmax_t)size);
+	warnp(__func__, "calloc from vcmdprintf of %zu bytes failed", size);
 	return NULL;
     }
 
@@ -250,8 +251,7 @@ vcmdprintf(char const *fmt, va_list ap)
      * verify amount of data written
      */
     if ((size_t)(d + 1 - cmd) != size) {
-	warn(__func__, "stored characters: %jd != size: %ju",
-	     (intmax_t)((size_t)(d + 1 - cmd)), (uintmax_t)size);
+	warn(__func__, "stored characters: %zu != size: %zu", (size_t)(d + 1 - cmd), size);
 
 	if (cmd != NULL) {
 	    free(cmd);
@@ -265,7 +265,6 @@ vcmdprintf(char const *fmt, va_list ap)
      */
     return cmd;
 }
-
 
 
 /*
@@ -323,8 +322,6 @@ cmdprintf(char const *fmt, ...)
      */
     return cmd;
 }
-
-
 
 
 /*
@@ -661,6 +658,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
      */
     return stream;
 }
+
 
 /*
  * sum_and_count - add to a sum, count the number of additions

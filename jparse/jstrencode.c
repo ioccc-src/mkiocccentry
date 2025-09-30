@@ -176,6 +176,7 @@ add_encoded_string(char *string, size_t bufsiz)
     return jstr;
 }
 
+
 /*
  * dup_without_nl - duplicate a buffer and remove all newlines
  *
@@ -286,7 +287,7 @@ jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool 
 	warn(__func__, "error while reading data from input stream");
 	return NULL;
     }
-    dbg(DBG_MED, "stream read length: %ju", (uintmax_t)inputlen);
+    dbg(DBG_MED, "stream read length: %zu", inputlen);
 
     /*
      * if -N, remove all newlines from data
@@ -329,7 +330,7 @@ jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool 
 	--inputlen;
 	++input;
 	--inputlen;
-	dbg(DBG_VHIGH, "stream read length changed to: %ju", (uintmax_t)inputlen);
+	dbg(DBG_VHIGH, "stream read length changed to: %zu", inputlen);
 	dbg(DBG_VHIGH, "stream data changed to: <%s>", input);
 
     /*
@@ -348,7 +349,7 @@ jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool 
 	    dbg(DBG_HIGH, "removing leading double quote from stream");
 	    ++input;
 	    --inputlen;
-	    dbg(DBG_VHIGH, "stream read length is now: %ju", (uintmax_t)inputlen);
+	    dbg(DBG_VHIGH, "stream read length is now: %zu", inputlen);
 	    dbg(DBG_VHIGH, "stream data is now: <%s>", input);
 
 	/*
@@ -362,7 +363,7 @@ jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool 
 	    dbg(DBG_HIGH, "removing trailing double quote from stream");
 	    input[inputlen-1] = '\0';
 	    --inputlen;
-	    dbg(DBG_VHIGH, "stream read length changed to: %ju", (uintmax_t)inputlen);
+	    dbg(DBG_VHIGH, "stream read length changed to: %zu", inputlen);
 	    dbg(DBG_VHIGH, "stream data changed to: <%s>", input);
 	}
     }
@@ -393,7 +394,7 @@ jstrencode_stream(FILE *in_stream, bool skip_enclosing, bool ignore_first, bool 
 
     jstr = add_encoded_string(buf, bufsiz);
     if (jstr == NULL) {
-	warn(__func__, "failed to allocate jstring of size %ju", bufsiz);
+	warn(__func__, "failed to allocate jstring of size %zu", bufsiz);
 	return NULL;
     }
 
@@ -549,7 +550,7 @@ main(int argc, char **argv)
 		    warn(__func__, "failed to encode string from stdin");
 		    success = false;
 		} else {
-		    dbg(DBG_LOW, "encoded buf size: %ju", (uintmax_t)jstr->bufsiz);
+		    dbg(DBG_LOW, "encoded buf size: %zu", jstr->bufsiz);
 		}
 
 	    } else {
@@ -559,7 +560,7 @@ main(int argc, char **argv)
 		 */
 		inputlen = strlen(input);
 		dbg(DBG_LOW, "processing arg: %d: <%s>", i-optind, input);
-		dbg(DBG_MED, "arg length: %ju", (uintmax_t)inputlen);
+		dbg(DBG_MED, "arg length: %zu", inputlen);
 	    }
 
 	    /*
@@ -581,7 +582,7 @@ main(int argc, char **argv)
 		 */
 		input = dup_input;
 		dbg(DBG_VHIGH, "-N and arg is now: %d: <%s>", i-optind, input);
-		dbg(DBG_VHIGH, "-N and arg length is now: %ju", (uintmax_t)inputlen);
+		dbg(DBG_VHIGH, "-N and arg length is now: %zu", inputlen);
 	    }
 
 	    /*
@@ -603,7 +604,7 @@ main(int argc, char **argv)
 		    ++input;
 		    --inputlen;
 		    dbg(DBG_VHIGH, "arg is now: %d: <%s>", i-optind, input);
-		    dbg(DBG_VHIGH, "arg length is now: %ju", (uintmax_t)inputlen);
+		    dbg(DBG_VHIGH, "arg length is now: %zu", inputlen);
 		}
 
 	    /*
@@ -623,7 +624,7 @@ main(int argc, char **argv)
 		    ++input;
 		    --inputlen;
 		    dbg(DBG_VHIGH, "arg is now: %d: <%s>", i-optind, input);
-		    dbg(DBG_VHIGH, "arg length is now: %ju", (uintmax_t)inputlen);
+		    dbg(DBG_VHIGH, "arg length is now: %zu", inputlen);
 		}
 
 		/*
@@ -638,7 +639,7 @@ main(int argc, char **argv)
 		    input[inputlen-1] = '\0';
 		    --inputlen;
 		    dbg(DBG_VHIGH, "arg is now: %d: <%s>", i-optind, input);
-		    dbg(DBG_VHIGH, "arg length is now: %ju", (uintmax_t)inputlen);
+		    dbg(DBG_VHIGH, "arg length is now: %zu", inputlen);
 		}
 	    }
 
@@ -654,13 +655,13 @@ main(int argc, char **argv)
 	     * append encoded buffer to encoded JSON strings list
 	     */
 	    } else {
-		dbg(DBG_MED, "encode length: %ju", bufsiz);
+		dbg(DBG_MED, "encode length: %zu", bufsiz);
 		jstr = add_encoded_string(buf, bufsiz);
 		if (jstr == NULL) {
 		    warn(__func__, "error adding encoded string to list");
 		    success = false;
 		} else {
-		    dbg(DBG_MED, "added string of size %ju to encoded strings list", bufsiz);
+		    dbg(DBG_MED, "added string of size %zu to encoded strings list", bufsiz);
 		}
 	    }
 
@@ -688,7 +689,7 @@ main(int argc, char **argv)
 	 */
 	jstr = jstrencode_stream(stdin, skip_concat_quotes, skip_each, skip_each, ignore_nl);
 	if (jstr != NULL) {
-	    dbg(DBG_MED, "encode length: %ju", jstr->bufsiz);
+	    dbg(DBG_MED, "encode length: %zu", jstr->bufsiz);
 	} else {
 	    warn(__func__, "error while encoding processing stdin");
 	    success = false;
@@ -716,8 +717,7 @@ main(int argc, char **argv)
 	    errno = 0;		/* pre-clear errno for warnp() */
 	    outputlen = fwrite(buf, 1, bufsiz, stdout);
 	    if (outputlen != bufsiz) {
-		warnp(__func__, "error: wrote %ju bytes out of expected %ju bytes",
-			    (uintmax_t)outputlen, (uintmax_t)bufsiz);
+		warnp(__func__, "error: wrote %zu bytes out of expected %zu bytes", outputlen, bufsiz);
 		success = false;
 	    }
 	}

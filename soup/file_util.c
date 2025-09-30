@@ -94,10 +94,10 @@
 	    *(enum path_sanity *)(sanity_p) = (enum path_sanity)(path_err); \
 	} \
 	if ((len_p) != NULL) { \
-	    *(uintmax_t *)(len_p) = path_len; \
+	    *(size_t *)(len_p) = path_len; \
 	} \
 	if ((depth_p) != NULL) { \
-	    *(uintmax_t *)(depth_p) = deep; \
+	    *(int32_t *)(depth_p) = deep; \
 	} \
 	if ((array) != NULL) { \
 	    dyn_array_free(array); \
@@ -605,6 +605,7 @@ dir_name(char const *path, int level)
     return ret;
 }
 
+
 /*
  * count_comps       - count comp delimited components in a string
  *
@@ -789,7 +790,7 @@ count_comps(char const *str, char comp, bool remove_all)
     /*
      * return the total components
      */
-    dbg(DBG_VVHIGH, "#4: count_comps(\"%s\", %c, \"%s\") == %ju", str, comp, booltostr(remove_all), (uintmax_t)count);
+    dbg(DBG_VVHIGH, "#4: count_comps(\"%s\", %c, \"%s\") == %zu", str, comp, booltostr(remove_all), count);
     return count;
 }
 
@@ -864,7 +865,7 @@ exists(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %lld", path, (long long)buf.st_size);
     return true;
 }
 
@@ -950,7 +951,7 @@ file_type(char const *path)
             return FILE_TYPE_ERR;
         }
     }
-    dbg(DBG_VVHIGH, "path size: %jd: %s", (intmax_t)buf.st_size, path);
+    dbg(DBG_VVHIGH, "path size: %lld: %s", (long long)buf.st_size, path);
 
     /*
      * determine type of file
@@ -1025,7 +1026,7 @@ is_mode(char const *path, mode_t mode)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %lld", path, (long long)buf.st_size);
 
     switch (file_type(path)) {
         case FILE_TYPE_ERR:
@@ -1107,7 +1108,7 @@ has_mode(char const *path, mode_t mode)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %lld", path, (long long)buf.st_size);
 
     if (buf.st_mode & mode) {
         dbg(DBG_HIGH, "path %s mode %o has %o set: %o & %o == %o", path, buf.st_mode, mode,
@@ -1157,7 +1158,7 @@ is_file(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %lld", path, (long long)buf.st_size);
 
     /*
      * test if path is a regular file
@@ -1206,7 +1207,7 @@ is_dir(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %lld", path, (long long)buf.st_size);
 
     /*
      * test if path is a regular directory
@@ -1255,7 +1256,7 @@ is_symlink(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %lld", path, (long long)buf.st_size);
 
     /*
      * test if path is a symlink
@@ -1304,7 +1305,7 @@ is_socket(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %lld", path, (long long)buf.st_size);
 
     /*
      * test if path is a socket
@@ -1316,6 +1317,7 @@ is_socket(char const *path)
     dbg(DBG_V1_HIGH, "path %s is a socket", path);
     return true;
 }
+
 
 /*
  * is_chardev - if a path is a character device
@@ -1352,7 +1354,7 @@ is_chardev(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %lld", path, (long long)buf.st_size);
 
     /*
      * test if path is a character device
@@ -1401,7 +1403,7 @@ is_blockdev(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %lld", path, (long long)buf.st_size);
 
     /*
      * test if path is a block device
@@ -1450,7 +1452,7 @@ is_fifo(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %lld", path, (long long)buf.st_size);
 
     /*
      * test if path is a FIFO
@@ -1462,6 +1464,7 @@ is_fifo(char const *path)
     dbg(DBG_V1_HIGH, "path %s is a FIFO", path);
     return true;
 }
+
 
 /*
  * is_exec - if a path is executable or directory is searchable
@@ -1500,9 +1503,9 @@ is_exec(char const *path)
 	return false;
     }
     if (S_ISDIR(buf.st_mode)) {
-	dbg(DBG_V1_HIGH, "path is a directory: %s size: %jd", path, (intmax_t)buf.st_size);
+	dbg(DBG_V1_HIGH, "path is a directory: %s size: %lld", path, (long long)buf.st_size);
     } else {
-	dbg(DBG_V1_HIGH, "path is a file: %s size: %jd", path, (intmax_t)buf.st_size);
+	dbg(DBG_V1_HIGH, "path is a file: %s size: %lld", path, (long long)buf.st_size);
     }
 
     /*
@@ -1562,7 +1565,7 @@ is_read(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %lld", path, (long long)buf.st_size);
 
     /*
      * test if we are allowed to execute it
@@ -1613,7 +1616,7 @@ is_write(char const *path)
 	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
 	return false;
     }
-    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %lld", path, (long long)buf.st_size);
 
     /*
      * test if we are allowed to execute it
@@ -1714,7 +1717,7 @@ filemode(char const *path, bool printing)
         }
     }
 
-    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %lld", path, (long long)buf.st_size);
     dbg(DBG_HIGH, "path %s is mode %o (printing: %s)", path, st_mode, booltostr(printing));
     return st_mode;
 }
@@ -1777,6 +1780,7 @@ is_open_file_stream(FILE *stream)
      */
     return true;
 }
+
 
 /*
  * reset_fts    - clear out a struct fts *
@@ -2646,7 +2650,7 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
                         /* get next string pointer */
                         u = dyn_array_value(fts->ignore, char *, i);
                         if (u == NULL) {	/* paranoia */
-                            err(110, __func__, "found NULL pointer in fts->ignore[%ju]", (uintmax_t)i);
+                            err(110, __func__, "found NULL pointer in fts->ignore[%jd]", i);
                             not_reached();
                         }
                         if ((fts->base || count_dirs(name) == 1) && (((fts->match_case && !strcmp(ent->fts_name, u)) ||
@@ -2699,7 +2703,7 @@ read_fts(char *dir, int dirfd, int *cwd, struct fts *fts)
                         /* get next string pointer */
                         u = dyn_array_value(fts->match, char *, i);
                         if (u == NULL) {	/* paranoia */
-                            err(111, __func__, "found NULL pointer in fts->match[%ju]", (uintmax_t)i);
+                            err(111, __func__, "found NULL pointer in fts->match[%jd]", i);
                             not_reached();
                         }
                         if ((fts->base || count_dirs(name) == 1) && (((fts->match_case && !strcmp(ent->fts_name, u)) ||
@@ -2872,7 +2876,7 @@ array_has_path(struct dyn_array *array, char *path, bool match_case, bool fn, in
 	/* get next string pointer */
 	u = dyn_array_value(array, char *, i);
 	if (u == NULL) {	/* paranoia */
-	    err(113, __func__, "found NULL pointer in path name dynamic array element: %ju", (uintmax_t)i);
+	    err(113, __func__, "found NULL pointer in path name dynamic array element: %ju", i);
 	    not_reached();
 	}
 
@@ -2977,6 +2981,7 @@ find_path_in_array(char *path, struct dyn_array *paths, bool match_case, bool fn
      */
     return NULL;
 }
+
 
 /*
  * append_path
@@ -3449,13 +3454,13 @@ struct dyn_array *
 find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath, struct fts *fts)
 {
     FTSENT *ent = NULL; /* for read_fts() */
-    int i = 0;      /* for count check */
-    uintmax_t j = 0;   /* for array iteration */
     uintmax_t len = 0; /* length of arrays */
     struct dyn_array *paths_found = NULL; /* returned array */
     char *path = NULL;
     char *name = NULL;
     char *dirname = NULL;
+    int i = 0;      /* for count check */
+    uintmax_t j = 0;   /* for array iteration */
 
     /*
      * firewall
@@ -3700,7 +3705,6 @@ find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath
 }
 
 
-
 /*
  * file_size - determine the file size
  *
@@ -3740,7 +3744,7 @@ file_size(char const *path)
     /*
      * return file size
      */
-    dbg(DBG_V1_HIGH, "path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_V1_HIGH, "path %s size: %lld", path, (long long)buf.st_size);
     return buf.st_size;
 }
 
@@ -3796,7 +3800,7 @@ size_if_file(char const *path)
     /*
      * return file size
      */
-    dbg(DBG_VVHIGH, "regular file path %s size: %jd", path, (intmax_t)buf.st_size);
+    dbg(DBG_VVHIGH, "regular file path %s size: %lld", path, (long long)buf.st_size);
     return buf.st_size;
 }
 
@@ -3842,7 +3846,7 @@ is_empty(char const *path)
     /*
      * return not empty
      */
-    dbg(DBG_V1_HIGH, "path %s is not empty, size: %jd", path, (intmax_t)size);
+    dbg(DBG_V1_HIGH, "path %s is not empty, size: %lld", path, (long long)size);
     return false;
 }
 
@@ -4022,7 +4026,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     int infd = -1;              /* input file file descriptor */
     int outfd = -1;             /* output file file descriptor */
     int ret = -1;               /* libc return value */
-    struct stat in_st;             /* to get the permissions of source file */
+    struct stat in_st;          /* to get the permissions of source file */
     struct stat out_st;
 
     /*
@@ -4110,7 +4114,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
         not_reached();
     }
 
-    dbg(DBG_HIGH, "read %ju bytes from src file %s", (uintmax_t)inbytes, src);
+    dbg(DBG_HIGH, "read %zu bytes from src file %s", inbytes, src);
 
     /*
      * close the src file
@@ -4153,12 +4157,10 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
     errno = 0;		/* pre-clear errno for warnp() */
     outbytes = fwrite(buf, 1, inbytes, out_file);
     if (outbytes != inbytes) {
-        errp(160, __func__, "error: wrote %ju bytes out of expected %ju bytes",
-                    (uintmax_t)outbytes, (uintmax_t)inbytes);
+        errp(160, __func__, "error: wrote %zu bytes out of expected %zu bytes", outbytes, inbytes);
         not_reached();
     } else {
-        dbg(DBG_HIGH, "wrote %ju bytes to dest file %s == %ju read bytes", (uintmax_t)outbytes, src,
-                (uintmax_t)inbytes);
+        dbg(DBG_HIGH, "wrote %zu bytes to dest file %s == %zu read bytes", outbytes, src, inbytes);
     }
 
     /*
@@ -4204,7 +4206,7 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
         not_reached();
     }
 
-    dbg(DBG_HIGH, "read %ju bytes from dest file %s", (uintmax_t)inbytes, src);
+    dbg(DBG_HIGH, "read %zu bytes from dest file %s", inbytes, src);
 
     /*
      * close the dest file
@@ -4220,12 +4222,11 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
      * first check that the bytes read in is the same as the bytes written
      */
     if (outbytes != inbytes) {
-        err(165, __func__, "error: read %ju bytes out of expected %ju bytes",
-                    (uintmax_t)inbytes, (uintmax_t)outbytes);
+        err(165, __func__, "error: read %zu bytes out of expected %zu bytes", inbytes, outbytes);
         not_reached();
     } else {
-        dbg(DBG_HIGH, "read in %ju bytes from dest file %s out of expected %ju bytes from src file %s",
-                (uintmax_t)inbytes, dest, (uintmax_t)outbytes, src);
+        dbg(DBG_HIGH, "read in %zu bytes from dest file %s out of expected %zu bytes from src file %s",
+                inbytes, dest, outbytes, src);
     }
 
     /*
@@ -4843,7 +4844,7 @@ path_sanity_error(enum path_sanity sanity)
  *	orig_path	    - path to canonicalize
  *      max_path_len        - max canonicalized path length, 0 ==> no limit
  *	max_filename_len    - max length of each component of path, 0 ==> no limit
- *      max_depth           - max depth of subdirectory tree, 0 ==> no limit
+ *      max_depth           - max depth of subdirectory tree, 0 ==> no limit, <0 ==> reserved for future use
  *      sanity_p	    - NULL ==> don't save canon_path path_sanity error, or PATH_OK
  *			      != NULL ==> save enum path_sanity in *sanity_p
  *      len_p		    - NULL ==> don't save canonical path length,
@@ -4894,23 +4895,23 @@ path_sanity_error(enum path_sanity sanity)
  *	!= NULL ==> malloced path that has been canonicalized
  */
 char *
-canon_path(char const *orig_path, uintmax_t max_path_len, uintmax_t max_filename_len, uintmax_t max_depth,
-	   enum path_sanity *sanity_p, uintmax_t *len_p, uintmax_t *depth_p, bool rel_only, bool any_case, bool safe_chk)
+canon_path(char const *orig_path, size_t max_path_len, size_t max_filename_len, int32_t max_depth,
+	   enum path_sanity *sanity_p, size_t *len_p, int32_t *depth_p, bool rel_only, bool any_case, bool safe_chk)
 {
     char *path = NULL;		/* duplicated orig_path to be/that has been canonicalized */
-    uintmax_t path_len = 0;	/* full path length */
-    uintmax_t tmp_len = 0;	/* temporary path length */
-    uintmax_t comp_len = 0;	/* path component length */
+    size_t path_len = 0;	/* full path length */
+    size_t tmp_len = 0;		/* temporary path length */
+    size_t comp_len = 0;	/* path component length */
     enum path_sanity sanity = PATH_OK;	/* canon_path path_sanity error, or PATH_OK */
     bool relative = true;	/* true ==> path is relative to "." (dot), false ==> path is absolute */
     struct dyn_array *array = NULL;    /* dynamic array of pointers to strings - path component stack */
     char *p = NULL;		/* path component */
     char **q = NULL;		/* address of a dynamic array string element */
-    intmax_t deep = 0;		/* dynamic array stack depth */
-    uintmax_t i = 0;		/* path component number */
+    int32_t deep = 0;		/* dynamic array stack depth */
     bool test = true;		/* true ==> passed test, false == failed test */
     char *ret_path = NULL;	/* malloced canonicalized path to return */
     size_t strlcpy_ret = 0;	/* private_strlcpy() return value */
+    size_t i = 0;		/* path component number */
 
     /*
      * firewall
@@ -4989,7 +4990,7 @@ canon_path(char const *orig_path, uintmax_t max_path_len, uintmax_t max_filename
 	/*
 	 * check for "." (dot)
 	 */
-	dbg(DBG_V3_HIGH, "%s: path component[%" PRIdMAX "]: %s", __func__, i, p);
+	dbg(DBG_V3_HIGH, "%s: path component[%zu]: %s", __func__, i, p);
 	comp_len = strlen(p);
 	if (strcmp(p, ".") == 0) {
 
@@ -5014,8 +5015,8 @@ canon_path(char const *orig_path, uintmax_t max_path_len, uintmax_t max_filename
 		    __func__, path_sanity_name(sanity), path_sanity_error(sanity));
 		return NULL;
 	    }
-	    deep = dyn_array_pop(array, NULL);
-	    dbg(DBG_V3_HIGH, "%s: .. component stack pop, stack depth: %" PRIdMAX, __func__, deep);
+	    deep = (int32_t)dyn_array_pop(array, NULL);
+	    dbg(DBG_V3_HIGH, "%s: .. component stack pop, stack depth: %d", __func__, deep);
 
 	/*
 	 * process this path component
@@ -5033,7 +5034,7 @@ canon_path(char const *orig_path, uintmax_t max_path_len, uintmax_t max_filename
 		if (comp_len > max_filename_len) {
 
 		    /* path component too long */
-		    dbg(DBG_V3_HIGH, "%s: path component length: %" PRIuMAX "> max_filename_len: %" PRIuMAX,
+		    dbg(DBG_V3_HIGH, "%s: path component length: %zu > max_filename_len: %zu",
 			__func__, comp_len, max_filename_len);
 		    report_canon_err(PATH_ERR_NAME_TOO_LONG, sanity_p, len_p, depth_p, path, array);
 		    dbg(DBG_HIGH, "%s: path component too long %s: %s",
@@ -5079,15 +5080,28 @@ canon_path(char const *orig_path, uintmax_t max_path_len, uintmax_t max_filename
 		for (i=0; i < comp_len; ++i) {
 		    p[i] = tolower(p[i]);
 		}
-		dbg(DBG_V3_HIGH, "%s: lower case path component[%" PRIdMAX "]: %s", __func__, i, p);
+		dbg(DBG_V3_HIGH, "%s: lower case path component[%zu: %s", __func__, i, p);
 	    }
 
 	    /*
 	     * push component into the path stack
+	     *
+	     * NOTE: If the path stack were to grow to larger than INT32_MAX,
+	     *	     and if we have a maximum depth allowed, we will declare
+	     *	     an immediate PATH_ERR_PATH_TOO_DEEP, even if some later
+	     *	     ".." (dotdot) might be able to later reduce the depth.
 	     */
 	    test = dyn_array_push(array, p);
-	    deep = dyn_array_tell(array);
-	    dbg(DBG_V3_HIGH, "%s: pushed path component on stack, depth: %" PRIdMAX, __func__, deep);
+	    if (max_depth > 0 && dyn_array_tell(array) > INT32_MAX) {
+
+		/* path component too deep */
+		dbg(DBG_V3_HIGH, "%s: path depth: %d max_depth: %d", __func__, deep, max_depth);
+		report_canon_err(PATH_ERR_PATH_TOO_DEEP, sanity_p, len_p, depth_p, path, array);
+		dbg(DBG_HIGH, "%s: while canonicalizing, path became too deep %s: %s",
+		    __func__, path_sanity_name(sanity), path_sanity_error(sanity));
+	    }
+	    deep = (dyn_array_tell(array) > INT32_MAX) ? INT32_MAX : (int32_t)dyn_array_tell(array);
+	    dbg(DBG_V3_HIGH, "%s: pushed path component on stack, depth: %d", __func__, deep);
 	    dbg(DBG_V4_HIGH, "%s: data moved: %s", __func__, booltostr(test));
 	}
     }
@@ -5097,13 +5111,12 @@ canon_path(char const *orig_path, uintmax_t max_path_len, uintmax_t max_filename
     /*
      * check depth if max_depth > 0
      */
-    if (max_depth > 0 && deep > (intmax_t)max_depth) {
+    if (max_depth > 0 && deep > max_depth) {
 
 	/* path component too deep */
-	dbg(DBG_V3_HIGH, "%s: path depth: %" PRIdMAX "> max_depth: %" PRIdMAX,
-	    __func__, deep, (intmax_t)max_depth);
+	dbg(DBG_V3_HIGH, "%s: path depth: %d max_depth: %d", __func__, deep, max_depth);
 	report_canon_err(PATH_ERR_PATH_TOO_DEEP, sanity_p, len_p, depth_p, path, array);
-	dbg(DBG_HIGH, "%s: path component too long %s: %s",
+	dbg(DBG_HIGH, "%s: path component too is deep %s: %s",
 	    __func__, path_sanity_name(sanity), path_sanity_error(sanity));
 	return NULL;
     }
@@ -5439,7 +5452,7 @@ calloc_path(char const *dirname, char const *filename)
 	buf = calloc(len+2, sizeof(*buf));	/* + 1 for paranoia padding */
 	errno = 0;		/* pre-clear errno for errp() */
 	if (buf == NULL) {
-	    errp(203, __func__, "calloc of %ju bytes failed", (uintmax_t)len);
+	    errp(203, __func__, "calloc of %zu bytes failed", len);
 	    not_reached();
 	}
 

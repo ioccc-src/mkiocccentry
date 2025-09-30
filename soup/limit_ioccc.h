@@ -40,8 +40,8 @@
 #undef DIGRAPHS		/* digraphs count a 2 for Rule 2b */
 #undef TRIGRAPHS	/* trigraphs count a 3 for Rule 2b */
 
-#define RULE_2A_SIZE ((off_t)(4993))		/* Rule 2a size of prog.c */
-#define RULE_2B_SIZE ((size_t)(2503))		/* Rule 2b size of prog.c */
+#define RULE_2A_SIZE (4993)		/* Rule 2a size of prog.c */
+#define RULE_2B_SIZE (2503)		/* Rule 2b size of prog.c */
 
 /*
  * IMPORTANT:
@@ -83,8 +83,8 @@
  * NOTE: The MANDATORY_SUBMISSION_FILES file is a limit on extra files for a submission, NOT a winning entry
  *	 and does NOT include any mandatory files.
  */
-#define MAX_TARBALL_LEN ((off_t)(3999971))	/* compressed tarball size limit in bytes */
-#define MAX_SUM_FILELEN ((off_t)(27651*1024))	/* maximum sum of the byte lengths of all files in the entry */
+#define MAX_TARBALL_LEN (3999971)		/* compressed tarball size limit in bytes */
+#define MAX_SUM_FILELEN (27651*1024)		/* maximum sum of the byte lengths of all files in the entry */
 #define MANDATORY_SUBMISSION_FILES (5)		/* number of required files in submission */
 #define OPTIONAL_SUBMISSION_FILES (3)		/* submission files, if they exist, that do NOT count towards the extra total */
 #define MAX_EXTRA_FILE_COUNT (31)		/* maximum number of files not including mandatory submission files */

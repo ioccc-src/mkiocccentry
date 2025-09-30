@@ -1,6 +1,15 @@
 # Significant changes in the JSON parser repo
 
 
+## Release 2.4.3 2025-09-29
+
+
+Updated `JPARSE_REPO_VERSION` to "2.4.3 2025-09-29".
+Updated `JPARSE_TOOL_VERSION` to "2.0.3 2025-09-29".
+Updated `JPARSE_LIBRARY_VERSION` to "2.4.2 2025-09-29".
+Updated `JPARSE_UTILS_VERSION` to "2.1.5 2025-09-29".
+
+
 ## Release 2.4.2 2025-09-28
 
 Moved the `fd_is_ready()` function and the `flush_tty()` function
