@@ -1,7 +1,9 @@
 /*
  * file_util - common utility functions for file operations
  *
- * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
+ * "Courage is found in unlikely places."
+ *
+ *      -- J.R.R Tolkien
  *
  * Copyright (c) 2022-2025 by Cody Boone Ferguson and Landon Curt Noll. All
  * rights reserved.
@@ -5184,7 +5186,6 @@ canon_path(char const *orig_path, size_t max_path_len, size_t max_filename_len, 
 	 * case: path is absolute, return "/" (slash)
 	 */
 	} else {
-
 	    /* return "/" (slash) */
 	    ret_path = strdup("/");
 	    if (ret_path == NULL) {
@@ -5233,7 +5234,6 @@ canon_path(char const *orig_path, size_t max_path_len, size_t max_filename_len, 
      */
     ret_path = calloc(1, path_len+1+1);	/* +1 for trailing NUL, +1 for paranoia */
     if (ret_path == NULL) {
-
 	/* malloc failure */
 	report_canon_err(PATH_ERR_MALLOC, sanity_p, len_p, depth_p, path, array);
 	dbg(DBG_HIGH, "%s: error #3 %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
@@ -5248,7 +5248,6 @@ canon_path(char const *orig_path, size_t max_path_len, size_t max_filename_len, 
      *	     has been already handled above.
      */
     for (q = dyn_array_first(array, char *); q < dyn_array_beyond(array, char *); ++q) {
-
 	/* paranoia */
 	if (q == NULL || *q == NULL) {
 
@@ -5262,7 +5261,6 @@ canon_path(char const *orig_path, size_t max_path_len, size_t max_filename_len, 
 	 * append "/"s (slash) as needed
 	 */
 	if (q == dyn_array_first(array, char *)) {
-
 	    /*
 	     * case: on first component of the canonicalized path
 	     *
@@ -5270,9 +5268,7 @@ canon_path(char const *orig_path, size_t max_path_len, size_t max_filename_len, 
 	     * An absolute canonicalized path starts with "/" (slash)
 	     */
 	    ret_path[0] = (relative) ? '\0' : '/';
-
 	} else {
-
 	    /*
 	     * case: a subsequent component of the canonicalized path
 	     */
@@ -5282,7 +5278,6 @@ canon_path(char const *orig_path, size_t max_path_len, size_t max_filename_len, 
 	/* append component from stack */
 	strlcpy_ret = private_strlcat(ret_path, *q, path_len+1);
 	if (strlcpy_ret >= path_len+1) {
-
 	    /* canonicalized path length mis-calculation */
 	    report_canon_err(PATH_ERR_WRONG_LEN, sanity_p, len_p, depth_p, path, array);
 	    dbg(DBG_HIGH, "%s: error #0 %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
@@ -5291,7 +5286,6 @@ canon_path(char const *orig_path, size_t max_path_len, size_t max_filename_len, 
     }
     /* canonicalized path length sanity check */
     if (path_len != strlen(ret_path)) {
-
 	/* canonicalized path length mis-calculation */
 	report_canon_err(PATH_ERR_WRONG_LEN, sanity_p, len_p, depth_p, path, array);
 	dbg(DBG_HIGH, "%s: error #1 %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
@@ -5427,7 +5421,6 @@ calloc_path(char const *dirname, char const *filename)
      * NULL dirname means path is just filename
      */
     if (dirname == NULL) {
-
 	/*
 	 * just return a newly calloced filename
 	 */
@@ -5444,7 +5437,6 @@ calloc_path(char const *dirname, char const *filename)
      * We need to form: dirname/filename
      */
     } else {
-
 	/*
 	 * calloc string
 	 */
