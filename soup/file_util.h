@@ -1,7 +1,9 @@
 /*
  * file_util - common utility functions for file operations
  *
- * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
+ * "Courage is found in unlikely places."
+ *
+ *      -- J.R.R Tolkien
  *
  * Copyright (c) 2022-2025 by Cody Boone Ferguson and Landon Curt Noll. All
  * rights reserved.

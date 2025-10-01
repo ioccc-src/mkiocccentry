@@ -1,7 +1,26 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## release 2.7.3 2025-09-29
+## Release 2.7.4 2025-10-01
+
+Fix bug in `cpath` - the help string did not show all the versions.
+
+Fix typo in `cpath`.
+
+Synced copyright from `soup/file_util.[ch]` into `cpath` as the code is based on and
+uses it (originally under `jparse` in a rush to get IOCCC28 running).
+
+Changed quote in `soup/file_util.[ch]` to no longer refer to the JSON spec as
+it's now in the right place and outside of `jparse/`.
+
+Moved `CPATH_VERSION` into `soup/version.h`.
+
+Slight format change in some files under `soup/`.
+
+Updated `CPATH_VERSION` to `"1.0.1 2025-10-01"`.
+
+
+## Release 2.7.3 2025-09-29
 
 Updates from [dbg repo](https://github.com/lcn2/dbg).
 

@@ -147,6 +147,11 @@
 #define MIN_CHKSUBMIT_VERSION CHKSUBMIT_VERSION
 
 /*
+ * official cpath version
+ */
+#define CPATH_VERSION "1.0.1 2025-10-01" /* format: major.minor YYYY-MM-DD */
+
+/*
  * Version of info for JSON the .entry.json files.
  */
 #define ENTRY_VERSION "1.2 2024-09-25"		/* format: major.minor YYYY-MM-DD */
