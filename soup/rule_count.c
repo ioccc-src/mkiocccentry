@@ -182,6 +182,7 @@ static Word cwords[] = {
 	{ STRLEN("noreturn"), "noreturn" } ,			/* +C23 */
 	{ STRLEN("not"), "not" } ,				/* +C89 iso646.h */
 	{ STRLEN("not_eq"), "not_eq" } ,			/* +C89 iso646.h */
+	{ STRLEN("nullptr"), "nullptr" } ,			/* +C23 */
 	{ STRLEN("or"), "or" } ,				/* +C89 iso646.h */
 	{ STRLEN("or_eq"), "or_eq" } ,				/* +C89 iso646.h */
 	{ STRLEN("register"), "register" } ,			/* K&R */
