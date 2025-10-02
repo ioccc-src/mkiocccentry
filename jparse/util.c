@@ -251,7 +251,7 @@ string_to_uintmax(char const *str, uintmax_t *ret)
 	warnp(__func__, "error converting string \"%s\" to uintmax_t", str);
 	return false;
     } else if (num <= 0 || num >= UINTMAX_MAX) {
-	warn(__func__, "number %s out of range for uintmax_t (must be >= %d && < %jd)", str, 0, UINTMAX_MAX);
+	warn(__func__, "number %s out of range for uintmax_t (must be >= %d && < %ju)", str, 0, UINTMAX_MAX);
 	return false;
     }
 
@@ -451,7 +451,7 @@ is_floating_notation(char const *str, size_t len)
     }
 
     if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
-	warn(__func__, "str[%zu-1] is not an ASCII digit: 0x%02x for str: %s", len, (int)str[len-1], str);
+	warn(__func__, "str[%zu-1] is not an ASCII digit: 0x%02X for str: %s", len, (int)str[len-1], str);
 	return false;	/* processing failed */
     }
 
@@ -602,7 +602,7 @@ is_e_notation(char const *str, size_t len)
     }
 
     if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
-	warn(__func__, "str[%zu-1] is not an ASCII digit: 0x%02x for str: %s", len, (int)str[len-1], str);
+	warn(__func__, "str[%zu-1] is not an ASCII digit: 0x%02X for str: %s", len, (int)str[len-1], str);
 	return false;	/* processing failed */
     }
 

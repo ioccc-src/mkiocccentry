@@ -118,6 +118,7 @@ main(int argc, char *argv[])
     size_t len = 0;		/* length of str */
     int arg_count = 0;		/* number of args to process */
     bool opt_error = false;	/* fchk_inval_opt() return */
+    size_t testnum = 0;
     int i;
 
     /*
@@ -192,20 +193,21 @@ main(int argc, char *argv[])
     /*
      * process each test case
      */
-    for (i=0; i < test_count; ++i) {
+    for (testnum=0; testnum < test_count; ++testnum) {
 
 	/*
 	 * convert the test string
 	 */
-	node = json_conv_number_str(test_set[i], &len);
+	node = json_conv_number_str(test_set[testnum], &len);
 	if (node == NULL) {
 	    warn(__func__, "json_conv_number_str(\"%s\", &%zu) returned NULL",
-			   test_set[i], len);
+			   test_set[testnum], len);
 	    error = true;
 	    break;
 	}
 	if (node->type != JTYPE_NUMBER) {
-	    err(10, program, "node->type for test %d: %s != %s", i, json_type_name(node->type), json_type_name(JTYPE_NUMBER));
+	    err(10, program, "node->type for test %zu: %s != %s", testnum, json_type_name(node->type),
+                    json_type_name(JTYPE_NUMBER));
 	    not_reached();
 	}
 	item = &(node->item.number);
@@ -213,10 +215,10 @@ main(int argc, char *argv[])
 	/*
 	 * compare conversion with test case
 	 */
-	test = chk_test(i, item, &test_result[i], len, strict);
+	test = chk_test(testnum, item, &test_result[testnum], len, strict);
 	if (test == false) {
-	    warn(__func__, "test: chk_test(%d, item, &test_result[%d], %zu, %s) failed",
-			   i, i, len, (strict ? "true" : "false"));
+	    warn(__func__, "test: chk_test(%zu, item, &test_result[%zu], %zu, %s) failed",
+			   testnum, testnum, len, (strict ? "true" : "false"));
 	    error = true;
 	}
 
@@ -265,7 +267,7 @@ main(int argc, char *argv[])
  *		  NULL pointer given, or len was incorrect
  */
 static bool
-chk_test(int testnum, struct json_number *item, struct json_number *test, size_t len, bool strict)
+chk_test(size_t testnum, struct json_number *item, struct json_number *test, size_t len, bool strict)
 {
     bool test_error = false;	/* true ==> check failed */
 
@@ -289,11 +291,11 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
      * test parsed boolean
      */
     if (test_result[testnum].parsed != item->parsed) {
-	dbg(DBG_VHIGH, "ERROR: test_result[%d].parsed: %d != item.parsed: %d",
+	dbg(DBG_VHIGH, "ERROR: test_result[%zu].parsed: %d != item.parsed: %d",
 		       testnum, test_result[testnum].parsed, item->parsed);
 	test_error = true;
     } else {
-	dbg(DBG_VVHIGH, "test_result[%d].parsed: %d == item.parsed: %d",
+	dbg(DBG_VVHIGH, "test_result[%zu].parsed: %d == item.parsed: %d",
 			testnum, test_result[testnum].parsed, item->parsed);
     }
 
@@ -301,11 +303,11 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
      * test converted boolean
      */
     if (test_result[testnum].converted != item->converted) {
-	dbg(DBG_VHIGH, "ERROR: test_result[%d].converted: %d != item.converted: %d",
+	dbg(DBG_VHIGH, "ERROR: test_result[%zu].converted: %d != item.converted: %d",
 		       testnum, test_result[testnum].converted, item->converted);
 	test_error = true;
     } else {
-	dbg(DBG_VVHIGH, "test_result[%d].converted: %d == item.converted: %d",
+	dbg(DBG_VVHIGH, "test_result[%zu].converted: %d == item.converted: %d",
 			testnum, test_result[testnum].converted, item->converted);
     }
 
@@ -314,19 +316,19 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
      */
     if (test_result[testnum].as_str == NULL) {
 	if (item->as_str != NULL) {
-	    dbg(DBG_VHIGH, "ERROR: test_result[%d].as_str == NULL && item->as_str != NULL", testnum);
+	    dbg(DBG_VHIGH, "ERROR: test_result[%zu].as_str == NULL && item->as_str != NULL", testnum);
 	    test_error = true;
 	} else {
-	    dbg(DBG_VVHIGH, "OK: test_result[%d].as_str == NULL && item->as_str == NULL", testnum);
+	    dbg(DBG_VVHIGH, "OK: test_result[%zu].as_str == NULL && item->as_str == NULL", testnum);
 	}
     } else {
 	/*
 	 * test non-NULL strings
 	 */
 	if (item->as_str != NULL) {
-	    dbg(DBG_VVHIGH, "OK: test_result[%d].as_str != NULL && item->as_str != NULL", testnum);
+	    dbg(DBG_VVHIGH, "OK: test_result[%zu].as_str != NULL && item->as_str != NULL", testnum);
 	} else {
-	    dbg(DBG_VHIGH, "ERROR: test_result[%d].as_str != NULL && item->as_str == NULL", testnum);
+	    dbg(DBG_VHIGH, "ERROR: test_result[%zu].as_str != NULL && item->as_str == NULL", testnum);
 	    test_error = true;
 	}
     }
@@ -335,19 +337,19 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
      * test string lengths
      */
     if (test_result[testnum].as_str_len != item->as_str_len) {
-	dbg(DBG_VHIGH, "ERROR: test_result[%d].as_str_len: %zu != item->as_str_len: %zu",
+	dbg(DBG_VHIGH, "ERROR: test_result[%zu].as_str_len: %zu != item->as_str_len: %zu",
 		       testnum, test_result[testnum].as_str_len, item->as_str_len);
 	test_error = true;
     } else {
-	dbg(DBG_VVHIGH, "OK: test_result[%d].as_str_len: %zu == item->as_str_len: %zu",
+	dbg(DBG_VVHIGH, "OK: test_result[%zu].as_str_len: %zu == item->as_str_len: %zu",
 		        testnum, test_result[testnum].as_str_len, item->as_str_len);
     }
     if (test_result[testnum].number_len != item->number_len) {
-	dbg(DBG_VHIGH, "ERROR: test_result[%d].number_len: %zu != item->number_len: %zu",
+	dbg(DBG_VHIGH, "ERROR: test_result[%zu].number_len: %zu != item->number_len: %zu",
 		       testnum, test_result[testnum].number_len, item->number_len);
 	test_error = true;
     } else {
-	dbg(DBG_VVHIGH, "OK: test_result[%d].number_len: %zu == item->number_len: %zu",
+	dbg(DBG_VVHIGH, "OK: test_result[%zu].number_len: %zu == item->number_len: %zu",
 		        testnum, test_result[testnum].number_len, item->number_len);
     }
 
@@ -355,27 +357,27 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
      * test: other top level booleans
      */
     if (test_result[testnum].is_negative != item->is_negative) {
-	dbg(DBG_VHIGH, "ERROR: test_result[%d].is_negative: %d != item.is_negative: %d",
+	dbg(DBG_VHIGH, "ERROR: test_result[%zu].is_negative: %d != item.is_negative: %d",
 		       testnum, test_result[testnum].is_negative, item->is_negative);
 	test_error = true;
     } else {
-	dbg(DBG_VVHIGH, "OK: test_result[%d].is_negative: %d == item.is_negative: %d",
+	dbg(DBG_VVHIGH, "OK: test_result[%zu].is_negative: %d == item.is_negative: %d",
 			testnum, test_result[testnum].is_negative, item->is_negative);
     }
     if (test_result[testnum].is_floating != item->is_floating) {
-	dbg(DBG_VHIGH, "ERROR: test_result[%d].is_floating: %d != item.is_floating: %d",
+	dbg(DBG_VHIGH, "ERROR: test_result[%zu].is_floating: %d != item.is_floating: %d",
 		       testnum, test_result[testnum].is_floating, item->is_floating);
 	test_error = true;
     } else {
-	dbg(DBG_VVHIGH, "OK: test_result[%d].is_floating: %d == item.is_floating: %d",
+	dbg(DBG_VVHIGH, "OK: test_result[%zu].is_floating: %d == item.is_floating: %d",
 			testnum, test_result[testnum].is_floating, item->is_floating);
     }
     if (test_result[testnum].is_e_notation != item->is_e_notation) {
-	dbg(DBG_VHIGH, "ERROR: test_result[%d].is_e_notation: %d != item.is_e_notation: %d",
+	dbg(DBG_VHIGH, "ERROR: test_result[%zu].is_e_notation: %d != item.is_e_notation: %d",
 		       testnum, test_result[testnum].is_e_notation, item->is_e_notation);
 	test_error = true;
     } else {
-	dbg(DBG_VVHIGH, "OK: test_result[%d].is_e_notation: %d == item.is_e_notation: %d",
+	dbg(DBG_VVHIGH, "OK: test_result[%zu].is_e_notation: %d == item.is_e_notation: %d",
 			testnum, test_result[testnum].is_e_notation, item->is_e_notation);
     }
 
@@ -514,10 +516,10 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
      * if this test failed, return false
      */
     if (test_error == true) {
-	dbg(DBG_MED, "ERROR: test %d failed", testnum);
+	dbg(DBG_MED, "ERROR: test %zu failed", testnum);
 	return false;
     }
-    dbg(DBG_HIGH, "OK: test %d passed", testnum);
+    dbg(DBG_HIGH, "OK: test %zu passed", testnum);
     return true;
 }
 
@@ -540,7 +542,7 @@ chk_test(int testnum, struct json_number *item, struct json_number *test, size_t
  * NOTE: This function will warn with a very high debug level on error.
  */
 static void
-check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, intmax_t val_a, intmax_t val_b)
+check_val(bool *testp, char const *type, size_t testnum, bool size_a, bool size_b, intmax_t val_a, intmax_t val_b)
 {
     /*
      * firewall
@@ -558,13 +560,13 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, 
      * compare booleans
      */
     if (size_a != size_b) {
-	dbg(DBG_VHIGH, "ERROR: test_result[%d].%s_sized: %s != item->%s_sized: %s",
+	dbg(DBG_VHIGH, "ERROR: test_result[%zu].%s_sized: %s != item->%s_sized: %s",
 		       testnum,
 		       type, booltostr(size_a),
 		       type, booltostr(size_b));
 	*testp = true; /* test failed */
     } else {
-	dbg(DBG_VVHIGH, "OK: test_result[%d].%s_sized: %s == item->%s_sized: %s",
+	dbg(DBG_VVHIGH, "OK: test_result[%zu].%s_sized: %s == item->%s_sized: %s",
 		        testnum,
 		        type, booltostr(size_a),
 		        type, booltostr(size_b));
@@ -574,13 +576,13 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, 
      * compare values
      */
     if (size_a == true && val_a != val_b) {
-	dbg(DBG_VHIGH, "ERROR: test_result[%d].as_%s: %jd != item->as_%s: %jd",
+	dbg(DBG_VHIGH, "ERROR: test_result[%zu].as_%s: %jd != item->as_%s: %jd",
 		       testnum,
 		       type, val_a,
 		       type, val_b);
 	*testp = true; /* test failed */
     } else if (size_a == true) {
-	dbg(DBG_VVHIGH, "OK: test_result[%d].as_%s: %jd == item->as_%s: %jd",
+	dbg(DBG_VVHIGH, "OK: test_result[%zu].as_%s: %jd == item->as_%s: %jd",
 		        testnum,
 		        type, val_a,
 		        type, val_b);
@@ -607,7 +609,7 @@ check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, 
  * NOTE: This function will warn with a very high debug level on error.
  */
 static void
-check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b, uintmax_t val_a, uintmax_t val_b)
+check_uval(bool *testp, char const *type, size_t testnum, bool size_a, bool size_b, uintmax_t val_a, uintmax_t val_b)
 {
     /*
      * firewall
@@ -625,13 +627,13 @@ check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
      * compare booleans
      */
     if (size_a != size_b) {
-	dbg(DBG_VHIGH, "ERROR: test_result[%d].%s_sized: %s != item->%s_sized: %s",
+	dbg(DBG_VHIGH, "ERROR: test_result[%zu].%s_sized: %s != item->%s_sized: %s",
 		       testnum,
 		       type, booltostr(size_a),
 		       type, booltostr(size_b));
 	*testp = true; /* test failed */
     } else {
-	dbg(DBG_VVHIGH, "OK: test_result[%d].%s_sized: %s == item->%s_sized: %s",
+	dbg(DBG_VVHIGH, "OK: test_result[%zu].%s_sized: %s == item->%s_sized: %s",
 		        testnum,
 		        type, booltostr(size_a),
 		        type, booltostr(size_b));
@@ -641,13 +643,13 @@ check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
      * compare values
      */
     if (size_a == true && val_a != val_b) {
-	dbg(DBG_VHIGH, "ERROR: test_result[%d].as_%s: %ju != item->as_%s: %ju",
+	dbg(DBG_VHIGH, "ERROR: test_result[%zu].as_%s: %ju != item->as_%s: %ju",
 		       testnum,
 		       type, val_a,
 		       type, val_b);
 	*testp = true; /* test failed */
     } else {
-	dbg(DBG_VVHIGH, "OK: test_result[%d].as_%s: %ju == item->as_%s: %ju",
+	dbg(DBG_VVHIGH, "OK: test_result[%zu].as_%s: %ju == item->as_%s: %ju",
 		        testnum,
 		        type, val_a,
 		       type, val_b);
@@ -677,7 +679,7 @@ check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
  * NOTE: This function will warn with a very high debug level on error.
  */
 static void
-check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
+check_fval(bool *testp, char const *type, size_t testnum, bool size_a, bool size_b,
 	  long double val_a, long double val_b, bool int_a, bool int_b, bool strict)
 {
     long double diff;		/* absolute difference between val_a and val_b */
@@ -699,25 +701,25 @@ check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
      * compare booleans
      */
     if (size_a != size_b) {
-	dbg(DBG_VHIGH, "ERROR: test_result[%d].%s_sized: %s != item->%s_sized: %s",
+	dbg(DBG_VHIGH, "ERROR: test_result[%zu].%s_sized: %s != item->%s_sized: %s",
 		       testnum,
 		       type, booltostr(size_a),
 		       type, booltostr(size_b));
 	*testp = true; /* test failed */
     } else {
-	dbg(DBG_VVHIGH, "OK: test_result[%d].%s_sized: %s == item->%s_sized: %s",
+	dbg(DBG_VVHIGH, "OK: test_result[%zu].%s_sized: %s == item->%s_sized: %s",
 		        testnum,
 		        type, booltostr(size_a),
 		        type, booltostr(size_b));
     }
     if (int_a != int_b) {
-	dbg(DBG_VHIGH, "ERROR: test_result[%d].%s_int: %s != item->%s_int: %s",
+	dbg(DBG_VHIGH, "ERROR: test_result[%zu].%s_int: %s != item->%s_int: %s",
 		       testnum,
 		       type, int_a ? "true" : "false",
 		       type, int_b ? "true" : "false");
 	*testp = true; /* test failed */
     } else {
-	dbg(DBG_VVHIGH, "OK: test_result[%d].%s_int: %s == item->%s_int: %s",
+	dbg(DBG_VVHIGH, "OK: test_result[%zu].%s_int: %s == item->%s_int: %s",
 		        testnum,
 		        type, int_a ? "true" : "false",
 		        type, int_b ? "true" : "false");
@@ -733,13 +735,13 @@ check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 	 */
 	if (strict == true) {
 	    if ((intmax_t)val_a != (intmax_t)val_b) {
-		dbg(DBG_VHIGH, "ERROR: test_result[%d].as_%s: %.22Lg != item->as_%s: %.22Lg",
+		dbg(DBG_VHIGH, "ERROR: test_result[%zu].as_%s: %.22Lg != item->as_%s: %.22Lg",
 			       testnum,
 			       type, val_a,
 			       type, val_b);
 		*testp = true; /* test failed */
 	    } else {
-		dbg(DBG_VVHIGH, "OK: test_result[%d].as_%s: %.22Lg == item->as_%s: %.22Lg",
+		dbg(DBG_VVHIGH, "OK: test_result[%zu].as_%s: %.22Lg == item->as_%s: %.22Lg",
 				testnum,
 				type, val_a,
 				type, val_b);
@@ -762,20 +764,20 @@ check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
 
 	    /* compare difference as part of the whole */
 	    if (islessequal(diff_part, 1.0L/MATCH_PRECISION)) {
-		dbg(DBG_VVHIGH, "OK: test_result[%d].as_%s: %.22Lg similar to item->as_%s: %.22Lg",
+		dbg(DBG_VVHIGH, "OK: test_result[%zu].as_%s: %.22Lg similar to item->as_%s: %.22Lg",
 				testnum,
 				type, val_a,
 				type, val_b);
-		dbg(DBG_VVHIGH, "OK: test_result[%d].as_%s: diff precision: %.22Lg <= 1.0/MATCH_PRECISION: %.22Lg",
+		dbg(DBG_VVHIGH, "OK: test_result[%zu].as_%s: diff precision: %.22Lg <= 1.0/MATCH_PRECISION: %.22Lg",
 			       testnum,
 			       type, diff_part, 1.0L/MATCH_PRECISION);
 
 	    } else {
-		dbg(DBG_VHIGH, "ERROR: test_result[%d].as_%s: %.22Lg not similar to item->as_%s: %.22Lg",
+		dbg(DBG_VHIGH, "ERROR: test_result[%zu].as_%s: %.22Lg not similar to item->as_%s: %.22Lg",
 			       testnum,
 			       type, val_a,
 			       type, val_b);
-		dbg(DBG_VHIGH, "ERROR: test_result[%d].as_%s: diff precision: %.22Lg > 1.0/MATCH_PRECISION: %.22Lg",
+		dbg(DBG_VHIGH, "ERROR: test_result[%zu].as_%s: diff precision: %.22Lg > 1.0/MATCH_PRECISION: %.22Lg",
 			       testnum,
 			       type, diff_part, 1.0L/MATCH_PRECISION);
 		*testp = true; /* test failed */

@@ -1908,7 +1908,7 @@ fprobject(FILE *stream, struct json_object *item)
      */
     if (CONVERTED_PARSED_JSON_NODE(item)) {
 
-        fprint(stream, "\t{%s%s}len: %zu",
+        fprint(stream, "\t{%s%s}len: %jd",
                        PARSED_JSON_NODE(item)?"p":"",
                        CONVERTED_PARSED_JSON_NODE(item)?"c":"",
                        item->len);
@@ -1966,7 +1966,7 @@ fprarray(FILE *stream, struct json_array *item)
      */
     if (CONVERTED_PARSED_JSON_NODE(item)) {
 
-        fprint(stream, "\t{%s%s}len: %zu",
+        fprint(stream, "\t{%s%s}len: %jd",
                        PARSED_JSON_NODE(item)?"p":"",
                        CONVERTED_PARSED_JSON_NODE(item)?"c":"",
                        item->len);

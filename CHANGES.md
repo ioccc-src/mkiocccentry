@@ -1,6 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.7.5 2025-10-02
+
+Synced [jparse repo](https://github.com/xexyl/jparse) with various fixes and
+also what was done with release 2.7.3 2025-09-29 here (some of the fixes being
+in that commit but a fair few older ones too). See `jparse/CHANGES.md` if you
+wish to know more.
+
+
 ## Release 2.7.4 2025-10-01
 
 Fix bug in `cpath` - the help string did not show all the versions.
@@ -18,6 +26,8 @@ Moved `CPATH_VERSION` into `soup/version.h`.
 Slight format change in some files under `soup/`.
 
 Updated `CPATH_VERSION` to `"1.0.1 2025-10-01"`.
+
+Add missing `nullptr` keyword to `soup/rule_count.c`.
 
 
 ## Release 2.7.3 2025-09-29

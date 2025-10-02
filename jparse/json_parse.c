@@ -925,7 +925,7 @@ chkbyte2asciistr(void)
      * assert: JSON_BYTE_VALUES must be 256
      */
     if (JSON_BYTE_VALUES != 256) {
-	err(172, __func__, "JSON_BYTE_VALUES: %d != 256", JSON_BYTE_VALUES);
+	err(172, __func__, "JSON_BYTE_VALUES: %zu != 256", (size_t)JSON_BYTE_VALUES);
 	not_reached();
     }
 
@@ -933,8 +933,8 @@ chkbyte2asciistr(void)
      * assert: table must be of size 256
      */
     if (TBLLEN(byte2asciistr) != JSON_BYTE_VALUES) {
-	err(173, __func__, "byte2asciistr table length is %zu instead of %d",
-			   TBLLEN(byte2asciistr), JSON_BYTE_VALUES);
+	err(173, __func__, "byte2asciistr table length is %zu instead of %zu",
+			   TBLLEN(byte2asciistr), (size_t)JSON_BYTE_VALUES);
 	not_reached();
     }
 
@@ -943,7 +943,7 @@ chkbyte2asciistr(void)
      */
     for (i=0; i < JSON_BYTE_VALUES; ++i) {
 	if (byte2asciistr[i].byte != i) {
-	    err(174, __func__, "byte2asciistr[0x%02x].byte: %d != %d", i, byte2asciistr[i].byte, i);
+	    err(174, __func__, "byte2asciistr[0x%02X].byte: %d != %d", i, byte2asciistr[i].byte, i);
 	    not_reached();
 	}
     }
@@ -953,7 +953,7 @@ chkbyte2asciistr(void)
      */
     for (i=0; i < JSON_BYTE_VALUES; ++i) {
 	if (byte2asciistr[i].enc == NULL) {
-	    err(175, __func__, "byte2asciistr[0x%02x].enc == NULL", i);
+	    err(175, __func__, "byte2asciistr[0x%02X].enc == NULL", i);
 	    not_reached();
 	}
     }
@@ -963,7 +963,7 @@ chkbyte2asciistr(void)
      */
     for (i=0; i < JSON_BYTE_VALUES; ++i) {
 	if (strlen(byte2asciistr[i].enc) != byte2asciistr[i].len) {
-	    err(176, __func__, "byte2asciistr[0x%02x].enc length: %zu != byte2asciistr[0x%02x].len: %zu",
+	    err(176, __func__, "byte2asciistr[0x%02X].enc length: %zu != byte2asciistr[0x%02X].len: %zu",
 			       i, strlen(byte2asciistr[i].enc),
 			       i, byte2asciistr[i].len);
 	    not_reached();
@@ -975,18 +975,18 @@ chkbyte2asciistr(void)
      */
     for (i=0x00; i <= 0x07; ++i) {
 	if (byte2asciistr[i].len != LITLEN("\\uxxxx")) {
-	    err(177, __func__, "byte2asciistr[0x%02x].enc length: %zu != %zu",
+	    err(177, __func__, "byte2asciistr[0x%02X].enc length: %zu != %zu",
 			       i, strlen(byte2asciistr[i].enc),
 			       LITLEN("\\uxxxx"));
 	    not_reached();
 	}
 	ret = sscanf(byte2asciistr[i].enc, "\\u%04x%c", &int_hexval, &guard);
 	if (ret != 1) {
-	    err(178, __func__, "byte2asciistr[0x%02x].enc: <%s> is not in <\\uxxxx> form", i, byte2asciistr[i].enc);
+	    err(178, __func__, "byte2asciistr[0x%02X].enc: <%s> is not in <\\uxxxx> form", i, byte2asciistr[i].enc);
 	    not_reached();
 	}
 	if (i != int_hexval) {
-	    err(179, __func__, "byte2asciistr[0x%02x].enc: <%s> != <\\u%04x> form", i, byte2asciistr[i].enc, i);
+	    err(179, __func__, "byte2asciistr[0x%02X].enc: <%s> != <\\u%04x> form", i, byte2asciistr[i].enc, i);
 	    not_reached();
 	}
     }
@@ -997,13 +997,13 @@ chkbyte2asciistr(void)
     indx = 0x08;
     encstr = "\\b";
     if (byte2asciistr[indx].len != LITLEN("\\b")) {
-	err(180, __func__, "byte2asciistr[0x%02x].enc length: %zu != %zu",
+	err(180, __func__, "byte2asciistr[0x%02X].enc length: %zu != %zu",
 			   indx, strlen(byte2asciistr[indx].enc),
 			   strlen(encstr));
 	not_reached();
     }
     if (strcmp(byte2asciistr[indx].enc, encstr) != 0) {
-	err(181, __func__, "byte2asciistr[0x%02x].enc: <%s> != <%s>", indx, byte2asciistr[indx].enc, encstr);
+	err(181, __func__, "byte2asciistr[0x%02X].enc: <%s> != <%s>", indx, byte2asciistr[indx].enc, encstr);
 	not_reached();
     }
 
@@ -1013,13 +1013,13 @@ chkbyte2asciistr(void)
     indx = 0x09;
     encstr = "\\t";
     if (byte2asciistr[indx].len != LITLEN("\\b")) {
-	err(182, __func__, "byte2asciistr[0x%02x].enc length: %zu != %zu",
+	err(182, __func__, "byte2asciistr[0x%02X].enc length: %zu != %zu",
 			   indx, strlen(byte2asciistr[indx].enc),
 			   strlen(encstr));
 	not_reached();
     }
     if (strcmp(byte2asciistr[indx].enc, encstr) != 0) {
-	err(183, __func__, "byte2asciistr[0x%02x].enc: <%s> != <%s>", indx, byte2asciistr[indx].enc, encstr);
+	err(183, __func__, "byte2asciistr[0x%02X].enc: <%s> != <%s>", indx, byte2asciistr[indx].enc, encstr);
 	not_reached();
     }
 
@@ -1029,13 +1029,13 @@ chkbyte2asciistr(void)
     indx = 0x0a;
     encstr = "\\n";
     if (byte2asciistr[indx].len != strlen(encstr)) {
-	err(184, __func__, "byte2asciistr[0x%02x].enc length: %zu != %zu",
+	err(184, __func__, "byte2asciistr[0x%02X].enc length: %zu != %zu",
 			   indx, strlen(byte2asciistr[indx].enc),
 			   strlen(encstr));
 	not_reached();
     }
     if (strcmp(byte2asciistr[indx].enc, encstr) != 0) {
-	err(185, __func__, "byte2asciistr[0x%02x].enc: <%s> != <%s>", indx, byte2asciistr[indx].enc, encstr);
+	err(185, __func__, "byte2asciistr[0x%02X].enc: <%s> != <%s>", indx, byte2asciistr[indx].enc, encstr);
 	not_reached();
     }
 
@@ -1045,13 +1045,13 @@ chkbyte2asciistr(void)
     indx = 0x0b;
     encstr = "\\u000b";
     if (byte2asciistr[indx].len != strlen(encstr)) {
-	err(186, __func__, "byte2asciistr[0x%02x].enc length: %zu != %zu",
+	err(186, __func__, "byte2asciistr[0x%02X].enc length: %zu != %zu",
 			   indx, strlen(byte2asciistr[indx].enc),
 			   strlen(encstr));
 	not_reached();
     }
     if (strcmp(byte2asciistr[indx].enc, encstr) != 0) {
-	err(187, __func__, "byte2asciistr[0x%02x].enc: <%s> != <%s>", indx, byte2asciistr[indx].enc, encstr);
+	err(187, __func__, "byte2asciistr[0x%02X].enc: <%s> != <%s>", indx, byte2asciistr[indx].enc, encstr);
 	not_reached();
     }
 
@@ -1061,13 +1061,13 @@ chkbyte2asciistr(void)
     indx = 0x0c;
     encstr = "\\f";
     if (byte2asciistr[indx].len != strlen(encstr)) {
-	err(188, __func__, "byte2asciistr[0x%02x].enc length: %zu != %zu",
+	err(188, __func__, "byte2asciistr[0x%02X].enc length: %zu != %zu",
 			   indx, strlen(byte2asciistr[indx].enc),
 			   strlen(encstr));
 	not_reached();
     }
     if (strcmp(byte2asciistr[indx].enc, encstr) != 0) {
-	err(189, __func__, "byte2asciistr[0x%02x].enc: <%s> != <%s>", indx, byte2asciistr[indx].enc, encstr);
+	err(189, __func__, "byte2asciistr[0x%02X].enc: <%s> != <%s>", indx, byte2asciistr[indx].enc, encstr);
 	not_reached();
     }
 
@@ -1077,13 +1077,13 @@ chkbyte2asciistr(void)
     indx = 0x0d;
     encstr = "\\r";
     if (byte2asciistr[indx].len != strlen(encstr)) {
-	err(190, __func__, "byte2asciistr[0x%02x].enc length: %zu != %zu",
+	err(190, __func__, "byte2asciistr[0x%02X].enc length: %zu != %zu",
 			   indx, strlen(byte2asciistr[indx].enc),
 			   strlen(encstr));
 	not_reached();
     }
     if (strcmp(byte2asciistr[indx].enc, encstr) != 0) {
-	err(191, __func__, "byte2asciistr[0x%02x].enc: <%s> != <%s>", indx, byte2asciistr[indx].enc, encstr);
+	err(191, __func__, "byte2asciistr[0x%02X].enc: <%s> != <%s>", indx, byte2asciistr[indx].enc, encstr);
 	not_reached();
     }
 
@@ -1092,18 +1092,18 @@ chkbyte2asciistr(void)
      */
     for (i=0x0e; i <= 0x1f; ++i) {
 	if (byte2asciistr[i].len != LITLEN("\\uxxxx")) {
-	    err(192, __func__, "byte2asciistr[0x%02x].enc length: %zu != %zu",
+	    err(192, __func__, "byte2asciistr[0x%02X].enc length: %zu != %zu",
 			       i, strlen(byte2asciistr[i].enc),
 			       LITLEN("\\uxxxx"));
 	    not_reached();
 	}
 	ret = sscanf(byte2asciistr[i].enc, "\\u%04x%c", &int_hexval, &guard);
 	if (ret != 1) {
-	    err(193, __func__, "byte2asciistr[0x%02x].enc: <%s> is not in <\\uxxxx> form", i, byte2asciistr[i].enc);
+	    err(193, __func__, "byte2asciistr[0x%02X].enc: <%s> is not in <\\uxxxx> form", i, byte2asciistr[i].enc);
 	    not_reached();
 	}
 	if (i != int_hexval) {
-	    err(194, __func__, "byte2asciistr[0x%02x].enc: <%s> != <\\u%04x> form", i, byte2asciistr[i].enc, i);
+	    err(194, __func__, "byte2asciistr[0x%02X].enc: <%s> != <\\u%04x> form", i, byte2asciistr[i].enc, i);
 	    not_reached();
 	}
     }
@@ -1113,12 +1113,12 @@ chkbyte2asciistr(void)
      */
     for (i=0x20; i <= 0x21; ++i) {
 	if (byte2asciistr[i].len != 1) {
-	    err(195, __func__, "byte2asciistr[0x%02x].enc length: %zu != %d",
+	    err(195, __func__, "byte2asciistr[0x%02X].enc length: %zu != %d",
 			       i, strlen(byte2asciistr[i].enc), 1);
 	    not_reached();
 	}
 	if ((unsigned int)(byte2asciistr[i].enc[0]) != i) {
-	    err(196, __func__, "byte2asciistr[0x%02x].enc: <%s> is not <%c>", i, byte2asciistr[i].enc, (char)i);
+	    err(196, __func__, "byte2asciistr[0x%02X].enc: <%s> is not <%c>", i, byte2asciistr[i].enc, (char)i);
 	    not_reached();
 	}
     }
@@ -1129,13 +1129,13 @@ chkbyte2asciistr(void)
     indx = 0x22;
     encstr = "\\\"";
     if (byte2asciistr[indx].len != strlen(encstr)) {
-	err(197, __func__, "byte2asciistr[0x%02x].enc length: %zu != %zu",
+	err(197, __func__, "byte2asciistr[0x%02X].enc length: %zu != %zu",
 			   indx, strlen(byte2asciistr[indx].enc),
 			   strlen(encstr));
 	not_reached();
     }
     if (strcmp(byte2asciistr[indx].enc, encstr) != 0) {
-	err(198, __func__, "byte2asciistr[0x%02x].enc: <%s> != <%s>", indx, byte2asciistr[indx].enc, encstr);
+	err(198, __func__, "byte2asciistr[0x%02X].enc: <%s> != <%s>", indx, byte2asciistr[indx].enc, encstr);
 	not_reached();
     }
 
@@ -1144,12 +1144,12 @@ chkbyte2asciistr(void)
      */
     for (i=0x23; i <= 0x5b; ++i) {
 	if (byte2asciistr[i].len != 1) {
-	    err(199, __func__, "byte2asciistr[0x%02x].enc length: %zu != %d",
+	    err(199, __func__, "byte2asciistr[0x%02X].enc length: %zu != %d",
 			       i, strlen(byte2asciistr[i].enc), 1);
 	    not_reached();
 	}
 	if ((unsigned int)(byte2asciistr[i].enc[0]) != i) {
-	    err(200, __func__, "byte2asciistr[0x%02x].enc: <%s> is not <%c>", i, byte2asciistr[i].enc, (char)i);
+	    err(200, __func__, "byte2asciistr[0x%02X].enc: <%s> is not <%c>", i, byte2asciistr[i].enc, (char)i);
 	    not_reached();
 	}
     }
@@ -1160,13 +1160,13 @@ chkbyte2asciistr(void)
     indx = 0x5c;
     encstr = "\\\\";
     if (byte2asciistr[indx].len != strlen(encstr)) {
-	err(201, __func__, "byte2asciistr[0x%02x].enc length: %zu != %zu",
+	err(201, __func__, "byte2asciistr[0x%02X].enc length: %zu != %zu",
 			   indx, strlen(byte2asciistr[indx].enc),
 			   strlen(encstr));
 	not_reached();
     }
     if (strcmp(byte2asciistr[indx].enc, encstr) != 0) {
-	err(202, __func__, "byte2asciistr[0x%02x].enc: <%s> != <%s>", indx, byte2asciistr[indx].enc, encstr);
+	err(202, __func__, "byte2asciistr[0x%02X].enc: <%s> != <%s>", indx, byte2asciistr[indx].enc, encstr);
 	not_reached();
     }
 
@@ -1175,12 +1175,12 @@ chkbyte2asciistr(void)
      */
     for (i=0x5d; i <= 0x7e; ++i) {
 	if (byte2asciistr[i].len != 1) {
-	    err(203, __func__, "byte2asciistr[0x%02x].enc length: %zu != %d",
+	    err(203, __func__, "byte2asciistr[0x%02X].enc length: %zu != %d",
 			       i, strlen(byte2asciistr[i].enc), 1);
 	    not_reached();
 	}
 	if ((unsigned int)(byte2asciistr[i].enc[0]) != i) {
-	    err(204, __func__, "byte2asciistr[0x%02x].enc: <%s> is not <%c>", i, byte2asciistr[i].enc, (char)i);
+	    err(204, __func__, "byte2asciistr[0x%02X].enc: <%s> is not <%c>", i, byte2asciistr[i].enc, (char)i);
 	    not_reached();
 	}
     }
@@ -1190,18 +1190,18 @@ chkbyte2asciistr(void)
      */
     for (i=0x7f; i <= 0x7f; ++i) {
 	if (byte2asciistr[i].len != LITLEN("\\uxxxx")) {
-	    err(205, __func__, "byte2asciistr[0x%02x].enc length: %zu != %zu",
+	    err(205, __func__, "byte2asciistr[0x%02X].enc length: %zu != %zu",
 			       i, strlen(byte2asciistr[i].enc),
 			       LITLEN("\\uxxxx"));
 	    not_reached();
 	}
 	ret = sscanf(byte2asciistr[i].enc, "\\u%04x%c", &int_hexval, &guard);
 	if (ret != 1) {
-	    err(206, __func__, "byte2asciistr[0x%02x].enc: <%s> is not in <\\uxxxx> form", i, byte2asciistr[i].enc);
+	    err(206, __func__, "byte2asciistr[0x%02X].enc: <%s> is not in <\\uxxxx> form", i, byte2asciistr[i].enc);
 	    not_reached();
 	}
 	if (i != int_hexval) {
-	    err(207, __func__, "byte2asciistr[0x%02x].enc: <%s> != <\\u%04x> form", i, byte2asciistr[i].enc, i);
+	    err(207, __func__, "byte2asciistr[0x%02X].enc: <%s> != <\\u%04x> form", i, byte2asciistr[i].enc, i);
 	    not_reached();
 	}
     }
@@ -1211,17 +1211,17 @@ chkbyte2asciistr(void)
      */
     for (i=0x80; i <= 0xff; ++i) {
 	if (byte2asciistr[i].len != 1) {
-	    err(208, __func__, "byte2asciistr[0x%02x].enc length: %zu != %d",
+	    err(208, __func__, "byte2asciistr[0x%02X].enc length: %zu != %d",
 			       i, strlen(byte2asciistr[i].enc), 1);
 	    not_reached();
 	}
 	if ((uint8_t)(byte2asciistr[i].enc[0]) != i) {
-	    err(209, __func__, "byte2asciistr[0x%02x].enc[0]: 0x%02x is not 0x%02jx",
+	    err(209, __func__, "byte2asciistr[0x%02X].enc[0]: 0x%02X is not 0x%02jx",
 			       i, (uint8_t)(byte2asciistr[i].enc[0]) & 0xff, (uintmax_t)i);
 	    not_reached();
 	}
 	if ((uint8_t)(byte2asciistr[i].enc[1]) != 0) {
-	    err(210, __func__, "byte2asciistr[0x%02x].enc[1]: 0x%02x is not 0",
+	    err(210, __func__, "byte2asciistr[0x%02X].enc[1]: 0x%02X is not 0",
 			       i, (uint8_t)(byte2asciistr[i].enc[1]) & 0xff);
 	    not_reached();
 	}
@@ -1261,28 +1261,28 @@ chkbyte2asciistr(void)
 	/*
 	 * test JSON encoding
 	 */
-	dbg(DBG_VVVHIGH, "testing json_encode_str(0x%02x, *mlen)", i);
+	dbg(DBG_VVVHIGH, "testing json_encode_str(0x%02X, *mlen)", i);
 	/* load input string */
 	str[0] = (char)i;
 	/* test json_encode_str() */
 	mstr = json_encode_str(str, &mlen, false);
 	/* check encoding result */
 	if (mstr == NULL) {
-	    err(214, __func__, "json_encode_str(0x%02x, *mlen: %zu) == NULL",
+	    err(214, __func__, "json_encode_str(0x%02X, *mlen: %zu) == NULL",
 			       i, mlen);
 	    not_reached();
 	}
 	if (mlen != byte2asciistr[i].len) {
-	    err(215, __func__, "json_encode_str(0x%02x, *mlen %zu != %zu)",
+	    err(215, __func__, "json_encode_str(0x%02X, *mlen %zu != %zu)",
 			       i, mlen, byte2asciistr[i].len);
 	    not_reached();
 	}
 	if (strcmp(byte2asciistr[i].enc, mstr) != 0) {
-	    err(216, __func__, "json_encode_str(0x%02x, *mlen: %zu) != <%s>", i,
+	    err(216, __func__, "json_encode_str(0x%02X, *mlen: %zu) != <%s>", i,
 			       mlen, byte2asciistr[i].enc);
 	    not_reached();
 	}
-	dbg(DBG_VVHIGH, "testing json_encode_str(0x%02x, *mlen) encoded to <%s>", i, mstr);
+	dbg(DBG_VVHIGH, "testing json_encode_str(0x%02X, *mlen) encoded to <%s>", i, mstr);
 
 	/*
 	 * test decoding the JSON encoded string
@@ -1301,7 +1301,7 @@ chkbyte2asciistr(void)
 	    not_reached();
 	}
 	if ((uint8_t)(mstr2[0]) != i) {
-	    err(219, __func__, "json_decode_str(<%s>, false, *mlen2: %zu): 0x%02x != 0x%02x",
+	    err(219, __func__, "json_decode_str(<%s>, false, *mlen2: %zu): 0x%02X != 0x%02X",
 			       mstr, mlen2, (uint8_t)(mstr2[0]) & 0xff, i);
 	    not_reached();
 	}
@@ -1562,7 +1562,7 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 			    free(ret);
 			    ret = NULL;
 			}
-			warn(__func__, "surrogate pair invalid: \\u%x\\u%x", xa, xb);
+			warn(__func__, "surrogate pair invalid: \\u%X\\u%X", xa, xb);
 
 			return NULL;
 		    }
@@ -1623,7 +1623,7 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 		    ret = NULL;
 		}
 
-		warn(__func__, "found invalid JSON \\-escape while decoding: followed by 0x%02x", (uint8_t)c);
+		warn(__func__, "found invalid JSON \\-escape while decoding: followed by 0x%02X", (uint8_t)c);
 		return NULL;
 	    }
 	}
@@ -1745,7 +1745,7 @@ json_decode(char const *ptr, size_t len, bool quote, size_t *retlen)
 		if (retlen != NULL) {
 		    *retlen = 0;
 		}
-		warn(__func__, "found non-\\-escaped char: 0x%02x", (uint8_t)c);
+		warn(__func__, "found non-\\-escaped char: 0x%02X", (uint8_t)c);
 		return NULL;
 		break;
 
@@ -1847,7 +1847,7 @@ json_decode(char const *ptr, size_t len, bool quote, size_t *retlen)
 			if (retlen != NULL) {
 			    *retlen = 0;
 			}
-			warn(__func__, "surrogate pair invalid: \\u%x\\u%x", xa, xb);
+			warn(__func__, "surrogate pair invalid: \\u%X\\u%X", xa, xb);
 
 			return NULL;
 		    }
@@ -1891,7 +1891,7 @@ json_decode(char const *ptr, size_t len, bool quote, size_t *retlen)
 		if (retlen != NULL) {
 		    *retlen = 0;
 		}
-		warn(__func__, "found invalid JSON \\-escape: followed by 0x%02x", (uint8_t)c);
+		warn(__func__, "found invalid JSON \\-escape: followed by 0x%02X", (uint8_t)c);
 		return NULL;
 	    }
 	}
@@ -2557,7 +2557,7 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 	return false;	/* processing failed */
     }
     if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
-	warn(__func__, "str[%zu-1] is not an ASCII digit: 0x%02x for str: %s", len, (int)str[len-1], str);
+	warn(__func__, "str[%zu-1] is not an ASCII digit: 0x%02X for str: %s", len, (int)str[len-1], str);
 	return false;	/* processing failed */
     }
     str_len = strlen(str);
@@ -2896,7 +2896,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	return false;	/* processing failed */
     }
     if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
-	warn(__func__, "str[%zu-1] is not an ASCII digit: 0x%02x for str: %s", len, (int)str[len-1], str);
+	warn(__func__, "str[%zu-1] is not an ASCII digit: 0x%02X for str: %s", len, (int)str[len-1], str);
 	return false;	/* processing failed */
     }
     str_len = strlen(str);
@@ -3519,7 +3519,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	 */
 	if (str[0] == '/') {
 	    *slash = true;
-	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is /: 0x%02x", (unsigned int)str[0]);
+	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is /: 0x%02X", (unsigned int)str[0]);
 
 	/*
 	 * case: first character is alphanumeric
@@ -3528,16 +3528,16 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	    *first_alphanum = true;
 	    if (isupper(str[0])) {
 		*upper = true;
-		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is UPPER CASE: 0x%02x", (unsigned int)str[0]);
+		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is UPPER CASE: 0x%02X", (unsigned int)str[0]);
 	    } else {
-		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is alphanumeric: 0x%02x", (unsigned int)str[0]);
+		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is alphanumeric: 0x%02X", (unsigned int)str[0]);
 	    }
 
 	/*
 	 * case: first character is non-alphanumeric portable POSIX safe plus +
 	 */
 	} else if (str[0] == '.' || str[0] == '_' || str[0] == '+') {
-	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is ASCII non-alphanumeric POSIX portable safe plus +: 0x%02x",
+	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is ASCII non-alphanumeric POSIX portable safe plus +: 0x%02X",
 			     (unsigned int)str[0]);
 
 	/*
@@ -3545,7 +3545,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	 */
 	} else {
 	    found_unsafe = true;
-	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is not POSIX portable safe plus +/: 0x%02x",
+	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is not POSIX portable safe plus +/: 0x%02X",
 			     (unsigned int)str[0]);
 	}
 
@@ -3554,7 +3554,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
      */
     } else {
 	found_unsafe = true;
-	dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is non-ASCII: 0x%02x",
+	dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is non-ASCII: 0x%02X",
 			 (unsigned int)str[0]);
     }
 
@@ -3573,7 +3573,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	     */
 	    if (str[i] == '/') {
 		if (*slash == false) {
-		    dbg(DBG_VVVHIGH, "posix_safe_chk(): found first / at str[%zu]: 0x%02x",
+		    dbg(DBG_VVVHIGH, "posix_safe_chk(): found first / at str[%zu]: 0x%02X",
 				     i, (unsigned int)str[i]);
 		}
 		*slash = true;
@@ -3583,7 +3583,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	     */
 	    } else if (isalnum(str[i])) {
 		if (*upper == false && isupper(str[i])) {
-		    dbg(DBG_VVVHIGH, "posix_safe_chk(): found first UPPER CASE at str[%zu]: 0x%02x",
+		    dbg(DBG_VVVHIGH, "posix_safe_chk(): found first UPPER CASE at str[%zu]: 0x%02X",
 				     i, (unsigned int)str[i]);
 		    *upper = true;
 		}
@@ -3593,7 +3593,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	     */
 	    } else if (str[i] != '.' && str[i] != '_' && str[i] != '+' && str[i] != '-') {
 		if (found_unsafe == false) {
-		    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[%zu] found first non-POSIX portable safe plus +/: 0x%02x",
+		    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[%zu] found first non-POSIX portable safe plus +/: 0x%02X",
 				     i, (unsigned int)str[i]);
 		}
 		found_unsafe = true;
@@ -3604,7 +3604,7 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	 */
 	} else {
 	    if (found_unsafe == false) {
-		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[%zu] found first non-ASCII: 0x%02x",
+		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[%zu] found first non-ASCII: 0x%02X",
 				 i, (unsigned int)str[i]);
 	    }
 	    found_unsafe = true;

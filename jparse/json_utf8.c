@@ -56,7 +56,7 @@
  *	bytes	    pointer to the number of bytes
  *
  * NOTE: If str is NULL we use the value in surrogate; otherwise we attempt to
- * extract the value by parsing the string as %4x and then, assuming we extract
+ * extract the value by parsing the string as 0x%4x and then, assuming we extract
  * a value, we count the number of bytes required for the string. It is this
  * value that is returned.
  *
@@ -181,10 +181,10 @@ surrogate_pair_to_codepoint(int32_t hi, int32_t lo)
      * These should theoretically never happen.
      */
     if (hi < 0) {
-        warn(__func__, "high byte < 0: %4x", hi);
+        warn(__func__, "high byte < 0: 0x%4X", hi);
         return -1;
     } else if (lo < 0) {
-        warn(__func__, "low byte < 0: %4x", lo);
+        warn(__func__, "low byte < 0: 0x%4X", lo);
         return -1;
     }
 
@@ -384,10 +384,10 @@ is_surrogate_pair(const int32_t xa, const int32_t xb)
         return false;
     }
     if (xa >= 0xD800 && xa <= 0xDBFF && xb >= 0xDC00 && xb <= 0xDFFF) {
-        dbg(DBG_HIGH, "high surrogate %4x followed by low surrogate %4x", xa, xb);
+        dbg(DBG_HIGH, "high surrogate 0x%4X followed by low surrogate 0x%4X", xa, xb);
         return true;
     } else if (xa >= 0xDC00 && xa <= 0xDFFF) {
-        warn(__func__, "low surrogate %4x not preceded by high surrogate", xa);
+        warn(__func__, "low surrogate 0x%4X not preceded by high surrogate", xa);
         return false;
     }
     return false;

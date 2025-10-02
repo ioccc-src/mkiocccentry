@@ -1451,7 +1451,7 @@ YY_RULE_SETUP
 			    /*
                              * invalid token: any other character (regexp ".")
                              */
-			    dbg(DBG_LOW, "at line %d column %d: invalid token: 0x%02x = <%c>", yylloc->first_line,
+			    dbg(DBG_LOW, "at line %d column %d: invalid token: 0x%02X = <%c>", yylloc->first_line,
                                     yylloc->first_column, *yytext, *yytext);
 
 			    /*
@@ -2845,7 +2845,7 @@ low_byte_scan(char const *data, size_t len, size_t *low_bytes, size_t *nul_bytes
 	     * case: below the report limit
 	     */
 	    if (*low_bytes <= MAX_LOW_BYTES_REPORTED) {
-		werr(36, __func__, "invalid LOW byte 0x%02x detected in line: %zu byte position: %zu",
+		werr(36, __func__, "invalid LOW byte 0x%02X detected in line: %zu byte position: %zu",
 			 data[i], linenum, byte_pos);
 
 	    /*

@@ -1324,28 +1324,28 @@ depend: ${ALL_CSRC}
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 jparse.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../dyn_array/dyn_array.h ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h \
+    ../pr/../dbg/dbg.h ../pr/../dyn_array/../dbg/c_bool.h \
+    ../pr/../dyn_array/../dbg/c_compat.h ../pr/../dyn_array/../dbg/dbg.h \
     ../pr/../dyn_array/dyn_array.h ../pr/pr.h jparse.c jparse.h \
     jparse.tab.h json_parse.h json_sem.h json_utf8.h json_util.h util.h
 jparse.ref.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../dyn_array/dyn_array.h ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h \
+    ../pr/../dbg/dbg.h ../pr/../dyn_array/../dbg/c_bool.h \
+    ../pr/../dyn_array/../dbg/c_compat.h ../pr/../dyn_array/../dbg/dbg.h \
     ../pr/../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.ref.c \
     jparse.tab.h json_parse.h json_sem.h json_utf8.h json_util.h util.h
 jparse.tab.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../dyn_array/dyn_array.h ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h \
+    ../pr/../dbg/dbg.h ../pr/../dyn_array/../dbg/c_bool.h \
+    ../pr/../dyn_array/../dbg/c_compat.h ../pr/../dyn_array/../dbg/dbg.h \
     ../pr/../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.lex.h \
     jparse.tab.c jparse.tab.h json_parse.h json_sem.h json_utf8.h \
     json_util.h util.h version.h
 jparse.tab.ref.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/../dbg/c_bool.h ../dyn_array/../dbg/c_compat.h \
-    ../dyn_array/../dbg/dbg.h ../dyn_array/dyn_array.h \
-    ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h ../pr/../dbg/dbg.h \
+    ../dyn_array/dyn_array.h ../pr/../dbg/c_bool.h ../pr/../dbg/c_compat.h \
+    ../pr/../dbg/dbg.h ../pr/../dyn_array/../dbg/c_bool.h \
+    ../pr/../dyn_array/../dbg/c_compat.h ../pr/../dyn_array/../dbg/dbg.h \
     ../pr/../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.lex.h \
     jparse.tab.h jparse.tab.ref.c json_parse.h json_sem.h json_utf8.h \
     json_util.h util.h version.h

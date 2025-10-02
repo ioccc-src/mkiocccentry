@@ -98,7 +98,7 @@
 # define CHAR_BIT (8)		/* paranoia - in case limits.h is very old */
 #endif
 #define BITS_IN_BYTE (CHAR_BIT)	    /* assume 8 bit bytes */
-#define MAX_BYTE (0xff)		    /* maximum byte value */
+#define MAX_BYTE (0xFFULL)	    /* maximum byte value */
 #define BYTE_VALUES (MAX_BYTE+1)    /* number of different combinations of bytes */
 
 /*

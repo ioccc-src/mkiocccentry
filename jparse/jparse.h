@@ -25,20 +25,31 @@
 #include <stdio.h>
 
 /*
- * dbg - info, debug, warning, error, and usage message facility
+ * dbg - info, debug, warning, error, usage message facility plus bool,
+ * __attribute__, __func__ and not_reached() compatibility
+ *
+ * pr - stdio helper library
+ *
+ * dyn_array - dynamic array library
  */
 #if defined(INTERNAL_INCLUDE)
   #include "../dbg/c_bool.h"
   #include "../dbg/c_compat.h"
   #include "../dbg/dbg.h"
+  #include "../pr/pr.h"
+  #include "../dyn_array/dyn_array.h"
 #elif defined(INTERNAL_INCLUDE_2)
   #include "../dbg/c_bool.h"
   #include "../dbg/c_compat.h"
   #include "../dbg/dbg.h"
+  #include "../pr/pr.h"
+  #include "../dyn_array/dyn_array.h"
 #else
   #include <c_bool.h>
   #include <c_compat.h>
   #include <dbg.h>
+  #include <pr.h>
+  #include <dyn_array.h>
 #endif
 
 /*

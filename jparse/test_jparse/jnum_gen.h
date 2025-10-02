@@ -94,7 +94,7 @@
 /*
  * official jnum_gen version
  */
-#define JNUM_GEN_VERSION "2.0.1 2025-03-15"	/* format: major.minor YYYY-MM-DD */
+#define JNUM_GEN_VERSION "2.0.2 2025-10-02"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * jnum_gen tool basename

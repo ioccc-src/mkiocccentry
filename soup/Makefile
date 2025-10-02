@@ -1056,6 +1056,9 @@ chk_sem_info.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
 chk_validate.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
     ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/../dbg/c_bool.h \
+    ../jparse/../pr/../dyn_array/../dbg/c_compat.h \
+    ../jparse/../pr/../dyn_array/../dbg/dbg.h \
     ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
     ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
     ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
@@ -1064,6 +1067,9 @@ chk_validate.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
 default_handle.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
     ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/../dbg/c_bool.h \
+    ../jparse/../pr/../dyn_array/../dbg/c_compat.h \
+    ../jparse/../pr/../dyn_array/../dbg/dbg.h \
     ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
     ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
     ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
@@ -1090,6 +1096,9 @@ foo.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h foo.c foo.h \
 location_main.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
     ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/../dbg/c_bool.h \
+    ../jparse/../pr/../dyn_array/../dbg/c_compat.h \
+    ../jparse/../pr/../dyn_array/../dbg/dbg.h \
     ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
     ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
     ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
@@ -1098,6 +1107,9 @@ location_main.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
 location_tbl.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
     ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/../dbg/c_bool.h \
+    ../jparse/../pr/../dyn_array/../dbg/c_compat.h \
+    ../jparse/../pr/../dyn_array/../dbg/dbg.h \
     ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
     ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
     ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
@@ -1106,6 +1118,9 @@ location_tbl.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
 location_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
     ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/../dbg/c_bool.h \
+    ../jparse/../pr/../dyn_array/../dbg/c_compat.h \
+    ../jparse/../pr/../dyn_array/../dbg/dbg.h \
     ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
     ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
     ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
@@ -1114,6 +1129,9 @@ location_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
 random_answers.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
     ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/../dbg/c_bool.h \
+    ../jparse/../pr/../dyn_array/../dbg/c_compat.h \
+    ../jparse/../pr/../dyn_array/../dbg/dbg.h \
     ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
     ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
     ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
@@ -1124,6 +1142,9 @@ rule_count.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h ../iocccsize.h \
 sanity.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
     ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
+    ../jparse/../pr/../dyn_array/../dbg/c_bool.h \
+    ../jparse/../pr/../dyn_array/../dbg/c_compat.h \
+    ../jparse/../pr/../dyn_array/../dbg/dbg.h \
     ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
     ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
     ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \

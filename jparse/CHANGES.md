@@ -1,13 +1,47 @@
 # Significant changes in the JSON parser repo
 
 
-## Release 2.4.3 2025-09-29
+## Release 2.5.0 2025-10-02
 
+Added `#include` of `pr.h` and `dyn_array.h` in `jparse.h`.
 
-Updated `JPARSE_REPO_VERSION` to "2.4.3 2025-09-29".
-Updated `JPARSE_TOOL_VERSION` to "2.0.3 2025-09-29".
-Updated `JPARSE_LIBRARY_VERSION` to "2.4.2 2025-09-29".
-Updated `JPARSE_UTILS_VERSION` to "2.1.5 2025-09-29".
+Improved portability of formatting certain types.
+
+Clean up use of `PRIdMAX` and `PRIuMAX`.
+Clean up use of `intmax_t` and `uintmax_t`.
+Clean up use of `size_t`, `ssize_t` and `off_t`.
+Clean up use of `ptrdiff_t`.
+
+- Where `intmax_t` is used, format with `%jd`
+- Where `uintmax_t` is used, format with `%ju`
+- Where `off_t` is used, format with `%lld` with (long long) cast.
+- Where `size_t` is used, format with `%zu`
+- Where `ssize_t` is used, format with `%zd`
+- Where `ptrdiff_t` is used, format with `%td`
+- Where `int32_t` is used, format with `%d`
+- Where `uint32_t` is used, format with `%u`
+
+While `PRIdMAX` and `PRIuMAX` are deemed more portable by some, they only impact
+C **PRIOR to C99** as C99 standard helps here as it defines new `%z`,
+`%j`, and `%t` formats for printing `size_t`, `intmax_t`, and `ptrdiff_t`
+sizes respectively.
+
+Use `size_t` type for path and path item lengths.
+
+Made some `int`s instead `size_t` to match their use.
+
+Except for json specific (e.g. `\xxxx`) synchronised hex values (in strings) to
+be in the form `0x4X` (or whatever padding there was).
+
+Changed `MAX_BYTE` to have `ULL` (i.e. change it to unsigned long long).
+
+Fix various old format strings in several files.
+
+Updated `JPARSE_LIBRARY_VERSION` to `"2.4.3 2025-10-02"`.
+Updated `JPARSE_UTILS_VERSION` to `"2.1.5 2025-10-02"`.
+Updated `JPARSE_TOOL_VERSION` to `"2.0.3 2025-10-02"`.
+Updated `JNUM_CHK_VERSION` to `"2.0.2 2025-10-02"`.
+Updated `JNUM_GEN_VERSION` to `"2.0.2 2025-10-02"`.
 
 
 ## Release 2.4.2 2025-09-28
