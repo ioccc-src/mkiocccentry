@@ -68,32 +68,36 @@
  * byte as octet constants
  */
 #if !defined(CHAR_BIT)
-# define CHAR_BIT (8)		/* paranoia - in case limits.h is very old */
+ #define CHAR_BIT (8)		/* paranoia - in case limits.h is very old */
 #endif
-#define BITS_IN_BYTE (CHAR_BIT)	    /* assume 8 bit bytes */
-#define MAX_BYTE (0xff)		    /* maximum byte value */
-#define BYTE_VALUES (MAX_BYTE+1)    /* number of different combinations of bytes */
-
+#if !defined(BITS_IN_BYTE)
+ #define BITS_IN_BYTE (CHAR_BIT)	    /* assume 8 bit bytes */
+#endif
+#if !defined(BYTE_VALUES)
+ #define BYTE_VALUES (1<<CHAR_BIT)   /* number of different combinations of bytes */
+#endif
+#if !defined(MAX_BYTE)
+ #define MAX_BYTE (BYTE_VALUES-1)    /* maximum byte value */
+#endif
 
 /*
  * off_t MAX and MIN
  */
 #if !defined(OFF_MAX)
-#define OFF_MAX (~((off_t)1 << (sizeof(off_t) * BITS_IN_BYTE - 1)))
+ #define OFF_MAX (~((off_t)1 << (sizeof(off_t) * BITS_IN_BYTE - 1)))
 #endif /* OFF_MAX */
 #if !defined(OFF_MIN)
-#define OFF_MIN (((off_t)1 << (sizeof(off_t) * BITS_IN_BYTE - 1)))
+ #define OFF_MIN (((off_t)1 << (sizeof(off_t) * BITS_IN_BYTE - 1)))
 #endif /* OFF_MIN */
-
 
 /*
  * size_t MAX and MIN
  */
 #if !defined(SIZE_MAX)
-#define SIZE_MAX (~((size_t)0))
+ #define SIZE_MAX (~((size_t)0))
 #endif /* SIZE_MAX */
 #if !defined(SIZE_MIN)
-#define SIZE_MIN ((size_t)(0))
+ #define SIZE_MIN ((size_t)(0))
 #endif /* SIZE_MIN */
 
 
@@ -101,20 +105,20 @@
  * ssize_t MAX and MIN
  */
 #if !defined(SSIZE_MAX)
-#define SSIZE_MAX (~((ssize_t)1 << (sizeof(ssize_t) * BITS_IN_BYTE - 1)))
+ #define SSIZE_MAX (~((ssize_t)1 << (sizeof(ssize_t) * BITS_IN_BYTE - 1)))
 #endif /* SSIZE_MAX */
 #if !defined(SSIZE_MIN)
-#define SSIZE_MIN (((ssize_t)1 << (sizeof(ssize_t) * BITS_IN_BYTE - 1)))
+ #define SSIZE_MIN (((ssize_t)1 << (sizeof(ssize_t) * BITS_IN_BYTE - 1)))
 #endif /* SSIZE_MIN */
 
 /*
  * MAX and MIN macros
  */
 #if !defined(MAX)
-#define MAX(a,b) ((a)>(b)?(a):(b))
+ #define MAX(a,b) ((a)>(b)?(a):(b))
 #endif /* MAX */
 #if !defined(MIN)
-#define MIN(a,b) ((a)<(b)?(a):(b))
+ #define MIN(a,b) ((a)<(b)?(a):(b))
 #endif /* MIN */
 
 /*

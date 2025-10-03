@@ -814,13 +814,18 @@ depend: ${ALL_CSRC}
 	    fi; \
 	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
 	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | \
-	      ${SED} -e 's;\.\./soup/\.\./dbg/;../dbg/;g' \
-	             -e 's;\.\./soup/\.\./jparse/\.\./dyn_array/;../dyn_array/;g' \
-	             -e 's;\.\./soup/\.\./jparse/\.\./dbg/;../dbg/;g' \
-	             -e 's;\.\./soup/\.\./jparse/;../jparse/;g' \
-	             -e 's;\.\./dyn_array/\.\./dbg/;../dbg/;g' \
-	             -e 's;\.\./jparse/\.\./dbg/;../dbg/;g' \
-	             -e 's;\.\./jparse/\.\./dyn_array/;../dyn_array/;g' | \
+	      ${SED} -E -e 's;\s/usr/local/include/\S+;;g' -e 's;\s/usr/include/\S+;;g' \
+			-e 's;\.\./pr/\.\./dyn_array/;../dyn_array/;g' \
+			-e 's;\.\./pr/\.\./dbg/;../dbg/;g' \
+			-e 's;\.\./dyn_array/\.\./dbg/;../dbg/;g' \
+			-e 's;\.\./jparse/\.\./pr/;../pr/;g' \
+			-e 's;\.\./jparse/\.\./dyn_array/;../dyn_array/;g' \
+			-e 's;\.\./jparse/\.\./dbg/;../dbg/;g' \
+			-e 's;\.\./soup/\.\./jparse/;\.\./jparse/;g' \
+			-e 's;\.\./soup/\.\./pr/;\.\./pr/;g' \
+			-e 's;\.\./soup/\.\./dyn_array/;\.\./dyn_array/;g' \
+			-e 's;\.\./soup/\.\./dbg/;\.\./dbg/;g' \
+			| \
 	      ${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
 		${RM} ${RM_V} -f Makefile.orig; \
@@ -835,30 +840,19 @@ depend: ${ALL_CSRC}
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
 fnamchk.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
-    ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
-    ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
-    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
-    ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
-    ../jparse/util.h ../jparse/version.h ../soup/../dbg/c_bool.h \
-    ../soup/../dbg/c_compat.h ../soup/../dbg/dbg.h \
-    ../soup/../dyn_array/dyn_array.h ../soup/default_handle.h \
-    ../soup/file_util.h ../soup/limit_ioccc.h ../soup/location.h \
-    ../soup/util.h ../soup/version.h fnamchk.c fnamchk.h
+    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
+    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
+    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h ../pr/pr.h \
+    ../soup/default_handle.h ../soup/file_util.h ../soup/limit_ioccc.h \
+    ../soup/location.h ../soup/util.h ../soup/version.h fnamchk.c fnamchk.h
 test_file_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
-    ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
-    ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
-    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
-    ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
-    ../jparse/util.h ../jparse/version.h ../soup/../dyn_array/dyn_array.h \
+    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
+    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
+    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h ../pr/pr.h \
     ../soup/file_util.h ../soup/version.h test_file_util.c
 utf8_test.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/../pr/../dbg/c_bool.h \
-    ../jparse/../pr/../dbg/c_compat.h ../jparse/../pr/../dbg/dbg.h \
-    ../jparse/../pr/../dyn_array/dyn_array.h ../jparse/../pr/pr.h \
-    ../jparse/jparse.h ../jparse/jparse.tab.h ../jparse/json_parse.h \
-    ../jparse/json_sem.h ../jparse/json_utf8.h ../jparse/json_util.h \
-    ../jparse/util.h ../jparse/version.h ../soup/../dyn_array/dyn_array.h \
+    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
+    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
+    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h ../pr/pr.h \
     ../soup/default_handle.h ../soup/limit_ioccc.h ../soup/location.h \
     ../soup/util.h ../soup/version.h utf8_test.c

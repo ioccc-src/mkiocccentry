@@ -1680,7 +1680,7 @@ sem_object_find_name(struct json const *node, unsigned int depth, struct json_se
 	}
 	if (s->type != JTYPE_MEMBER) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(85, node, depth+1, sem, name, "JTYPE_OBJECT set[%d] type: %s != JTYPE_MEMBER",
+		*val_err = werr_sem_val(85, node, depth+1, sem, name, "JTYPE_OBJECT set[%jd] type: %s != JTYPE_MEMBER",
 					i, json_type_name(s->type));
 	    }
 	    return NULL;

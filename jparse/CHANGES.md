@@ -37,6 +37,14 @@ Changed `MAX_BYTE` to have `ULL` (i.e. change it to unsigned long long).
 
 Fix various old format strings in several files.
 
+Improved `make depend` to not produce needless "`../`" in the dependencies.
+
+Improved how `BITS_IN_BYTE`, `BYTE_VALUES`, and `MAX_BYTE` are defined.
+
+With the exception of printing Unicode Control Point hex values,
+regularized to debug, warning and error messages to use lower case hex,
+with a leading 0x, and to be consistent with how "the repo" does this.
+
 Updated `JPARSE_LIBRARY_VERSION` to `"2.4.3 2025-10-02"`.
 Updated `JPARSE_UTILS_VERSION` to `"2.1.5 2025-10-02"`.
 Updated `JPARSE_TOOL_VERSION` to `"2.0.3 2025-10-02"`.
