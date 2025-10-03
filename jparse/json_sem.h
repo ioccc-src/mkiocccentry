@@ -114,8 +114,8 @@ struct json_sem_val_err
     struct json_sem const *sem;	/* semantic node in question or NULL */
     int sem_index;		/* index of sem in JSON semantic table or -1 ==> not in table */
     char *diagnostic;		/* diagnostic message or NULL */
-    bool calloced;		/* true ==> struct diagnostic calloced */
-				/* false ==> diagnostic is a non-calloced static string */
+    bool calloced;		/* true ==> struct diagnostic calloced,
+				   false ==> diagnostic is a non-calloced static string */
 };
 
 /*

@@ -56,7 +56,7 @@
  *	bytes	    pointer to the number of bytes
  *
  * NOTE: If str is NULL we use the value in surrogate; otherwise we attempt to
- * extract the value by parsing the string as %4x and then, assuming we extract
+ * extract the value by parsing the string as 0x%4x and then, assuming we extract
  * a value, we count the number of bytes required for the string. It is this
  * value that is returned.
  *
@@ -77,18 +77,18 @@ utf8len(const char *str, int32_t surrogate)
 	x = surrogate;
 	if (x < 0x80) {
 	    len = 1;
-	    dbg(DBG_VVHIGH, "%X length %zd", x, len);
+	    dbg(DBG_VVHIGH, "0x%x length %zd", x, len);
 	} else if (x < 0x800) {
 	    len = 2;
-	    dbg(DBG_VVHIGH, "%X length %zd", x, len);
+	    dbg(DBG_VVHIGH, "0x%x length %zd", x, len);
 	} else if (x < 0x10000) {
 	    len = 3;
-	    dbg(DBG_VVHIGH, "%X length %zd", x, len);
+	    dbg(DBG_VVHIGH, "0x%x length %zd", x, len);
 	} else if (x < 0x110000) {
 	    len = 4;
-	    dbg(DBG_VVHIGH, "%X length %zd", x, len);
+	    dbg(DBG_VVHIGH, "0x%x length %zd", x, len);
 	} else {
-	    warn(__func__, "%X: illegal value, len: %zd\n", x, len);
+	    warn(__func__, "0x%x illegal value, len: %zd\n", x, len);
 	    len = -1;
 	}
 
@@ -134,18 +134,18 @@ utf8len(const char *str, int32_t surrogate)
 	 */
 	if (x < 0x80) {
 	    len = 1;
-	    dbg(DBG_VVHIGH, "%X length %zd", x, len);
+	    dbg(DBG_VVHIGH, "0x%x length %zd", x, len);
 	} else if (x < 0x800) {
 	    len = 2;
-	    dbg(DBG_VVHIGH, "%X length %zd", x, len);
+	    dbg(DBG_VVHIGH, "0x%x length %zd", x, len);
 	} else if (x < 0x10000) {
 	    len = 3;
-	    dbg(DBG_VVHIGH, "%X length %zd", x, len);
+	    dbg(DBG_VVHIGH, "0x%x length %zd", x, len);
 	} else if (x < 0x110000) {
 	    len = 4;
-	    dbg(DBG_VVHIGH, "%X length %zd", x, len);
+	    dbg(DBG_VVHIGH, "0x%x length %zd", x, len);
 	} else {
-	    warn(__func__, "%X: illegal value, len %zd\n", x, len);
+	    warn(__func__, "0x%x illegal value, len %zd\n", x, len);
 	    len = -1;
 	}
     }
@@ -181,10 +181,10 @@ surrogate_pair_to_codepoint(int32_t hi, int32_t lo)
      * These should theoretically never happen.
      */
     if (hi < 0) {
-        warn(__func__, "high byte < 0: %4x", hi);
+        warn(__func__, "high byte < 0: 0x%04x", hi);
         return -1;
     } else if (lo < 0) {
-        warn(__func__, "low byte < 0: %4x", lo);
+        warn(__func__, "low byte < 0: 0x%04x", lo);
         return -1;
     }
 
@@ -280,26 +280,26 @@ codepoint_to_unicode(char *output, unsigned int codepoint)
     }
 
     if (codepoint >= 0xD800 && codepoint <= 0xDFFF) {
-	warn(__func__, "codepoint: %X: illegal surrogate", codepoint);
+	warn(__func__, "codepoint: 0x%x: illegal surrogate", codepoint);
 	len = -2;
     } else if (codepoint <= 0x7F) {
         output[0] = (char)codepoint;
         output[1] = '\0';
         len = 1;
-        dbg(DBG_VVHIGH, "%s: codepoint: %X <= 0x7F", __func__, codepoint);
+        dbg(DBG_VVHIGH, "%s: codepoint: 0x%x <= 0x7F", __func__, codepoint);
     } else if (codepoint <= 0x7FF) {
         output[0] = (char)(0xC0 | (codepoint >> 6));
         output[1] = (char)(0x80 | (codepoint & 0x3F));
         output[2] = '\0';
         len = 2;
-        dbg(DBG_VVHIGH, "%s: codepoint: %X <= 0x7FF", __func__, codepoint);
+        dbg(DBG_VVHIGH, "%s: codepoint: 0x%x <= 0x7FF", __func__, codepoint);
     } else if (codepoint <= 0xFFFF) {
         output[0] = (char)(0xE0 | (codepoint >> 12));
         output[1] = (char)(0x80 | ((codepoint >> 6) & 0x3F));
         output[2] = (char)(0x80 | (codepoint & 0x3F));
         output[3] = '\0';
         len = 3;
-        dbg(DBG_VVHIGH, "%s: codepoint: %X <= 0xFFFF", __func__, codepoint);
+        dbg(DBG_VVHIGH, "%s: codepoint: 0x%x <= 0xFFFF", __func__, codepoint);
     } else if (codepoint <= 0x10FFFF) {
         output[0] = (char)(0xF0 | (codepoint >> 18));
         output[1] = (char)(0x80 | ((codepoint >> 12) & 0x3F));
@@ -307,7 +307,7 @@ codepoint_to_unicode(char *output, unsigned int codepoint)
         output[3] = (char)(0x80 | (codepoint & 0x3F));
         output[4] = '\0';
         len = 4;
-        dbg(DBG_VVHIGH, "%s: codepoint: %X <= 0x10FFFF", __func__, codepoint);
+        dbg(DBG_VVHIGH, "%s: codepoint: 0x%x <= 0x10FFFF", __func__, codepoint);
     } else {
 	warn(__func__, "illegal value: %#X too big\n", codepoint);
 	len = -1;
@@ -384,10 +384,10 @@ is_surrogate_pair(const int32_t xa, const int32_t xb)
         return false;
     }
     if (xa >= 0xD800 && xa <= 0xDBFF && xb >= 0xDC00 && xb <= 0xDFFF) {
-        dbg(DBG_HIGH, "high surrogate %4x followed by low surrogate %4x", xa, xb);
+        dbg(DBG_HIGH, "high surrogate 0x%04x followed by low surrogate 0x%04x", xa, xb);
         return true;
     } else if (xa >= 0xDC00 && xa <= 0xDFFF) {
-        warn(__func__, "low surrogate %4x not preceded by high surrogate", xa);
+        warn(__func__, "low surrogate 0x%04x not preceded by high surrogate", xa);
         return false;
     }
     return false;

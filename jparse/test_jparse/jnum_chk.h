@@ -87,7 +87,7 @@
 /*
  * official jnum_chk version
  */
-#define JNUM_CHK_VERSION "2.0.1 2025-03-15"      /* format: major.minor YYYY-MM-DD */
+#define JNUM_CHK_VERSION "2.0.2 2025-10-02"      /* format: major.minor YYYY-MM-DD */
 
 
 /*
@@ -109,7 +109,7 @@ static bool quiet = false;				/* true ==> quiet mode */
 /*
  * externals
  */
-extern int const test_count;			/* number of tests to perform */
+extern size_t const test_count;			/* number of tests to perform */
 extern char *test_set[];			/* test strings */
 extern struct json_number test_result[];	/* struct integer conversions of test strings */
 
@@ -117,10 +117,10 @@ extern struct json_number test_result[];	/* struct integer conversions of test s
  * function prototypes
  */
 #if !defined(JNUM_TEST)
-static bool chk_test(int testnum, struct json_number *item, struct json_number *test, size_t len, bool strict);
-static void check_val(bool *testp, char const *type, int testnum, bool size_a, bool size_b, intmax_t val_a, intmax_t val_b);
-static void check_uval(bool *testp, char const *type, int testnum, bool size_a, bool size_b, uintmax_t val_a, uintmax_t val_b);
-static void check_fval(bool *testp, char const *type, int testnum, bool size_a, bool size_b,
+static bool chk_test(size_t testnum, struct json_number *item, struct json_number *test, size_t len, bool strict);
+static void check_val(bool *testp, char const *type, size_t testnum, bool size_a, bool size_b, intmax_t val_a, intmax_t val_b);
+static void check_uval(bool *testp, char const *type, size_t testnum, bool size_a, bool size_b, uintmax_t val_a, uintmax_t val_b);
+static void check_fval(bool *testp, char const *type, size_t testnum, bool size_a, bool size_b,
 		       long double val_a, long double val_b, bool int_a, bool int_b, bool strict);
 #endif
 

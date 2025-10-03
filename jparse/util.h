@@ -95,11 +95,17 @@
  * byte as octet constants
  */
 #if !defined(CHAR_BIT)
-# define CHAR_BIT (8)		/* paranoia - in case limits.h is very old */
+ #define CHAR_BIT (8)		/* paranoia - in case limits.h is very old */
 #endif
-#define BITS_IN_BYTE (CHAR_BIT)	    /* assume 8 bit bytes */
-#define MAX_BYTE (0xff)		    /* maximum byte value */
-#define BYTE_VALUES (MAX_BYTE+1)    /* number of different combinations of bytes */
+#if !defined(BITS_IN_BYTE)
+ #define BITS_IN_BYTE (CHAR_BIT)	    /* assume 8 bit bytes */
+#endif
+#if !defined(BYTE_VALUES)
+ #define BYTE_VALUES (1<<CHAR_BIT)   /* number of different combinations of bytes */
+#endif
+#if !defined(MAX_BYTE)
+ #define MAX_BYTE (BYTE_VALUES-1)    /* maximum byte value */
+#endif
 
 /*
  * off_t MAX and MIN

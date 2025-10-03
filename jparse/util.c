@@ -251,7 +251,7 @@ string_to_uintmax(char const *str, uintmax_t *ret)
 	warnp(__func__, "error converting string \"%s\" to uintmax_t", str);
 	return false;
     } else if (num <= 0 || num >= UINTMAX_MAX) {
-	warn(__func__, "number %s out of range for uintmax_t (must be >= %d && < %jd)", str, 0, UINTMAX_MAX);
+	warn(__func__, "number %s out of range for uintmax_t (must be >= %d && < %ju)", str, 0, UINTMAX_MAX);
 	return false;
     }
 

@@ -925,7 +925,7 @@ chkbyte2asciistr(void)
      * assert: JSON_BYTE_VALUES must be 256
      */
     if (JSON_BYTE_VALUES != 256) {
-	err(172, __func__, "JSON_BYTE_VALUES: %d != 256", JSON_BYTE_VALUES);
+	err(172, __func__, "JSON_BYTE_VALUES: %zu != 256", (size_t)JSON_BYTE_VALUES);
 	not_reached();
     }
 
@@ -933,8 +933,8 @@ chkbyte2asciistr(void)
      * assert: table must be of size 256
      */
     if (TBLLEN(byte2asciistr) != JSON_BYTE_VALUES) {
-	err(173, __func__, "byte2asciistr table length is %zu instead of %d",
-			   TBLLEN(byte2asciistr), JSON_BYTE_VALUES);
+	err(173, __func__, "byte2asciistr table length is %zu instead of %zu",
+			   TBLLEN(byte2asciistr), (size_t)JSON_BYTE_VALUES);
 	not_reached();
     }
 
@@ -1562,7 +1562,7 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 			    free(ret);
 			    ret = NULL;
 			}
-			warn(__func__, "surrogate pair invalid: \\u%x\\u%x", xa, xb);
+			warn(__func__, "surrogate pair invalid: \\u%X\\u%X", xa, xb);
 
 			return NULL;
 		    }
@@ -1847,7 +1847,7 @@ json_decode(char const *ptr, size_t len, bool quote, size_t *retlen)
 			if (retlen != NULL) {
 			    *retlen = 0;
 			}
-			warn(__func__, "surrogate pair invalid: \\u%x\\u%x", xa, xb);
+			warn(__func__, "surrogate pair invalid: \\u%X\\u%X", xa, xb);
 
 			return NULL;
 		    }
