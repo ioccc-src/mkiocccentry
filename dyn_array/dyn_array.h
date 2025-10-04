@@ -68,7 +68,7 @@
 /*
  * official version
  */
-#define DYN_ARRAY_VERSION "2.5.2 2024-09-29"	/* format: major.minor YYYY-MM-DD */
+#define DYN_ARRAY_VERSION "2.5.3 2024-10-03"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
