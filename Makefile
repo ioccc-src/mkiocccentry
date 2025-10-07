@@ -1080,7 +1080,7 @@ all_tags:
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 	${Q} echo
 	${Q} ${RM} -f tags
-	${Q} for dir in . dbg dyn_array jparse jparse/test_jparse soup test_ioccc; do \
+	${Q} for dir in . dbg dyn_array pr jparse jparse/test_jparse soup test_ioccc; do \
 	    if [[ -s $$dir/${LOCAL_DIR_TAGS} ]]; then \
 		echo "${SED} -e 's;\t;\t'$${dir}'/;' $${dir}/${LOCAL_DIR_TAGS} >> tags"; \
 		${SED} -e 's;\t;\t'$${dir}'/;' "$${dir}/${LOCAL_DIR_TAGS}" >> tags; \
@@ -1090,7 +1090,7 @@ all_tags:
 		echo "make $@ Warning: missing local tags file: $$dir/${LOCAL_DIR_TAGS}" 1>&2 ; \
 	    fi; \
 	done
-	${E} ${SORT} tags -o tags
+	${E} LC_ALL="C" LANG="C" ${SORT} tags -o tags
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
