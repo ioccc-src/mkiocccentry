@@ -12,7 +12,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH dbg 3 "26 September 2025" "dbg"
+.TH dbg 3 "08 October 2025" "dbg"
 .SH NAME
 .BR dbg() \|,
 .BR vdbg() \|,
@@ -347,8 +347,8 @@ main(void)
      *
      * with newlines as described.
      */
-    msg("NOTE: The next line should say: \"Warning: %s: %s", __func__, "elephant is sky-blue pink\"");
-    warn(__func__, "elephant is sky-blue pink\n");
+    msg("NOTE: The next line should say: \\"Warning: %s: %s", __func__, "elephant is sky-blue pink\\"");
+    warn(__func__, "elephant is sky-blue pink\\n");
 
     /* this will not print anything as verbosity_level 3 (DBG_MED) < 5 (DBG_HIGH): */
     dbg(DBG_HIGH, "starting critical section");
@@ -362,13 +362,13 @@ main(void)
      *
      *      debug[3]: file: foo.bar has length: 7
      */
-    msg("NOTE: The next line should read: \"debug[3]: file: %s has length: %ld\"", filename, length);
+    msg("NOTE: The next line should read: \\"debug[3]: file: %s has length: %ld\\"", filename, length);
     dbg(DBG_MED, "file: %s has length: %ld", filename, length);
 
     /*
      * We can avoid even making debug calls when the debug level is not high enough.
      */
-    msg("\nNOTE: about to loop %ld times", length);
+    msg("\\nNOTE: about to loop %ld times", length);
     for (i=0; i < length; ++i) {
         if (dbg_allowed(DBG_VVVHIGH)) {
             /* this call is skipped unless debugging level is at least DBG_VVVHIGH */
@@ -376,18 +376,18 @@ main(void)
         }
     }
     verbosity_level = DBG_VVVVVHIGH;    /* raise debugging level to an extreme level */
-    msg("\nNOTE: raised debug level to: %d", verbosity_level);
+    msg("\\nNOTE: raised debug level to: %d", verbosity_level);
     dbg(DBG_VVVVVHIGH, "i = %ld, i*i = %ld, i*i*i = %ld", i, i*i, i*i*i);
 
     /*
      * turn off debugging
      */
     dbg_output_allowed = false;
-    msg("\nNOTE: all debugging has been disabled");
+    msg("\\nNOTE: all debugging has been disabled");
     if (is_dbg_enabled) {
         warn(__func__, "debugging should have been been disabled!");
     }
-    dbg(DBG_LOW, "\nNOTE: this minimal debug message will not print because debugging has been disabled");
+    dbg(DBG_LOW, "\\nNOTE: this minimal debug message will not print because debugging has been disabled");
 
     /*
      * If EPERM == 1 then this will print:
@@ -397,7 +397,7 @@ main(void)
      * with newlines as discussed and then exit 2.
      */
     errno = EPERM;
-    msg("\nNOTE: The next line should read: \"ERROR[2]: main: test: errno[%d]: %s\"", errno, strerror(errno));
+    msg("\\nNOTE: The next line should read: \\"ERROR[2]: main: test: errno[%d]: %s\\"", errno, strerror(errno));
     errp(2, __func__, "test");
     not_reached();
 

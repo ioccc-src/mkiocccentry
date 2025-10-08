@@ -745,7 +745,7 @@ all_tags:
 	${S} echo
 	${E} ${RM} ${RM_V} -f tags
 	${E} ${CP} -f -v ${LOCAL_DIR_TAGS} tags
-	${E} ${SORT} tags -o tags
+	${E} LC_ALL="C" LANG="C" ${SORT} tags -o tags
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

@@ -676,7 +676,7 @@ all_tags:
 		${SED} -e 's;\t;\t'$${dir}'/;' "$${dir}/${LOCAL_DIR_TAGS}" >> tags; \
 	    fi; \
 	done
-	${E} ${SORT} tags -o tags
+	${E} LC_ALL="C" LANG="C" ${SORT} tags -o tags
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
