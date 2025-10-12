@@ -165,6 +165,35 @@
  */
 #define MATCH_PRECISION ((long double)(1<<22))
 
+/*
+ * st_mode related convenience macros
+ *
+ * See also stat(2)
+ */
+#define ITEM_TYPE(st_mode) ((st_mode) & (S_IFMT))
+/**/
+#define FILE_TYPE (S_IFREG)
+#define DIR_TYPE (S_IFDIR)
+#define SYMLINK_TYPE (S_IFLNK)
+/**/
+#define ITEM_IS_FILE(st_mode) (ITEM_TYPE(st_mode) == FILE_TYPE)
+#define ITEM_IS_DIR(st_mode) (ITEM_TYPE(st_mode) == DIR_TYPE)
+#define ITEM_IS_SYMLINK(st_mode) (ITEM_TYPE(st_mode) == SYMLINK_TYPE)
+/**/
+#define ITEM_IS_NOT_FILE(st_mode) (ITEM_TYPE(st_mode) != FILE_TYPE)
+#define ITEM_IS_NOT_DIR(st_mode) (ITEM_TYPE(st_mode) != DIR_TYPE)
+#define ITEM_IS_NOT_SYMLINK(st_mode) (ITEM_TYPE(st_mode) != SYMLINK_TYPE)
+/**/
+#define ITEM_IS_FILEDIR(st_mode) (ITEM_IS_FILE(st_mode) || ITEM_IS_DIR(st_mode))
+#define ITEM_IS_FILESYM(st_mode) (ITEM_IS_FILE(st_mode) || ITEM_IS_SYMLINK(st_mode))
+#define ITEM_IS_DIRSYM(st_mode) (ITEM_IS_DIR(st_mode) || ITEM_IS_SYMLINK(st_mode))
+#define ITEM_IS_FILEDIRSYM(st_mode) (ITEM_IS_FILE(st_mode) || ITEM_IS_DIR(st_mode) || ITEM_IS_SYMLINK(st_mode))
+/**/
+#define ITEM_IS_NOT_FILEDIR(st_mode) (! ITEM_IS_FILEDIR(st_mode))
+#define ITEM_IS_NOT_FILESYM(st_mode) (! ITEM_IS_FILESYM(st_mode))
+#define ITEM_IS_NOT_DIRSYM(st_mode) (! ITEM_IS_DIRSYM(st_mode))
+#define ITEM_IS_NOT_FILEDIRSYM(st_mode) (! ITEM_IS_FILEDIRSYM(st_mode))
+
 
 /*
  * enums
@@ -175,8 +204,8 @@
  */
 enum path_sanity
 {
-    PATH_ERR_UNKNOWN = 0,               /* unknown error code (default in switch) */
-    PATH_OK,                            /* path (str) is a sane relative path */
+    PATH_ERR_UNSET = -1,                /* error code not set */
+    PATH_OK = 0,                        /* path (str) is a sane relative path */
     PATH_ERR_PATH_IS_NULL,              /* path string (str) is NULL */
     PATH_ERR_PATH_EMPTY,		/* path string (str) is 0 length (empty) */
     PATH_ERR_PATH_TOO_LONG,             /* path (str) > max_path_len */
@@ -253,13 +282,14 @@ struct fts
     bool initialised;       /* internal use: after first call we can safely check pointers */
 };
 
+
 /*
  * external function declarations
  */
+extern char *str_dup(char const *str);
 extern char *base_name(char const *path);
-extern char *dir_name(char const *path, int level);
-extern size_t count_comps(char const *str, char comp, bool remove_all);
-extern size_t count_dirs(char const *path);
+extern char *base_name(char const *path);
+extern char *dir_name(char const *path);
 extern bool exists(char const *path);
 extern bool is_mode(char const *path, mode_t mode);
 extern bool has_mode(char const *path, mode_t mode);
@@ -276,12 +306,12 @@ extern bool is_write(char const *path);
 extern mode_t filemode(char const *path, bool printing);
 extern bool is_open_file_stream(FILE *stream);
 extern void reset_fts(struct fts *fts, bool free_ignored, bool free_match);
-/* XXX - remove after table driven walk code in in place - XXX */
+/* XXX - remove after table driven walk code is in place - XXX */
 extern char *fts_path(FTSENT *ent);
 extern FTSENT *read_fts(char *dir, int dirfd, int *cwd, struct fts *fts);
 extern bool array_has_path(struct dyn_array *array, char *path, bool match_case, bool fn, intmax_t *idx);
 extern uintmax_t paths_in_array(struct dyn_array *array);
-/* XXX - remove after table driven walk code in in place - XXX */
+/* XXX - remove after table driven walk code is in place - XXX */
 extern char *find_path_in_array(char *path, struct dyn_array *paths, bool match_case, bool fn, intmax_t *idx);
 extern bool append_path(struct dyn_array **paths, char *str, bool unique, bool duped, bool match_case, bool fn);
 extern void free_paths_array(struct dyn_array **paths, bool only_empty);
@@ -302,5 +332,6 @@ extern char *canon_path(char const *orig_path, size_t max_path_len, size_t max_f
 			bool rel_only, bool any_case, bool safe_chk);
 extern bool path_has_component(char const *path, char const *name);
 extern char *calloc_path(char const *dirname, char const *filename);
+extern char const *file_type_name(mode_t st_mode);
 
 #endif				/* INCLUDE_FILE_UTIL_H */

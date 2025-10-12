@@ -131,6 +131,7 @@ main(int argc, char *argv[])
     bool ignore_timestamp = false; /* true ==> ignore timestamp check result (for testing purposes) */
     bool opt_error = false;	/* fchk_inval_opt() return */
     bool safe = true;		/* assume path is sane */
+    enum path_sanity sanity = PATH_ERR_UNSET;	/* canon_path error or PATH_OK */
     int i;
 
     /* IOCCC requires use of C locale */
@@ -196,7 +197,11 @@ main(int argc, char *argv[])
     }
 
     /* collect arg */
-    filepath = argv[optind];
+    filepath = canon_path(argv[optind], 0, 0, 0, &sanity, NULL, NULL, false, true, true);
+    if (filepath == NULL) {
+	err(3, program, "bogus filepath: %s error: %s", argv[optind], path_sanity_error(sanity)); /*ooo*/
+	not_reached();
+    }
     dbg(DBG_LOW, "filepath: %s", filepath);
 
     /*

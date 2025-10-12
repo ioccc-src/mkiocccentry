@@ -151,6 +151,8 @@ static const char * const usage_msg =
  * forward declarations
  */
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
+static size_t count_comps(char const *str, char comp, bool remove_all);
+static size_t count_dirs(char const *path);
 
 
 int
@@ -164,6 +166,7 @@ main(int argc, char **argv)
     bool found_tar = false;                     /* for find_utils */
     bool found_fnamchk = false;                 /* for find_utils */
     bool opt_error = false;			/* fchk_inval_opt() return */
+    enum path_sanity sanity = PATH_ERR_UNSET;	/* canon_path error or PATH_OK */
 
     /* IOCCC requires use of C locale */
     set_ioccc_locale();
@@ -245,7 +248,11 @@ main(int argc, char **argv)
 	usage(3, program, "wrong number of arguments"); /*ooo*/
 	not_reached();
     }
-    tarball_path = argv[optind];
+    tarball_path = canon_path(argv[optind], 0, 0, 0, &sanity, NULL, NULL, false, true, true);
+    if (tarball_path == NULL) {
+	err(3, program, "bogus tarball path: %s error: %s", argv[optind], path_sanity_error(sanity)); /*ooo*/
+	not_reached();
+    }
     dbg(DBG_MED, "tarball path: %s", tarball_path);
     dbg(DBG_MED, "fnamchk test mode: %s", booltostr(test_mode));
     dbg(DBG_MED, "entertainment mode: %s", booltostr(entertain));
@@ -509,6 +516,229 @@ usage(int exitcode, char const *prog, char const *str)
 }
 
 
+/* XXX - remove after table driven walk code is in place - XXX */
+/*
+ * count_comps       - count comp delimited components in a string
+ *
+ * given:
+ *      str             - string to test
+ *      comp            - component delimiting character
+ *      remove_all      - true ==> remove all trailing delimiter chars,
+ *                        false ==> remove all but last trailing delimiter char
+ *
+ * returns:
+ *      0 ==> empty string,
+ *      1 ==> comp not found or str is the delimiter itself
+ *      > 1 ==> number of components found delimited by comp
+ *
+ * NOTE: successive components are counted as one (i.e. if comp is '/' then
+ * foo///bar will be counted as two and /// will be counted as 1.
+ *
+ * NOTE: if the delimiting character is '/' and the string is "foo///" then
+ * after removing the trailing '/'s the string will be "foo/".
+ *
+ * NOTE: if the delimiting character is '/' and the string is "foo/" then the
+ * count is 1 just as if it was "foo//"; on the other hand, if the string is
+ * "foo" without the delimiting character, the count is 0 as there actually is
+ * no component!
+ */
+static size_t
+count_comps(char const *str, char comp, bool remove_all)
+{
+    size_t count = 0;       /* number of components */
+    char *copy;             /* to simplify counting */
+    size_t len;		    /* length of str */
+    char *p;
+    size_t i;
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	err(12, __func__, "called with NULL str");
+	not_reached();
+    }
+
+    /*
+     * duplicate the string for counting, as to simplify this we truncate the
+     * string
+     */
+    errno = 0;			/* pre-clear errno for errp() */
+    copy = strdup(str);
+    if (copy == NULL) {
+	errp(13, __func__, "strdup(\"%s\") failed", str);
+	not_reached();
+    }
+
+    dbg(DBG_V3_HIGH, "#0: count_comps(\"%s\", %c, \"%s\")", str, comp, booltostr(remove_all));
+
+    /*
+     * case: empty string is 0
+     */
+    len = strlen(copy);
+    if (len <= 0) {
+	dbg(DBG_VVHIGH, "#1: count_comps(\"%s\", %c, \"%s\"): \"%s\" is an empty string", str, comp, str,
+                booltostr(remove_all));
+	return 0;
+    }
+
+    /*
+     * remove any multiple trailing delimiter chars except the last one
+     */
+    if (remove_all) {
+	dbg(DBG_V1_HIGH, "#2: string before removing any multiple trailing delimiter chars '%c's: %s", comp, copy);
+        for (i = len - 1; i > 0; --i) {
+            if (copy[i] == comp) {
+                if (i > 0 && copy[i-1] != comp) {
+                    /*
+                     * if we get here it means that there are no more successive
+                     * delimiting characters so we do not want to remove this one
+                     */
+                    break;
+                } else {
+                    /* trim the trailing / */
+                    copy[i] = '\0';
+                }
+            } else {
+                /*
+                 * no more than one trailing delimiter char exist (now)
+                 */
+                break;
+            }
+        }
+        dbg(DBG_HIGH, "#4: string after removing trailing '%c's: %s", comp, copy);
+    }
+
+    /*
+     * now copy has no successive trailing delimiting characters
+     */
+    len = strlen(copy);
+
+    /*
+     * case: length is 0
+     */
+    if (len <= 0) {
+        /*
+         * string is empty
+         */
+	dbg(DBG_V1_HIGH, "#5: count_comps(\"%s\", '%c', \"%s\") == 0", str, comp, booltostr(remove_all));
+        if (copy != NULL) {
+            free(copy);
+            copy = NULL;
+        }
+        return 0;
+
+    /*
+     * case: length is 1
+     */
+    } else if (len == 1) {
+        char tmp = '\0';
+        if (copy != NULL) {
+            tmp = *copy;
+            free(copy);
+            copy = NULL;
+        }
+        if (tmp == comp) {
+            /*
+             * if len is 1 and the character is the component then there is exactly 1 component.
+             *
+             * We know this because we have removed all successive component chars
+             * at the end of the string.
+             */
+            dbg(DBG_V1_HIGH, "#6: count_comps(\"%s\", '%c', \"%s\") == 1", str, comp, booltostr(remove_all));
+            return 1;
+        } else {
+            /*
+             * if there is only one character and it is not the delimiting
+             * character then we have 0 components
+             */
+            return 0;
+        }
+    }
+
+    /*
+     * if we get here, we have more work to do
+     */
+    count = 0;
+
+    /*
+     * look for the last component char
+     */
+    p = strrchr(copy, comp);
+    if (p == NULL) {
+
+	/*
+	 * str does not have the component, return 1
+	 */
+	dbg(DBG_VVHIGH, "#3: count_comps(\"%s\", %c, \"%s\") == 1", str, comp, booltostr(remove_all));
+        return 0;
+
+    } else {
+        while (p != NULL) {
+            ++count;
+            /*
+             * we need to remove successive component chars
+             */
+            while (p >= copy && *p && *p == comp) {
+                *p-- = '\0';
+            }
+
+            /*
+             * get next last component char
+             */
+            p = strrchr(copy, comp);
+        }
+    }
+
+    /*
+     * free storage
+     */
+    if (copy != NULL) {
+	free(copy);
+	copy = NULL;
+    }
+
+    /*
+     * return the total components
+     */
+    dbg(DBG_VVHIGH, "#4: count_comps(\"%s\", %c, \"%s\") == %zu", str, comp, booltostr(remove_all), count);
+    return count;
+}
+
+
+/* XXX - remove after table driven walk code is in place - XXX */
+/*
+ * count_dirs
+ *
+ * Return number of directory components in a path, using count_comps()
+ *
+ * given:
+ *      path    - path to count directory components
+ *
+ * returns:
+ *      number (size_t) of directory components in path
+ *
+ * NOTE: this function does not return on a NULL path but an empty path will
+ * return 0.
+ */
+static size_t
+count_dirs(char const *path)
+{
+    /*
+     * firewall
+     */
+    if (path == NULL) {
+        err(14, __func__, "path is NULL");
+        not_reached();
+    }
+
+    /*
+     * return the number of components in the path
+     */
+    return count_comps(path, '/', true);
+}
+
+
 /*
  * txzchk_sanity_chks - perform basic sanity checks
  *
@@ -528,7 +758,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
      * firewall
      */
     if ((tar == NULL && !read_from_text_file) || fnamchk == NULL || tarball_path == NULL) {
-	err(12, __func__, "called with NULL arg(s)");
+	err(15, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -552,7 +782,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 		  "    https://www.gnu.org/software/tar/",
 		  "",
 		  NULL);
-	    err(13, __func__, "tar does not exist: %s", tar);
+	    err(16, __func__, "tar does not exist: %s", tar);
 	    not_reached();
 	}
 
@@ -570,7 +800,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 		  "    https://www.gnu.org/software/tar/",
 		  "",
 		  NULL);
-	    err(14, __func__, "tar is not a regular file: %s", tar);
+	    err(17, __func__, "tar is not a regular file: %s", tar);
 	    not_reached();
 	}
 
@@ -588,7 +818,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 		  "    https://www.gnu.org/software/tar/",
 		  "",
 		  NULL);
-	    err(15, __func__, "tar is not an executable program: %s", tar);
+	    err(18, __func__, "tar is not an executable program: %s", tar);
 	    not_reached();
 	}
     }
@@ -606,7 +836,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "",
 	      "    txzchk -F /path/to/fnamchk [...]",
 	      NULL);
-	err(16, __func__, "fnamchk does not exist: %s", fnamchk);
+	err(19, __func__, "fnamchk does not exist: %s", fnamchk);
 	not_reached();
     }
 
@@ -619,7 +849,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "",
 	      "    txzchk -F /path/to/fnamchk [...]",
 	      NULL);
-	err(17, __func__, "fnamchk is not a regular file: %s", fnamchk);
+	err(20, __func__, "fnamchk is not a regular file: %s", fnamchk);
 	not_reached();
     }
 
@@ -632,7 +862,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "",
 	      "    txzchk -F /path/to/fnamchk [...]",
 	      NULL);
-	err(18, __func__, "fnamchk is not an executable program: %s", fnamchk);
+	err(21, __func__, "fnamchk is not an executable program: %s", fnamchk);
 	not_reached();
     }
 
@@ -649,7 +879,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "    txzchk [options] <tarball_path>"
 	      "",
 	      NULL);
-	err(19, __func__, "tarball_path does not exist: %s", tarball_path);
+	err(22, __func__, "tarball_path does not exist: %s", tarball_path);
 	not_reached();
     }
 
@@ -663,7 +893,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "    txzchk [...] <tarball_path>",
 	      "",
 	      NULL);
-	err(20, __func__, "tarball_path is not a regular file: %s", tarball_path);
+	err(23, __func__, "tarball_path is not a regular file: %s", tarball_path);
 	not_reached();
     }
 
@@ -677,7 +907,7 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "    txzchk [...] <tarball_path>"
 	      "",
 	      NULL);
-	err(21, __func__, "tarball_path is not readable: %s", tarball_path);
+	err(24, __func__, "tarball_path is not readable: %s", tarball_path);
 	not_reached();
     }
 
@@ -709,7 +939,7 @@ check_txz_file(char const *tarball_path, char const *dirname, struct txz_file *f
      * firewall
      */
     if (tarball_path == NULL || file == NULL || file->basename == NULL || file->filename == NULL) {
-	err(22, __func__, "passed NULL arg(s)");
+	err(25, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -807,10 +1037,10 @@ check_file_size(char const *tarball_path, off_t size, struct txz_file *file)
      */
 
     if (tarball_path == NULL || file == NULL) {
-	err(23, __func__, "called with NULL arg(s)");
+	err(26, __func__, "called with NULL arg(s)");
 	not_reached();
     } else if (file->basename == NULL || file->filename == NULL) {
-	err(24, __func__, "file->basename == NULL || file->filename == NULL which should never happen");
+	err(27, __func__, "file->basename == NULL || file->filename == NULL which should never happen");
 	not_reached();
     }
 
@@ -885,10 +1115,10 @@ check_all_txz_files(void)
      */
     for (file = txz_files; file != NULL; file = file->next) {
 	if (file->basename == NULL) {
-	    err(25, __func__, "found NULL file->basename in txz_files list");
+	    err(28, __func__, "found NULL file->basename in txz_files list");
 	    not_reached();
 	} else if (file->filename == NULL) {
-	    err(26, __func__, "found NULL file->filename in txz_files list");
+	    err(29, __func__, "found NULL file->filename in txz_files list");
 	    not_reached();
         }
 
@@ -1171,7 +1401,7 @@ check_directory(struct txz_file *file, char const *dirname, char const *tarball_
      * firewall
      */
     if (tarball_path == NULL || file == NULL || file->filename == NULL) {
-	err(27, __func__, "passed NULL arg(s)");
+	err(30, __func__, "passed NULL arg(s)");
 	not_reached();
     }
 
@@ -1231,7 +1461,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
      */
     if (p == NULL || linep == NULL || line_dup == NULL || tarball_path == NULL || saveptr == NULL ||
 	sum == NULL || count == NULL || perms == NULL) {
-	err(28, __func__, "called with NULL arg(s)");
+	err(31, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1246,7 +1476,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
 	p = strchr(p, '/');
     }
     if (p == NULL) {
-	err(29, __func__, "txzchk: encountered NULL pointer when parsing line %s", line_dup);
+	err(32, __func__, "txzchk: encountered NULL pointer when parsing line %s", line_dup);
         not_reached();
     }
     ++p;
@@ -1264,7 +1494,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
     }
     p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
-	err(30, __func__, "%s: NULL pointer encountered trying to parse line", tarball_path);
+	err(33, __func__, "%s: NULL pointer encountered trying to parse line", tarball_path);
 	not_reached();
     }
 
@@ -1298,14 +1528,14 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
     for (i = 0; i < 3; ++i) {
 	p = strtok_r(NULL, tok_sep, saveptr);
 	if (p == NULL) {
-            err(31, __func__, "%s: NULL pointer trying to parse line", tarball_path);
+            err(34, __func__, "%s: NULL pointer trying to parse line", tarball_path);
             not_reached();
 	}
     }
     /* p should now contain the filename. */
     file = alloc_txz_file(p, dirname, perms, isdir, isfile, isexec, length);
     if (file == NULL) {
-	err(32, __func__, "alloc_txz_file() returned NULL");
+	err(35, __func__, "alloc_txz_file() returned NULL");
 	not_reached();
     }
 
@@ -1350,13 +1580,13 @@ count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t
      * firewall
      */
     if (tarball_path == NULL) {
-	err(33, __func__, "tarball_path is NULL");
+	err(36, __func__, "tarball_path is NULL");
 	not_reached();
     } else if (sum == NULL) {
-	err(34, __func__, "sum is NULL");
+	err(37, __func__, "sum is NULL");
 	not_reached();
     } else if (count == NULL) {
-	err(35, __func__, "count is NULL");
+	err(38, __func__, "count is NULL");
 	not_reached();
     }
     test = sum_and_count(length, sum, count, &sum_check, &count_check);
@@ -1451,13 +1681,13 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
      */
     if (p == NULL || linep == NULL || line_dup == NULL || tarball_path == NULL || saveptr == NULL ||
 	sum == NULL || count == NULL) {
-	err(36, __func__, "called with NULL arg(s)");
+	err(39, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
     p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
-        err(37, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
+        err(40, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
         not_reached();
     }
 
@@ -1479,7 +1709,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
      */
     p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
-        err(38, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
+        err(41, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
         not_reached();
     }
 
@@ -1498,7 +1728,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
 
     p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
-	err(39, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
+	err(42, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
         not_reached();
     }
 
@@ -1532,14 +1762,14 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
     for (i = 0; i < 4; ++i) {
 	p = strtok_r(NULL, tok_sep, saveptr);
 	if (p == NULL) {
-	    err(40, __func__, "txzchk: %s: NULL pointer trying to parse line", tarball_path);
+	    err(43, __func__, "txzchk: %s: NULL pointer trying to parse line", tarball_path);
             not_reached();
 	}
     }
     /* p should now contain the filename. */
     file = alloc_txz_file(p, dirname, perms, isdir, isfile, isexec, length);
     if (file == NULL) {
-	err(41, __func__, "txzchk: alloc_txz_file() returned NULL");
+	err(44, __func__, "txzchk: alloc_txz_file() returned NULL");
 	not_reached();
     }
 
@@ -1596,7 +1826,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tar
      */
     if (linep == NULL || line_dup == NULL || tarball_path == NULL ||
 	    sum == NULL || count == NULL) {
-	err(42, __func__, "called with NULL arg(s)");
+	err(45, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1621,7 +1851,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tar
     /* extract each field, one at a time, to do various tests */
     p = strtok_r(linep, tok_sep, &saveptr);
     if (p == NULL) {
-	err(43, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
+	err(46, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
         not_reached();
     }
 
@@ -1631,7 +1861,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tar
     errno = 0;      /* pre-clear errno for errp() */
     perms = strdup(p);
     if (perms == NULL) {
-        errp(44, __func__, "txzchk: failed to strdup permissions string");
+        errp(47, __func__, "txzchk: failed to strdup permissions string");
         not_reached();
     }
 
@@ -1656,7 +1886,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tar
      */
     p = strtok_r(NULL, tok_sep, &saveptr);
     if (p == NULL) {
-	err(45, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
+	err(48, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
         not_reached();
     }
     if (strchr(p, '/') != NULL) {
@@ -1703,7 +1933,7 @@ check_tarball(char const *tar, char const *fnamchk)
      */
     if ((!read_from_text_file && tar == NULL) || fnamchk == NULL || tarball_path == NULL)
     {
-	err(46, __func__, "called with NULL arg(s)");
+	err(49, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1807,14 +2037,14 @@ check_tarball(char const *tar, char const *fnamchk)
                 errno = 0; /* pre-clear errno for errp() */
                 fnamchk_stream = pipe_open(__func__, false, true, "% -t -T -E % -- %", fnamchk, ext, tarball_path);
                 if (fnamchk_stream == NULL) {
-                    errp(47, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
+                    errp(50, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
                     not_reached();
                 }
             } else {
                 errno = 0; /* pre-clear errno for errp() */
                 fnamchk_stream = pipe_open(__func__, false, true, "% -T -E % -- %", fnamchk, ext, tarball_path);
                 if (fnamchk_stream == NULL) {
-                    errp(48, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
+                    errp(51, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
                     not_reached();
                 }
             }
@@ -1831,7 +2061,7 @@ check_tarball(char const *tar, char const *fnamchk)
                 fnamchk_stream = pipe_open(__func__, false, true, "% -E % -- %", fnamchk, ext, tarball_path);
             }
             if (fnamchk_stream == NULL) {
-                errp(49, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
+                errp(52, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
                 not_reached();
             }
         }
@@ -1856,7 +2086,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	fnamchk_stream = NULL;
 
 	if (dirname == NULL || *dirname == '\0') {
-	    err(50, __func__, "txzchk: unexpected NULL pointer from fnamchk -- %s", tarball_path);
+	    err(53, __func__, "txzchk: unexpected NULL pointer from fnamchk -- %s", tarball_path);
 	    not_reached();
 	}
     }
@@ -1865,7 +2095,7 @@ check_tarball(char const *tar, char const *fnamchk)
     tarball.size = file_size(tarball_path);
     /* report size if too big */
     if (tarball.size < 0) {
-	err(51, __func__, "%s: impossible error: txzchk_sanity_chks() found tarball but file_size() did not", tarball_path);
+	err(54, __func__, "%s: impossible error: txzchk_sanity_chks() found tarball but file_size() did not", tarball_path);
 	not_reached();
     } else if (tarball.size > MAX_TARBALL_LEN) {
 	++tarball.total_feathers;
@@ -1892,7 +2122,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	input_stream = fopen(tarball_path, "r");
 	if (input_stream == NULL)
 	{
-	    errp(52, __func__, "fopen of %s failed", tarball_path);
+	    errp(55, __func__, "fopen of %s failed", tarball_path);
 	    not_reached();
 	}
 	errno = 0;		/* pre-clear errno for warnp() */
@@ -1916,7 +2146,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	    exit_code = shell_cmd(__func__, false, true, "% -tJvf % >/dev/null", tar, tarball_path);
 	}
 	if (exit_code != 0) {
-	    err(53, __func__, "%s -tJvf %s failed with exit code: %d",
+	    err(56, __func__, "%s -tJvf %s failed with exit code: %d",
 			      tar, tarball_path, WEXITSTATUS(exit_code));
 	    not_reached();
 	}
@@ -1925,7 +2155,7 @@ check_tarball(char const *tar, char const *fnamchk)
         errno = 0; /* pre-clear errno for errp() */
 	input_stream = pipe_open(__func__, false, true, "% -tJvf %", tar, tarball_path);
 	if (input_stream == NULL) {
-	    errp(54, __func__, "popen for reading failed for: %s -tJvf %s",
+	    errp(57, __func__, "popen for reading failed for: %s -tJvf %s",
 			      tar, tarball_path);
 	    not_reached();
 	}
@@ -2062,15 +2292,15 @@ has_special_bits(struct txz_file *file)
      * firewall
      */
     if (file == NULL) {
-	err(55, __func__, "called with NULL file");
+	err(58, __func__, "called with NULL file");
 	not_reached();
     }
     if (file->filename == NULL) {
-        err(56, __func__, "file->filename is NULL");
+        err(59, __func__, "file->filename is NULL");
         not_reached();
     }
     if (file->perms == NULL) {
-        err(57, __func__, "file->perms is NULL");
+        err(60, __func__, "file->perms is NULL");
         not_reached();
     }
 
@@ -2152,21 +2382,21 @@ add_txz_line(char const *str, uintmax_t line_num)
      * firewall
      */
     if (str == NULL) {
-	err(58, __func__, "passed NULL str");
+	err(61, __func__, "passed NULL str");
 	not_reached();
     }
 
     errno = 0;
     line = calloc(1, sizeof *line);
     if (line == NULL) {
-	errp(59, __func__, "unable to allocate struct txz_line *");
+	errp(62, __func__, "unable to allocate struct txz_line *");
 	not_reached();
     }
 
     errno = 0;
     line->line = strdup(str);
     if (line->line == NULL) {
-	errp(60, __func__, "unable to strdup string '%s' for lines list", str);
+	errp(63, __func__, "unable to strdup string '%s' for lines list", str);
 	not_reached();
     }
     line->line_num = line_num;
@@ -2205,7 +2435,7 @@ parse_all_txz_lines(char const *dirname, char const *tarball_path)
      * firewall
      */
     if (tarball_path == NULL) {
-	err(61, __func__, "passed NULL tarball_path");
+	err(64, __func__, "passed NULL tarball_path");
 	not_reached();
     }
 
@@ -2218,7 +2448,7 @@ parse_all_txz_lines(char const *dirname, char const *tarball_path)
 
 	line_dup = strdup(line->line);
 	if (line_dup == NULL) {
-	    err(62, __func__, "%s: duplicating %s failed", tarball_path, line->line);
+	    err(65, __func__, "%s: duplicating %s failed", tarball_path, line->line);
 	    not_reached();
 	}
 
@@ -2293,25 +2523,25 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, bool isdir, b
      * firewall
      */
     if (path == NULL) {
-	err(63, __func__, "passed NULL path");
+	err(66, __func__, "passed NULL path");
 	not_reached();
     }
     if (perms == NULL) {
-        err(64, __func__, "passed NULL perms");
+        err(67, __func__, "passed NULL perms");
         not_reached();
     }
 
     errno = 0; /* pre-clear errno for errp() */
     file = calloc(1, sizeof *file);
     if (file == NULL) {
-	errp(65, __func__, "%s: unable to allocate a struct txz_file *", tarball_path);
+	errp(68, __func__, "%s: unable to allocate a struct txz_file *", tarball_path);
 	not_reached();
     }
 
     errno = 0; /* pre-clear errno for errp() */
     file->filename = strdup(path);
     if (!file->filename) {
-	errp(66, __func__, "%s: unable to strdup filename %s", tarball_path, path);
+	errp(69, __func__, "%s: unable to strdup filename %s", tarball_path, path);
 	not_reached();
     }
 
@@ -2320,16 +2550,16 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, bool isdir, b
      */
     file->basename = base_name(path);
     if (file->basename == NULL || *(file->basename) == '\0') {
-	err(67, __func__, "%s: unable to strdup basename of filename %s", tarball_path, path);
+	err(70, __func__, "%s: unable to strdup basename of filename %s", tarball_path, path);
 	not_reached();
     }
 
     /*
      * get root directory name of this file (i.e. up to the first '/')
      */
-    file->top_dirname = dir_name(path, -1);
+    file->top_dirname = dir_name(path);
     if (file->top_dirname == NULL || *(file->top_dirname) == '\0') {
-	err(68, __func__, "%s: unable to strdup top dirname of filename %s", tarball_path, path);
+	err(71, __func__, "%s: unable to strdup top dirname of filename %s", tarball_path, path);
 	not_reached();
     }
     if (isdir && dirname != NULL) {
@@ -2338,9 +2568,9 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, bool isdir, b
          * this is an extra directory or the top level directory (the submission
          * directory in mkiocccentry terms)
          */
-        dir = dir_name(path, 0);
+        dir = strdup(path);
         if (dir == NULL) {
-            err(69, __func__, "error extracting full directory name of: %s", path);
+            err(72, __func__, "error duplicating full directory name of: %s", path);
             not_reached();
         }
 
@@ -2409,7 +2639,7 @@ add_txz_file_to_list(struct txz_file *txzfile)
      * firewall
      */
     if (txzfile == NULL || !txzfile->filename || !txzfile->basename) {
-	err(70, __func__, "called with NULL pointer(s)");
+	err(73, __func__, "called with NULL pointer(s)");
 	not_reached();
     }
 
@@ -2449,7 +2679,7 @@ free_txz_file(struct txz_file **file)
      * firewall
      */
     if (file == NULL || *file == NULL) {
-        err(71, __func__, "file is NULL");
+        err(74, __func__, "file is NULL");
         not_reached();
     }
 

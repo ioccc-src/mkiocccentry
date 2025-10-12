@@ -1,31 +1,31 @@
 Warning: txzchk: found non-executable non-directory file test-6/.auth.json with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-6/prögög.c with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: file "test-6/prögög.c" is not a sane relative path
+Warning: check_txz_file: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: file "test-6/prögög.c" is not a sane relative path
 Warning: txzchk: found non-executable non-directory file test-6/prög.c with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: file "test-6/prög.c" is not a sane relative path
+Warning: check_txz_file: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: file "test-6/prög.c" is not a sane relative path
 Warning: txzchk: found non-executable non-directory file test-6/prog.c with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-6/remarks.md with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found non .auth.json and .info.json dot file: .test
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found incorrect top level directory in filename .test
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found non .auth.json and .info.json dot file: .
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found file called '.' in path .
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found incorrect top level directory in filename .
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found non .auth.json and .info.json dot file: .
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found file called '.' in path test-6/.
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found non .auth.json and .info.json dot file: .
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found file called '.' in path test-6/.
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found non .auth.json and .info.json dot file: .test
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found incorrect top level directory in filename .test
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found non .auth.json and .info.json dot file: .
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found file called '.' in path .
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found incorrect top level directory in filename .
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found non .auth.json and .info.json dot file: .
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found file called '.' in path test-6/.
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found non .auth.json and .info.json dot file: .
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found file called '.' in path test-6/.
 Warning: txzchk: found non-executable non-directory file test-6//.file.json with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found non .auth.json and .info.json dot file: .file.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found non .auth.json and .info.json dot file: .file.json
 Warning: txzchk: found non-executable non-directory file test-6//.test.json with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found non .auth.json and .info.json dot file: .test.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found non .auth.json and .info.json dot file: .test.json
 Warning: txzchk: found non-executable non-directory file test-6//.info.json with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-6/Makefile with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-6/prog.c with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: filename test-6//.test.json (basename .test.json) not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: filename test-6//.file.json (basename .file.json) not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found a total of 2 files with the name . in the same directory
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: filename test-6/. (basename .) not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found a total of 2 files with the name prog.c in the same directory
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: not all files in correct directory
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found a total of 6 invalidly named dot files
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found 31 feathers stuck in the tarball
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: filename test-6//.test.json (basename .test.json) not allowed
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: filename test-6//.file.json (basename .file.json) not allowed
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found a total of 2 files with the name . in the same directory
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: filename test-6/. (basename .) not allowed
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found a total of 2 files with the name prog.c in the same directory
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: not all files in correct directory
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found a total of 6 invalidly named dot files
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found 31 feathers stuck in the tarball

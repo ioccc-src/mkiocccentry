@@ -1,64 +1,64 @@
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-1/extra1
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-1/extra1
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-1/extra1
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-1/extra1
 Warning: txzchk: found non-executable non-directory file test-1/extra1 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-1/extra1
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    1433 Jun  3 07:41 test-1/.info.json
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    1433 Jun  3 07:41 test-1/.info.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-1/extra1
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    1433 Jun  3 07:41 test-1/.info.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    1433 Jun  3 07:41 test-1/.info.json
 Warning: txzchk: found non-executable non-directory file test-1/.info.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-1/.info.json
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    4454 Jun  3 07:41 test-1/remarks.md
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    4454 Jun  3 07:41 test-1/remarks.md
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-1/.info.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    4454 Jun  3 07:41 test-1/remarks.md
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    4454 Jun  3 07:41 test-1/remarks.md
 Warning: txzchk: found non-executable non-directory file test-1/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-1/remarks.md
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    2794 Jun  3 07:41 test-1/.auth.json
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    2794 Jun  3 07:41 test-1/.auth.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-1/remarks.md
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    2794 Jun  3 07:41 test-1/.auth.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    2794 Jun  3 07:41 test-1/.auth.json
 Warning: txzchk: found non-executable non-directory file test-1/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-1/.auth.json
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff      61 Jun  3 07:41 test-1/prog.c
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff      61 Jun  3 07:41 test-1/prog.c
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-1/.auth.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff      61 Jun  3 07:41 test-1/prog.c
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff      61 Jun  3 07:41 test-1/prog.c
 Warning: txzchk: found non-executable non-directory file test-1/prog.c with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-1/prog.c
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-1/extra2
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-1/extra2
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-1/prog.c
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-1/extra2
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-1/extra2
 Warning: txzchk: found non-executable non-directory file test-1/extra2 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-1/extra2
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    1854 Jun  3 07:41 test-1/Makefile
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    1854 Jun  3 07:41 test-1/Makefile
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-1/extra2
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    1854 Jun  3 07:41 test-1/Makefile
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    1854 Jun  3 07:41 test-1/Makefile
 Warning: txzchk: found non-executable non-directory file test-1/Makefile with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-1/Makefile
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line drwxr-xr-x  0 cody   staff       0 Jun  3 07:41 test-1/
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: drwxr-xr-x  0 cody   staff       0 Jun  3 07:41 test-1/
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-1/
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-0/extra1
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-0/extra1
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-1/Makefile
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line drwxr-xr-x  0 cody   staff       0 Jun  3 07:41 test-1/
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: drwxr-xr-x  0 cody   staff       0 Jun  3 07:41 test-1/
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-1/
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-0/extra1
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-0/extra1
 Warning: txzchk: found non-executable non-directory file test-0/extra1 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-0/extra1
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    1430 Jun  3 07:41 test-0/.info.json
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    1430 Jun  3 07:41 test-0/.info.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-0/extra1
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    1430 Jun  3 07:41 test-0/.info.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    1430 Jun  3 07:41 test-0/.info.json
 Warning: txzchk: found non-executable non-directory file test-0/.info.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-0/.info.json
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    4454 Jun  3 07:41 test-0/remarks.md
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    4454 Jun  3 07:41 test-0/remarks.md
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-0/.info.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    4454 Jun  3 07:41 test-0/remarks.md
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    4454 Jun  3 07:41 test-0/remarks.md
 Warning: txzchk: found non-executable non-directory file test-0/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-0/remarks.md
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    2794 Jun  3 07:41 test-0/.auth.json
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    2794 Jun  3 07:41 test-0/.auth.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-0/remarks.md
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    2794 Jun  3 07:41 test-0/.auth.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    2794 Jun  3 07:41 test-0/.auth.json
 Warning: txzchk: found non-executable non-directory file test-0/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-0/.auth.json
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff       0 Jun  3 07:41 test-0/prog.c
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff       0 Jun  3 07:41 test-0/prog.c
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-0/.auth.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff       0 Jun  3 07:41 test-0/prog.c
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff       0 Jun  3 07:41 test-0/prog.c
 Warning: txzchk: found non-executable non-directory file test-0/prog.c with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-0/prog.c
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-0/extra2
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-0/extra2
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-0/prog.c
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-0/extra2
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff       4 Jun  3 07:41 test-0/extra2
 Warning: txzchk: found non-executable non-directory file test-0/extra2 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-0/extra2
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    1854 Jun  3 07:41 test-0/Makefile
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    1854 Jun  3 07:41 test-0/Makefile
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-0/extra2
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line -rw-r--r--  0 cody   staff    1854 Jun  3 07:41 test-0/Makefile
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: -rw-r--r--  0 cody   staff    1854 Jun  3 07:41 test-0/Makefile
 Warning: txzchk: found non-executable non-directory file test-0/Makefile with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-0/Makefile
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line drwxr-xr-x  0 cody   staff       0 Jun  3 07:41 test-0/
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: drwxr-xr-x  0 cody   staff       0 Jun  3 07:41 test-0/
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-0/
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: not all files in correct directory
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found 63 feathers stuck in the tarball
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-0/Makefile
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical UID in file in line drwxr-xr-x  0 cody   staff       0 Jun  3 07:41 test-0/
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found non-numerical GID in file in line: drwxr-xr-x  0 cody   staff       0 Jun  3 07:41 test-0/
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found incorrect top level directory in filename test-0/
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: not all files in correct directory
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.1924267291.txt: found 63 feathers stuck in the tarball

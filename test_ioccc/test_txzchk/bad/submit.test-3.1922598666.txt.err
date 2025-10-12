@@ -1,31 +1,31 @@
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found empty .auth.json file
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found empty .auth.json file
 Warning: txzchk: found non-executable non-directory file test-3/.auth.json with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-3/prög.c with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: file "test-3/prög.c" is not a sane relative path
+Warning: check_txz_file: test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: file "test-3/prög.c" is not a sane relative path
 Warning: txzchk: found non-executable non-directory file test-3/prog.c with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-3/.. with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found non .auth.json and .info.json dot file: ..
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found non .auth.json and .info.json dot file: ..
 Warning: txzchk: found non-executable non-directory file test-3/../.././.test with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: file "test-3/../.././.test" is not a sane relative path
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found non .auth.json and .info.json dot file: .test
+Warning: check_txz_file: test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: file "test-3/../.././.test" is not a sane relative path
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found non .auth.json and .info.json dot file: .test
 Warning: txzchk: found non-executable non-directory file test-3/../.././test with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: file "test-3/../.././test" is not a sane relative path
+Warning: check_txz_file: test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: file "test-3/../.././test" is not a sane relative path
 Warning: txzchk: found non-executable non-directory file test-3/.././file with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: txzchk: directory with incorrect permissions found: test-3/test: drw-rw-r-- != drwxr-xr-x
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found empty remarks.md
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found empty remarks.md
 Warning: txzchk: found non-executable non-directory file test-3/remarks.md with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-3//.info.json with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found empty Makefile
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found empty Makefile
 Warning: txzchk: found non-executable non-directory file //test-3/Makefile with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
-Warning: check_txz_file: ./test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: file "//test-3/Makefile" is not a sane relative path
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found incorrect top level directory in filename //test-3/Makefile
+Warning: check_txz_file: test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: file "//test-3/Makefile" is not a sane relative path
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found incorrect top level directory in filename //test-3/Makefile
 Warning: txzchk: found non-executable non-directory file test-3/prog.c with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: txzchk: test-3/../.././test: depth too deep: 5 > 4
 Warning: txzchk: test-3/../.././.test: depth too deep: 5 > 4
 Warning: txzchk: test-3/../.././.test (basename .test) is a forbidden filename
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: filename test-3/.. (basename ..) not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found a total of 2 files with the name prog.c in the same directory
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: no Makefile found
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: not all files in correct directory
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found a total of 2 invalidly named dot files
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found 29 feathers stuck in the tarball
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: filename test-3/.. (basename ..) not allowed
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found a total of 2 files with the name prog.c in the same directory
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: no Makefile found
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: not all files in correct directory
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found a total of 2 invalidly named dot files
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-3.1922598666.txt: found 29 feathers stuck in the tarball

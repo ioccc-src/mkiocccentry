@@ -1,6 +1,74 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.7.6 2025-10-12
+
+The `fnamchk(8)` tool canonicalizes the `filepath`
+using `canon_path()` function.
+
+When the `mkiocccentry(1)` tool reports a path that is too deep, the
+path depth determined by the `canon_path()` function is used.
+
+Isolated `count_comps()` and `count_dirs()` to the `txzchk(1)` tool
+as static private functions.  These functions will eventually be
+removed once the driven walk code is in place.
+
+The `txzchk(1)` tool canonicalizes the `tarball_path`
+via the `canon_path()` function.
+
+Ran `make rebuild_txzchk_test_errors` to update the test suite
+for `txzchk(1)` as per the above.
+
+Removed testing of `count_dirs()` and `count_comps()` from
+`test_ioccc/test_file_util` as those functions will eventually be
+removed once the driven walk code is in place.
+
+The `count_dirs()` function used by `read_fts()` uses the `canon_path()`
+function to determine the path depth for now.  For now, the `count_dirs()`
+function used by `read_fts()` is now a static private function.  Once the
+driven walk code is in place, the `read_fts()` will be updated to make
+more direct use of canonicalized paths.
+
+Added `str_dup()` function to `soup.a`.
+
+The `base_name()` in `soup.a` carefully uses the `basename(3)` libs to
+determine the basename.
+
+The `dir_name()` function in `soup.a` no longer uses the `level` argument.
+The `dir_name()` function canonicalizes the `path` via the `canon_path()`
+function and carefully uses the `dirname(3)` libs to determine the dirname.
+
+Changed `PATH_ERR_UNKNOWN` to `PATH_ERR_UNSET`.  The value is now **-1**.
+The `PATH_OK` value is now **0**.
+
+Added `st_mode` (as per `stat(2)`) related convenience macros to
+`soup/file_util.h`.
+
+Added `file_type_name(st_mode)` to `soup.a` that returns
+a read-only string representation of mode of the file.
+
+Updated `test_ioccc/test_file_util` to perform detailed tests of
+`canon_path()`, `base_name()`, and `dir_name()`.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "2.7.5 2025-10-02"
+to "2.7.6 2025-10-12".
+
+Changed `SOUP_VERSION` from "2.1.1 2025-09-29"
+to "2.1.2 2025-10-12".
+
+Changed `MKIOCCCENTRY_VERSION` from "2.1.3 2025-09-27"
+to "2.1.4 2025-10-12".
+
+Changed `FNAMCHK_VERSION` from "2.1.2 2025-09-29"
+to "2.1.4 2025-10-12".
+
+Changed `TXZCHK_VERSION` from "2.0.7 2025-09-29"
+to "2.0.8 2025-10-12".
+
+Changed `FILE_UTIL_TEST_VERSION` from "2.0.4 2025-09-29"
+to "2.1.0 2025-10-12".
+
+
 ## Release 2.7.5 2025-10-02
 
 Synced [jparse repo](https://github.com/xexyl/jparse) with various fixes and

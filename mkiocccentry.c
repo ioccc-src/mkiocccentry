@@ -1378,6 +1378,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
     size_t unsafe_dirs = 0;             /* number of unsafe dirnames (added to dirs to verify there aren't too many) */
     struct fts fts;                     /* for FTS functions */
     int exit_code = 0;                  /* for make clobber */
+    int32_t depth = 0;			/* depth of subdirectory tree */
 
     /*
      * firewall
@@ -1741,7 +1742,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
 	     * will ignore any such "./".
              */
 	    (void) canon_path(ent->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
-			      &sanity, NULL, NULL, true, true, true);
+			      &sanity, NULL, &depth, true, true, true);
             switch (sanity) {
                 case PATH_ERR_NAME_TOO_LONG: /* last component too long */
                     err(4, __func__, "%s: name too long: strlen(\"%s\"): %zu > %d", ent->fts_name, ent->fts_name, /*ooo*/
@@ -1754,8 +1755,8 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                     not_reached();
                     break;
                 case PATH_ERR_PATH_TOO_DEEP: /* too many subdirectories */
-                    err(4, __func__, "%s: path too deep: depth %zu > %d", ent->fts_path + 2, /*ooo*/
-                            count_dirs(ent->fts_path), MAX_PATH_DEPTH);
+                    err(4, __func__, "%s: path too deep: depth %d > %d", ent->fts_path + 2, /*ooo*/
+                            depth, MAX_PATH_DEPTH);
                     not_reached();
                     break;
                 case PATH_ERR_NOT_POSIX_SAFE: /* not sane relative path */
@@ -1830,7 +1831,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                     err(4, __func__, "%s: path not relative", ent->fts_path + 2); /*ooo*/
                     not_reached();
                     break;
-                case PATH_ERR_UNKNOWN: /* unknown error */
+                case PATH_ERR_UNSET: /* error code not set */
                 case PATH_ERR_PATH_IS_NULL: /* path is NULL (should never happen) */
                 case PATH_OK: /* sane relative path */
                     break;
@@ -2882,6 +2883,7 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
     struct fts fts;                     /* for FTS functions */
     char *p = NULL;                     /* temp value to print lists (arrays) */
     intmax_t i = 0;                     /* index into arrays */
+    int32_t depth = 0;			/* depth of subdirectory tree */
 
     /*
      * firewall
@@ -3092,7 +3094,7 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
 	     * will ignore any such "./".
              */
 	    (void) canon_path(ent->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
-			      &sanity, NULL, NULL, true, true, true);
+			      &sanity, NULL, &depth, true, true, true);
             switch (sanity) {
                 case PATH_ERR_NAME_TOO_LONG: /* last component too long */
                     err(4, __func__, "%s: name too long: strlen(\"%s\"): %zu > %d", ent->fts_name, ent->fts_name, /*ooo*/
@@ -3105,8 +3107,8 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
                     not_reached();
                     break;
                 case PATH_ERR_PATH_TOO_DEEP: /* too many subdirectories */
-                    err(4, __func__, "%s: path too deep: depth %zu > %d", ent->fts_path + 2, /*ooo*/
-                            count_dirs(ent->fts_path), MAX_PATH_DEPTH);
+                    err(4, __func__, "%s: path too deep: depth %d > %d", ent->fts_path + 2, /*ooo*/
+                            depth, MAX_PATH_DEPTH);
                     not_reached();
                     break;
                 case PATH_ERR_NOT_POSIX_SAFE: /* not sane relative path */
@@ -3117,7 +3119,7 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
                     err(4, __func__, "%s: path not relative", ent->fts_path + 2); /*ooo*/
                     not_reached();
                     break;
-                case PATH_ERR_UNKNOWN: /* unknown error */
+                case PATH_ERR_UNSET: /* error code not set */
                 case PATH_ERR_PATH_IS_NULL: /* path is NULL (should never happen) */
                 case PATH_OK: /* sane relative path */
                     break;

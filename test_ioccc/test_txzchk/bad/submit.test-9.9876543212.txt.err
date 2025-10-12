@@ -1,9 +1,9 @@
 Warning: txzchk: found non-executable non-directory file test-9/extra1 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found empty .info.json file
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found empty .info.json file
 Warning: txzchk: found non-executable non-directory file test-9/.info.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found empty remarks.md
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found empty remarks.md
 Warning: txzchk: found non-executable non-directory file test-9/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found empty .auth.json file
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found empty .auth.json file
 Warning: txzchk: found non-executable non-directory file test-9/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-9/inventory.html with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-9/index.html with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
@@ -13,26 +13,26 @@ Warning: txzchk: found non-executable non-directory file test-9/prog.orig.c with
 Warning: txzchk: found non-executable non-directory file test-9/prog.orig with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-9/prog with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-9/. with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found non .auth.json and .info.json dot file: .
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found file called '.' in path test-9/.
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found non .auth.json and .info.json dot file: .
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found file called '.' in path test-9/.
 Warning: txzchk: found non-executable non-directory file test-9/. with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found non .auth.json and .info.json dot file: .
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found file called '.' in path test-9/.
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found non .auth.json and .info.json dot file: .
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found file called '.' in path test-9/.
 Warning: txzchk: found non-executable non-directory file test-9/prog.c with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file extra2 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found incorrect top level directory in filename extra2
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found empty Makefile
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found incorrect top level directory in filename extra2
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found empty Makefile
 Warning: txzchk: found non-executable non-directory file Makefile with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found incorrect top level directory in filename Makefile
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found a total of 2 files with the name . in the same directory
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/. (basename .) not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/prog (basename prog) not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/prog.orig (basename prog.orig) not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/prog.orig.c (basename prog.orig.c) not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/README.md (basename README.md) not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/GNUmakefile (basename GNUmakefile) not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/index.html (basename index.html) not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: no Makefile found
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: not all files in correct directory
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found a total of 2 invalidly named dot files
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found 38 feathers stuck in the tarball
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found incorrect top level directory in filename Makefile
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found a total of 2 files with the name . in the same directory
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/. (basename .) not allowed
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/prog (basename prog) not allowed
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/prog.orig (basename prog.orig) not allowed
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/prog.orig.c (basename prog.orig.c) not allowed
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/README.md (basename README.md) not allowed
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/GNUmakefile (basename GNUmakefile) not allowed
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: filename test-9/index.html (basename index.html) not allowed
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: no Makefile found
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: not all files in correct directory
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found a total of 2 invalidly named dot files
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543212.txt: found 38 feathers stuck in the tarball

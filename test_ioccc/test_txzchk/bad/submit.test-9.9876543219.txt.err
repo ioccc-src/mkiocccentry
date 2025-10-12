@@ -1,8 +1,8 @@
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: found empty .info.json file
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: found empty .info.json file
 Warning: txzchk: found non-executable non-directory file test-9/.info.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: found empty remarks.md
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: found empty remarks.md
 Warning: txzchk: found non-executable non-directory file test-9/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: found empty .auth.json file
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: found empty .auth.json file
 Warning: txzchk: found non-executable non-directory file test-9/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-9/inventory.html with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-9/index.html with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
@@ -32,22 +32,22 @@ Warning: txzchk: found non-executable non-directory file test-9/README6.md with 
 Warning: txzchk: found non-executable non-directory file test-9/README5.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-9/README4.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-9/README3.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: too many files: 32 > 31
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: too many files: 32 > 31
 Warning: txzchk: found non-executable non-directory file test-9/README2.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: too many files: 33 > 31
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: too many files: 33 > 31
 Warning: txzchk: found non-executable non-directory file test-9/README1.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: too many files: 34 > 31
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: too many files: 34 > 31
 Warning: txzchk: found non-executable non-directory file test-9/README.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: too many files: 35 > 31
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: too many files: 35 > 31
 Warning: txzchk: found non-executable non-directory file test-9/prog with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: too many files: 36 > 31
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: too many files: 36 > 31
 Warning: txzchk: found non-executable non-directory file test-9/prog.c with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: found a non-directory non-regular non-hard-linked item: srw-r--r--  0 501    20          4 Feb  6 02:28 test-9/extra2
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: found a non-directory non-regular non-hard-linked item: srw-r--r--  0 501    20          4 Feb  6 02:28 test-9/extra2
 Warning: txzchk: found non-executable non-directory file test-9/extra2 with wrong permissions: srw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: too many files: 37 > 31
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: too many files: 37 > 31
 Warning: txzchk: found non-executable non-directory file test-9/Makefile with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: filename test-9/prog (basename prog) not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: filename test-9/README.md (basename README.md) not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: filename test-9/GNUmakefile (basename GNUmakefile) not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: filename test-9/index.html (basename index.html) not allowed
-Warning: txzchk: ./test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: found 52 feathers stuck in the tarball
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: filename test-9/prog (basename prog) not allowed
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: filename test-9/README.md (basename README.md) not allowed
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: filename test-9/GNUmakefile (basename GNUmakefile) not allowed
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: filename test-9/index.html (basename index.html) not allowed
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543219.txt: found 52 feathers stuck in the tarball
