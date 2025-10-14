@@ -126,9 +126,12 @@ static const char * const usage_msg =
     "\t-l\t\tconvert to lower case (def: don't change the path case)\n"
     "\t-s\t\trequire canonicalized path components to be safe (def: don't check)\n"
     "\n"
-    "\t\t\t    safe path components match: ^[0-9A-Za-z._][0-9A-Za-z._+-]*$]\n"
+    "\t\t\t    safe path components match: ^[0-9A-Za-z._][0-9A-Za-z._+-]*$\n"
     "\n"
     "\tpath ...\tcanonicalize path args (def: read paths from stdin)\n"
+    "\n"
+    "\t\t\t    When reading paths from stdin, use one path per line.\n"
+    "\t\t\t    Empty lines and lines that begin with # (hash) are ignored.\n"
     "\n"
     "Exit codes:\n"
     "    0\tall is OK\n"
@@ -293,11 +296,35 @@ main(int argc, char *argv[])
 	     * read the stdin line
 	     */
 	    readline_ret = readline(&line, stdin);
-	    if (readline_ret > 0) {
+	    if (readline_ret >= 0) {
 		dbg(DBG_HIGH, "readline(&line, stdin) returned: %ld bytes", readline_ret);
 	    } else {
 		dbg(DBG_HIGH, "readline(&line, stdin) error, returned: %ld", readline_ret);
 		break;
+	    }
+
+	    /*
+	     * ignore empty lines and lines that begin with "#"
+	     */
+	    if (readline_ret <= 0 || line[0] == '\0') {
+		dbg(DBG_HIGH, "ignoring empty line");
+
+		/* free stdin line buffer */
+		if (line != NULL) {
+		    free(line);
+		    line = NULL;
+		}
+		continue;
+	    }
+	    if (line[0] == '#') {
+		dbg(DBG_HIGH, "ignoring line that begins with #");
+
+		/* free stdin line buffer */
+		if (line != NULL) {
+		    free(line);
+		    line = NULL;
+		}
+		continue;
 	    }
 
 	    /*
@@ -324,7 +351,7 @@ main(int argc, char *argv[])
 		cpath = NULL;
 	    }
 
-	} while (readline_ret > 0);
+	} while (readline_ret >= 0);
 
     /*
      * case: process command line args

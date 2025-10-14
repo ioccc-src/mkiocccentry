@@ -4643,7 +4643,8 @@ path_sanity_error(enum path_sanity sanity)
  *
  * returns:
  *	NULL ==> invalid path, internal error, or NULL pointer used
- *	!= NULL ==> malloced path that has been canonicalized
+ *	!= NULL ==> malloced path that has been canonicalized and
+ *		    if sanity_p != NULL then *sanity_p is set to PATH_OK
  *
  * NOTE: When NULL is return, if sanity_p is non-NULL, then *sanity_p will be set != PATH_OK.
  *
@@ -4830,32 +4831,6 @@ canon_path(char const *orig_path, size_t max_path_len, size_t max_filename_len, 
 	    }
 
 	    /*
-	     * check if path string is safe
-	     */
-	    if (safe_chk) {
-
-		/*
-		 * We will perform a test if a path string is safe
-		 *
-		 * We will set any_case as true because either any_case == true,
-		 *	in which case ANY case is OK,
-		 * or any_case == false, in which case we need to convert to lower case,
-		 * and converting to lower case means that beforehand, ANY case is OK.
-		 *
-		 * We will set slash_ok to false because this is a path component
-		 * and strtok(3) should never let "/" (slash) be present.
-		 */
-		test = safe_path_str(p, true, false);
-		if (! test) {
-
-		    /* path component is unsafe */
-		    report_canon_err(PATH_ERR_NOT_POSIX_SAFE, sanity_p, len_p, depth_p, path, array);
-		    dbg(DBG_HIGH, "%s: path component is not safe", __func__);
-		    return NULL;
-		}
-	    }
-
-	    /*
 	     * convert to lower case if not any_case
 	     */
 	    if (! any_case) {
@@ -4926,6 +4901,32 @@ canon_path(char const *orig_path, size_t max_path_len, size_t max_filename_len, 
 	    report_canon_err(PATH_ERR_NULL_COMPONENT, sanity_p, len_p, depth_p, path, array);
 	    dbg(DBG_HIGH, "%s: error #0 %s: %s", __func__, path_sanity_name(sanity), path_sanity_error(sanity));
 	    return NULL;
+	}
+
+	/*
+	 * case: test each canonical path component is safe
+	 */
+	if (safe_chk) {
+
+	    /*
+	     * We will perform a test if a path string is safe
+	     *
+	     * We will set any_case as true because either any_case == true,
+	     *	in which case ANY case is OK,
+	     * or any_case == false, in which case we need to convert to lower case,
+	     * and converting to lower case means that beforehand, ANY case is OK.
+	     *
+	     * We will set slash_ok to false because this is a path component
+	     * and strtok(3) should never let "/" (slash) be present.
+	     */
+	    test = safe_path_str(*q, true, false);
+	    if (! test) {
+
+		/* path component is unsafe */
+		report_canon_err(PATH_ERR_NOT_POSIX_SAFE, sanity_p, len_p, depth_p, path, array);
+		dbg(DBG_HIGH, "%s: path component is not safe: %s", __func__, *q);
+		return NULL;
+	    }
 	}
 
 	/* sum component length */

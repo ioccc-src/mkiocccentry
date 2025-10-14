@@ -149,7 +149,7 @@
 /*
  * official cpath version
  */
-#define CPATH_VERSION "1.0.1 2025-10-01" /* format: major.minor YYYY-MM-DD */
+#define CPATH_VERSION "1.0.2 2025-10-12" /* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .entry.json files.
