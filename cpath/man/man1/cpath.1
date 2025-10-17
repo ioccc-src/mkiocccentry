@@ -1,0 +1,669 @@
+.\" section 1 man page for cpath
+.\"
+.\" "Not all those who wander are lost."
+.\"
+.\"      -- J.R.R. Tolkien
+.\"
+.\" Copyright (c) 1991-2025 by Landon Curt Noll.  All Rights Reserved.
+.\"
+.\" Permission to use, copy, modify, and distribute this software and
+.\" its documentation for any purpose and without fee is hereby granted,
+.\" provided that the above copyright, this permission notice and text
+.\" this comment, and the disclaimer below appear in all of the following:
+.\"
+.\"       supporting documentation
+.\"       source copies
+.\"       source works derived from this source
+.\"       binaries derived from this source or from derived source
+.\"
+.\" THE AUTHORS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+.\" ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+.\" AUTHORS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
+.\" DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+.\" CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.\" This code was developed between 1991-2025 by Landon Curt Noll:
+.\"
+.\"	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) ^oo^
+.\"
+.\" "Share and Enjoy!"
+.\"
+.TH cpath 1 "14 October 2025" "cpath" "canonicalize paths"
+.SH NAME
+.B cpath
+\- canonicalize paths
+.SH SYNOPSIS
+.B cpath
+.RB [\| \-h \|]
+.RB [\| \-v
+.IR level \|]
+.RB [\| \-q \|]
+.RB [\| \-V \|]
+.RB [\| \-m
+.IR max_path \|]
+.RB [\| \-M
+.IR max_file \|]
+.RB [\| \-d
+.IR max_depth \|]
+.RB [\| \-D \|]
+.RB [\| \-r \|]
+.RB [\| \-l \|]
+.RB [\| \-s \|]
+.RB [\| \-S
+.IR regex \|]
+.I [path...]
+.SH DESCRIPTION
+.B cpath
+canonicalizes path strings.
+.PP
+If one of more
+.I path
+args are given, then the canonicalized path of each is printed,
+one per line, on standard output (stdout).
+.PP
+If no args are given, paths to be canonicalized are read from standard input,
+one path per line are read.
+Empty lines, and lines that begin with the
+.B #
+character are ignored.
+.PP
+The
+.I path
+does not have to exist.
+The local local filesystem is not checked by the
+.BR cpath (1)
+command.
+Symbolic links are not considered.
+.PP
+To check the filesystem, after using
+.BR cpath (1)
+canonicalize a path string,
+use the
+.BR realpath (1)
+to check the filesystem.
+.PP
+.SH OPTIONS
+.TP
+.B \-h
+Show help and exit.
+.TP
+.BI \-v\  level
+Set verbosity level to
+.IR level
+(def: 0).
+.TP
+.B \-V
+Print version strings and exit.
+.TP
+.BI \-m\  max_path
+Set the maximum canonicalized path length to
+.BR max_path .
+.PP
+.RS
+The length of the path is expressed in bytes, with a value of
+.R 0
+being interpreted as no path length limit.
+.PP
+By default, there is no path length limit.
+.RE
+.TP
+.BI \-M\  max_file
+Set the maximum length of any canonicalized path component to
+.BR max_file .
+.sp
+A path components are separated by
+.B /
+(slashes).
+For example, the path:
+.sp
+.RS
+.RS
+.ft B
+dir/subdir/file
+.ft R
+.RE
+.sp
+consists of these 3 path components:
+.sp
+.RS
+.ft B
+dir
+.br
+subdir
+.br
+file
+.ft R
+.RE
+.RE
+.PP
+.RS
+The length of a path component is expressed in bytes, with a value of
+.R 0
+being interpreted as no path component limit.
+.PP
+By default, there is no path component length limit.
+.RE
+.TP
+.BI \-d\  max_depth
+Set the maximum canonicalized path tree depth to
+.BR max_depth .
+.PP
+.RS
+The tree depth of a canonicalized path is the number of path directory levels.
+.PP
+These canonicalized paths have a path tree depth of 0:
+.sp
+.RS
+.ft B
+/
+.br
+\&.
+.ft R
+.RE
+.PP
+These canonicalized paths have a path tree depth of 1:
+.sp
+.RS
+.ft B
+/foo
+.br
+\&./curds
+.ft R
+.RE
+.PP
+These canonicalized paths have a path tree depth of 2:
+.sp
+.RS
+.ft B
+/foo/bar
+.br
+\&./curds/and
+.ft R
+.RE
+.PP
+These canonicalized paths have a path tree depth of 3:
+.sp
+.RS
+.ft B
+/foo/bar.baz
+.br
+\&./curds/and/whey
+.ft R
+.RE
+.PP
+A
+.B max_depth
+of
+.B 0
+indicates there is no path tree depth limit.
+.PP
+By default, there is no path tree depth limit.
+.RE
+.PP
+.BR NOTE :
+The
+.BI \-m\  max_path,
+.BI \-M\  max_file,
+and
+.BI \-d\  max_depth
+limits apply to the path after canonicalization.
+.TP
+.B \-D
+Generate an error when
+.B ..
+(dot-dot)
+moves above the beginning of the path.
+.sp
+By default, when
+.B ..
+(dot-dot)
+moves before beginning of absolute path,
+.B ..
+(dot-dot)
+path components are ignored.
+This is because the
+.B /..
+(slash dot-dot)
+at the root of the file tree is linked to
+.B /
+(slash) retained.
+.sp
+.sp
+By default, when
+.B ..
+(dot-dot)
+moves before beginning of a relative path, the
+.B ..
+(dot-dot)
+path components are retailed.
+.TP
+.B \-r
+Require the path to be relative so that
+absolute paths (path that begin with the
+.B /
+character) are flagged as as error.
+By default, both absolute and relative paths are allowed.
+.TP
+.B \-l
+Convert the canonicalized path to use lower case letters.
+By default, the case of the path is not modified.
+.TP
+.B \-s
+Require all canonicalized path components to be safe.
+.sp
+A safe path component is one that matches a given regular expression.
+See
+.BI \-S\  regex
+below for details on the safe path component regular expression.
+.TP
+.BI \-S\  regex
+Change the safe path regular expression to the extended regular expression
+.IR regex .
+.sp
+By default, the safe path regular expression is:
+.sp
+.RS
+.RS
+.nf
+^[0-9A-Za-z._][0-9A-Za-z._+-]*$
+.fi
+.RE
+.RE
+.sp
+Use of
+.BI \-S\  regex
+implies
+.BR \-s .
+.PP
+.SH CANONICALIZATION
+.PP
+The word canonicalization may be defined as conforming to a general rule or acceptable procedure,
+or reduced to the canonical form.
+.PP
+The canonicalization process involves several stages.
+.PP
+.B Stage
+.BR 0 :
+Remove extraneous trailing
+.BR /
+(slash) characters by removing the trailing slashes.
+.PP
+.RS
+For example, these paths:
+.sp
+.RS
+.ft B
+foo/
+.br
+bar//
+.br
+///
+.br
+/
+.ft R
+.RE
+.sp
+are canonicalized as:
+.sp
+.RS
+.ft B
+foo
+.br
+bar
+.br
+/
+.br
+/
+.ft R
+.RE
+.RE
+.PP
+.B Stage
+.BR 1 :
+Replace multiple consecutive
+.BR / s
+with a single
+.B /
+character.
+.PP
+.RS
+For example, these paths:
+.sp
+.RS
+.ft B
+/var//tmp///test
+.br
+a/b//c///d
+.ft R
+.RE
+.sp
+are canonicalized as:
+.sp
+.RS
+.ft B
+/var/tmp/test
+.br
+a/b/c/d
+.ft R
+.RE
+.RE
+.PP
+.B Stage
+.BR 2 :
+Remove extraneous
+.B ./
+(dot-slash)
+path components.
+.PP
+.RS
+For example, these paths:
+.sp
+.RS
+.ft B
+\&./bar
+.br
+\&./
+.br
+whey/.
+.br
+\&./a/./b/././c/.
+.ft R
+.RE
+.sp
+are canonicalized as:
+.sp
+.RS
+.ft B
+bar
+.br
+\&.
+.br
+whey
+.br
+a/b/c
+.ft R
+.RE
+.RE
+.PP
+.B Stage
+.BR 3 :
+Process
+.B ..
+(dot-dot)
+path components.
+.RS
+.sp
+Normally the presence of a
+.B ..
+(dot-dot)
+path component will cause both the
+.B ..
+(dot-dot)
+path component and the previous path component to be removed from the canonicalized path.
+.PP
+For example, these paths:
+.sp
+.RS
+.ft B
+/usr/lib/../bin/make
+.br
+a/b/c/../../d/e/..
+.ft R
+.RE
+.sp
+are canonicalized as:
+.sp
+.RS
+.ft B
+/usr/bin/make
+.br
+a/d
+.ft R
+.RE
+.sp
+The exception happens when a
+.B ..
+(dot-dot)
+path component moves above the beginning of the path.
+For example:
+.sp
+.RS
+.ft B
+/..
+.br
+\&./../whey
+.br
+a/b/../../../c
+.ft R
+.RE
+.sp
+By default, when
+.B ..
+(dot-dot)
+moves before beginning of absolute path
+(i.e., a path that starts with
+.B /
+(slash)
+character),
+.B ..
+(dot-dot)
+path components are ignored and not included in the canonicalized path.
+This is because the
+.B /..
+(slash dot-dot)
+at the root of the file tree is linked to
+.B /
+(slash) retained.
+.sp
+By default, when
+(dot-dot)
+moves before beginning of relative path,
+(i.e., a path that does not start with a
+.B /
+(slash)
+character),
+such
+.B ..
+(dot-dot) path components are retailed in the canonicalized path.
+.sp
+Optionally, moving above the beginning of the path can be set to generate an error,
+.RE
+.PP
+.BR NOTE :
+At the end of this stage, the path may be said to be canonicalized.
+.PP
+.B Stage
+.BR 4 :
+Test for optional path restrictions and optional path conversions.
+.PP
+.RS
+A canonicalized path may optionally be tested for further restrictions such
+as maximum byte length of a canonicalized path,
+maximum byte length of any canonicalized path component,
+and maximum canonicalized path tree depth.
+.PP
+The path components of the canonicalized path
+may be optionally checked if they match safely regular expression.
+.sp
+When safe canonicalized components checking is enabled,
+the default safe path regular expression is:
+.sp
+.RS
+.nf
+^[0-9A-Za-z._][0-9A-Za-z._+-]*$
+.fi
+.RE
+.PP
+Finally, the UPPER CASE letters in the canonicalized path
+may be converted into lower case letters (see the notes under
+.B \-l
+above).
+.RE
+.PP
+.SH EXIT STATUS
+.TP
+0
+all is OK
+.TQ
+1
+.B \-r
+was used and the canonicalized path is absolute (starts with the
+.B /
+character).
+.TQ
+2
+.B \-h
+or
+.B \-V
+used and help string or version strings printed.
+.TQ
+3
+command line error
+.TQ
+4
+The canonicalized path exceeds the
+.BI \-m\  max_path
+limit.
+.TQ
+5
+The length of a canonicalized path component exceeds the
+.BI \-M\  max_file
+limit.
+.TQ
+6
+The depth of the canonicalized path exceeds the
+.BI \-d\  max_depth
+limit.
+.TQ
+7
+.B \-s
+was used and canonicalized path is not safe.
+That is, a path component does not match the regular expression:
+.RS
+.RS
+.nf
+^[0-9A-Za-z._][0-9A-Za-z._+-]*$
+.fi
+.RE
+.RE
+.TQ
+8
+The canonicalized path has
+.B ..
+path component(s) such as the path attempt to go beyond the top level directory.
+.TQ
+9
+The path is an empty string.
+.TQ
+>=10
+internal error
+.SH EXAMPLES
+.PP
+To canonicalize a single path:
+.sp
+.RS
+.ft B
+cpath ./a/path
+.ft R
+.RE
+.sp
+The above command prints the path:
+.sp
+.RS
+.ft B
+a/path
+.ft R
+.RE
+.PP
+.sp
+To canonicalize multiple paths on the command line:
+.sp
+.RS
+.ft B
+cpath /var/tmp/../spool/mail curds ./whey/
+.ft R
+.RE
+.sp
+The above command prints the paths:
+.sp
+.RS
+.ft B
+/var/spool/mail
+.br
+curds
+.br
+whey
+.ft R
+.RE
+.PP
+.sp
+If the file,
+.B paths
+contains the following lines:
+.sp
+.RS
+.ft B
+#
+.br
+# comment lines are ignored as well as empty lines
+.br
+# Use one path per line
+.sp
+\&./a/./b/././c/.
+.br
+/usr/lib/../bin/make
+.br
+a/b/c/../../d/e/..
+.ft R
+.RE
+.sp
+The command:
+.sp
+.RS
+.ft B
+cpath < paths
+.ft R
+.RE
+.sp
+will print:
+.sp
+.RS
+.ft B
+a/b/c
+.br
+/usr/bin/make
+.br
+a/d
+.ft R
+.RE
+.SH BUGS
+Possibly.
+.sp
+If you have a bug fix in the form of a pull request to the cpath GitHub repo at:
+.sp
+.RS
+.ft B
+https://github.com/lcn2/cpath/pulls
+.ft R
+.RE
+.SH HISTORY
+The cpath facility was first written by Landon Curt Noll sometime in 1991.
+.SH SEE ALSO
+.PP
+.BR canon_path (3),
+.BR path_sanity_error (3),
+.BR path_sanity_name (3),
+.BR realpath (1),
+.BR realpath (3),
+.BR re_format (7),
+.BR safe_path_str (3),
+.BR safe_str (3)
+.PP
+See also the cpath GitHub repo at:
+.sp
+.RS
+.ft B
+https://github.com/lcn2/cpath
+.ft R
+.RE

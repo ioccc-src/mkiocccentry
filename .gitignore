@@ -4,8 +4,6 @@
 *.[ao]
 /bug-report*.txt
 *build.log*
-cpath
-cpath-*.tmp
 /chkentry
 /chkentry-*.tmp
 /chksubmit
@@ -20,6 +18,10 @@ cpath-*.tmp
 dbg_test.out
 .DS_Store
 *.dSYM/
+/cpath.clone/
+/cpath/cpath
+/cpath/cpath-*.tmp
+/cpath/.github
 /dyn_array.clone/
 /dyn_array/dyn_array-*.tmp
 /dyn_array/dyn_test

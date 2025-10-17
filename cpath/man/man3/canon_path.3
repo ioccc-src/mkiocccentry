@@ -1,0 +1,1046 @@
+.\" section 3 man page for canon_path
+.\"
+.\" "Not all those who wander are lost."
+.\"
+.\"      -- J.R.R. Tolkien
+.\"
+.\" Copyright (c) 1991-2025 by Landon Curt Noll.  All Rights Reserved.
+.\"
+.\" Permission to use, copy, modify, and distribute this software and
+.\" its documentation for any purpose and without fee is hereby granted,
+.\" provided that the above copyright, this permission notice and text
+.\" this comment, and the disclaimer below appear in all of the following:
+.\"
+.\"       supporting documentation
+.\"       source copies
+.\"       source works derived from this source
+.\"       binaries derived from this source or from derived source
+.\"
+.\" THE AUTHORS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+.\" ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+.\" AUTHORS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
+.\" DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+.\" ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+.\" CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+.\"
+.\" This code was developed between 1991-2025 by Landon Curt Noll:
+.\"
+.\"     chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) ^oo^
+.\"
+.\" "Share and Enjoy!"
+.\"
+.TH canon_path 3 "14 October 2025" "canon_path"
+.SH NAME
+.BR canon_path() \|,
+.BR path_sanity_error() \|,
+.BR path_sanity_name() \|,
+.BR safe_path_str() \|,
+.BR safe_str()
+\- canonicalize a path
+.SH SYNOPSIS
+\fB#include <cpath.h>\fP
+.sp
+\fB#define CPATH_VERSION "..."                      /* format: major.minor YYYY-MM-DD */\fP
+.sp
+\fBextern const char *const cpath_version;          /* library version format: major.minor YYYY-MM-DD */\fP
+.sp
+\fBchar *\fP
+.br
+\fBcanon_path(char const *orig_path,\fP
+.br
+\fB           size_t max_path_len, size_t max_filename_len,\fP
+.br
+\fB           int32_t max_depth, enum path_sanity *sanity_p, size_t *len_p, int32_t *depth_p,\fP
+.br
+\fB           bool rel_only, bool lower_case, bool safe_chk, bool dotdot_err,\fP
+.br
+\fB           const regex_t *restrict preg);\fP
+.sp
+\fBchar const *\fP
+.br
+\fBpath_sanity_error(enum path_sanity sanity);\fP
+.sp
+\fBchar const *\fP
+.br
+\fBpath_sanity_name(enum path_sanity sanity);\fP
+.sp
+\fBbool\fP
+.br
+\fBsafe_path_str(char const *str, bool any_case, bool slash_ok);\fP
+.sp
+\fBbool\fP
+.br
+\fBsafe_str(char const *str, bool any_case, bool slash_ok);\fP
+.SH DESCRIPTION
+The
+.BR canon_path ()
+function converts the
+.B orig_path
+and returns a canonicalized path as a malloced string.
+.PP
+If
+.B max_path_len
+is > 0, then
+the length in bytes of the canonicalized path must not exceed the
+.B max_path_len
+value.
+When
+.B max_path_len
+is
+.BR 0 ,
+then the canonicalized path length is unlimited.
+.PP
+If
+.B max_filename_len
+is > 0, then
+each canonicalized path component in bytes must not exceed the
+.B max_filename_len
+value.
+When
+.B max_filename_len
+is
+.BR 0 ,
+then the canonicalized path component length is unlimited.
+.PP
+A path components are separated by
+.B /
+(slashes).
+For example, the path:
+.sp
+.RS
+.ft B
+dir/subdir/file
+.ft R
+.RE
+.sp
+consists of these 3 path components:
+.sp
+.RS
+.ft B
+dir
+.br
+subdir
+.br
+file
+.ft R
+.RE
+.PP
+If
+.B max_depth
+is > 0, then
+the canonicalized path depth must not exceed the
+.B max_depth
+value.
+When
+.B max_depth
+is
+.BR 0 ,
+then the canonicalized path depth is unlimited.
+.PP
+The tree depth of a canonicalized path is the number of path directory levels.
+.PP
+These canonicalized paths have a path tree depth of 0:
+.sp
+.RS
+.ft B
+/
+.br
+\&.
+.ft R
+.RE
+.PP
+These canonicalized paths have a path tree depth of 1:
+.sp
+.RS
+.ft B
+/foo
+.br
+\&./curds
+.ft R
+.RE
+.PP
+These canonicalized paths have a path tree depth of 2:
+.sp
+.RS
+.ft B
+/foo/bar
+.br
+\&./curds/and
+.ft R
+.RE
+.PP
+These canonicalized paths have a path tree depth of 3:
+.sp
+.RS
+.ft B
+/foo/bar.baz
+.br
+\&./curds/and/whey
+.ft R
+.RE
+.PP
+If
+.B sanity_p
+is
+.BR non-NULL ,
+then
+.B *sanity_p
+will set to the
+.B "enum path_sanity"
+value according to the success or failure of the
+.BR canon_path ()
+function.
+.sp
+If
+.BR canon_path ()
+fails, it will a return a
+.B NULL
+value, then of
+.B sanity_p
+is
+.BR non-NULL ,
+then
+.B *sanity_p
+will be set to one of the following
+.B "enum path_sanity"
+values:
+.sp
+.RS
+.B PATH_ERR_PATH_IS_NULL
+- path string is
+.B NULL
+.br
+.B PATH_ERR_PATH_EMPTY
+- path string is 0 length (empty)
+.br
+.B PATH_ERR_PATH_TOO_LONG
+- canonicalized path is too long
+.br
+.B PATH_ERR_NOT_RELATIVE
+- canonicalized path starts with
+.B /
+(slash) and rel_only is
+.B true
+.br
+.B PATH_ERR_NAME_TOO_LONG
+- a canonicalized path component is too long
+.br
+.B PATH_ERR_PATH_TOO_DEEP
+- canonicalized path depth is too deep
+.br
+.B PATH_ERR_NOT_SAFE
+- a canonicalized path component does not match the safety regex
+.br
+.B PATH_ERR_DOTDOT_OVER_TOPDIR
+- '..' (dot-dot) path component moved above topdir
+.br
+.B PATH_ERR_MALLOC
+- malloc related failure during path processing (internal error)
+.br
+.B PATH_ERR_NULL_COMPONENT
+- component on path stack is NULL (internal error)
+.br
+.B PATH_ERR_WRONG_LEN
+- constructed canonical path has the wrong length (internal error)
+.RE
+.sp
+If
+.BR canon_path ()
+is successful and returns a
+.B non-NULL
+value, then of
+.B sanity_p
+is
+.BR non-NULL ,
+then
+.B *sanity_p
+will be set to:
+.RS
+.PP
+.sp
+.B PATH_OK
+- path successfully canonicalized and no limit errors were detected
+.RE
+.PP
+If
+.B len_p
+is
+.BR non-NULL ,
+then
+.B *len_p
+will be set to the length of the canonicalized path in bytes.
+.PP
+If
+.B depth_p
+is
+.BR non-NULL ,
+then
+.B *depth_p
+will be set to depth of the canonicalized path.
+A depth of
+.B 0
+indicates that the canonicalized path is just the top level directory.
+A depth of
+.B 1
+indicates that the canonicalized path is directly under the top level directory.
+A depth of
+.B 2
+indicates that the canonicalized path is an sub-directory directly under the top level directory.
+Etc.
+.PP
+If
+.B rel_only
+is
+.B true
+then
+.B orig_path
+must be a relative path and may not start with a
+.B /
+(slash) character, otherwise if
+.B false
+then the
+.B orig_path
+may be either an absolute path or a relative path and may start with any character.
+.PP
+If
+.B lower_case
+is
+.B true
+then all UPPER CASE letters will be converted into lower case letters during the canonicalization process, otherwise if
+.B false
+then no case conversion is performed.
+Converting to lower case may be
+useful with considering paths for filesystems that are case insensitive.
+.PP
+If
+.B safe_chk
+is
+.B true
+then each path component is checked for safety by matching an extended regular expression.
+.PP
+When
+.B preg
+is
+.BR NULL ,
+a default safety extended regular expression is used:
+.sp
+.RS
+.nf
+^[0-9A-Za-z._][0-9A-Za-z._+-]*$
+.fi
+.RE
+.sp
+To use a non-default safety extended regular expression, use the
+.BR regcomp (3)
+function.
+If
+.BR regcomp (3)
+returns 0, then give address of the
+.B regex_t
+to
+.BR canon_path (3)
+as
+.BR preg .
+.sp
+.BR IMPORTANT :
+We recommend that extended regular expression begin wit a
+.B ^
+character and end with a
+.B $
+character.
+This will force the extended regular expression to match the entire canonicalized path component.
+.sp
+.BR NOTE :
+The term
+.B safe
+is used in what may be used in an application that performs file name pattern matching is as that used by a shell.
+There is nothing inherently dangerous about a path, per se, especially when the application is the canonicalized path
+to most functions, such as
+.BR fopen (3).
+Nevertheless, an application may wish to restrict the length, depth, and character set used in paths.
+See the
+.BR Stage 4
+in the
+.B CANONICALIZATION
+section below for further details.
+.sp
+See the
+.B EXAMPLE
+section for further details.
+.PP
+The
+.BR path_sanity_error ()
+function returns a static string describing a
+.BR canon_path (3)
+error by giving it a
+.B "enum path_sanity"
+value.
+The
+.B "enum path_sanity"
+value may be set by calling
+.BR canon_path (3)
+with non-NULL sanity_p address.
+See the
+.B EXAMPLE
+section for further details.
+.PP
+The
+.BR path_sanity_name ()
+function returns a static string that matches the
+.B "enum path_sanity"
+error.
+The
+.B "enum path_sanity"
+value may be set by calling
+.BR canon_path (3)
+with non-NULL sanity_p address.
+See the
+.B EXAMPLE
+section for further details.
+.PP
+The
+.BR safe_path_str ()
+function tests if
+.B str
+is a safe path string.
+.PP
+For the
+.BR safe_path_str ()
+function: if
+.B any_case
+is
+.B true
+and
+.B slash_ok
+is
+.B true
+then
+.B str
+match the regular expression:
+.sp
+.RS
+.nf
+^[/0-9A-Za-z._][/0-9A-Za-z._+-]*$
+.fi
+.RE
+.PP
+For the
+.BR safe_path_str ()
+function: if
+.B any_case
+is
+.B true
+and
+.B slash_ok
+is
+.B false
+then
+.B str
+match the regular expression:
+.sp
+.RS
+.nf
+^[0-9A-Za-z._][0-9A-Za-z._+-]*$
+.fi
+.RE
+.PP
+For the
+.BR safe_path_str ()
+function: if
+.B any_case
+is
+.B false
+and
+.B slash_ok
+is
+.B true
+then
+.B str
+match the regular expression:
+.sp
+.RS
+.nf
+^[/0-9a-z._][/0-9a-z._+-]*$
+.fi
+.RE
+.PP
+For the
+.BR safe_path_str ()
+function: if
+.B any_case
+is
+.B false
+and
+.B slash_ok
+is
+.B false
+then
+.B str
+match the regular expression:
+.sp
+.RS
+.nf
+^[0-9a-z._][0-9a-z._+-]*$
+.fi
+.RE
+.PP
+The
+.BR safe_str ()
+function is similar to the
+.BR safe_path_str ()
+except that the regular expression of the first character is not different.
+In particular, the
+.BR safe_path_str ()
+function uses the
+.BR safe_str ()
+function to process characters beyond the first character.
+.PP
+For the
+.BR safe_str ()
+function: if
+.B any_case
+is
+.B true
+and
+.B slash_ok
+is
+.B true
+then
+.B str
+match the regular expression:
+.sp
+.RS
+.nf
+^[/0-9A-Za-z._+-]*$
+.fi
+.RE
+.PP
+For the
+.BR safe_str ()
+function: if
+.B any_case
+is
+.B true
+and
+.B slash_ok
+is
+.B false
+then
+.B str
+match the regular expression:
+.sp
+.RS
+.nf
+^[0-9A-Za-z._+-]*$
+.fi
+.RE
+.PP
+For the
+.BR safe_str ()
+function: if
+.B any_case
+is
+.B false
+and
+.B slash_ok
+is
+.B true
+then
+.B str
+match the regular expression:
+.sp
+.RS
+.nf
+^[/0-9a-z._+-]*$
+.fi
+.RE
+.PP
+For the
+.BR safe_str ()
+function: if
+.B any_case
+is
+.B false
+and
+.B slash_ok
+is
+.B false
+then
+.B str
+match the regular expression:
+.sp
+.RS
+.nf
+^[0-9a-z._+-]*$
+.fi
+.RE
+.SH RETURN VALUE
+The
+.BR canon_path ()
+function returns a pointer to the malloced canonicalized path, or
+.B NULL
+if there was an error.
+.PP
+Because the
+.B non-NULL
+return of
+.BR canon_path ()
+is a malloced string, the caller must free that string via the
+.BR free (3)
+when the canonicalized path is no longer needed.
+.PP
+The function
+.BR path_sanity_error ()
+returns a static string describing the
+.B "enum path_sanity"
+value.
+.PP
+The function
+.BR path_sanity_name ()
+returns a static string that matches the
+.B "enum path_sanity"
+name.
+.PP
+The
+.BR safe_path_str ()
+function and the
+.BR path_str ()
+function return
+.B true
+if
+.B str
+matches the regular expression according to the
+.B any_case
+and
+.B slash_ok
+boolean values, otherwise these
+functions will return
+.BR false .
+.PP
+.SH CANONICALIZATION
+.PP
+The word canonicalization may be defined as conforming to a general rule or acceptable procedure,
+or reduced to the canonical form.
+.PP
+The canonicalization process involves several stages.
+.PP
+.B Stage
+.BR 0 :
+Remove extraneous trailing
+.BR /
+(slash) characters by removing the trailing slashes.
+.PP
+.RS
+For example, these paths:
+.sp
+.RS
+.ft B
+foo/
+.br
+bar//
+.br
+///
+.br
+/
+.ft R
+.RE
+.sp
+are canonicalized as:
+.sp
+.RS
+.ft B
+foo
+.br
+bar
+.br
+/
+.br
+/
+.ft R
+.RE
+.RE
+.PP
+.B Stage
+.BR 1 :
+Replace multiple consecutive
+.BR / s
+with a single
+.B /
+character.
+.PP
+.RS
+For example, these paths:
+.sp
+.RS
+.ft B
+/var//tmp///test
+.br
+a/b//c///d
+.ft R
+.RE
+.sp
+are canonicalized as:
+.sp
+.RS
+.ft B
+/var/tmp/test
+.br
+a/b/c/d
+.ft R
+.RE
+.RE
+.PP
+.B Stage
+.BR 2 :
+Remove extraneous
+.B ./
+(dot-slash)
+path components.
+.PP
+.RS
+For example, these paths:
+.sp
+.RS
+.ft B
+\&./bar
+.br
+\&./
+.br
+whey/.
+.br
+\&./a/./b/././c/.
+.ft R
+.RE
+.sp
+are canonicalized as:
+.sp
+.RS
+.ft B
+bar
+.br
+\&.
+.br
+whey
+.br
+a/b/c
+.ft R
+.RE
+.RE
+.PP
+.B Stage
+.BR 3 :
+Process
+.B ..
+(dot-dot)
+path components.
+.RS
+.sp
+Normally the presence of a
+.B ..
+(dot-dot)
+path component will cause both the
+.B ..
+(dot-dot)
+path component and the previous path component to be removed from the canonicalized path.
+.PP
+For example, these paths:
+.sp
+.RS
+.ft B
+/usr/lib/../bin/make
+.br
+a/b/c/../../d/e/..
+.ft R
+.RE
+.sp
+are canonicalized as:
+.sp
+.RS
+.ft B
+/usr/bin/make
+.br
+a/d
+.ft R
+.RE
+.sp
+The exception happens when a
+.B ..
+(dot-dot)
+path component moves above the beginning of the path.
+For example:
+.sp
+.RS
+.ft B
+/..
+.br
+\&./../whey
+.br
+a/b/../../../c
+.ft R
+.RE
+.sp
+By default, when
+.B ..
+(dot-dot)
+moves before beginning of absolute path
+(i.e., a path that starts with
+.B /
+(slash)
+character),
+.B ..
+(dot-dot)
+path components are ignored and not included in the canonicalized path.
+This is because the
+.B /..
+(slash dot-dot)
+at the root of the file tree is linked to
+.B /
+(slash) retained.
+.sp
+By default, when
+(dot-dot)
+moves before beginning of relative path,
+(i.e., a path that does not start with a
+.B /
+(slash)
+character),
+such
+.B ..
+(dot-dot) path components are retailed in the canonicalized path.
+.sp
+Optionally, moving above the beginning of the path can be set to generate an error,
+.RE
+.PP
+.BR NOTE :
+At the end of this stage, the path may be said to be canonicalized.
+.PP
+.B Stage
+.BR 4 :
+Test for optional path restrictions and optional path conversions.
+.PP
+.RS
+A canonicalized path may optionally be tested for further restrictions such
+as maximum byte length of a canonicalized path,
+maximum byte length of any canonicalized path component,
+and maximum canonicalized path tree depth.
+.PP
+The path components of the canonicalized path
+may be optionally checked if they match safely regular expression.
+.sp
+When safe canonicalized components checking is enabled,
+the default safe path regular expression is:
+.sp
+.RS
+.nf
+^[0-9A-Za-z._][0-9A-Za-z._+-]*$
+.fi
+.RE
+.PP
+Finally, the UPPER CASE letters in the canonicalized path
+may be converted into lower case letters (see the notes under
+.B \-l
+above).
+.RE
+.PP
+.SH EXAMPLE
+After installing:
+.RS
+.sp
+- dbg repo from
+.BR https://github.com/lcn2/dbg
+.br
+- dyn_array repo from
+.BR https://github.com/lcn2/dyn_array
+.br
+- pr repo from
+.BR https://github.com/lcn2/pr
+.br
+- and this cpath repo from
+.BR https://github.com/lcn2/cpath
+.RE
+.sp
+Compile C code such as
+.B foo.c
+using:
+.sp
+.RS
+.ft B
+.nf
+cc foo.c -ldbg -ldyn_array -lpr -lcpath -o foo
+.fi
+.ft R
+.RE
+.sp
+Consider the following C code framework:
+.sp
+.RS
+.ft B
+.nf
+#include <cpath.h>
+
+char *path;                                 /* path to canonicalize */
+char *cpath;                                /* canonicalized path or NULL */
+enum path_sanity sanity = PATH_ERR_UNSET;   /* canon_path() path error code, or PATH_OK */
+
+/* ... */
+
+/*
+ * set path to be a pointer to some path string
+ *
+ * In this example we hard code a path.
+ */
+path = "./some/./dot-dot-will-delete-me/../path/.";
+
+/*
+ * canonicalize path without an limits, checks, no case conversion
+ */
+cpath = canon_path(path, 0, 0, 0, &sanity, NULL, NULL, false, false, false, false, NULL);
+if (cpath == NULL) {
+
+    /* write canonization error to stderr and exit(10) */
+    err(10, __func__, "failed to canonicalize path: %s error: %s (%s)",
+		      path, path_sanity_name(sanity), path_sanity_error(sanity));
+    not_reached();
+
+} else {
+
+    /* report on canonicalized path to stdout using the libpr print(3) function */
+    print("path: %s is canonicalized into: %s\\n", path, cpath);
+
+    /* free malloced canonicalized path storage */
+    free(cpath);
+    cpath = NULL;
+}
+
+/* ... */
+
+char *path2;                                /* another path to canonicalize */
+char *cpath2;                               /* canonicalized path2 or NULL */
+enum path_sanity sanity2 = PATH_ERR_UNSET;  /* canon_path() path2 error code, or PATH_OK */
+size_t max_path_len = 32;                   /* maximum canonicalized path2 length */
+size_t max_filename_len = 14;               /* maximum canonicalized path2 component length */
+int32_t max_depth = 5;                      /* maximum canonicalized path2 depth */
+size_t len2;                                /* length of canonicalized path2 */
+size_t depth2;                              /* length of canonicalized path depth */
+
+/*
+ * set path2 to be a pointer to some path string
+ *
+ * In this example we hard code a path.
+ */
+path2 = "This/./Path/Is/A/Rather_long_name_in_the-but-dot-dot-DELETES-it/../Path";
+
+/*
+ * canonicalize path2 with size limits, relative path, lower case conversion,
+ * error if .. (dot-dot) moves above the beginning of the path,
+ * default extended regular expression path component safety check of:
+ *
+ *    ^[0-9A-Za-z._][0-9A-Za-z._+-]*$
+ */
+cpath2 = canon_path(path2, max_path_len, max_filename_len, max_depth,
+		    &sanity2, &len2, &depth2, true, true, true, true, NULL);
+if (cpath2 == NULL) {
+
+    /* write canonization error to stderr and exit(11) */
+    err(11, __func__, "failed to canonicalize path2: %s error: %s (%s)",
+		      path2, path_sanity_name(sanity2), path_sanity_error(sanity2));
+    not_reached();
+
+} else {
+
+    /* report on canonicalized path2 to stdout using the libpr print(3) function */
+    print("path2: %s is canonicalized into: %s", path2, cpath2);
+    print("canonicalized path2 length: %zu path2 depth: %d", len2, depth2);
+
+    /* free malloced canonicalized path storage */
+    free(cpath2);
+    cpath2 = NULL;
+}
+
+/* ... */
+
+char *path3;                                /* yet another path to canonicalize */
+char *cpath3;                               /* canonicalized path3 or NULL */
+enum path_sanity sanity2 = PATH_ERR_UNSET;  /* canon_path() path3 error code, or PATH_OK */
+char *regex = "^[0-9A-Za-z]+$";             /* alphanumeric only extended regular expression */
+regex_t reg;                                /* compiled extended regular expression */
+int regcomp_ret = -1;                       /* regcomp(3) return value or -1 (REG_ENOSYS) */
+
+/*
+ * set path3 to be a pointer to some path string
+ *
+ * In this example we hard code a path.
+ */
+path3 = "./a/b2////c333/Four";
+
+/*
+ * compile an extended regular expression
+ */
+regcomp_ret = regcomp(&reg, regex, REG_EXTENDED);
+if (regcomp_ret != 0)
+    char errbuf[BUFSIZ+1];  /* regerror() message buffer */
+
+    /* write regular expression compile error to stderr and exit(12) */
+    memset(errbuf, 0, sizeof(errbuf));
+    (void) regerror(regcomp_ret, &reg, errbuf, BUFSIZ);
+    err(12, __func__, "invalid regular expression: %s: error: %s", regex, errbuf);
+    not_reached();
+}
+
+/*
+ * canonicalize path3 with a non-default extended regular expression path component safety check
+ */
+cpath3 = canon_path(path3, max_path_len, max_filename_len, max_depth,
+		    &sanity3, NULL, NULL, false, false, true, false, &reg);
+regfree(&reg); /* free the regular extended regular expression storage */
+if (cpath3 == NULL) {
+
+    /* write canonization error to stderr and exit(13) */
+    err(13, __func__, "failed to canonicalize path3: %s error: %s (%s)",
+		      path3, path_sanity_name(sanity3), path_sanity_error(sanity3));
+    not_reached();
+
+} else {
+
+    /* report on canonicalized path3 to stdout using the libpr print(3) function */
+    print("path3: %s is canonicalized into: %s", path3, cpath3);
+
+    /* free malloced canonicalized path storage */
+    free(cpath3);
+}
+.fi
+.ft R
+.RE
+.SH BUGS
+Possibly.
+.sp
+If you have a bug fix in the form of a pull request to the cpath GitHub repo at:
+.sp
+.RS
+.ft B
+https://github.com/lcn2/cpath/pulls
+.ft R
+.RE
+.SH HISTORY
+The cpath facility was first written by Landon Curt Noll sometime in 1991.
+.SH SEE ALSO
+.PP
+.BR cpath (1),
+.BR dbg (3),
+.BR err (3),
+.BR print (3),
+.BR realpath (1),
+.BR realpath (3),
+.BR regcomp (3),
+.BR regerror (3),
+.BR regexec (3),
+.BR regfree (3),
+.BR re_format (7)
+.PP
+See also the cpath GitHub repo at:
+.sp
+.RS
+.ft B
+https://github.com/lcn2/cpath
+.ft R
+.RE

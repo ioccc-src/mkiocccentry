@@ -1,0 +1,14 @@
+# We sort the list below via: sort -d -u
+#
+?
+*.[ao]
+/canon_path.o
+/cpath
+/cpath.o
+/cpath-*.tmp
+.local.dir.tags
+/man/man3/path_sanity_error.3
+/man/man3/path_sanity_name.3
+/man/man3/safe_path_str.3
+/man/man3/safe_str.3
+tags
