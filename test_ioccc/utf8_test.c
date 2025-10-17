@@ -75,7 +75,6 @@
  */
 #include "../soup/location.h"
 
-
 /*
  * definitions
  */

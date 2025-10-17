@@ -1435,7 +1435,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
     }
     /*
      * list of unsafe (not POSIX plus + safe chars only) filenames to show to
-     * user (i.e., canon_path() sets sanity to PATH_ERR_NOT_POSIX_SAFE and not
+     * user (i.e., canon_path() sets sanity to PATH_ERR_NOT_SAFE and not
      * another error condition)
      */
     infop->unsafe_files = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
@@ -1445,7 +1445,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
     }
     /*
      * list of unsafe (not POSIX plus + safe chars only) directory names to show
-     * to user (i.e., canon_path() sets sanity to PATH_ERR_NOT_POSIX_SAFE and
+     * to user (i.e., canon_path() sets sanity to PATH_ERR_NOT_SAFE and
      * not another error condition)
      */
     infop->unsafe_dirs = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
@@ -1742,7 +1742,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
 	     * will ignore any such "./".
              */
 	    (void) canon_path(ent->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
-			      &sanity, NULL, &depth, true, true, true);
+			      &sanity, NULL, &depth, true, true, true, true, NULL);
             switch (sanity) {
                 case PATH_ERR_NAME_TOO_LONG: /* last component too long */
                     err(4, __func__, "%s: name too long: strlen(\"%s\"): %zu > %d", ent->fts_name, ent->fts_name, /*ooo*/
@@ -1759,7 +1759,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
                             depth, MAX_PATH_DEPTH);
                     not_reached();
                     break;
-                case PATH_ERR_NOT_POSIX_SAFE: /* not sane relative path */
+                case PATH_ERR_NOT_SAFE: /* not sane relative path */
                     if (!ignored_dirname) {
                         /*
                          * if the component does not have an ignored directory
@@ -3094,7 +3094,7 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
 	     * will ignore any such "./".
              */
 	    (void) canon_path(ent->fts_path, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
-			      &sanity, NULL, &depth, true, true, true);
+			      &sanity, NULL, &depth, true, true, true, true, NULL);
             switch (sanity) {
                 case PATH_ERR_NAME_TOO_LONG: /* last component too long */
                     err(4, __func__, "%s: name too long: strlen(\"%s\"): %zu > %d", ent->fts_name, ent->fts_name, /*ooo*/
@@ -3111,7 +3111,7 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
                             depth, MAX_PATH_DEPTH);
                     not_reached();
                     break;
-                case PATH_ERR_NOT_POSIX_SAFE: /* not sane relative path */
+                case PATH_ERR_NOT_SAFE: /* not sane relative path */
                     err(4, __func__, "%s: path not POSIX plus + safe", ent->fts_path + 2); /*ooo*/
                     not_reached();
                     break;

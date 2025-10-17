@@ -200,26 +200,6 @@
  */
 
 /*
- * for the path sanity functions
- */
-enum path_sanity
-{
-    PATH_ERR_UNSET = -1,                /* error code not set */
-    PATH_OK = 0,                        /* path (str) is a sane relative path */
-    PATH_ERR_PATH_IS_NULL,              /* path string (str) is NULL */
-    PATH_ERR_PATH_EMPTY,		/* path string (str) is 0 length (empty) */
-    PATH_ERR_PATH_TOO_LONG,             /* path (str) > max_path_len */
-    PATH_ERR_NOT_RELATIVE,              /* path (str) not relative (i.e. it starts with a '/') */
-    PATH_ERR_NAME_TOO_LONG,             /* path component > max_filename_len */
-    PATH_ERR_PATH_TOO_DEEP,             /* current depth > max_depth */
-    PATH_ERR_NOT_POSIX_SAFE,            /* invalid/not sane path component */
-    PATH_ERR_DOTDOT_OVER_TOPDIR,	/* '..' (dotdot) path component moved above topdir */
-    PATH_ERR_MALLOC,			/* malloc related failure during path processing */
-    PATH_ERR_NULL_COMPONENT,		/* component on path stack is NULL */
-    PATH_ERR_WRONG_LEN,			/* constructed canonical path has the wrong length */
-};
-
-/*
  * enum for the find_path() functions (bits to be ORed)
  */
 enum fts_type
@@ -286,7 +266,6 @@ struct fts
 /*
  * external function declarations
  */
-extern char *str_dup(char const *str);
 extern char *base_name(char const *path);
 extern char *base_name(char const *path);
 extern char *dir_name(char const *path);
@@ -325,11 +304,6 @@ extern size_t copyfile(char const *src, char const *dest, bool copy_mode, mode_t
 extern void touch(char const *path, mode_t mode);
 extern void touchat(char const *path, mode_t mode, char const *dir, int dirfd);
 extern int mkdirs(int dirfd, const char *str, mode_t mode);
-extern char const *path_sanity_name(enum path_sanity sanity);
-extern char const *path_sanity_error(enum path_sanity sanity);
-extern char *canon_path(char const *orig_path, size_t max_path_len, size_t max_filename_len, int32_t max_depth,
-			enum path_sanity *sanity_p, size_t *len_p, int32_t *depth_p,
-			bool rel_only, bool any_case, bool safe_chk);
 extern bool path_has_component(char const *path, char const *name);
 extern char *calloc_path(char const *dirname, char const *filename);
 extern char const *file_type_name(mode_t st_mode);

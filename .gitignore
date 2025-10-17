@@ -128,6 +128,8 @@ test_file_util.copy.o
 /test_ioccc/test_JSON/
 /test_ioccc/test_src/
 /test_ioccc/topdir/
+/test_ioccc/try_walk_set
+/test_ioccc/try_walk_set-*.tmp
 /test_ioccc/txzchk_test.log
 /test_ioccc/utf8_test
 /test_ioccc/utf8_test-*.tmp

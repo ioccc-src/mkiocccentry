@@ -982,185 +982,62 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
 
 
 /*
- * safe_str - test if a string is safe
- *
- * A safe string contains ('+-._'), and either ANYcase alphanumeric or lowercase alphanumeric,
- * depending on any_case, and perhaps '/' (slash) depending on slash_ok.
+ * str_dup - return a duplicate of a string
  *
  * given:
- *	str	    string to test
- *	any_case    true ==> UPPER CASE and lower case are allowed
- *		    false ==> only lower case allowed
- *	slash_ok    true ==> '/' (slash) allowed
- *		    false ==> '/' (slash) are NOT allowed
- *
- * If any_case is true,  slash_ok is true,  then str must match: ^[/0-9A-Za-z._+-]+$
- *
- * If any_case is true,  slash_ok is false, then str must match: ^[0-9A-Za-z._+-]+$
- *
- * If any_case is false, slash_ok is true,  then str must match: ^[/0-9a-z._+-]+$
- *
- * If any_case is false, slash_ok is false, then str must match: ^[0-9a-z._+-]+$
+ *	str	the string to duplicate
  *
  * return:
- *	true ==> str is safe
- *	false ==> str is NOT safe, or str is an empty string, or str is NULL
+ *	a malloced copy of str
+ *
+ * NOTE: If str == NULL, then a calloc this function will attempt to return a calloc a zero length string.
+ *	 That is, calloc will attempt to allocated a single NUL byte.
+ *	 A debug message at DBG_HIGH is issued when this happens.
+ *
+ * NOTE: This function attempts to return a calloc a zero length string if strdup(3) fails.
+ *	 That is, calloc will attempt to allocated a single NUL byte.
+ *	 A debug message at DBG_HIGH is issued when this happens.
+ *
+ * NOTE: In the unlikely event of the calloc of a zero length string failed, this function will NOT return.
+ *       We exit because if the calloc of a single NUL byte fails, we can only conclude that some
+ *	 extremely serious error has happened: exiting is perhaps the best option in such a case.
+ *	 Therefore, it should be EXTREMELY unlikely that this function will NOT return.
+ *
+ * NOTE: This function will NEVER return NULL.
  */
-bool
-safe_str(char const *str, bool any_case, bool slash_ok)
+char *
+str_dup(char const *str)
 {
-    size_t len;		/* length of str */
-    size_t ret;		/* strspn() return - number of allowed characters in str */
-    char const *accept;	/* set of characters allowed in str */
+    char *ret;			/* malloced string to return */
 
     /*
      * firewall
      */
     if (str == NULL) {
-	warn("%s: str is NULL", __func__);
-	return false;
-    }
-
-    /*
-     * empty strings are NOT safe
-     */
-    len = strlen(str);
-    if (len <= 0) {
-	return false;
-    }
-
-    /*
-     * determine the allowed character set
-     */
-    if (any_case) {
-	/* case: safe ('+-._'), '/' (slash) allowed, and ANYcase alphanumeric allowed */
-	if (slash_ok) {
-	    accept = "+-."
-		     "/"
-		     "0123456789"
-		     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-		     "_"
-		     "abcdefghijklmnopqrstuvwxyz";
-	/* case: safe ('+-._'), but NOT '/' (slash) allowed, and ANYcase alphanumeric allowed */
-	} else {
-	    accept = "+-."
-		     "0123456789"
-		     "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-		     "_"
-		     "abcdefghijklmnopqrstuvwxyz";
+	dbg(DBG_HIGH, "%s: str is NULL, will will attempt return a calloc a single NUL byte", __func__);
+	ret = calloc(1, 1);
+	if (ret == NULL) {
+	    /* likely a serious memory correction as happened: we exit */
+	    errp(159, __func__, "calloc #0 of a zero length string failed!");
+	    not_reached();
 	}
-    } else {
-	/* case: safe ('+-._'), '/' (slash) allowed, and lowercase alphanumeric allowed */
-	if (slash_ok) {
-	    accept = "+-."
-		     "/"
-		     "0123456789"
-		     "_"
-		     "abcdefghijklmnopqrstuvwxyz";
-	/* case: safe ('+-._'), but NOT '/' (slash) allowed, and lowercase alphanumeric allowed */
-	} else {
-	    accept = "+-."
-		     "0123456789"
-		     "_"
-		     "abcdefghijklmnopqrstuvwxyz";
+	return ret;
+    }
+
+    /*
+     * duplicate string
+     */
+    errno = 0; /* pre-clear errno for errp() */
+    ret = strdup(str);
+    if (ret == NULL) {
+	dbg(DBG_HIGH, "%s: strdup(\"%s\") failed, will attempt return a calloc a single NUL byte", __func__, str);
+	ret = calloc(1, 1);
+	if (ret == NULL) {
+	    /* likely a serious memory correction as happened: we exit */
+	    errp(160, __func__, "calloc #1 of a zero length string failed!");
+	    not_reached();
 	}
+	return ret;
     }
-
-    /*
-     * determine if the string only contains allowed characters
-     */
-    ret = strspn(str, accept);
-
-    /*
-     * string is case if all characters in string are allowed
-     */
-    if (ret == len) {
-	return true;
-    }
-    return false;
-}
-
-
-/*
- * safe_path_str - test if a path string is safe
- *
- * A path string starts with an ANYcase alphanumeric or lowercase alphanumeric character,
- * depending on any_case, or '_' (underscore), or '-' (dash),
- * or with '/' (slash) depending on slash_ok.
- *
- * After the 1st path character, a safe path string contains ('+-._'), and either
- * ANYcase alphanumeric or lowercase alphanumeric characters, depending on any_case,
- * and perhaps '/' (slash) depending on slash_ok.
- *
- * given:
- *	path_str	    string to test
- *	any_case    true ==> UPPER CASE and lower case are allowed
- *		    false ==> only lower case allowed
- *	slash_ok    true ==> '/' (slash) allowed
- *		    false ==> '/' (slash) are NOT allowed
- *
- * If any_case is true,  slash_ok is true,  then str must match: ^[/0-9A-Za-z._][/0-9A-Za-z._+-]*$
- *
- * If any_case is true,  slash_ok is false, then str must match: ^[0-9A-Za-z._][0-9A-Za-z._+-]*$
- *
- * If any_case is false, slash_ok is true,  then str must match: ^[/0-9a-z._][/0-9a-z._+-]*$
- *
- * If any_case is false, slash_ok is false, then str must match: ^[0-9a-z._][0-9a-z._+-]*$
- *
- * return:
- *	true ==> path_str is safe
- *	false ==> path_str is NOT safe, or str is an empty string, or str is NULL
- */
-bool
-safe_path_str(char const *path_str, bool any_case, bool slash_ok)
-{
-    bool safe;		/* if beyond 1st character is safe */
-
-    /*
-     * firewall
-     */
-    if (path_str == NULL) {
-	warn("%s: path_str is NULL", __func__);
-	return false;
-    }
-
-    /*
-     * test the first character
-     */
-    if (path_str[0] == '\0') {
-	/* empty string is not considered safe */
-	return false;
-    } else if (path_str[0] == '/' && slash_ok == false) {
-	/* string starts with '/' (slash), however slash_ok is false, thus is NOT safe */
-	return false;
-    } else if (!isascii(path_str[0])) {
-	/* string starts with a non-ASCII character, thus is NOT safe */
-	return false;
-    } else if (path_str[0] != '.' && path_str[0] != '_' &&
-	      any_case == true && !isalnum(path_str[0])) {
-	/* string does NOT start with an UPPERcase character NOR a lowercase character, NOR a digit, thus is NOT safe */
-	return false;
-    } else if (path_str[0] != '.' && path_str[0] != '_' &&
-	       any_case == false && !(islower(path_str[0]) || isdigit(path_str[0]))) {
-	/* string does NOT start with a lowercase character, NOR a digit, thus is NOT safe */
-	return false;
-    }
-    /* assertion: 1st character of path_str is safe */
-
-    /*
-     * if path_str is a single character, then path_str is safe
-     */
-    if (path_str[1] == '\0') {
-	return true;
-    }
-
-    /*
-     * determine if the rest of path_str is safe
-     */
-    safe = safe_str(path_str+1, any_case, slash_ok);
-
-    /*
-     * if rest of path_str is safe, then path_str is safe, otherwise it is NOT
-     */
-    return safe;
+    return ret;
 }

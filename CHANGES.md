@@ -1,6 +1,49 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.7.7 2025-10-17
+
+Include "Release 2.0.0 2025-10-16" of
+[cpath repo](https://github.com/lcn2/cpath).
+
+Update use of `canon_path(3)` to "Release 2.0.0 2025-10-16"
+in this repo.
+
+Removed old version **1.0.2 2025-10-12** `canon_path(3)`,
+`path_sanity_name(3)`, old `path_sanity_error(3)`.
+
+Moved `str_dup()` from `soup/file_util.c` to `soup/util.c`.
+
+Fixed `make depend` in `soup/Makefile` and `test_ioccc/Makefile`.
+
+Removed `cpath.c` in favor of `cpath/cpath.c` from
+[cpath repo](https://github.com/lcn2/cpath).
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "2.7.6 2025-10-12"
+to "2.7.7 2025-10-17".
+
+Changed `SOUP_VERSION` from "2.1.2 2025-10-12"
+to "2.1.3 2025-10-17".
+
+Changed `MKIOCCCENTRY_VERSION` from "2.1.4 2025-10-12"
+to "2.1.5 2025-10-17".
+
+Changed `FNAMCHK_VERSION` from "2.1.4 2025-10-12"
+to "2.1.5 2025-10-17".
+
+Changed `TXZCHK_VERSION` from "2.0.8 2025-10-12"
+to "2.0.9 2025-10-17".
+
+Changed `CHKENTRY_VERSION` from "2.1.1 2025-09-29"
+to "2.1.2 2025-10-17".
+
+Changed `CHKSUBMIT_VERSION` from "1.0.0 2025-08-28"
+to "1.0.1 2025-10-17".
+
+Changed `FILE_UTIL_TEST_VERSION` from "2.1.0 2025-10-12"
+to "2.1.1 2025-10-17".
+
+
 ## Release 2.7.6 2025-10-12
 
 The `fnamchk(8)` tool canonicalizes the `filepath`

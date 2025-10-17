@@ -77,6 +77,11 @@
 #include "../dbg/dbg.h"
 
 /*
+ * canon_path - canonicalize paths
+ */
+#include "../cpath/cpath.h"
+
+/*
  * verge - the functionality to test versions
  */
 #include "../jparse/verge.h"
@@ -3153,7 +3158,7 @@ test_extra_filename(char const *str)
      * validate that the filename is POSIX portable safe plus + chars
      */
     (void) canon_path(str, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
-		      &sanity, NULL, NULL, true, true, true);
+		      &sanity, NULL, NULL, true, true, true, true, NULL);
     if (sanity != PATH_OK) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: canon_path safely check on extra_file failed");

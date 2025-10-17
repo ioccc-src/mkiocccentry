@@ -47,6 +47,11 @@
 #include "../dbg/dbg.h"
 
 /*
+ * canon_path - canonicalize paths
+ */
+#include "../cpath/cpath.h"
+
+/*
  * file_util - common utility functions for file operations
  */
 #include "../soup/file_util.h"

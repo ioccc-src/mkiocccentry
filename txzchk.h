@@ -75,6 +75,11 @@
 #include "dbg/dbg.h"
 
 /*
+ * canon_path - canonicalize paths
+ */
+#include "cpath/cpath.h"
+
+/*
  * sanity - perform common IOCCC sanity checks
  */
 #include "soup/sanity.h"

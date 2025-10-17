@@ -81,11 +81,15 @@
  */
 #include "jparse/version.h"
 
-
 /*
  * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg/dbg.h"
+
+/*
+ * canon_path - canonicalize paths
+ */
+#include "cpath/cpath.h"
 
 /*
  * location - location/country codes and set the IOCCC locale

@@ -84,12 +84,12 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.7.6 2025-10-12"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.7.7 2025-10-17"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "2.1.2 2025-10-12"	/* format: major.minor YYYY-MM-DD */
+#define SOUP_VERSION "2.1.3 2025-10-17"	/* format: major.minor YYYY-MM-DD */
 
 /*
  * official iocccsize version
@@ -100,7 +100,7 @@
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "2.1.4 2025-10-12"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "2.1.5 2025-10-17"	/* format: major.minor YYYY-MM-DD */
 #define MIN_MKIOCCCENTRY_VERSION MKIOCCCENTRY_VERSION
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC29-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
@@ -125,31 +125,26 @@
 /*
  * official fnamchk version
  */
-#define FNAMCHK_VERSION "2.1.4 2025-10-12"	/* format: major.minor YYYY-MM-DD */
+#define FNAMCHK_VERSION "2.1.5 2025-10-17"	/* format: major.minor YYYY-MM-DD */
 #define MIN_FNAMCHK_VERSION FNAMCHK_VERSION
 
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "2.0.8 2025-10-12"	/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "2.0.9 2025-10-17"	/* format: major.minor YYYY-MM-DD */
 #define MIN_TXZCHK_VERSION TXZCHK_VERSION
 
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "2.1.1 2025-09-29"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "2.1.2 2025-10-17"	/* format: major.minor YYYY-MM-DD */
 #define MIN_CHKENTRY_VERSION CHKENTRY_VERSION
 
 /*
  * official chksubmit version
  */
-#define CHKSUBMIT_VERSION "1.0.0 2025-08-28"	/* format: major.minor YYYY-MM-DD */
+#define CHKSUBMIT_VERSION "1.0.1 2025-10-17"	/* format: major.minor YYYY-MM-DD */
 #define MIN_CHKSUBMIT_VERSION CHKSUBMIT_VERSION
-
-/*
- * official cpath version
- */
-#define CPATH_VERSION "1.0.2 2025-10-12" /* format: major.minor YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .entry.json files.
@@ -166,7 +161,7 @@
 /*
  * test_file_util - test common utility functions for file operations
  */
-#define FILE_UTIL_TEST_VERSION "2.1.0 2025-10-12" /* version format: major.minor YYYY-MM-DD */
+#define FILE_UTIL_TEST_VERSION "2.1.1 2025-10-17" /* version format: major.minor YYYY-MM-DD */
 
 
 /*

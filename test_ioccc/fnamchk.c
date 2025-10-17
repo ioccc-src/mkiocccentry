@@ -197,7 +197,7 @@ main(int argc, char *argv[])
     }
 
     /* collect arg */
-    filepath = canon_path(argv[optind], 0, 0, 0, &sanity, NULL, NULL, false, true, true);
+    filepath = canon_path(argv[optind], 0, 0, 0, &sanity, NULL, NULL, false, true, true, true, NULL);
     if (filepath == NULL) {
 	err(3, program, "bogus filepath: %s error: %s", argv[optind], path_sanity_error(sanity)); /*ooo*/
 	not_reached();

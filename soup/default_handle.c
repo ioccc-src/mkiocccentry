@@ -63,6 +63,11 @@
  */
 #include "default_handle.h"
 
+/*
+ * canon_path - canonicalize paths
+ */
+#include "../cpath/cpath.h"
+
 
 /*
  * How to translate certain UTF-8 strings into safe lower case

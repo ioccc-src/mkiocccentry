@@ -51,6 +51,11 @@
 #include "dbg/dbg.h"
 
 /*
+ * canon_path - canonicalize paths
+ */
+#include "cpath/cpath.h"
+
+/*
  * jparse - the parser
  */
 #include "jparse/jparse.h"
@@ -59,7 +64,6 @@
  * jparse/version - JSON parser API and tool version
  */
 #include "jparse/version.h"
-
 
 /*
  * soup - some delicious IOCCC soup recipes :-)

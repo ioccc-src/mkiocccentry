@@ -404,7 +404,8 @@ all: ${TARGETS} ${EXTERN_PROG}
 utf8_test.o: utf8_test.c
 	${CC} ${CFLAGS} utf8_test.c -c
 
-utf8_test: utf8_test.o ../soup/soup.a ../pr/libpr.a ../jparse/libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
+utf8_test: utf8_test.o ../soup/soup.a ../pr/libpr.a ../jparse/libjparse.a ../cpath/libcpath.a \
+	   ../dyn_array/libdyn_array.a ../dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -o $@
 
 ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test
@@ -413,7 +414,8 @@ ioccc_test.sh: ../dbg/dbg_test ../dyn_array/dyn_test
 fnamchk.o: fnamchk.c fnamchk.h
 	${CC} ${CFLAGS} fnamchk.c -c
 
-fnamchk: fnamchk.o ../soup/soup.a ../pr/libpr.a ../jparse/libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
+fnamchk: fnamchk.o ../soup/soup.a ../pr/libpr.a ../jparse/libjparse.a ../cpath/libcpath.a \
+		   ../dyn_array/libdyn_array.a ../dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -o $@
 
 
@@ -458,7 +460,8 @@ test_JSON: ../soup/limit_ioccc.h ../soup/version.h
 test_file_util.o: test_file_util.c
 	${CC} ${CFLAGS} test_file_util.c -c
 
-test_file_util: test_file_util.o ../soup/soup.a ../pr/libpr.a ../jparse/libjparse.a ../dyn_array/libdyn_array.a ../dbg/libdbg.a
+test_file_util: test_file_util.o ../soup/soup.a ../pr/libpr.a ../jparse/libjparse.a ../cpath/libcpath.a \
+		../dyn_array/libdyn_array.a ../dbg/libdbg.a
 	${CC} ${CFLAGS} $^ -lm -o $@
 
 test: test_JSON
@@ -815,6 +818,9 @@ depend: ${ALL_CSRC}
 	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
 	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | \
 	      ${SED} -E -e 's;\s/usr/local/include/\S+;;g' -e 's;\s/usr/include/\S+;;g' \
+			-e 's;\.\./cpath/\.\./dyn_array/;../dyn_array/;g' \
+			-e 's;\.\./cpath/\.\./dbg/;../dbg/;g' \
+			-e 's;\.\./cpath/\.\./pr/;../pr/;g' \
 			-e 's;\.\./pr/\.\./dyn_array/;../dyn_array/;g' \
 			-e 's;\.\./pr/\.\./dbg/;../dbg/;g' \
 			-e 's;\.\./dyn_array/\.\./dbg/;../dbg/;g' \
@@ -839,17 +845,18 @@ depend: ${ALL_CSRC}
 	${S} echo "${OUR_NAME}: make $@ ending"
 
 ### DO NOT CHANGE MANUALLY BEYOND THIS LINE
-fnamchk.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
+fnamchk.o: ../cpath/cpath.h ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
     ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
     ../jparse/json_util.h ../jparse/util.h ../jparse/version.h ../pr/pr.h \
     ../soup/default_handle.h ../soup/file_util.h ../soup/limit_ioccc.h \
     ../soup/location.h ../soup/util.h ../soup/version.h fnamchk.c fnamchk.h
-test_file_util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
-    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h ../pr/pr.h \
-    ../soup/file_util.h ../soup/version.h test_file_util.c
+test_file_util.o: ../cpath/cpath.h ../dbg/c_bool.h ../dbg/c_compat.h \
+    ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
+    ../jparse/version.h ../pr/pr.h ../soup/file_util.h ../soup/version.h \
+    test_file_util.c
 utf8_test.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
     ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \

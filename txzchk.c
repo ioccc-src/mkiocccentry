@@ -248,7 +248,7 @@ main(int argc, char **argv)
 	usage(3, program, "wrong number of arguments"); /*ooo*/
 	not_reached();
     }
-    tarball_path = canon_path(argv[optind], 0, 0, 0, &sanity, NULL, NULL, false, true, true);
+    tarball_path = canon_path(argv[optind], 0, 0, 0, &sanity, NULL, NULL, false, true, true, true, NULL);
     if (tarball_path == NULL) {
 	err(3, program, "bogus tarball path: %s error: %s", argv[optind], path_sanity_error(sanity)); /*ooo*/
 	not_reached();
@@ -979,7 +979,7 @@ check_txz_file(char const *tarball_path, char const *dirname, struct txz_file *f
          * filename must use only POSIX portable filename and + chars plus /
          */
 	(void) canon_path(file->filename, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
-			  &sanity, NULL, NULL, true, true, true);
+			  &sanity, NULL, NULL, true, true, true, true, NULL);
         if (sanity != PATH_OK) {
             ++tarball.total_feathers; /* report it once and consider it only one feather */
             ++tarball.unsafe_chars;

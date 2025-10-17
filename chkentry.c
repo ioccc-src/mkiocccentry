@@ -701,7 +701,7 @@ main(int argc, char *argv[])
                          * based on the filename.
                          */
 			if (canon_path(u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
-					  NULL, NULL, NULL, true, true, true) == NULL) {
+					  NULL, NULL, NULL, true, true, true, true, NULL) == NULL) {
                             werr(1, __func__, "%s: not a sane relative path with max path len, filename len and depth "/*ooo*/
                                     "of %d, %d, %d ", u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH);
                             ++all_extra_err_count;
@@ -936,7 +936,7 @@ main(int argc, char *argv[])
                          * based on the filename.
                          */
 			if (canon_path(u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
-					  NULL, NULL, NULL, true, true, true) == NULL) {
+					  NULL, NULL, NULL, true, true, true, true, NULL) == NULL) {
                             werr(1, __func__, "%s: not a sane relative path with max path len, filename len and depth "/*ooo*/
                                     "of %d, %d, %d ", u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH);
                             ++all_extra_err_count;
