@@ -18,7 +18,7 @@ Convert path strings to a canonical path.
 
 ### Paths do not have to exist
 
-The paths to **NOT** have to exist.  The local filesystem is **NOT**
+The paths do **NOT** have to exist.  The local filesystem is **NOT**
 accessed by the `cpath(1)` command, **NOR** the `canon_path(3)` library
 function.  **NO** filesystem checks are performed.  Symbolic links are
 **NOT** considered.
@@ -27,7 +27,7 @@ function.  **NO** filesystem checks are performed.  Symbolic links are
 ### If you want to also check the filesystem
 
 To check the filesystem, after using `cpath(1)` to canonicalize a path,
-use the `realpath(1)` to check the filesystem.  Similarly, after using
+use the `realpath(1)` command to check the filesystem. Similarly, after using
 `canon_path(1)` to canonicalize a path, use `realpath(3)`.
 
 
@@ -49,7 +49,7 @@ use the `realpath(1)` to check the filesystem.  Similarly, after using
 
 # Dependencies
 
-In order to compile and use `jparse` (the applications and the library) you will
+In order to compile and use `cpath` (the applications and the library) you will
 need to download, compile and install the [dbg repo](https://github.com/lcn2/dbg),
 the [dyn_array repo](https://github.com/lcn2/dyn_array), and the
 [pr repo](https://github.com/lcn2/pr).
@@ -125,7 +125,7 @@ To install the `cpath(1)` command and `libcpath.a` library:
 ```
 
 We also support the `PREFIX` standard so if you need to install the binaries to
-`/usr/bin`, library to `/usr/lib`, the header files to `/usr/include/jparse` and
+`/usr/bin`, library to `/usr/lib`, the header files to `/usr/include` and
 the man pages to `/usr/share/man/man[138]`, then do:
 
 ```sh
@@ -232,7 +232,7 @@ One may optionally set a maximum path component length.
 By default, the path depth is unlimited.
 
 The path depth is the depth from the top level directory or "_topdir_".
-If the path is an abolsolute path (starts with "/" (slash), then the
+If the path is an absolute path (starts with "/" (slash), then the
 "_topdir_" is "/" (slash), other the "_topdir_" is assumed to be
 "." (dot).
 
@@ -256,9 +256,9 @@ Relative path depths:
 
 ## Require the path to be relative
 
-By default, **both** abolsolute and relatve paths are allowed.
+By default, **both** absolute and relative paths are allowed.
 
-One may require the path to be relatve and flag abolsolute paths as
+One may require the path to be relative and flag absolute paths as
 an error.
 
 
@@ -274,7 +274,7 @@ i.e., where `foo` and `Foo` and `FOO` refer to the same file.
 
 ## Require canonicalized path components to be safe
 
-By default, canonicalized paths may contain any character other the the `NUL` (`'\0'`
+By default, canonicalized paths may contain any character other the `NUL` (`'\0'`
 or 0 byte) character.
 
 One may require all canonicalized path components to conform to an safety check extended regular expression.
@@ -285,7 +285,7 @@ By default, the safety check is perform by the following extended regular expres
     ^[0-9A-Za-z._][0-9A-Za-z._+-]*$
 ```
 
-**IMPORTANT**: We recommend that extended regular expression begin wit
+**IMPORTANT**: We recommend that extended regular expression begin with
 a **^** character and end with a **$ &**character.  This will force
 the extended regular expression to match the entire canonicalized path component.
 
@@ -354,7 +354,7 @@ In this mode, lines that begin with "#" (hash) and empty lines are ignored:
 
 ## cpath(1) usage message
 
-```
+```sh
 usage: ./cpath [-h] [-v level] [-V] [-m max_path] [-M max_file] [-d max_depth] [-D] [-r] [-l] [-s] [-S regex] [path ...]
 
     -h              print help message and exit
