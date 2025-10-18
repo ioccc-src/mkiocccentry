@@ -137,7 +137,7 @@ base_name(char const *path)
      * Temporarily duplicate the path for basename processing in case basename(3) modifies the path.
      */
     errno = 0;			/* pre-clear errno for errp() */
-    path_dup = strdup(path);
+    path_dup = strdup(path);	/* use strdup(3), not str_dup(3), so that we can report when strdup(3) fails */
     if (path_dup == NULL) {
 	dbg(DBG_HIGH, "%s: strdup(\"%s\") #0 failed, returning \".\"", __func__, path);
 	ret = str_dup(".");
@@ -162,7 +162,7 @@ base_name(char const *path)
      * For these reasons, we duplicate the basename(3) return.
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = strdup(bname);
+    ret = strdup(bname);	/* use strdup(3), not str_dup(3), so that we can report when strdup(3) fails */
     if (ret == NULL) {
 	dbg(DBG_HIGH, "%s: strdup(\"%s\") #1 failed, returning \".\"", __func__, bname);
 	ret = str_dup(".");
@@ -320,7 +320,7 @@ dir_name(char const *path)
      * For these reasons, we duplicate the dirname(3) return.
      */
     errno = 0;			/* pre-clear errno for errp() */
-    ret = strdup(dname);
+    ret = strdup(dname);	/* use strdup(3), not str_dup(3), so that we can report when strdup(3) fails */
     if (ret == NULL) {
 	dbg(DBG_HIGH, "%s: strdup(\"%s\") failed, returning \".\" for: %s", __func__, dname, path);
 	ret = str_dup(".");
