@@ -128,7 +128,11 @@ base_name(char const *path)
      * firewall
      */
     if (path == NULL) {
+
+	/* report NULL path */
 	dbg(DBG_HIGH, "%s: path is NULL, returning \".\"", __func__);
+
+	/* basename(NULL) returns . (dot), and so do we */
 	ret = str_dup(".");
         return ret;
     }
@@ -139,7 +143,11 @@ base_name(char const *path)
     errno = 0;			/* pre-clear errno for errp() */
     path_dup = strdup(path);	/* use strdup(3), not str_dup(3), so that we can report when strdup(3) fails */
     if (path_dup == NULL) {
-	dbg(DBG_HIGH, "%s: strdup(\"%s\") #0 failed, returning \".\"", __func__, path);
+
+	/* report strdup(3) failure of the path */
+	dbg(DBG_HIGH, "%s: strdup(\"%s\") of path failed, returning \".\"", __func__, path);
+
+	/* return malloced . (dot) on strdup(3) of path failure */
 	ret = str_dup(".");
         return ret;
     }
@@ -149,7 +157,17 @@ base_name(char const *path)
      */
     bname = basename(path_dup);
     if (bname == NULL) {
-	dbg(DBG_HIGH, "%s: basename(\"%s\") failed, returning \".\"", __func__, path);
+
+	/* report basename failure */
+	dbg(DBG_HIGH, "%s: basename(\"%s\") failed, returning \".\"", __func__, path_dup);
+
+	/* free storage */
+	if (path_dup != NULL) {
+	    free(path_dup);
+	    path_dup = NULL;
+	}
+
+	/* return malloced . (dot) in basename(3) failure */
 	ret = str_dup(".");
         return ret;
     }
@@ -164,7 +182,17 @@ base_name(char const *path)
     errno = 0;			/* pre-clear errno for errp() */
     ret = strdup(bname);	/* use strdup(3), not str_dup(3), so that we can report when strdup(3) fails */
     if (ret == NULL) {
-	dbg(DBG_HIGH, "%s: strdup(\"%s\") #1 failed, returning \".\"", __func__, bname);
+
+	/* report strdup(3) failure of the basename */
+	dbg(DBG_HIGH, "%s: strdup(\"%s\") failed, returning \".\"", __func__, bname);
+
+	/* free storage */
+	if (path_dup != NULL) {
+	    free(path_dup);
+	    path_dup = NULL;
+	}
+
+	/* return malloced . (dot) on strdup(3) of basename failure */
 	ret = str_dup(".");
         return ret;
     }
