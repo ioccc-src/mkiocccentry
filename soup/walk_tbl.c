@@ -12,7 +12,8 @@
  *                 might be one application of walking, so to is processing
  *                 the listing of a tar(1) command.
  *
- * Copyright (c) 2025 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2025 by Landon Curt Noll and Cody Boone Ferguson.  All Rights
+ * Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
