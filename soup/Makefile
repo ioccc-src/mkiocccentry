@@ -235,7 +235,7 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= chk_validate.c entry_util.c file_util.c location_util.c location_main.c sanity.c \
-       rule_count.c random_answers.c util.c
+       rule_count.c random_answers.c walk_tbl.c util.c walk_util.c
 H_SRC= chk_validate.h soup.h entry_util.h file_util.h foo.h limit_ioccc.h location.h \
 	sanity.h default_handle.h version.h iocccsize_err.h random_answers.h util.h
 #
@@ -274,7 +274,7 @@ LOCAL_DIR_TAGS= .local.dir.tags
 # NOTE: ${LIB_OBJS} are objects to put into a library and removed by make clean
 #
 LIB_OBJS= chk_validate.o entry_util.o util.o file_util.o location_util.o location_tbl.o sanity.o \
-       foo.o rule_count.o random_answers.o \
+       foo.o rule_count.o random_answers.o walk_tbl.o walk_util.o \
        default_handle.o chk_sem_info.o chk_sem_auth.o util.o
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
@@ -445,6 +445,12 @@ rule_count.o: rule_count.c
 
 random_answers.o: random_answers.c random_answers.h
 	${CC} ${CFLAGS} random_answers.c -c
+
+walk_tbl.o: walk_tbl.c walk.h
+	${CC} ${CFLAGS} walk_tbl.c -c
+
+walk_util.o: walk_util.c walk.h
+	${CC} ${CFLAGS} walk_util.c -c
 
 default_handle.o: default_handle.c
 	${CC} ${CFLAGS} default_handle.c -c
@@ -1076,7 +1082,7 @@ entry_util.o: ../cpath/cpath.h ../dbg/c_bool.h ../dbg/c_compat.h \
     entry_util.h file_util.h limit_ioccc.h location.h util.h version.h
 file_util.o: ../cpath/cpath.h ../dbg/c_bool.h ../dbg/c_compat.h \
     ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/util.h ../pr/pr.h \
-    file_util.c file_util.h util.h
+    file_util.c file_util.h util.h walk.h
 foo.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h foo.c foo.h \
     oebxergfB.h
 location_main.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
@@ -1112,3 +1118,9 @@ sanity.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
 util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../jparse/util.h ../pr/pr.h file_util.h util.c \
     util.h
+walk_tbl.o: ../cpath/cpath.h ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
+    ../dyn_array/dyn_array.h ../jparse/util.h ../pr/pr.h file_util.h util.h \
+    walk.h walk_tbl.c
+walk_util.o: ../cpath/cpath.h ../dbg/c_bool.h ../dbg/c_compat.h \
+    ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/util.h ../pr/pr.h \
+    file_util.h util.h walk.h walk_util.c

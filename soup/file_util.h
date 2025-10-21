@@ -50,7 +50,6 @@
 #include <sys/types.h>  /* various things */
 #include <sys/stat.h>   /* for stat(2) and others */
 #include <fts.h>        /* FTS and FTSENT */
-#include <fnmatch.h>    /* for fnmatch(3) (for ignored paths - if desired) */
 #include <limits.h>	/* for CHAR_BIT */
 
 
@@ -68,57 +67,64 @@
  * byte as octet constants
  */
 #if !defined(CHAR_BIT)
- #define CHAR_BIT (8)		/* paranoia - in case limits.h is very old */
+  #define CHAR_BIT (8)		/* paranoia - in case limits.h is very old */
 #endif
 #if !defined(BITS_IN_BYTE)
- #define BITS_IN_BYTE (CHAR_BIT)	    /* assume 8 bit bytes */
+  #define BITS_IN_BYTE (CHAR_BIT)	    /* assume 8 bit bytes */
 #endif
 #if !defined(BYTE_VALUES)
- #define BYTE_VALUES (1<<CHAR_BIT)   /* number of different combinations of bytes */
+  #define BYTE_VALUES (1<<CHAR_BIT)   /* number of different combinations of bytes */
 #endif
 #if !defined(MAX_BYTE)
- #define MAX_BYTE (BYTE_VALUES-1)    /* maximum byte value */
+  #define MAX_BYTE (BYTE_VALUES-1)    /* maximum byte value */
 #endif
 
+/*
+ * number of bytes to hold an int converted to decimal
+ */
+#if !defined(INT_DECIMAL_SIZE)
+  #define INT_DECIMAL_SIZE ((((((size_t)CHAR_BIT) * sizeof(int)) * 302) / 1000) + 1)
+#endif
+
+#if 0	/* XXX - pre-IOCCC29: remove the obsolete #if block below - XXX */
 /*
  * off_t MAX and MIN
  */
 #if !defined(OFF_MAX)
- #define OFF_MAX (~((off_t)1 << (sizeof(off_t) * BITS_IN_BYTE - 1)))
+  #define OFF_MAX (~((off_t)1 << (sizeof(off_t) * BITS_IN_BYTE - 1)))
 #endif /* OFF_MAX */
 #if !defined(OFF_MIN)
- #define OFF_MIN (((off_t)1 << (sizeof(off_t) * BITS_IN_BYTE - 1)))
+  #define OFF_MIN (((off_t)1 << (sizeof(off_t) * BITS_IN_BYTE - 1)))
 #endif /* OFF_MIN */
 
 /*
  * size_t MAX and MIN
  */
 #if !defined(SIZE_MAX)
- #define SIZE_MAX (~((size_t)0))
+  #define SIZE_MAX (~((size_t)0))
 #endif /* SIZE_MAX */
 #if !defined(SIZE_MIN)
- #define SIZE_MIN ((size_t)(0))
+  #define SIZE_MIN ((size_t)(0))
 #endif /* SIZE_MIN */
-
 
 /*
  * ssize_t MAX and MIN
  */
 #if !defined(SSIZE_MAX)
- #define SSIZE_MAX (~((ssize_t)1 << (sizeof(ssize_t) * BITS_IN_BYTE - 1)))
+  #define SSIZE_MAX (~((ssize_t)1 << (sizeof(ssize_t) * BITS_IN_BYTE - 1)))
 #endif /* SSIZE_MAX */
 #if !defined(SSIZE_MIN)
- #define SSIZE_MIN (((ssize_t)1 << (sizeof(ssize_t) * BITS_IN_BYTE - 1)))
+  #define SSIZE_MIN (((ssize_t)1 << (sizeof(ssize_t) * BITS_IN_BYTE - 1)))
 #endif /* SSIZE_MIN */
 
 /*
  * MAX and MIN macros
  */
 #if !defined(MAX)
- #define MAX(a,b) ((a)>(b)?(a):(b))
+  #define MAX(a,b) ((a)>(b)?(a):(b))
 #endif /* MAX */
 #if !defined(MIN)
- #define MIN(a,b) ((a)<(b)?(a):(b))
+  #define MIN(a,b) ((a)<(b)?(a):(b))
 #endif /* MIN */
 
 /*
@@ -129,7 +135,7 @@
 #define LLONG_MAX_BASE10_DIGITS (19) /* for string to int functions */
 #define TBLLEN(x) (sizeof(x)/sizeof((x)[0]))	/* number of elements in an initialized table array */
 #define UNUSED_ARG(x) (void)(x)			/* prevent compiler from complaining about an unused arg */
-
+#endif	/* XXX - pre-IOCCC29: remove the obsolete #if block above - XXX */
 
 /*
  * invalid exit codes (values < 0) that may be returned by shell_cmd()
@@ -139,7 +145,7 @@
 #define EXIT_FFLUSH_FAILED (-4)		/* invalid exit code - fflush() failed */
 #define EXIT_NULL_ARGS (-5)		/* invalid exit code - function called with a NULL arg */
 
-
+#if 0	/* XXX - pre-IOCCC29: remove the obsolete #if block below - XXX */
 /*
  * utility macros for find_text functions
  */
@@ -164,6 +170,7 @@
  * non-strict floating match to 1 part in MATCH_PRECISION
  */
 #define MATCH_PRECISION ((long double)(1<<22))
+#endif	/* XXX - pre-IOCCC29: remove the obsolete #if block above - XXX */
 
 /*
  * st_mode related convenience macros
@@ -195,6 +202,7 @@
 #define ITEM_IS_NOT_FILEDIRSYM(st_mode) (! ITEM_IS_FILEDIRSYM(st_mode))
 
 
+#if 1	/* XXX - pre-IOCCC29: remove the obsolete #if block below - XXX */
 /*
  * enums
  */
@@ -219,7 +227,6 @@ enum fts_type
 /*
  * file_type enum - for file_type() function to determine type of file
  */
-
 enum file_type
 {
     FILE_TYPE_ERR       = -1,   /* some error other than ENOENT (no such file or directory) */
@@ -232,6 +239,7 @@ enum file_type
     FILE_TYPE_BLOCK     = 6,    /* block device */
     FILE_TYPE_FIFO      = 7     /* FIFO */
 };
+
 
 /*
  * structures
@@ -261,6 +269,7 @@ struct fts
     bool(*check)(FTS *, FTSENT *);  /* function pointer to use to check an FTSENT * (NULL ==> check_fts_info()) */
     bool initialised;       /* internal use: after first call we can safely check pointers */
 };
+#endif	/* XXX - pre-IOCCC29: remove the obsolete #if block above - XXX */
 
 
 /*
@@ -284,17 +293,25 @@ extern bool is_read(char const *path);
 extern bool is_write(char const *path);
 extern mode_t filemode(char const *path, bool printing);
 extern bool is_open_file_stream(FILE *stream);
+/* XXX - pre-IOCCC29: remove the obsolete function below - XXX */
 extern void reset_fts(struct fts *fts, bool free_ignored, bool free_match);
-/* XXX - remove after table driven walk code is in place - XXX */
+/* XXX - pre-IOCCC29: remove the obsolete function below - XXX */
 extern char *fts_path(FTSENT *ent);
+/* XXX - pre-IOCCC29: remove the obsolete function below - XXX */
 extern FTSENT *read_fts(char *dir, int dirfd, int *cwd, struct fts *fts);
+/* XXX - pre-IOCCC29: remove the obsolete function below - XXX */
 extern bool array_has_path(struct dyn_array *array, char *path, bool match_case, bool fn, intmax_t *idx);
+/* XXX - pre-IOCCC29: remove the obsolete function below - XXX */
 extern uintmax_t paths_in_array(struct dyn_array *array);
-/* XXX - remove after table driven walk code is in place - XXX */
+/* XXX - pre-IOCCC29: remove the obsolete function below - XXX */
 extern char *find_path_in_array(char *path, struct dyn_array *paths, bool match_case, bool fn, intmax_t *idx);
+/* XXX - pre-IOCCC29: remove the obsolete function below - XXX */
 extern bool append_path(struct dyn_array **paths, char *str, bool unique, bool duped, bool match_case, bool fn);
+/* XXX - pre-IOCCC29: remove the obsolete function below - XXX */
 extern void free_paths_array(struct dyn_array **paths, bool only_empty);
+/* XXX - pre-IOCCC29: remove the obsolete function below - XXX */
 extern char *find_path(char const *path, char *dir, int dirfd, int *cwd, bool abspath, struct fts *fts);
+/* XXX - pre-IOCCC29: remove the obsolete function below - XXX */
 extern struct dyn_array *find_paths(struct dyn_array *paths, char *dir, int dirfd, int *cwd, bool abspath, struct fts *fts);
 extern off_t file_size(char const *path);
 extern off_t size_if_file(char const *path);
@@ -304,6 +321,7 @@ extern size_t copyfile(char const *src, char const *dest, bool copy_mode, mode_t
 extern void touch(char const *path, mode_t mode);
 extern void touchat(char const *path, mode_t mode, char const *dir, int dirfd);
 extern int mkdirs(int dirfd, const char *str, mode_t mode);
+/* XXX - pre-IOCCC29: remove the obsolete function below - XXX */
 extern bool path_has_component(char const *path, char const *name);
 extern char *calloc_path(char const *dirname, char const *filename);
 extern char const *file_type_name(mode_t st_mode);

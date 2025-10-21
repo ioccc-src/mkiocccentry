@@ -3180,8 +3180,8 @@ chk_url(struct json const *node,
  *	true ==> JSON element is valid
  *	false ==> JSON element is NOT valid, or NULL pointer, or some internal error
  *
- * XXX: post IOCCC28 this function and related JSON will be removed but to
- * simplify it during IOCCC28 we simply return true in every case as we no
+ * XXX: post IOCCC29 this function and related JSON will be removed but to
+ * simplify it during IOCCC29 we simply return true in every case as we no
  * longer care about it.
  */
 bool

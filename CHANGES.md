@@ -1,5 +1,125 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.8.0 2025-10-20
+
+Checkpoint on the table driven walk code.  Currently
+the table driven walk code is just in test form and
+is NOT being used by the toolkit.
+
+The important table driven data structures and macros
+are found in `soup/walk.h`.
+
+The tables are encoded as `struct walk_rule` arrays
+from a `struct walk_set` found in `soup/walk_tbl.c`.
+
+### test_ioccc/try_walk_set
+
+To "test" using one of the static walk_rule sets, with an "inventory",
+use the tool: `test_ioccc/try_walk_set`.
+
+While `test_ioccc/try_walk_set -h` will print the usage
+message, there are two modes for this tool:
+
+* sets of 3 args "type size path" on the command line:
+
+The following "inventory" may be processed using the `mkiocccentry struct walk_set`,
+with moderate verbosity:
+
+``` sh
+    test_ioccc/try_walk_set -v 3 f 2345 prog.c f 3456 remarks.md f 4567 Makefile
+```
+
+Here the "type size path" sets on the command line refer to:
+
+- `f 2345 prog.c` ==> `prog.c` file of size 2345
+- `f 3456 remarks.md` ==> `remarks.md` file size 3456
+- `f 4567 Makefile` ==> `Makefile` file size 3456
+
+### test_ioccc/try_walk_set
+
+By default the `mkiocccentry walk_set` is used by the
+`test_ioccc/try_walk_set` "test" tool.  The list of **Allowed Walk Sets**
+may be printed by using:
+
+``` sh
+    test_ioccc/try_walk_set -s l
+```
+
+To try the same set of 3 files with the `chkentry -w walk_set`,
+the struct walk_set for a winning entry, with the same 3 files:
+
+``` sh
+    test_ioccc/try_walk_set -v 3 -s 6 f 2345 prog.c f 3456 remarks.md f 4567 Makefile
+```
+
+* read sets of 3 parameters from stdin
+
+The following "inventory" may be processed using the `mkiocccentry `struct walk_set`
+with even more verbosity:
+
+``` sh
+    cat > data <<EOF
+    # comments and empty lines are ignored
+
+    f 1234 .entry.json
+    f 2345 prog.c
+    f 3456 remarks.md
+    f 4567 Makefile
+    d 4 info
+    f 123 info/foo
+    EOF
+
+    test_ioccc/try_walk_set -v 5 < data
+```
+
+To try the same set of 3 files with the `chkentry -w walk_set`,
+the struct walk_set for a winning entry, with the same 3 files:
+
+``` sh
+    test_ioccc/try_walk_set -s 6 < data
+```
+
+The list of problems (missing files) and prohibited items will be printed on stderr,
+and the tool will exit non-zero (1).
+
+## test_ioccc/try_fts_walk
+
+To "test" using one of the static walk_rule sets, by walking a file tree,
+use the tool: `test_ioccc/try_fts_walk`.
+
+The `test_ioccc/try_fts_walk -h` will print the usage message.
+
+Consider the following walk of a tree using the `mkiocccentry struct walk_set`:
+
+``` sh
+    test_ioccc/try_fts_walk -v 3 test_ioccc/slot/good/topdir/12345678-1234-4321-abcd-1234567890ab-7
+```
+
+And for a "_bad_" directory:
+
+``` sh
+    test_ioccc/try_fts_walk -v 3 test_ioccc/workdir/bad/test-6
+```
+
+Added a number of comments identify some of the "_obsolete_" functions, definitions
+and data types that need to go away prior to **IOCCC29**.  I.e., these functions
+are being made obsolete by the table driven walk code.
+
+Sync with [pr repo](https://github.com/lcn2/pr).
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "2.7.7 2025-10-17"
+to "2.8.0 2025-10-20".
+
+Changed `SOUP_VERSION` from "2.1.3 2025-10-17"
+to "2.2.0 2025-10-20".
+
+Changed `FILE_UTIL_TEST_VERSION` from "2.1.1 2025-10-17"
+to "2.1.2 2025-10-20".
+
+Added `TRY_FTS_WALK_VERSION` as "1.0.0 2025-10-20".
+
+Added `TRY_WALK_SET_VERSION` as "1.0.0 2025-10-20".
+
 
 ## Release 2.7.7 2025-10-17
 

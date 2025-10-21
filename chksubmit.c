@@ -59,12 +59,6 @@
 
 #define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
 
-/* number of bytes to hold an int converted to decimal */
-#if !defined(CHAR_BIT)
-# define CHAR_BIT (8)		/* paranoia - in case limits.h is very old */
-#endif
-#define INT_DECIMAL_SIZE ((((((size_t)CHAR_BIT) * sizeof(int)) * 302) / 1000) + 1)
-
 
 /*
  * globals

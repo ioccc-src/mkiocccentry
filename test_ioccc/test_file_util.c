@@ -48,7 +48,6 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <locale.h>
-#include <fnmatch.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -299,11 +298,12 @@ main(int argc, char **argv)
     char *path = NULL;			/* path to process */
     char *expect = NULL;		/* expected process result */
     /**/
-    char *name = NULL;                  /* for various tests */
     size_t bytes = 0;
     struct stat in_st;                  /* verify copyfile() sets correct modes */
     struct stat out_st;                 /* output file stat(2) */
     bool dir_exists = false;            /* true ==> directory already exists (for testing modes) */
+#if 0	/* XXX - pre-IOCCC29: remove the obsolete #if block below - XXX */
+    char *name = NULL;                  /* for various tests */
     FTSENT *ent = NULL;                 /* to test read_fts() */
     char *fname = NULL;                 /* to test find_path() */
     int cwd = -1;                       /* to restore after read_fts() test */
@@ -312,13 +312,14 @@ main(int argc, char **argv)
     struct dyn_array *paths_found = NULL;   /* to test find_paths() */
     uintmax_t len = 0;                 /* length of arrays */
     intmax_t idx = 0;                  /* for find_path_in_array() */
+    uintmax_t j = 0;                   /* for arrays */
+#endif	/* XXX - pre-IOCCC29: remove the obsolete #if block above - XXX */
     struct fts fts;		        /* for read_fts(), find_path() and find_paths() */
     off_t size1 = 0;			/* for checking size_if_file() */
     off_t size2 = 0;			/* for checking size_if_file() */
     struct json *tree = NULL;           /* check that the jparse.json file is valid JSON */
     int ret;
     int i;
-    uintmax_t j = 0;                   /* for arrays */
 
     /*
      * use default locale based on LANG
@@ -787,6 +788,7 @@ main(int argc, char **argv)
     /**/
     test_dir_name(test_num, path, expect);
 
+#if 0	/* XXX - pre-IOCCC29: remove the obsolete ifdef block below - XXX */
     /*
      * check if "foo/bar/baz" has component "baz"
      */
@@ -889,6 +891,7 @@ main(int argc, char **argv)
         free(path);
         path = NULL;
     }
+#endif	/* XXX - pre-IOCCC29: remove the obsolete ifdef block above - XXX */
 
     /*
      * try again but this time with a mode
@@ -1134,7 +1137,7 @@ main(int argc, char **argv)
         fdbg(stderr, DBG_MED, "/dev/null is NOT a character device");
     }
 
-/* XXX - start of code that will be replace by table drive walk code - XXX */
+#if 0	/* XXX - pre-IOCCC29: remove the obsolete #if block below - XXX */
     /*
      * test read_fts()
      *
@@ -2872,7 +2875,7 @@ main(int argc, char **argv)
         free(name);
         name = NULL;
     }
-/* XXX - end of code that will be replace by table drive walk code - XXX */
+#endif	/* XXX - pre-IOCCC29: remove the obsolete #if block above - XXX */
 
     /*
      * All Done!!! All Done!!! -- Jessica Noll, Age 2

@@ -8,6 +8,10 @@
 /chkentry-*.tmp
 /chksubmit
 /chksubmit-*.tmp
+/cpath.clone/
+/cpath/cpath
+/cpath/cpath-*.tmp
+/cpath/.github
 /dbg.clone/
 /dbg/dbg_example
 /dbg/dbg_example-*.tmp
@@ -18,10 +22,6 @@
 dbg_test.out
 .DS_Store
 *.dSYM/
-/cpath.clone/
-/cpath/cpath
-/cpath/cpath-*.tmp
-/cpath/.github
 /dyn_array.clone/
 /dyn_array/dyn_array-*.tmp
 /dyn_array/dyn_test
@@ -128,6 +128,7 @@ test_file_util.copy.o
 /test_ioccc/test_JSON/
 /test_ioccc/test_src/
 /test_ioccc/topdir/
+/test_ioccc/try_fts_walk
 /test_ioccc/try_walk_set
 /test_ioccc/try_walk_set-*.tmp
 /test_ioccc/txzchk_test.log

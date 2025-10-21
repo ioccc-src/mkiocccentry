@@ -232,7 +232,7 @@ CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= utf8_test.c fnamchk.c test_file_util.c
+C_SRC= utf8_test.c fnamchk.c test_file_util.c try_walk_set.c try_fts_walk.c
 H_SRC= fnamchk.h
 #
 PICKY_OPTIONS= -c -e -s -t8 -u -v -w132
@@ -275,7 +275,7 @@ LIB_OBJS=
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and removed by make clean
 #
-OTHER_OBJS= utf8_test.o fnamchk.o test_file_util.o
+OTHER_OBJS= utf8_test.o fnamchk.o test_file_util.o try_walk_set.o try_fts_walk.o
 
 # NOTE: intermediate files to make and removed by make clean
 #
@@ -351,7 +351,7 @@ SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS= utf8_test fnamchk test_file_util
+PROG_TARGETS= utf8_test fnamchk test_file_util try_walk_set try_fts_walk
 
 # what to make by all but NOT to removed by clobber
 #
@@ -416,6 +416,20 @@ fnamchk.o: fnamchk.c fnamchk.h
 
 fnamchk: fnamchk.o ../soup/soup.a ../pr/libpr.a ../jparse/libjparse.a ../cpath/libcpath.a \
 		   ../dyn_array/libdyn_array.a ../dbg/libdbg.a
+	${CC} ${CFLAGS} $^ -o $@
+
+try_walk_set.o: try_walk_set.c
+	${CC} ${CFLAGS} try_walk_set.c -c
+
+try_walk_set: try_walk_set.o ../soup/soup.a ../pr/libpr.a ../cpath/libcpath.a \
+	      ../dyn_array/libdyn_array.a ../dbg/libdbg.a ../jparse/libjparse.a
+	${CC} ${CFLAGS} $^ -o $@
+
+try_fts_walk.o: try_fts_walk.c
+	${CC} ${CFLAGS} try_fts_walk.c -c
+
+try_fts_walk: try_fts_walk.o ../soup/soup.a ../pr/libpr.a ../cpath/libcpath.a \
+	      ../dyn_array/libdyn_array.a ../dbg/libdbg.a ../jparse/libjparse.a
 	${CC} ${CFLAGS} $^ -o $@
 
 
@@ -857,6 +871,20 @@ test_file_util.o: ../cpath/cpath.h ../dbg/c_bool.h ../dbg/c_compat.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
     ../jparse/version.h ../pr/pr.h ../soup/file_util.h ../soup/version.h \
     test_file_util.c
+try_fts_walk.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
+    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
+    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
+    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h ../pr/pr.h \
+    ../soup/../cpath/cpath.h ../soup/file_util.h ../soup/limit_ioccc.h \
+    ../soup/location.h ../soup/util.h ../soup/version.h ../soup/walk.h \
+    try_fts_walk.c
+try_walk_set.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
+    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
+    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
+    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h ../pr/pr.h \
+    ../soup/../cpath/cpath.h ../soup/file_util.h ../soup/limit_ioccc.h \
+    ../soup/location.h ../soup/util.h ../soup/version.h ../soup/walk.h \
+    try_walk_set.c
 utf8_test.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
     ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \

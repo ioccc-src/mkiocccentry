@@ -48,7 +48,6 @@
 #include <sys/types.h>  /* various things */
 #include <sys/stat.h>   /* for stat(2) and others */
 #include <fts.h>        /* FTS and FTSENT */
-#include <fnmatch.h>    /* for fnmatch(3) (for ignored paths - if desired) */
 #include <limits.h>	/* for CHAR_BIT */
 
 
@@ -59,6 +58,7 @@
 #include "../dbg/dbg.h"
 #include "../dyn_array/dyn_array.h"
 
+#if 0	/* XXX - pre-IOCCC29: remove the obsolete #if block below - XXX */
 /*
  * byte as octet constants
  */
@@ -102,11 +102,13 @@
 #define LSET_BIT(var,bit)  ((var) | ((uintmax_t)bit))
 #define LREMOVE_BIT(var,bit)  ((var) & ~((uintmax_t)bit))
 #define LTOGGLE_BIT(var,bit) ((var) ^ ((uintmax_t)bit))
+#endif	/* XXX - pre-IOCCC29: remove the obsolete #if block above - XXX */
 
 /*
  * external function declarations
  */
 extern char *str_dup(char const *str);
+/* XXX - pre-IOCCC29: remove the obsolete function below - XXX */
 extern bool sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_checkp, intmax_t *count_checkp);
 extern bool is_empty(char const *path);
 extern char *cmdprintf(char const *format, ...);

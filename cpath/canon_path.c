@@ -546,7 +546,7 @@ canon_path(char const *orig_path,
     size_t path_len = 0;	/* full path length */
     size_t tmp_len = 0;		/* temporary path length */
     size_t comp_len = 0;	/* path component length */
-    enum path_sanity sanity = PATH_OK;	/* canon_path path_sanity error, or PATH_OK */
+    enum path_sanity sanity = PATH_ERR_UNSET;	/* canon_path path_sanity error, or PATH_OK */
     bool relative = true;		/* true ==> path is relative to "." (dot), false ==> path is absolute */
     struct dyn_array *array = NULL;	/* dynamic array of pointers to strings - path component stack */
     char *p = NULL;		/* path component */
@@ -1134,14 +1134,20 @@ canon_path(char const *orig_path,
     }
 
     /*
-     * free stack storage
+     * free duplicated orig_path
      */
     if (path != NULL) {
 	free(path);
 	path = NULL;
     }
-    dyn_array_free(array);
-    array = NULL;
+
+    /*
+     * free stack storage
+     */
+    if (array != NULL) {
+	dyn_array_free(array);
+	array = NULL;
+    }
 
     /*
      * return a sand and canonical path

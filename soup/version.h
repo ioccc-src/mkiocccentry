@@ -84,23 +84,23 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.7.7 2025-10-17"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.8.0 2025-10-20"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "2.1.3 2025-10-17"	/* format: major.minor YYYY-MM-DD */
+#define SOUP_VERSION "2.2.0 2025-10-20"	/* format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official iocccsize version
  */
-#define IOCCCSIZE_VERSION "29.0.1 2025-09-29"	/* format: major.minor YYYY-MM-DD */
+#define IOCCCSIZE_VERSION "29.0.1 2025-09-29"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_IOCCCSIZE_VERSION IOCCCSIZE_VERSION
 
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "2.1.5 2025-10-17"	/* format: major.minor YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "2.1.5 2025-10-17"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_MKIOCCCENTRY_VERSION MKIOCCCENTRY_VERSION
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC29-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
@@ -108,60 +108,70 @@
 /*
  * official location version
  */
-#define LOCATION_VERSION "1.0.6 2025-09-23"		/* format: major.minor YYYY-MM-DD */
+#define LOCATION_VERSION "1.0.6 2025-09-23"	/* format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .info.json file.
  */
-#define INFO_VERSION "1.18 2025-05-28"		/* format: major.minor YYYY-MM-DD */
+#define INFO_VERSION "1.18 2025-05-28"		/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_INFO_VERSION INFO_VERSION
 
 /*
  * Version of info for JSON the .auth.json file.
  */
-#define AUTH_VERSION "1.24 2025-08-28"		/* format: major.minor YYYY-MM-DD */
+#define AUTH_VERSION "1.24 2025-08-28"		/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_AUTH_VERSION AUTH_VERSION
 
 /*
  * official fnamchk version
  */
-#define FNAMCHK_VERSION "2.1.5 2025-10-17"	/* format: major.minor YYYY-MM-DD */
+#define FNAMCHK_VERSION "2.1.5 2025-10-17"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_FNAMCHK_VERSION FNAMCHK_VERSION
 
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "2.0.9 2025-10-17"	/* format: major.minor YYYY-MM-DD */
+#define TXZCHK_VERSION "2.0.9 2025-10-17"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_TXZCHK_VERSION TXZCHK_VERSION
 
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "2.1.2 2025-10-17"	/* format: major.minor YYYY-MM-DD */
+#define CHKENTRY_VERSION "2.1.2 2025-10-17"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_CHKENTRY_VERSION CHKENTRY_VERSION
 
 /*
  * official chksubmit version
  */
-#define CHKSUBMIT_VERSION "1.0.1 2025-10-17"	/* format: major.minor YYYY-MM-DD */
+#define CHKSUBMIT_VERSION "1.0.1 2025-10-17"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_CHKSUBMIT_VERSION CHKSUBMIT_VERSION
 
 /*
  * Version of info for JSON the .entry.json files.
  */
-#define ENTRY_VERSION "1.2 2024-09-25"		/* format: major.minor YYYY-MM-DD */
+#define ENTRY_VERSION "1.2 2024-09-25"		/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_ENTRY_VERSION ENTRY_VERSION
 
 /*
  * Version of info for JSON the author_handle.json files.
  */
-#define AUTHOR_VERSION "1.1 2024-02-11"		/* format: major.minor YYYY-MM-DD */
+#define AUTHOR_VERSION "1.1 2024-02-11"		/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_AUTHOR_VERSION AUTHOR_VERSION
 
 /*
  * test_file_util - test common utility functions for file operations
  */
-#define FILE_UTIL_TEST_VERSION "2.1.1 2025-10-17" /* version format: major.minor YYYY-MM-DD */
+#define FILE_UTIL_TEST_VERSION "2.1.2 2025-10-20" /* version format: major.minor[.patch] YYYY-MM-DD */
+
+ /*
+  * try_fts_walk - walk a directory tree using one of the static walk_rule sets
+  */
+#define TRY_FTS_WALK_VERSION "1.0.0 2025-10-20"	/* version format: major.minor[.patch] YYYY-MM-DD */
+
+ /*
+  * try_walk_set - try using one of the static walk_rule sets
+  */
+#define TRY_WALK_SET_VERSION "1.0.0 2025-10-20"	/* version format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
@@ -189,6 +199,14 @@
  *
  * Because the pr is a self contained system, we cannot define PR_VERSION here.
  * See pr/pr.h for the PR_VERSION value.
+ */
+
+
+/*
+ * cpath version
+ *
+ * Because the pr is a self contained system, we cannot define CPATH_VERSION here.
+ * See cpath/cpath.h for the CPATH_VERSION value.
  */
 
 

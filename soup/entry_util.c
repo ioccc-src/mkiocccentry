@@ -63,7 +63,6 @@
 #include <fts.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <fnmatch.h>
 
 /*
  * file_util - common utility functions for file operations

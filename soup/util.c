@@ -660,6 +660,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
 }
 
 
+/* XXX - pre-IOCCC29: remove the obsolete function below - XXX */
 /*
  * sum_and_count - add to a sum, count the number of additions
  *
