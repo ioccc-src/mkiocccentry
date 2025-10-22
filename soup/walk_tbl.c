@@ -8,8 +8,8 @@
  * IMPORTANT NOTE: While most of the applications for walk relates to walking
  *                 a directory tree, there are applications (related to the
  *                 tools such as txzchk(1)) where processing is perform on
- *                 the tar listing as well.  So a while traversing a file hierarchy
- *                 might be one application of walking, so to is processing
+ *                 the tar listing as well. So while traversing a file hierarchy
+ *                 might be one application of walking, so too is processing
  *                 the listing of a tar(1) command.
  *
  * Copyright (c) 2025 by Landon Curt Noll and Cody Boone Ferguson.  All Rights
@@ -533,7 +533,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      * COPYING*
      *
      * The mkiocccentry tool checks should have prevented anything from matching this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
@@ -547,7 +547,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      * COPYRIGHT*
      *
      * The mkiocccentry tool checks should have prevented anything from matching this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
@@ -561,7 +561,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      * LICENSE*
      *
      * The mkiocccentry tool checks should have prevented anything from matching this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
@@ -575,7 +575,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      * Makefile
      *
      * The mkiocccentry tool checks should have required something to match this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match files only and let "((anything))" rule below deal with any other
@@ -590,7 +590,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      * README.md
      *
      * The mkiocccentry tool checks should have prevented anything from matching this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
@@ -604,7 +604,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      * index.html
      *
      * The mkiocccentry tool checks should have prevented anything from matching this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
@@ -618,7 +618,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      * prog
      *
      * The mkiocccentry tool checks should have prevented anything from matching this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
@@ -632,7 +632,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      * prog.alt
      *
      * The mkiocccentry tool checks should have prevented anything from matching this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
@@ -657,7 +657,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      * prog.alt.o
      *
      * The mkiocccentry tool checks should have prevented anything from matching this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
@@ -671,7 +671,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      * prog.c
      *
      * The mkiocccentry tool checks should have required something to match this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match files only and let "((anything))" rule below deal with any other
@@ -686,7 +686,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      * prog.o
      *
      * The mkiocccentry tool checks should have prevented anything from matching this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
@@ -700,7 +700,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      * prog.orig.c
      *
      * The mkiocccentry tool checks should have prevented anything from matching this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
@@ -789,7 +789,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      *
      * The mkiocccentry tool creates a select set of ".*" (dot star) files that are managed by walk_rule entries
      * above, therefore the mkiocccentry tool checks should have prevented other ".*" (dot star) items.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * NOTE: ".." (dot-dot) is processed first in this struct walk_rule array, and the directory "." (dot)
@@ -809,7 +809,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      * bin tools that the IOCCC judges execute.
      *
      * The mkiocccentry tool checks should have required something to match this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
@@ -1093,7 +1093,7 @@ static struct walk_rule walk_rule_set_chkentry_s[] = {
      * COPYING*
      *
      * The mkiocccentry tool checks should have prevented anything from matching this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
@@ -1107,7 +1107,7 @@ static struct walk_rule walk_rule_set_chkentry_s[] = {
      * COPYRIGHT*
      *
      * The mkiocccentry tool checks should have prevented anything from matching this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
@@ -1121,7 +1121,7 @@ static struct walk_rule walk_rule_set_chkentry_s[] = {
      * LICENSE*
      *
      * The mkiocccentry tool checks should have prevented anything from matching this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
@@ -1135,7 +1135,7 @@ static struct walk_rule walk_rule_set_chkentry_s[] = {
      * Makefile
      *
      * The mkiocccentry tool checks should have required something to match this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match files only and let "((anything))" rule below deal with any other
@@ -1228,7 +1228,7 @@ static struct walk_rule walk_rule_set_chkentry_s[] = {
      * prog.c
      *
      * The mkiocccentry tool checks should have required something to match this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match files only and let "((anything))" rule below deal with any other
@@ -1362,7 +1362,7 @@ static struct walk_rule walk_rule_set_chkentry_s[] = {
      * bin tools that the IOCCC judges execute.
      *
      * The mkiocccentry tool checks should have required something to match this walk_rule.
-     * We match is again, in case of funny business" (as the expression goes) involving attempts to bypass checks
+     * We match is again, in case of "funny business" (as the expression goes) involving attempts to bypass checks
      * made by the mkiocccentry tool, and in case the tarball has been modified after formation.
      *
      * Regarding types: We match symlinks, and we match things avoid any potential for
