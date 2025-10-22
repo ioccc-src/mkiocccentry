@@ -1,5 +1,24 @@
 # Major changes to the IOCCC entry toolkit
 
+
+## Release 2.8.1 2025-10-22
+
+Simplify `fts_walk(struct walk_stat *wstat_p)` to just take an pointer to
+an initialized `struct walk_stat`: initialization needs to be performed
+by calling `init_walk_stat(...)` first.
+
+Changed `test_ioccc/try_fts_walk.c` as per the above.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "2.8.0 2025-10-20"
+to "2.8.1 2025-10-22".
+
+Changed `SOUP_VERSION` from "2.2.0 2025-10-20"
+to "2.2.1 2025-10-22".
+
+Changed `TRY_FTS_WALK_VERSION` from "1.0.0 2025-10-20"
+to "1.0.1 2025-10-22".
+
+
 ## Release 2.8.0 2025-10-20
 
 Checkpoint on the table driven walk code.  Currently

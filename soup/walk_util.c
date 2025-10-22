@@ -795,6 +795,9 @@ free_walk_stat(struct walk_stat *wstat_p)
 /*
  * init_walk_stat - initialize a walk_stat
  *
+ * This init_walk_stat() will initialize a struct walk_stat, given the various arguments
+ * that such an initialization requires.
+ *
  * given:
  *	wstat_p		    - pointer to a struct walk_stat
  *	topdir		    - path to a topdir, or empty string
@@ -854,6 +857,7 @@ init_walk_stat(struct walk_stat *wstat_p, char const *topdir, struct walk_set *s
 	errp(47,  __func__, "failed to strdup topdir string");
 	not_reached();
     }
+    wstat_p->topdir_len = strlen(wstat_p->topdir);
 
     /*
      * unset walked
@@ -3564,25 +3568,21 @@ record_fts_err(struct walk_stat *wstat_p, char const *path, off_t st_size, mode_
 /*
  * fts_walk - walk a file system tree
  *
+ * Given an initialized struct walk_stat, traverse a file system tree recording
+ * matches against the struct walk_rule array of the struct walk_set.
+ *
+ * NOTE: You need to call init_walk_stat() first in order to setup the struct walk_stat first.
+ *
  * given:
- *	wstat_p		    - pointer to a struct walk_stat
- *	topdir		    - path to a topdir (may NOT be an empty string)
- *	set		    - pointer to a walk_set
- *	context		    - string describing the context (tool and options) for debugging purposes
- *			      NOTE: The context string arg as duplicated via strdup(3).
- *      max_path_len        - max canonicalized path length, 0 ==> no limit
- *	max_filename_len    - max length of each component of path, 0 ==> no limit
- *      max_depth           - max depth of subdirectory tree, 0 ==> no limit, <0 ==> reserved for future use
+ *	wstat_p		    - pointer to a struct walk_stat to create
  *
  * return:
  *	true ==> no errors found
  *	false ==> some errors found
  */
 bool
-fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, char const *context,
-	 size_t max_path_len, size_t max_filename_len, int32_t max_depth)
+fts_walk(struct walk_stat *wstat_p)
 {
-    size_t topdir_len = 0;	    /* length of topdir */
     char const **path_set;	    /* NULL terminated array of character pointers */
     FTS *ftsp = NULL;		    /* file hierarchy structure */
     FTSENT *ftsent = NULL;	    /* information on a file under the file hierarchy structure */
@@ -3597,35 +3597,17 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	warn(__func__, "wstat_p is NULL");
 	return false;
     }
-    if (topdir == NULL) {
-	warn(__func__, "topdir is NULL");
-	return false;
-    }
-    if (set == NULL) {
-	warn(__func__, "set is NULL");
-	return false;
-    }
-    if (context == NULL) {
-	warn(__func__, "context is NULL");
-	return false;
-    }
 
     /*
-     * firewall - topdir cannot be an empty string
+     * if walk_stat check fails, abort
+     *
+     * NOTE: Passing this check means that we do not have to do as much checking elsewhere
+     *       in this function.
      */
-    topdir_len = strlen(topdir);
-    if (topdir_len <= 0) {
-	warn(__func__, "topdir is an empty string");
-	return false;
+    if (! chk_walk_stat(wstat_p)) {
+	err(94, __func__, "wstat_p failed chk_walk_stat");
+	not_reached();
     }
-
-    /*
-     * initialize a walk_stat
-     */
-    init_walk_stat(wstat_p, topdir, set, context,
-		   max_path_len, max_filename_len, max_depth,
-		   false);
-    dbg(DBG_V2_HIGH, "%s: initialized walk_stat for context: %s", __func__, context);
 
     /*
      * form a NULL terminated array of strings
@@ -3638,13 +3620,13 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	warnp(__func__, "calloc of 2 string pointers failed");
 	return false;
     }
-    path_set[0] = topdir;
+    path_set[0] = wstat_p->topdir;
     path_set[1] = NULL;
 
     /*
      * "open" the file hierarchy
      *
-     * NOTE: If topdir is a symlink, we will reference where is points, however for
+     * NOTE: If wstat_p->topdir is a symlink, we will reference where is points, however for
      *	     any symlink we find lower down, we will see the symbolic links themselves.
      */
     errno = 0;	/* pre-clear for warnp() */
@@ -3675,7 +3657,7 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	if (ftsent->fts_path == NULL) {
 
 	    /* warn about fts_path failure */
-	    warn(__func__, "fts_path was NULL during file hierarchy traversal of: %s,", topdir);
+	    warn(__func__, "fts_path was NULL during file hierarchy traversal of: %s,", wstat_p->topdir);
 
 	    /* close file hierarchy traversal */
 	    errno = 0;	/* pre-clear for warnp() */
@@ -3694,14 +3676,15 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	    return false;
 
 	/*
-	 * paranoia - avoid fts_path that is shorter than the canonicalized topdir length
+	 * paranoia - avoid fts_path that is shorter than the canonicalized wstat_p->topdir length
 	 *
 	 * NOTE: This should never happen, but in case there a fts_read(3) bug, we check.
 	 */
-	} else if (ftsent->fts_pathlen < topdir_len) {
+	} else if (ftsent->fts_pathlen < wstat_p->topdir_len) {
 
-	    /* warn about fts_path length shorter than canonicalized topdir length */
-	    warn(__func__, "fts_read produced fts_pathlen: %d < %zu for: %s", ftsent->fts_pathlen, topdir_len, ftsent->fts_path);
+	    /* warn about fts_path length shorter than canonicalized wstat_p->topdir length */
+	    warn(__func__, "fts_read produced fts_pathlen: %d < %zu for: %s",
+			   ftsent->fts_pathlen, wstat_p->topdir_len, ftsent->fts_path);
 
 	    /* close file hierarchy traversal */
 	    errno = 0;	/* pre-clear for warnp() */
@@ -3720,26 +3703,26 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	    return false;
 
 	/*
-	 * skip topdir itself
+	 * skip wstat_p->topdir itself
 	 *
 	 * NOTE: Due to directory pre-order and post-order traversal, this may happen twice.
 	 */
-	} else if (ftsent->fts_pathlen == topdir_len && strcmp(topdir, ftsent->fts_path) == 0) {
+	} else if (ftsent->fts_pathlen == wstat_p->topdir_len && strcmp(wstat_p->topdir, ftsent->fts_path) == 0) {
 
-	    /* silently skip topdir  */
-	    dbg(DBG_V1_HIGH, "%s: skipping topdir: %s", __func__, topdir);
+	    /* silently skip wstat_p->topdir  */
+	    dbg(DBG_V1_HIGH, "%s: skipping wstat_p->topdir: %s", __func__, wstat_p->topdir);
 	    continue;
 
 	/*
-	 * paranoia - avoid fts_path that is same as canonicalized topdir length but isn't topdir
+	 * paranoia - avoid fts_path that is same as canonicalized wstat_p->topdir length but isn't wstat_p->topdir
 	 *
 	 * NOTE: This should never happen, but in case there a fts_read(3) bug, we check.
 	 */
-	} else if (ftsent->fts_pathlen == topdir_len) {
+	} else if (ftsent->fts_pathlen == wstat_p->topdir_len) {
 
-	    /* warn about fts_path length same as canonicalized topdir length but isn't topdir */
-	    warn(__func__, "fts_read() produced fts_pathlen: %d == %zu for topdir: %s != %s",
-		 ftsent->fts_pathlen, topdir_len, topdir, ftsent->fts_path);
+	    /* warn about fts_path length same as canonicalized wstat_p->topdir length but isn't wstat_p->topdir */
+	    warn(__func__, "fts_read() produced fts_pathlen: %d == %zu for wstat_p->topdir: %s != %s",
+		 ftsent->fts_pathlen, wstat_p->topdir_len, wstat_p->topdir, ftsent->fts_path);
 
 	    /* close file hierarchy traversal */
 	    errno = 0;	/* pre-clear for warnp() */
@@ -3757,18 +3740,19 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	    }
 	    return false;
 
-	/* assertion: ftsent->fts_pathlen > topdir_len */
+	/* assertion: ftsent->fts_pathlen > wstat_p->topdir_len */
 
 	/*
-	 * paranoia - avoid fts_path that does NOT start with canonicalized topdir followed by / (slash)
+	 * paranoia - avoid fts_path that does NOT start with canonicalized wstat_p->topdir followed by / (slash)
 	 *
 	 * NOTE: This should never happen, but in case there is a fts_read(3) bug, we check.
 	 */
-	} else if (ftsent->fts_path[topdir_len] != '/' || strncmp(topdir, ftsent->fts_path, topdir_len) != 0) {
+	} else if (ftsent->fts_path[wstat_p->topdir_len] != '/' ||
+		   strncmp(wstat_p->topdir, ftsent->fts_path, wstat_p->topdir_len) != 0) {
 
-	    /* warn about fts_path not starting with canonicalized topdir + / (slash) */
-	    warn(__func__, "fts_read() produced fts_pathlen: %d == %zu for non-topdir: %s",
-		 ftsent->fts_pathlen, topdir_len, ftsent->fts_path);
+	    /* warn about fts_path not starting with canonicalized wstat_p->topdir + / (slash) */
+	    warn(__func__, "fts_read() produced fts_pathlen: %d == %zu for non-wstat_p->topdir: %s",
+		 ftsent->fts_pathlen, wstat_p->topdir_len, ftsent->fts_path);
 
 	    /* close file hierarchy traversal */
 	    errno = 0;	/* pre-clear for warnp() */
@@ -3787,12 +3771,12 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	    return false;
 	}
 
-	/* assertion: ftsent->fts_path starts with topdir */
+	/* assertion: ftsent->fts_path starts with wstat_p->topdir */
 
 	/*
-	 * determine the part of fts_path that is beyond the topdir
+	 * determine the part of fts_path that is beyond the wstat_p->topdir
 	 */
-	subpath = &ftsent->fts_path[topdir_len+1];
+	subpath = &ftsent->fts_path[wstat_p->topdir_len+1];
 
 	/*
 	 * print information about the file
@@ -3808,7 +3792,7 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	    dbg(DBG_V1_HIGH, "  %s: size: %lld", __func__, (long long)(ftsent->fts_statp ? ftsent->fts_statp->st_size : 0));
 	    dbg(DBG_V1_HIGH, "  %s: depth: %d\n", __func__, ftsent->fts_level);
 
-	    /* record walk step with sub-path below canonicalized topdir */
+	    /* record walk step with sub-path below canonicalized wstat_p->topdir */
 	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL);
 	    break;
 
@@ -3822,7 +3806,7 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	    dbg(DBG_V1_HIGH, "  %s: size: %lld", __func__, (long long)(ftsent->fts_statp ? ftsent->fts_statp->st_size : 0));
 	    dbg(DBG_V1_HIGH, "  %s: depth: %d\n", __func__, ftsent->fts_level);
 
-	    /* record walk step with sub-path below canonicalized topdir */
+	    /* record walk step with sub-path below canonicalized wstat_p->topdir */
 	    record_fts_err(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, ftsent->fts_level);
 	    break;
 
@@ -3835,7 +3819,7 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	    dbg(DBG_V1_HIGH, "  %s: size: %lld", __func__, (long long)(ftsent->fts_statp ? ftsent->fts_statp->st_size : 0));
 	    dbg(DBG_V1_HIGH, "  %s: depth: %d\n", __func__, ftsent->fts_level);
 
-	    /* record walk step with sub-path below canonicalized topdir */
+	    /* record walk step with sub-path below canonicalized wstat_p->topdir */
 	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL);
 	    break;
 
@@ -3857,7 +3841,7 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	    fts_set_ret = fts_set(ftsp, ftsent, FTS_SKIP);
 	    if (fts_set_ret != 0) {
 
-		/* warn about fts_path not starting with canonicalized topdir + / (slash) */
+		/* warn about fts_path not starting with canonicalized wstat_p->topdir + / (slash) */
 		warn(__func__, "fts_set() returned error: %d for path:  %s", fts_set_ret, ftsent->fts_path);
 
 		/* close file hierarchy traversal */
@@ -3981,7 +3965,7 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	    fts_set_ret = fts_set(ftsp, ftsent, FTS_SKIP);
 	    if (fts_set_ret != 0) {
 
-		/* warn about fts_path not starting with canonicalized topdir + / (slash) */
+		/* warn about fts_path not starting with canonicalized wstat_p->topdir + / (slash) */
 		warn(__func__, "fts_set() returned error: %d for path:  %s", fts_set_ret, ftsent->fts_path);
 
 		/* close file hierarchy traversal */
@@ -4011,7 +3995,7 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	    dbg(DBG_V1_HIGH, "  %s: size: %lld", __func__, (long long)(ftsent->fts_statp ? ftsent->fts_statp->st_size : 0));
 	    dbg(DBG_V1_HIGH, "  %s: depth: %d\n", __func__, ftsent->fts_level);
 
-	    /* record walk step with sub-path below canonicalized topdir */
+	    /* record walk step with sub-path below canonicalized wstat_p->topdir */
 	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL);
 	    break;
 
@@ -4037,7 +4021,7 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	    fts_set_ret = fts_set(ftsp, ftsent, FTS_SKIP);
 	    if (fts_set_ret != 0) {
 
-		/* warn about fts_path not starting with canonicalized topdir + / (slash) */
+		/* warn about fts_path not starting with canonicalized wstat_p->topdir + / (slash) */
 		warn(__func__, "fts_set() returned error: %d for path:  %s", fts_set_ret, ftsent->fts_path);
 
 		/* close file hierarchy traversal */
@@ -4083,7 +4067,7 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	    fts_set_ret = fts_set(ftsp, ftsent, FTS_SKIP);
 	    if (fts_set_ret != 0) {
 
-		/* warn about fts_path not starting with canonicalized topdir + / (slash) */
+		/* warn about fts_path not starting with canonicalized wstat_p->topdir + / (slash) */
 		warn(__func__, "fts_set() returned error: %d for path:  %s", fts_set_ret, ftsent->fts_path);
 
 		/* close file hierarchy traversal */
@@ -4113,7 +4097,7 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	    dbg(DBG_V1_HIGH, "  %s: size: %lld", __func__, (long long)(ftsent->fts_statp ? ftsent->fts_statp->st_size : 0));
 	    dbg(DBG_V1_HIGH, "  %s: depth: %d\n", __func__, ftsent->fts_level);
 
-	    /* record walk step with sub-path below canonicalized topdir */
+	    /* record walk step with sub-path below canonicalized wstat_p->topdir */
 	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL);
 	    break;
 
@@ -4126,7 +4110,7 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	    dbg(DBG_V1_HIGH, "  %s: size withheld due to FTS_SLNONE", __func__);
 	    dbg(DBG_V1_HIGH, "  %s: depth: %d\n", __func__, ftsent->fts_level);
 
-	    /* record walk step with sub-path below canonicalized topdir */
+	    /* record walk step with sub-path below canonicalized wstat_p->topdir */
 	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL);
 	    break;
 
@@ -4147,7 +4131,7 @@ fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, ch
 	    fts_set_ret = fts_set(ftsp, ftsent, FTS_SKIP);
 	    if (fts_set_ret != 0) {
 
-		/* warn about fts_path not starting with canonicalized topdir + / (slash) */
+		/* warn about fts_path not starting with canonicalized wstat_p->topdir + / (slash) */
 		warn(__func__, "fts_set() returned error: %d for path: %s",
 		     fts_set_ret, ftsent->fts_path);
 

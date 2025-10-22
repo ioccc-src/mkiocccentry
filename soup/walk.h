@@ -387,6 +387,7 @@ struct walk_stat {
 
     /* information a walk that may have started (or not), may be in progress (or not), may have finished (or not) */
     char *topdir;			/* malloced path to a topdir, or empty string */
+    size_t topdir_len;			/* length of topdir in bytes */
     bool walked;			/* true ==> walk has completed, false ==> no walk has been performed */
     bool walking;			/* true ==> walk is in progress, false ==> walk is complete or no walk was ever started */
     bool skip;				/* true ==> some tree pruning was observed, false ==> no known tree pruning */
@@ -496,8 +497,7 @@ extern bool chk_walk(struct walk_stat *wstat_p, FILE *stream,
 		     int32_t max_file, int32_t max_dir, int32_t max_sym, int32_t max_other, bool walk_done);
 extern int fts_cmp(const FTSENT **a, const FTSENT **b);
 extern int fts_icmp(const FTSENT **a, const FTSENT **b);
-extern bool fts_walk(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, char const *context,
-		     size_t max_path_len, size_t max_filename_len, int32_t max_depth);
+extern bool fts_walk(struct walk_stat *wstat_p);
 
 
 #endif /* INCLUDE_WALK_H */

@@ -528,10 +528,16 @@ test_walk(FILE *out,
     }
 
     /*
+     * initialize a walk_stat
+     */
+    init_walk_stat(&wstat, topdir, set, context,
+		   max_path_len, max_filename_len, max_depth,
+		   false);
+
+    /*
      * walk a file system tree, recording steps
      */
-    walk_ok = fts_walk(&wstat, topdir, set, context,
-		       max_path_len, max_filename_len, max_depth);
+    walk_ok = fts_walk(&wstat);
     if (walk_ok == false) {
 	dbg(DBG_MED, "%s: fts_walk() failed", __func__);
 	return false;
