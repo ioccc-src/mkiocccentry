@@ -1,11 +1,11 @@
 /*
- * canon_path - canonicalize paths
+ * cpath - canonicalize paths
  *
- * "Not all those who wander are lost."
+ * "... not all those who wander are lost."
  *
  *      -- J.R.R. Tolkien
  *
- * Copyright (c) 1991-2025 by Landon Curt Noll  All Rights Reserved.
+ * Copyright (c) 1991,2008,2014-2016,2022-2025 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -29,6 +29,19 @@
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
  * Share and enjoy! :-)
+ *
+ * We gratefully acknowledge the concept contributions, plus the documentation
+ * corrections, and other suggestions made by Cody Boone Ferguson:
+ *
+ *	@xexyl
+ *	https://xexyl.net
+ *	https://ioccc.xexyl.net
+ *
+ * for whom the first part of the above quote applies:
+ *
+ * "All that is gold does not glitter, ..."
+ *
+ *      -- J.R.R. Tolkien
  */
 
 
