@@ -7,6 +7,9 @@ Simplify `fts_walk(struct walk_stat *wstat_p)` to just take an pointer to
 an initialized `struct walk_stat`: initialization needs to be performed
 by calling `init_walk_stat(...)` first.
 
+Added `topdir_len` to `struct walk_stat`.  The `chk_walk_stat()` function
+now checks that value.
+
 Changed `test_ioccc/try_fts_walk.c` as per the above.
 
 Changed `MKIOCCCENTRY_REPO_VERSION` from "2.8.0 2025-10-20"

@@ -1265,6 +1265,30 @@ chk_walk_stat(struct walk_stat *wstat_p)
     }
 
     /*
+     * topdir must be non-NULL
+     */
+    if (wstat_p->topdir == NULL) {
+	warn(__func__, "wstat_p->topdir is NULL");
+	return false;
+    }
+
+    /*
+     * topdir must be non-empty string
+     */
+    if (wstat_p->topdir[0] == '\0') {
+	warn(__func__, "wstat_p->topdir is am empty string");
+	return false;
+    }
+
+    /*
+     * topdir string length must match topdir_len
+     */
+    if (strlen(wstat_p->topdir) != wstat_p->topdir_len) {
+	warn(__func__, "wstat_p->topdir length: %zu != topdir_len: %zu", strlen(wstat_p->topdir), wstat_p->topdir_len);
+	return false;
+    }
+
+    /*
      * no errors found under walk_stat
      */
     return true;
