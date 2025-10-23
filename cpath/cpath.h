@@ -129,8 +129,8 @@ extern char const *path_sanity_error(enum path_sanity sanity);
 extern bool safe_str(char const *str, bool any_case, bool slash_ok);
 extern bool safe_path_str(char const *str, bool any_case, bool slash_ok);
 extern char *canon_path(char const *orig_path,
-			size_t max_path_len, size_t max_filename_len, int32_t max_depth,
-			enum path_sanity *sanity_p, size_t *len_p, int32_t *depth_p,
+			size_t max_path_len, size_t max_filename_len, int_least32_t max_depth,
+			enum path_sanity *sanity_p, size_t *len_p, int_least32_t *depth_p,
 			bool rel_only, bool lower_case, bool safe_chk, bool dotdot_err,
 			const regex_t *restrict preg);
 

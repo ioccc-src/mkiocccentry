@@ -1,3 +1,11 @@
+## Release 2.0.1 2025-10-23
+
+Change `int32_t` (which is not required by the standard to exist) to
+`int_least32_t` (which is required by the standard to exist). This update was
+done through `sgit(1)` and that means the man page was indeed updated. Also a
+typo fixes: `an int...` (instead of `a int...`).
+
+
 ## Release 2.0.0 2025-10-16
 
 Improve `.gitignore` and sort the contents.

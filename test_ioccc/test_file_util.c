@@ -293,7 +293,7 @@ main(int argc, char **argv)
     char const *dirname = "foo";
     char const *filename = "bar";
     /**/
-    int32_t test_num = 0;		/* canon_path test number */
+    int_least32_t test_num = 0;		/* canon_path test number */
     /**/
     char *path = NULL;			/* path to process */
     char *expect = NULL;		/* expected process result */

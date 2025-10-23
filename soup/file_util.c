@@ -397,7 +397,7 @@ dir_name(char const *path)
 static size_t
 count_dirs(char const *path)
 {
-    int32_t deep = 0;			/* path depth, 0 ==> topdir, 1 ==> directly under topdir, etc. */
+    int_least32_t deep = 0;		/* path depth, 0 ==> topdir, 1 ==> directly under topdir, etc. */
     char const *cpath = NULL;		/* canonicalized path */
 
     /*

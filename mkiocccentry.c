@@ -1378,7 +1378,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
     size_t unsafe_dirs = 0;             /* number of unsafe dirnames (added to dirs to verify there aren't too many) */
     struct fts fts;                     /* for FTS functions */
     int exit_code = 0;                  /* for make clobber */
-    int32_t depth = 0;			/* depth of subdirectory tree */
+    int_least32_t depth = 0;		/* depth of subdirectory tree */
 
     /*
      * firewall
@@ -2883,7 +2883,7 @@ check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
     struct fts fts;                     /* for FTS functions */
     char *p = NULL;                     /* temp value to print lists (arrays) */
     intmax_t i = 0;                     /* index into arrays */
-    int32_t depth = 0;			/* depth of subdirectory tree */
+    int_least32_t depth = 0;		/* depth of subdirectory tree */
 
     /*
      * firewall

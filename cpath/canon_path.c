@@ -74,7 +74,7 @@
 	    *(size_t *)(len_p) = path_len; \
 	} \
 	if ((depth_p) != NULL) { \
-	    *(int32_t *)(depth_p) = deep; \
+	    *(int_least32_t *)(depth_p) = deep; \
 	} \
 	if ((path) != NULL) { \
 	    free(path); \
@@ -550,8 +550,8 @@ safe_path_str(char const *path_str, bool any_case, bool slash_ok)
  */
 char *
 canon_path(char const *orig_path,
-	   size_t max_path_len, size_t max_filename_len, int32_t max_depth,
-	   enum path_sanity *sanity_p, size_t *len_p, int32_t *depth_p,
+	   size_t max_path_len, size_t max_filename_len, int_least32_t max_depth,
+	   enum path_sanity *sanity_p, size_t *len_p, int_least32_t *depth_p,
 	   bool rel_only, bool lower_case, bool safe_chk, bool dotdot_err,
 	   const regex_t *restrict preg)
 {
@@ -564,7 +564,7 @@ canon_path(char const *orig_path,
     struct dyn_array *array = NULL;	/* dynamic array of pointers to strings - path component stack */
     char *p = NULL;		/* path component */
     char **q = NULL;		/* address of a dynamic array string element */
-    int32_t deep = 0;		/* path depth (see note above this function) */
+    int_least32_t deep = 0;	/* path depth (see note above this function) */
     bool test = true;		/* true ==> passed test, false == failed test */
     int regexec_ret = 0;	/* regexec(3) return code */
     char *ret_path = NULL;	/* malloced canonicalized path to return */
@@ -813,7 +813,7 @@ canon_path(char const *orig_path,
 		 * We let the component .. (dot-dot) to pop the previous previous path component from the stack
 		 */
 		} else {
-		    deep = (int32_t)dyn_array_pop(array, NULL);
+		    deep = (int_least32_t)dyn_array_pop(array, NULL);
 		    dbg(DBG_V3_HIGH, "%s: .. component stack pop, stack depth: %d", __func__, deep);
 		}
 	    }

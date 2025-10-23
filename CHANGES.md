@@ -10,7 +10,18 @@ by calling `init_walk_stat(...)` first.
 Added `topdir_len` to `struct walk_stat`.  The `chk_walk_stat()` function
 now checks that value.
 
+Add `path_in_walk_stat()` function to search for a canonicalized path
+on the all dynamic array of a `struct walk_stat`.
+
+Sync with the [cpath repo](https://github.com/lcn2/cpath).
+
+Change `int32_t` to `int_least32_t` for portability within
+the "non-cloned" code.
+
 Changed `test_ioccc/try_fts_walk.c` as per the above.
+
+Changed `fts_walk()` to exit (via `err()` on "firewall" level
+errors such as passing a NULL argument.
 
 Changed `MKIOCCCENTRY_REPO_VERSION` from "2.8.0 2025-10-20"
 to "2.8.1 2025-10-22".

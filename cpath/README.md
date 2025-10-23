@@ -454,7 +454,7 @@ Consider the following C code framework:
     enum path_sanity sanity2 = PATH_ERR_UNSET;  /* canon_path() path2 error code, or PATH_OK */
     size_t max_path_len = 32;                   /* maximum canonicalized path2 length */
     size_t max_filename_len = 14;               /* maximum canonicalized path2 component length */
-    int32_t max_depth = 5;                      /* maximum canonicalized path2 depth */
+    int_least32_t max_depth = 5;                /* maximum canonicalized path2 depth */
     size_t len2;                                /* length of canonicalized path2 */
     size_t depth2;                              /* length of canonicalized path depth */
 
@@ -575,8 +575,8 @@ The `canon_path()` function is defined in `cpath.h` is:
      */
 
     extern char * canon_path(char const *orig_path,
-                             size_t max_path_len, size_t max_filename_len, int32_t max_depth,
-                             enum path_sanity *sanity_p, size_t *len_p, int32_t *depth_p,
+                             size_t max_path_len, size_t max_filename_len, int_least32_t max_depth,
+                             enum path_sanity *sanity_p, size_t *len_p, int_least32_t *depth_p,
                              bool rel_only, bool lower_case, bool safe_chk);
 ```
 

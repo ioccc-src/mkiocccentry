@@ -152,8 +152,8 @@ static char const * const usage_msg =
 static void usage(int exitcode, char const *str) __attribute__((noreturn));
 static bool test_walk(FILE *out,
 		      char const *topdir, struct walk_set *set, char *context,
-		      size_t max_path_len, size_t max_filename_len, int32_t max_depth,
-		      int32_t max_file, int32_t max_dir, int32_t max_sym, int32_t max_other,
+		      size_t max_path_len, size_t max_filename_len, int_least32_t max_depth,
+		      int_least32_t max_file, int_least32_t max_dir, int_least32_t max_sym, int_least32_t max_other,
 		      bool sort_cpath);
 
 
@@ -167,13 +167,13 @@ main(int argc, char *argv[])
     /**/
     size_t max_path_len = MAX_PATH_LEN;		    /* max canonicalized path length, 0 ==> no limit */
     size_t max_filename_len = MAX_FILENAME_LEN;	    /* max length of each component of path, 0 ==> no limit */
-    int32_t max_depth = MAX_PATH_DEPTH;		    /* max canonicalized path depth where 0 is the topdir, 0 ==> no limit */
+    int_least32_t max_depth = MAX_PATH_DEPTH;	    /* max canonicalized path depth where 0 is the topdir, 0 ==> no limit */
     bool sort_cpath = true;			    /* true ==> dynamic arrays by canonicalized path, false ==> do not sort */
     /**/
-    int32_t max_file = MAX_EXTRA_FILE_COUNT;	    /* max counted files, 0 ==> unlimited, -1 ==> none */
-    int32_t max_dir = MAX_EXTRA_DIR_COUNT;	    /* max counted directories, 0 ==> unlimited, -1 ==> none */
-    int32_t max_sym = ANY_COUNTED;		    /* max counted symlinks, 0 ==> unlimited, -1 ==> none */
-    int32_t max_other = NO_COUNTED;		    /* max counted non-file/dir/symlinks, 0 ==> unlimited, -1 ==> none */
+    int_least32_t max_file = MAX_EXTRA_FILE_COUNT;  /* max counted files, 0 ==> unlimited, -1 ==> none */
+    int_least32_t max_dir = MAX_EXTRA_DIR_COUNT;    /* max counted directories, 0 ==> unlimited, -1 ==> none */
+    int_least32_t max_sym = ANY_COUNTED;	    /* max counted symlinks, 0 ==> unlimited, -1 ==> none */
+    int_least32_t max_other = NO_COUNTED;	    /* max counted non-file/dir/symlinks, 0 ==> unlimited, -1 ==> none */
     /**/
     bool opt_error = false;		/* fchk_inval_opt() return */
     int set_num = WALK_SET_DEFAULT;	/* set arg as a number */
@@ -234,9 +234,9 @@ main(int argc, char *argv[])
 	    break;
 	case 'd':
 	    errno = 0;
-	    max_depth = (int32_t) strtol(optarg, NULL, 0);
+	    max_depth = (int_least32_t) strtol(optarg, NULL, 0);
 	    if (errno != 0) {
-		errp(3, program, "unable to convert -d %s into a int32_t", optarg); /*ooo*/
+		errp(3, program, "unable to convert -d %s into a int_least32_t", optarg); /*ooo*/
 		not_reached();
 	    }
 	    break;
@@ -263,33 +263,33 @@ main(int argc, char *argv[])
 	    break;
 	case 'F':
 	    errno = 0;
-	    max_file = (int32_t) strtol(optarg, NULL, 0);
+	    max_file = (int_least32_t) strtol(optarg, NULL, 0);
 	    if (errno != 0) {
-		errp(3, program, "unable to convert -F %s into a int32_t", optarg); /*ooo*/
+		errp(3, program, "unable to convert -F %s into a int_least32_t", optarg); /*ooo*/
 		not_reached();
 	    }
 	    break;
 	case 'D':
 	    errno = 0;
-	    max_dir = (int32_t) strtol(optarg, NULL, 0);
+	    max_dir = (int_least32_t) strtol(optarg, NULL, 0);
 	    if (errno != 0) {
-		errp(3, program, "unable to convert -S %s into a int32_t", optarg); /*ooo*/
+		errp(3, program, "unable to convert -S %s into a int_least32_t", optarg); /*ooo*/
 		not_reached();
 	    }
 	    break;
 	case 'S':
 	    errno = 0;
-	    max_sym = (int32_t) strtol(optarg, NULL, 0);
+	    max_sym = (int_least32_t) strtol(optarg, NULL, 0);
 	    if (errno != 0) {
-		errp(3, program, "unable to convert -S %s into a int32_t", optarg); /*ooo*/
+		errp(3, program, "unable to convert -S %s into a int_least32_t", optarg); /*ooo*/
 		not_reached();
 	    }
 	    break;
 	case 'O':
 	    errno = 0;
-	    max_depth = (int32_t) strtol(optarg, NULL, 0);
+	    max_depth = (int_least32_t) strtol(optarg, NULL, 0);
 	    if (errno != 0) {
-		errp(3, program, "unable to convert -O %s into a int32_t", optarg); /*ooo*/
+		errp(3, program, "unable to convert -O %s into a int_least32_t", optarg); /*ooo*/
 		not_reached();
 	    }
 	    break;
@@ -500,8 +500,8 @@ usage(int exitcode, char const *str)
 static bool
 test_walk(FILE *out,
 	  char const *topdir, struct walk_set *set, char *context,
-	  size_t max_path_len, size_t max_filename_len, int32_t max_depth,
-	  int32_t max_file, int32_t max_dir, int32_t max_sym, int32_t max_other,
+	  size_t max_path_len, size_t max_filename_len, int_least32_t max_depth,
+	  int_least32_t max_file, int_least32_t max_dir, int_least32_t max_sym, int_least32_t max_other,
 	  bool sort_cpath)
 {
     struct walk_stat wstat;	    /* walk_stat being processed */

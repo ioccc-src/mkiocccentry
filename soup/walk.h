@@ -184,7 +184,7 @@ struct item {
     size_t fts_pathlen;             /* strlen(fts_path) */
     char *fts_name;                 /* malloced copy of the "file name", i.e., basename of fts_path */
     size_t fts_namelen;             /* strlen(fts_name) */
-    int32_t fts_level;              /* fts_path depth, 0 ==> topdir, 1 ==> directly under topdir, 2 ==> in sub-dir under topdir */
+    int_least32_t fts_level;	    /* fts_path depth, 0 ==> topdir, 1 ==> directly under topdir, 2 ==> in sub-dir under topdir */
     off_t st_size;                  /* file size, in bytes in struct stat st_size form */
     mode_t st_mode;                 /* inode protection mode in struct stat st_mode form */
 };
@@ -392,9 +392,9 @@ struct walk_stat {
     bool walking;			/* true ==> walk is in progress, false ==> walk is complete or no walk was ever started */
     bool skip;				/* true ==> some tree pruning was observed, false ==> no known tree pruning */
     bool tar_listing_used;		/* true ==> tarball listing walk, false ==> walk via fts(3) */
-    int32_t max_path_len;		/* max canonicalized path length, 0 ==> no limit */
-    int32_t max_filename_len;		/* max length of each component of path, 0 ==> no limit */
-    int32_t max_depth;			/* max depth of subdirectory tree, 0 ==> no limit, <0 ==> reserved for future use */
+    int_least32_t max_path_len;		/* max canonicalized path length, 0 ==> no limit */
+    int_least32_t max_filename_len;	/* max length of each component of path, 0 ==> no limit */
+    int_least32_t max_depth;		/* max depth of subdirectory tree, 0 ==> no limit, <0 ==> reserved for future use */
     uintmax_t steps;			/* number of steps taken during the walk */
 
     /* items by type - See enum allowed_type */
@@ -482,7 +482,7 @@ extern struct walk_set walk_chkentry_w;		/* chkentry -w walk_set */
  */
 extern void free_walk_stat(struct walk_stat *wstat_p);
 extern void init_walk_stat(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, char const *context,
-			   size_t max_path_len, size_t max_filename_len, int32_t max_depth,
+			   size_t max_path_len, size_t max_filename_len, int_least32_t max_depth,
 			   bool tar_listing_used);
 extern bool record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode_t st_mode, char const **cpath_ret);
 extern void fprintf_walk_stat(FILE *stream, struct walk_stat *wstat_p);
@@ -494,10 +494,11 @@ int item_icmp(void const *pa, void const *pb);
 extern void sort_walk_stat(struct walk_stat *wstat_p);
 extern void sort_walk_istat(struct walk_stat *wstat_p);
 extern bool chk_walk(struct walk_stat *wstat_p, FILE *stream,
-		     int32_t max_file, int32_t max_dir, int32_t max_sym, int32_t max_other, bool walk_done);
+		     int_least32_t max_file, int_least32_t max_dir, int_least32_t max_sym, int_least32_t max_other, bool walk_done);
 extern int fts_cmp(const FTSENT **a, const FTSENT **b);
 extern int fts_icmp(const FTSENT **a, const FTSENT **b);
 extern bool fts_walk(struct walk_stat *wstat_p);
+extern struct item *path_in_walk_stat(struct walk_stat *wstat_p, char const *c_path);
 
 
 #endif /* INCLUDE_WALK_H */
