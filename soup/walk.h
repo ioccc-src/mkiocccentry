@@ -102,8 +102,8 @@
  * For functions such as chk_walk(), these COUNTED defines may be used
  * as args for max_files, max_dirs, max_syms, or max_other.
  */
-#define ANY_COUNTED (0)		/* any number of counted items */
-#define NO_COUNTED (-1)		/* no counted items */
+#define ANY_COUNT (0)		/* any number of counted items */
+#define NO_COUNT (-1)		/* no counted items */
 
 
 /*

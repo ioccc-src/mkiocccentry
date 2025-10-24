@@ -194,8 +194,8 @@ main(int argc, char *argv[])
     /**/
     int_least32_t max_file = MAX_EXTRA_FILE_COUNT;  /* max counted files, 0 ==> unlimited, -1 ==> none */
     int_least32_t max_dir = MAX_EXTRA_DIR_COUNT;    /* max counted directories, 0 ==> unlimited, -1 ==> none */
-    int_least32_t max_sym = ANY_COUNTED;            /* max counted symlinks, 0 ==> unlimited, -1 ==> none */
-    int_least32_t max_other = NO_COUNTED;           /* max counted non-file/dir/symlinks, 0 ==> unlimited, -1 ==> none */
+    int_least32_t max_sym = ANY_COUNT;            /* max counted symlinks, 0 ==> unlimited, -1 ==> none */
+    int_least32_t max_other = NO_COUNT;           /* max counted non-file/dir/symlinks, 0 ==> unlimited, -1 ==> none */
     /**/
     size_t max_path_len = MAX_PATH_LEN;		    /* max canonicalized path length, 0 ==> no limit */
     size_t max_filename_len = MAX_FILENAME_LEN;	    /* max length of each component of path, 0 ==> no limit */
@@ -488,10 +488,10 @@ usage(int exitcode, char const *str)
     }
     fprintf_usage(exitcode, stderr, usage_msg, TRY_WALK_SET_BASENAME, TOPDIR,
 			    MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
-			    ANY_COUNTED, NO_COUNTED, MAX_EXTRA_FILE_COUNT,
-			    ANY_COUNTED, NO_COUNTED, MAX_EXTRA_DIR_COUNT,
-			    ANY_COUNTED, NO_COUNTED, ANY_COUNTED,
-			    ANY_COUNTED, NO_COUNTED, NO_COUNTED,
+			    ANY_COUNT, NO_COUNT, MAX_EXTRA_FILE_COUNT,
+			    ANY_COUNT, NO_COUNT, MAX_EXTRA_DIR_COUNT,
+			    ANY_COUNT, NO_COUNT, ANY_COUNT,
+			    ANY_COUNT, NO_COUNT, NO_COUNT,
 			    WALK_SET_DEFAULT, TRY_WALK_SET_BASENAME, TRY_WALK_SET_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();

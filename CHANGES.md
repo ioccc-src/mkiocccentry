@@ -15,6 +15,9 @@ errors such as passing a NULL argument.
 
 The `record_step()` is now able to optionally check for duplicates.
 
+Renamed `ANY_COUNTED` to `ANY_COUNT`.
+Renamed `NO_COUNTED` to `NO_COUNT`.
+
 Changed `MKIOCCCENTRY_REPO_VERSION` from "2.8.1 2025-10-22"
 to "2.8.2 2025-10-23".
 

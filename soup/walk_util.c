@@ -1647,7 +1647,7 @@ match_walk_rule(struct walk_rule *rule_p, struct item *i_p, int indx)
  *	wstat_p	    pointer to a struct walk_stat
  *	fts_path    "root path" from topdir of the item
  *	st_size	    size, in bytes in the form used by stat(2)
- *	st_mode	    inode protection mode in the form used b by stat(2)
+ *	st_mode	    inode protection mode in the form used by stat(2)
  *
  *	dup_p       != NULL ==> set *dup_p according to if canonicalized was already recorded in struct walk_stat
  *		    NULL ==> do not check for duplicates
@@ -3018,10 +3018,10 @@ sort_walk_istat(struct walk_stat *wstat_p)
  *	wset_p	    pointer to a struct walk_set
  *	stream	    != NULL ==> print error messages in err
  *		    NULL ==> do not print any error information
- *	max_file    max counted files, ANY_COUNTED ==> unlimited, NO_COUNTED ==> none allowed
- *	max_dir     max counted directories, ANY_COUNTED ==> unlimited, NO_COUNTED ==> none allowed
- *	max_sym     max counted symlinks, ANY_COUNTED ==> unlimited, NO_COUNTED ==> none allowed
- *	max_other   max counted non-file/dir/symlinks, ANY_COUNTED ==> unlimited, NO_COUNTED ==> none allowed
+ *	max_file    max counted files, ANY_COUNT ==> unlimited, NO_COUNT ==> none allowed
+ *	max_dir     max counted directories, ANY_COUNT ==> unlimited, NO_COUNT ==> none allowed
+ *	max_sym     max counted symlinks, ANY_COUNT ==> unlimited, NO_COUNT ==> none allowed
+ *	max_other   max counted non-file/dir/symlinks, ANY_COUNT ==> unlimited, NO_COUNT ==> none allowed
  *	walk_done   true ==> mark walked as true, walking as false
  *		    false ==> mark nothing
  *
@@ -3316,7 +3316,7 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 	fmsg(stream, "files: number of counted (non-free): %jd > maximum allowed counted: %d",
 		     counted_file_count, max_file);
 	ret = false;
-    } else if (max_file == NO_COUNTED && counted_file_count > 0) {
+    } else if (max_file == NO_COUNT && counted_file_count > 0) {
 	fmsg(stream, "files: no counted (non-free) allowed, found: %jd", counted_file_count);
 	ret = false;
     }
@@ -3329,7 +3329,7 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 	fmsg(stream, "directories: number of counted (non-free): %jd > maximum allowed counted: %d",
 		     counted_dir_count, max_dir);
 	ret = false;
-    } else if (max_dir == NO_COUNTED && counted_dir_count > 0) {
+    } else if (max_dir == NO_COUNT && counted_dir_count > 0) {
 	fmsg(stream, "directories: no counted (non-free) allowed, found: %jd", counted_dir_count);
 	ret = false;
     }
@@ -3342,7 +3342,7 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 	fmsg(stream, "symlinks: number of counted (non-free): %jd > maximum allowed counted: %d",
 		     counted_sym_count, max_sym);
 	ret = false;
-    } else if (max_sym == NO_COUNTED && counted_sym_count > 0) {
+    } else if (max_sym == NO_COUNT && counted_sym_count > 0) {
 	fmsg(stream, "symlinks: no counted (non-free) allowed, found: %jd", counted_sym_count);
 	ret = false;
     }
@@ -3355,7 +3355,7 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 	fmsg(stream, "non-files/dirs/symlinks: number of counted (non-free): %jd > maximum allowed counted: %d",
 		     counted_other_count, max_other);
 	ret = false;
-    } else if (max_other == NO_COUNTED && counted_other_count > 0) {
+    } else if (max_other == NO_COUNT && counted_other_count > 0) {
 	fmsg(stream, "non-files/dirs/symlinks: no counted (non-free) allowed, found: %jd", counted_other_count);
 	ret = false;
     }
