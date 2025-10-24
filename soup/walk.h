@@ -484,7 +484,8 @@ extern void free_walk_stat(struct walk_stat *wstat_p);
 extern void init_walk_stat(struct walk_stat *wstat_p, char const *topdir, struct walk_set *set, char const *context,
 			   size_t max_path_len, size_t max_filename_len, int_least32_t max_depth,
 			   bool tar_listing_used);
-extern bool record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode_t st_mode, char const **cpath_ret);
+extern bool record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode_t st_mode,
+		        bool *dup_p, char const **cpath_ret);
 extern void fprintf_walk_stat(FILE *stream, struct walk_stat *wstat_p);
 extern void fprintf_walk_set(FILE *stream, struct walk_set *wset_p);
 int path_cmp(const void *pa, const void *pb);

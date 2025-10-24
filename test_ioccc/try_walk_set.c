@@ -869,6 +869,7 @@ test_walk(int argc, char **argv, FILE *in, FILE *out,
     char *path = NULL;		    /* path arg as a string (pre-canonicalized) */
     char const *cpath = NULL;	    /* canonicalized path unless error in which case is just path */
     bool walk_ok = true;	    /* true ==> no walk errors found, false ==> some walk errors found */
+    bool dup = false;		    /* true ==> entry is a duplicate, false ==> entry is NOT a duplicate */
     int i;
 
     /*
@@ -926,9 +927,11 @@ test_walk(int argc, char **argv, FILE *in, FILE *out,
 	    /*
 	     * take a step with the data from the arguments
 	     */
-	    process = record_step(&wstat, parsed.path, parsed.st_size, parsed.st_mode, &cpath);
+	    process = record_step(&wstat, parsed.path, parsed.st_size, parsed.st_mode, &dup, &cpath);
 	    cpath = (cpath == NULL) ? "((NULL))" : cpath;   /* paranoia */
-	    if (process) {
+	    if (dup) {
+		dbg(DBG_MED, "item[%d]: %s duplicate skipped: %s", (i/3), context, cpath);
+	    } else if (process) {
 		dbg(DBG_MED, "item[%d]: %s should process: %s", (i/3), context, cpath);
 	    } else {
 		dbg(DBG_MED, "item[%d]: %s should ignore: %s", (i/3), context, cpath);
@@ -958,9 +961,11 @@ test_walk(int argc, char **argv, FILE *in, FILE *out,
 	    /*
 	     * take a step with the data from the arguments
 	     */
-	    process = record_step(&wstat, parsed.path, parsed.st_size, parsed.st_mode, &cpath);
+	    process = record_step(&wstat, parsed.path, parsed.st_size, parsed.st_mode, &dup, &cpath);
 	    cpath = (cpath == NULL) ? "((NULL))" : cpath;   /* paranoia */
-	    if (process) {
+	    if (dup) {
+		dbg(DBG_MED, "item[%d]: %s duplicate skipped: %s", (i/3), context, cpath);
+	    } else if (process) {
 		dbg(DBG_MED, "item[%d]: %s should process: %s", (i/3), context, cpath);
 	    } else {
 		dbg(DBG_MED, "item[%d]: %s should ignore: %s", (i/3), context, cpath);

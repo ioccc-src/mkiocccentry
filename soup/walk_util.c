@@ -1648,6 +1648,9 @@ match_walk_rule(struct walk_rule *rule_p, struct item *i_p, int indx)
  *	fts_path    "root path" from topdir of the item
  *	st_size	    size, in bytes in the form used by stat(2)
  *	st_mode	    inode protection mode in the form used b by stat(2)
+ *
+ *	dup_p       != NULL ==> set *dup_p according to if canonicalized was already recorded in struct walk_stat
+ *		    NULL ==> do not check for duplicates
  *	cpath_ret   != NULL ==> update with pointer to the canonical path
  *		    NULL ==> ignore
  *
@@ -1658,7 +1661,8 @@ match_walk_rule(struct walk_rule *rule_p, struct item *i_p, int indx)
  * NOTE: This function does not return on an internal error.
  */
 bool
-record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode_t st_mode, char const **cpath_ret)
+record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode_t st_mode,
+	    bool *dup_p, char const **cpath_ret)
 {
     struct walk_rule *rule_p;	    /* pointer to a walk rule */
     struct walk_set *wset_p;	    /* pointer to a walk set */
@@ -1754,6 +1758,25 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
     if (cpath == NULL) {
 	err(55, __func__, "cpath is still NULL");
 	not_reached();
+    }
+
+    /*
+     * if requested, check for duplicates
+     */
+    if (dup_p != NULL) {
+
+	/*
+	 * check for duplicates
+	 */
+	i_p = path_in_walk_stat(wstat_p, cpath);
+	if (i_p == NULL) {
+	    dbg(DBG_V2_HIGH, "%s: not a duplicate path: %s", __func__, fts_path);
+	    *dup_p = false;
+	} else{
+	    dbg(DBG_LOW, "%s: duplicate path found: %s", __func__, fts_path);
+	    *dup_p = true;
+	    return false;
+	}
     }
 
     /*
@@ -3819,7 +3842,7 @@ fts_walk(struct walk_stat *wstat_p)
 	    dbg(DBG_V1_HIGH, "  %s: depth: %d\n", __func__, ftsent->fts_level);
 
 	    /* record walk step with sub-path below canonicalized wstat_p->topdir */
-	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL);
+	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL, NULL);
 	    break;
 
 	case FTS_DC:
@@ -3846,7 +3869,7 @@ fts_walk(struct walk_stat *wstat_p)
 	    dbg(DBG_V1_HIGH, "  %s: depth: %d\n", __func__, ftsent->fts_level);
 
 	    /* record walk step with sub-path below canonicalized wstat_p->topdir */
-	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL);
+	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL, NULL);
 	    break;
 
 	case FTS_DNR:
@@ -4022,7 +4045,7 @@ fts_walk(struct walk_stat *wstat_p)
 	    dbg(DBG_V1_HIGH, "  %s: depth: %d\n", __func__, ftsent->fts_level);
 
 	    /* record walk step with sub-path below canonicalized wstat_p->topdir */
-	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL);
+	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL, NULL);
 	    break;
 
 	case FTS_NS:
@@ -4124,7 +4147,7 @@ fts_walk(struct walk_stat *wstat_p)
 	    dbg(DBG_V1_HIGH, "  %s: depth: %d\n", __func__, ftsent->fts_level);
 
 	    /* record walk step with sub-path below canonicalized wstat_p->topdir */
-	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL);
+	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL, NULL);
 	    break;
 
 	case FTS_SLNONE:
@@ -4137,7 +4160,7 @@ fts_walk(struct walk_stat *wstat_p)
 	    dbg(DBG_V1_HIGH, "  %s: depth: %d\n", __func__, ftsent->fts_level);
 
 	    /* record walk step with sub-path below canonicalized wstat_p->topdir */
-	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL);
+	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL, NULL);
 	    break;
 
 	default:

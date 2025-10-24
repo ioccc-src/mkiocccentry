@@ -1,6 +1,30 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.8.2 2025-10-23
+
+Sync with the [cpath repo](https://github.com/lcn2/cpath).
+
+Change `int32_t` to `int_least32_t` for portability within
+the "non-cloned" code.
+
+Changed `test_ioccc/try_fts_walk.c` as per the above.
+
+Changed `fts_walk()` to exit (via `err()` on "firewall" level
+errors such as passing a NULL argument.
+
+The `record_step()` is now able to optionally check for duplicates.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "2.8.1 2025-10-22"
+to "2.8.2 2025-10-23".
+
+Changed `SOUP_VERSION` from "2.2.1 2025-10-22"
+to "2.2.2 2025-10-23".
+
+Changed `TRY_WALK_SET_VERSION` from "1.0.0 2025-10-20"
+to "1.0.1 2025-10-23".
+
+
 ## Release 2.8.1 2025-10-22
 
 Simplify `fts_walk(struct walk_stat *wstat_p)` to just take an pointer to
@@ -12,16 +36,6 @@ now checks that value.
 
 Add `path_in_walk_stat()` function to search for a canonicalized path
 on the all dynamic array of a `struct walk_stat`.
-
-Sync with the [cpath repo](https://github.com/lcn2/cpath).
-
-Change `int32_t` to `int_least32_t` for portability within
-the "non-cloned" code.
-
-Changed `test_ioccc/try_fts_walk.c` as per the above.
-
-Changed `fts_walk()` to exit (via `err()` on "firewall" level
-errors such as passing a NULL argument.
 
 Changed `MKIOCCCENTRY_REPO_VERSION` from "2.8.0 2025-10-20"
 to "2.8.1 2025-10-22".

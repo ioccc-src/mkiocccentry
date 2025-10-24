@@ -84,12 +84,12 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.8.1 2025-10-22"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.8.2 2025-10-23"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "2.2.1 2025-10-22"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define SOUP_VERSION "2.2.2 2025-10-23"	/* format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official iocccsize version
@@ -171,7 +171,7 @@
  /*
   * try_walk_set - try using one of the static walk_rule sets
   */
-#define TRY_WALK_SET_VERSION "1.0.0 2025-10-20"	/* version format: major.minor[.patch] YYYY-MM-DD */
+#define TRY_WALK_SET_VERSION "1.0.1 2025-10-23"	/* version format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
