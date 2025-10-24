@@ -21,8 +21,6 @@
 .RB [\| \-J
 .IR level \|]
 .RB [\| \-q \|]
-.RB [\| \-i
-.IR subpath \|]
 .RB [\| \-P \|]
 .RB [\| \-s \|]
 .RB [\| \-S \|]
@@ -51,10 +49,7 @@ option is used) and, if the
 .B .info.json
 file is not ignored, it will compare the manifest with the files in the
 .B dir
-directory,
-unless that file has been explicitly ignored with the
-.BI \-i\  subpath
-option.
+directory.
 .PP
 If
 .I dir
@@ -62,11 +57,7 @@ is a winning IOCCC entry directory, then the
 .B \-w
 option, must be given.
 Some files must exist whereas others may not exist, depending on the
-.BI \-i\  subpath
-option; otherwise, without
-.BR \-w ,
-a different set of files must exist and must not exist, again depending on the
-.BI \-i\  subpath
+.B \-w
 option.
 .PP
 In either case, even if the manifest is being ignored, it will verify that the files in the directories are valid permissions (again, unless it's an ignored subpath or the
@@ -118,18 +109,6 @@ Print version and exit.
 Set quiet mode.
 Silences msg(), warn(), warnp() if verbosity level is 0.
 .TP
-.BI \-i\  subpath
-Ignore
-.IR subpath ,
-where
-.I subpath
-is a path relative to the
-.B dir
-directory.
-.sp 1
-This option may be used more than once but is only meant for the judges.
-Anyone who's not a judge might have their submission ignored instead. :\-)
-.TP
 .BI \-P
 Ignore permissions of files and directories.
 This option is for the judges.
@@ -177,8 +156,6 @@ Note that if you are testing that your submission directory is valid, you should
 .B NOT
 use either the
 .B \-w
-or
-.BI \-i\  subpath
 option as these exist for the judges only and not when validating the directory is a valid submission directory.
 .SH BUGS
 .PP

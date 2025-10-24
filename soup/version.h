@@ -137,7 +137,7 @@
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "2.1.2 2025-10-17"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define CHKENTRY_VERSION "2.1.3 2025-10-23"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_CHKENTRY_VERSION CHKENTRY_VERSION
 
 /*

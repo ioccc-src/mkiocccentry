@@ -18,11 +18,18 @@ The `record_step()` is now able to optionally check for duplicates.
 Renamed `ANY_COUNTED` to `ANY_COUNT`.
 Renamed `NO_COUNTED` to `NO_COUNT`.
 
+Removed `-i subpath` from `chkentry(1)` to make it easier to
+convert the code to using the "table-driven walk code", and
+because they were seldom used by IOCCC judges.
+
 Changed `MKIOCCCENTRY_REPO_VERSION` from "2.8.1 2025-10-22"
 to "2.8.2 2025-10-23".
 
 Changed `SOUP_VERSION` from "2.2.1 2025-10-22"
 to "2.2.2 2025-10-23".
+
+Changed `CHKENTRY_VERSION` from "2.1.2 2025-10-17"
+to "2.1.3 2025-10-23".
 
 Changed `TRY_WALK_SET_VERSION` from "1.0.0 2025-10-20"
 to "1.0.1 2025-10-23".

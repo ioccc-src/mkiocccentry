@@ -404,7 +404,6 @@ main(int argc, char *argv[])
     bool found_index = false;           /* true ==> index.html found */
     bool found_remarks = false;         /* true ==> remarks.md found */
     bool found_Makefile = false;        /* true ==> Makefile found */
-    bool ignored_subpath = false;	/* true ==> '-i path' used */
     bool opt_error = false;		/* fchk_inval_opt() return */
 
     /* IOCCC requires use of C locale */
@@ -424,7 +423,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:J:Vqi:PwsS")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:VqPwsS")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, "");	/*ooo*/
@@ -462,10 +461,6 @@ main(int argc, char *argv[])
 	    quiet = true;
 	    msg_warn_silent = true;
 	    break;
-        case 'i':   /* ignore subpath, where subpath is under the directory to be checked */
-            ignored_subpath = true;
-            add_ignore_subpath(optarg, &fts);
-            break;
         case 'P': /* ignore permissions of paths */
             ignore_permissions = true;
             break;
@@ -495,7 +490,7 @@ main(int argc, char *argv[])
     /*
      * before we do anything with the args we have to check conflicting options
      */
-    if (submission_mode && (special_mode || winning_entry_mode || ignore_permissions || ignored_subpath)) {
+    if (submission_mode && (special_mode || winning_entry_mode || ignore_permissions)) {
 	usage(3, program, "cannot use -S with -s, -w, -i and -P options"); /*ooo*/
         not_reached();
     }
