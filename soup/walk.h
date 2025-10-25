@@ -109,7 +109,8 @@
 /*
  * pattern_type - how to match a path item with a pattern
  */
-enum pattern_type {
+enum pattern_type
+{
     MATCH_UNSET = 0,		/* not a valid pattern_type and/or pattern_type has not been assigned */
 
     MATCH_STR,			/* match item with the full item string */
@@ -139,7 +140,8 @@ enum pattern_type {
  * In terms of the fts_open(3) function, FTS_PHYSICAL should be used.  In terms of a tarball listing,
  * what a symlink points to has no effect on allowed_type as symlinks are treated as just symlinks.
  */
-enum allowed_type {
+enum allowed_type
+{
     TYPE_UNSET = 0,		/* not a valid allowed_type and/or allowed_type has not been assigned */
 
     TYPE_FILE,			/* only items that exist and that are files match */
@@ -167,7 +169,8 @@ enum allowed_type {
 /*
  * allowed_level - where a walk_rule applies, relative to topdir
  */
-enum allowed_level {
+enum allowed_level
+{
     LEVEL_UNSET = 0,		/* a valid allowed_level and/or allowed_level has not been assigned */
     LEVEL_TOP,			/* walk_rule applies only to items directly in topdir */
     LEVEL_BELOW,		/* walk_rule applies only to items below but NOT under topdir */
@@ -179,7 +182,8 @@ enum allowed_level {
 /*
  * item - describe a file, directory or other file system member
  */
-struct item {
+struct item
+{
     char *fts_path;                 /* malloced copy of the "root path" from topdir - typicality canonicalized */
     size_t fts_pathlen;             /* strlen(fts_path) */
     char *fts_name;                 /* malloced copy of the "file name", i.e., basename of fts_path */
@@ -298,7 +302,8 @@ struct item {
  * is reached, the item will have no effect.  To avoid this, precede the final NULL pattern
  * walk_rule with one of the above suggested "catch all" walk_rule structures.
  */
-struct walk_rule {
+struct walk_rule
+{
     char const *pattern;	    /* how to match path item, ignored if match == MATCH_ANY, NULL if last in a walk_rule array */
 
     bool const required;	    /* true ==> something MUST match this walk_rule, else a fatal error MUST be thrown */
@@ -319,7 +324,8 @@ struct walk_rule {
 /*
  * walk_set - set of 1 or more walk_rule for a given application and if needed application option set
  */
-struct walk_set {
+struct walk_set
+{
     char const *name;		    /* walk_set name as a NUL terminated string, for debugging purposes */
     bool ready;			    /* true ==> walk_set setup: p_preg setup if needed, count set, context string set, etc. */
     char *context;		    /* malloced string describing context (tool + options) for debugging purposes */
@@ -377,7 +383,8 @@ struct walk_set {
  * such data (that won't be subject to realloc(3) facility moving data), or wait until the walk is complete.
  * For this reason, the walking boolean was added.
  */
-struct walk_stat {
+struct walk_stat
+{
 
     /* determine if other elements are valid */
     bool ready;				/* true ==> walk_set initialized, false ==> NONE of the other elements are valid */

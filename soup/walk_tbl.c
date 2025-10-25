@@ -58,7 +58,8 @@
  *
  * Path items are compared, in order, to each walk_rule UNTIL a match is found, OR until the NULL entry is found.
  */
-static struct walk_rule walk_rule_set_mkiocccentry[] = {
+static struct walk_rule walk_rule_set_mkiocccentry[] =
+{
 
     /*
      * (dot-dot)
@@ -478,7 +479,8 @@ static struct walk_rule walk_rule_set_mkiocccentry[] = {
 /*
  * mkiocccentry walk_set
  */
-struct walk_set walk_mkiocccentry = {
+struct walk_set walk_mkiocccentry =
+{
     "mkiocccentry walk_rule set",	/* walk_set name - for debugging purposes */
     false,				/* true ==> walk_set initialized and setup */
     NULL,				/* NUL terminated string describing context (tool + options) for debugging purposes */
@@ -497,7 +499,8 @@ struct walk_set walk_mkiocccentry = {
  *
  * Path items are compared, in order, to each walk_rule UNTIL a match is found, OR until the NULL entry is found.
  */
-static struct walk_rule walk_rule_set_txzchk[] = {
+static struct walk_rule walk_rule_set_txzchk[] =
+{
 
     /*
      * (dot-dot)
@@ -990,7 +993,8 @@ static struct walk_rule walk_rule_set_txzchk[] = {
 /*
  * txzchk walk_set
  */
-struct walk_set walk_txzchk = {
+struct walk_set walk_txzchk =
+{
     "txzchk walk_rule set",		/* walk_set name - for debugging purposes */
     false,				/* true ==> walk_set initialized and setup */
     NULL,				/* NUL terminated string describing context (tool + options) for debugging purposes */
@@ -1012,7 +1016,8 @@ struct walk_set walk_txzchk = {
 /*
  * chksubmit walk_set
  */
-struct walk_set walk_chksubmit = {
+struct walk_set walk_chksubmit =
+{
     "chksubmit walk_rule set",		/* walk_set name - for debugging purposes */
     false,				/* true ==> walk_set initialized and setup */
     NULL,				/* NUL terminated string describing context (tool + options) for debugging purposes */
@@ -1026,7 +1031,8 @@ struct walk_set walk_chksubmit = {
  *
  * Because chksubmit(1) calls chkentry -S, the chkentry -S case applies here.
  */
-struct walk_set walk_chkentry_S = {
+struct walk_set walk_chkentry_S =
+{
     "chkentry -S walk_rule set",	/* walk_set name - for debugging purposes */
     false,				/* true ==> walk_set initialized and setup */
     NULL,				/* NUL terminated string describing context (tool + options) for debugging purposes */
@@ -1045,7 +1051,8 @@ struct walk_set walk_chkentry_S = {
  *
  * Path items are compared, in order, to each walk_rule UNTIL a match is found, OR until the NULL entry is found.
  */
-static struct walk_rule walk_rule_set_chkentry_s[] = {
+static struct walk_rule walk_rule_set_chkentry_s[] =
+{
 
     /*
      * (dot-dot)
@@ -1544,7 +1551,8 @@ static struct walk_rule walk_rule_set_chkentry_s[] = {
 /*
  * chkentry -s walk_set
  */
-struct walk_set walk_chkentry_s = {
+struct walk_set walk_chkentry_s =
+{
     "chkentry -s walk_rule set",	/* walk_set name - for debugging purposes */
     false,				/* true ==> walk_set initialized and setup */
     NULL,				/* NUL terminated string describing context (tool + options) for debugging purposes */
@@ -1582,7 +1590,8 @@ struct walk_set walk_chkentry_s = {
  *
  * Path items are compared, in order, to each walk_rule UNTIL a match is found, OR until the NULL entry is found.
  */
-static struct walk_rule walk_rule_set_chkentry_w[] = {
+static struct walk_rule walk_rule_set_chkentry_w[] =
+{
 
     /*
      * (dot-dot)
@@ -2058,7 +2067,8 @@ static struct walk_rule walk_rule_set_chkentry_w[] = {
 /*
  * chkentry -w walk_set
  */
-struct walk_set walk_chkentry_w = {
+struct walk_set walk_chkentry_w =
+{
     "chkentry -w walk_rule set",	/* walk_set name - for debugging purposes */
     false,				/* true ==> walk_set initialized and setup */
     NULL,				/* NUL terminated string describing context (tool + options) for debugging purposes */
