@@ -153,9 +153,9 @@ init_walk_rule(struct walk_rule *wrule_p)
 
     /* allocate, for MATCH_REGEX match_type, the regex_t for regcomp(3) with REG_NOSUB */
     case MATCH_REGEX:
-	wrule_p->p_preg = malloc(sizeof(regex_t));
+	wrule_p->p_preg = calloc(1, sizeof(regex_t));
 	if (wrule_p->p_preg == NULL) {
-	    errp(23, __func__, "failed to malloc a regex_t #0");
+	    errp(23, __func__, "failed to calloc a regex_t #0");
 	}
 	ret = regcomp(wrule_p->p_preg, wrule_p->pattern, REG_NOSUB);
 	if (ret != 0) {
@@ -168,9 +168,9 @@ init_walk_rule(struct walk_rule *wrule_p)
 
     /* allocate, for MATCH_REGEX_ANYCASE match_type, the regex_t for regcomp(3) with REG_NOSUB|REG_ICASE */
     case MATCH_REGEX_ANYCASE:
-	wrule_p->p_preg = malloc(sizeof(regex_t));
+	wrule_p->p_preg = calloc(1, sizeof(regex_t));
 	if (wrule_p->p_preg == NULL) {
-	    errp(25, __func__, "failed to malloc a regex_t #1");
+	    errp(25, __func__, "failed to calloc a regex_t #1");
 	}
 	ret = regcomp(wrule_p->p_preg, wrule_p->pattern, REG_NOSUB|REG_ICASE);
 	if (ret != 0) {
@@ -183,9 +183,9 @@ init_walk_rule(struct walk_rule *wrule_p)
 
     /* allocate, for MATCH_EXT_REGEX match_type, the regex_t for regcomp(3) with REG_EXTENDED|REG_NOSUB */
     case MATCH_EXT_REGEX:
-	wrule_p->p_preg = malloc(sizeof(regex_t));
+	wrule_p->p_preg = calloc(1, sizeof(regex_t));
 	if (wrule_p->p_preg == NULL) {
-	    errp(27, __func__, "failed to malloc a regex_t #2");
+	    errp(27, __func__, "failed to calloc a regex_t #2");
 	}
 	ret = regcomp(wrule_p->p_preg, wrule_p->pattern, REG_EXTENDED|REG_NOSUB);
 	if (ret != 0) {
@@ -198,9 +198,9 @@ init_walk_rule(struct walk_rule *wrule_p)
 
     /* allocate, for MATCH_EXT_REGEX_ANYCASE match_type, the regex_t for regcomp(3) with REG_EXTENDED|REG_NOSUB|REG_ICASE */
     case MATCH_EXT_REGEX_ANYCASE:
-	wrule_p->p_preg = malloc(sizeof(regex_t));
+	wrule_p->p_preg = calloc(1, sizeof(regex_t));
 	if (wrule_p->p_preg == NULL) {
-	    errp(29, __func__, "failed to malloc a regex_t #3");
+	    errp(29, __func__, "failed to calloc a regex_t #3");
 	}
 	ret = regcomp(wrule_p->p_preg, wrule_p->pattern, REG_EXTENDED|REG_NOSUB|REG_ICASE);
 	if (ret != 0) {
@@ -242,7 +242,7 @@ free_walk_set(struct walk_set *wset_p)
     }
 
     /*
-     * free malloced context
+     * free calloced context
      */
     if (wset_p->context != NULL) {
 	free(wset_p->context);
@@ -338,7 +338,7 @@ init_walk_set(struct walk_set *wset_p, char const *context)
  * free_item - free and clear an item
  *
  * given:
- *	i_p	    pointer to a malloced struct item
+ *	i_p	    pointer to a calloced struct item
  *
  * NOTE: This function does not return on an internal error.
  */
@@ -375,7 +375,7 @@ free_item(struct item *i_p)
     memset(i_p, 0, sizeof(struct item));
 
     /*
-     * free the malloced struct item
+     * free the calloced struct item
      */
     free(i_p);
     return;
@@ -388,7 +388,7 @@ free_item(struct item *i_p)
  * One of the important side effects of this function is to use basename(3)
  * to obtain an allocated the basename of the original fts_path.
  *
- * All of the struct item are malloced, including the struct item itself, are malloced.
+ * All of the struct item are calloced, including the struct item itself, are calloced.
  *
  * given:
  *	fts_path    "root path" from topdir of the item
@@ -397,7 +397,7 @@ free_item(struct item *i_p)
  *	fts_level   fts_path depth, 0 ==> topdir, 1 ==> directly under topdir, 2 ==> in sub-dir under topdir
  *
  * returns:
- *	pointer to an calloced and filled out struct item with independently malloced strings.
+ *	pointer to an calloced and filled out struct item with independently calloced strings.
  *
  * NOTE: This function does not return on an internal error.
  */
@@ -1712,7 +1712,7 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
 	 * In for some internal errors from the canon_path() function, we have to abort.
 	 *
 	 * In other cases we can process the original path as a "path problem".
-	 * We form a fake malloced canonicalized path so that we can later file
+	 * We form a fake calloced canonicalized path so that we can later file
 	 * a "path problem".
 	 */
 	switch (sanity) {
@@ -3701,7 +3701,7 @@ fts_walk(struct walk_stat *wstat_p)
 	/*
 	 * paranoia - avoid NULL fts_path
 	 *
-	 * NOTE: This should never happpen, but in case there a fts_read(3) bug, we check.
+	 * NOTE: This should never happen, but in case there a fts_read(3) bug, we check.
 	 */
 	if (ftsent->fts_path == NULL) {
 

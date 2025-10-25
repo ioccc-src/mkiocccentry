@@ -1,6 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.8.3 2025-10-25
+
+Changed `soup/walk*` code to use `calloc(3)` instead of `malloc(3)`.
+
+Updated `SOUP_VERSION` to `"2.2.3 2025-10-25"`.
+
+
 ## Release 2.8.2 2025-10-23
 
 Sync with the [cpath repo](https://github.com/lcn2/cpath).
