@@ -8,8 +8,8 @@
  * IMPORTANT NOTE: While most of the applications for walk relates to walking
  *                 a directory tree, there are applications (related to the
  *                 tools such as txzchk(1)) where processing is perform on
- *                 the tar listing as well.  So a while traversing a file hierarchy
- *                 might be one application of walking, so to is processing
+ *                 the tar listing as well. So while traversing a file hierarchy
+ *                 might be one application of walking, so too is processing
  *                 the listing of a tar(1) command.
  *
  * Copyright (c) 2025 by Landon Curt Noll and Cody Boone Ferguson.  All Rights
