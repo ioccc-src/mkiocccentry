@@ -1,6 +1,44 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.8.3 2025-10-25
+
+Release chkentry use of table-driven walk code.
+
+Added `ITEM_PERM_BITS` to `soup/file_util.h`, which is
+equivalent to **0777**.
+
+Added `ITEM_PERM_0755` to `soup/file_util.h`, which is
+equivalent to **0755**.
+
+Added `ITEM_PERM_0555` to `soup/file_util.h`, which is
+equivalent to **0555**.
+
+Added `ITEM_PERM_0444` to `soup/file_util.h`, which is
+equivalent to **0444**.
+
+Added `ITEM_PERM(st_mode)` to extract the permission bits
+from an `st_mode`.
+
+Fixed use of `json_sem_check()` by changing to the "topdir"
+directory under which JSON validation is performed.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from ""2.8.2 2025-10-23"
+to "2.8.3 2025-10-25".
+
+Changed `SOUP_VERSION` from "2.2.2 2025-10-23"
+to "2.2.3 2025-10-25".
+
+Changed `CHKENTRY_VERSION` from "2.1.4 2025-10-23"
+to "2.1.5 2025-10-25".
+
+Changed `TRY_FTS_WALK_VERSION` from "1.0.2 2025-10-23"
+to "1.0.3 2025-10-25".
+
+Changed `TRY_WALK_SET_VERSION` from "1.0.1 2025-10-23"
+to "1.0.2 2025-10-25".
+
+
 ## Release 2.8.2 2025-10-23
 
 Sync with the [cpath repo](https://github.com/lcn2/cpath).
@@ -22,6 +60,15 @@ Removed `-i subpath` from `chkentry(1)` to make it easier to
 convert the code to using the "table-driven walk code", and
 because they were seldom used by IOCCC judges.
 
+Removed the `struct walk_set walk_chksubmit` because it is effectively
+just the `struct walk_set walk_chkentry_S` walk set and because
+`chksubmit(1)` just executes `chkentry -S`.
+
+When neither `-S`, nor `-s`, nor `-w` are used with `chkentry(1)`,
+then `chkentry -S` is now assumed (instead of `chkentry -s`).
+
+Improve the `chkentry(1)` man page.
+
 Changed `MKIOCCCENTRY_REPO_VERSION` from "2.8.1 2025-10-22"
 to "2.8.2 2025-10-23".
 
@@ -29,7 +76,7 @@ Changed `SOUP_VERSION` from "2.2.1 2025-10-22"
 to "2.2.2 2025-10-23".
 
 Changed `CHKENTRY_VERSION` from "2.1.2 2025-10-17"
-to "2.1.3 2025-10-23".
+to "2.1.4 2025-10-23".
 
 Changed `TRY_WALK_SET_VERSION` from "1.0.0 2025-10-20"
 to "1.0.1 2025-10-23".

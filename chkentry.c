@@ -62,22 +62,12 @@
  * definitions
  */
 #define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
-#define CHUNK (39)              /* allocate CHUNK elements at a time */
 
 
 /*
  * globals
  */
 static bool quiet = false;		    /* true ==> quiet mode */
-static bool ignore_info = false;            /* true ==> skip .info.json checks */
-static bool ignore_auth = false;            /* true ==> skip .auth.json checks */
-static bool ignore_entry = false;           /* true ==> skip .entry.json checks */
-static bool ignore_README_md = false;       /* true ==> skip README.md checks */
-static bool ignore_index = false;           /* true ==> skip index.html checks */
-static bool ignore_Makefile = false;        /* true ==> skip Makefile checks */
-static bool ignore_prog_c = false;          /* true ==> skip prog.c checks */
-static bool ignore_prog = false;            /* true ==> skip prog checks */
-static bool ignore_remarks_md = false;      /* true ==> skip remarks.md checks */
 
 
 /*
@@ -86,7 +76,7 @@ static bool ignore_remarks_md = false;      /* true ==> skip remarks.md checks *
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-i subpath] [-P] [-s] [-S] [-w] dir\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-P] [-s] [-S] [-w] dir\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -94,8 +84,6 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit\n"
     "\t-q\t\tquiet mode (def: loud :-) )\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
-    "\t-i subpath\tignore subpath, where subpath is a path relative to submission_dir\n"
-    "\t\t\t    NOTE: you can ignore more than one file or directory with multiple -i args\n"
     "\t-P\t\tIOCCC judge use only: ignore permissions\n"
     "\t-s\t\tIOCCC judge use only: enter special mode\n"
     "\t-S\t\tenter submission mode: used by the chksubmit(1) tool\n"
@@ -118,306 +106,40 @@ static const char * const usage_msg =
 /*
  * functions
  */
+static bool chk_json(FILE *err, char const *submission_dir, char const *filename, struct json_sem *sem);
 static void usage(int exitcode, char const *prog, char const *str) __attribute__((noreturn));
-static void add_ignore_subpath(char *path, struct fts *fts);
-
-
-/*
- * usage - print usage to stderr
- *
- * Example:
- *      usage(3, program, "wrong number of arguments");
- *
- * given:
- *	exitcode        value to exit with
- *	str		top level usage message
- *	prog		our program name
- *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
- *       Normally one should NOT include newlines in warn messages.
- *
- * This function does not return.
- */
-static void
-usage(int exitcode, char const *prog, char const *str)
-{
-    /*
-     * firewall
-     */
-    if (prog == NULL) {
-	prog = CHKENTRY_BASENAME;
-	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
-    }
-    if (str == NULL) {
-	str = "((NULL str))";
-	warn(__func__, "\nin usage(): str was NULL, forcing it to be: %s\n", str);
-    }
-
-    /*
-     * print the formatted usage stream
-     */
-    if (*str != '\0') {
-	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
-    }
-    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSON_DBG_DEFAULT,
-	    CHKENTRY_BASENAME, CHKENTRY_VERSION, JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
-    exit(exitcode); /*ooo*/
-    not_reached();
-}
-
-
-/*
- * add_ignore_subpath - add path, relative to the directory to be checked, to ignored paths list
- *
- * This function is used instead of just append_path() (although it uses this)
- * because some names have an abbreviation.
- *
- * given:
- *
- *      path    - path to add to ignore list
- *      fts     - struct fts * from main
- *
- * NOTE: for some paths abbreviations are allowed. However as it is impossible
- * to know all the possible paths in a submission/entry, in those cases it must
- * be the exact path.
- *
- * NOTE: these paths are from UNDER the submission directory. So if one has the
- * file:
- *
- *      submission_dir/foo/bar/baz
- *
- * and they run the command:
- *
- *      chkentry submission_dir
- *
- * and want to ignore the path baz they should NOT do:
- *
- *      chkentry -i submission_dir/foo/bar/baz submission_dir
- *
- * Rather they should do:
- *
- *      chkentry -i foo/bar/baz submission_dir
- *
- * NOTE: this function will not add a path to the array more than once so if you
- * were to do:
- *
- *      chkentry -i foo -i foo submission_dir
- *
- * the ignored list would only have the path 'foo' once.
- *
- * NOTE: this function will not return on a NULL fts (although if path is NULL
- * or empty it'll return before that check).
- */
-static void
-add_ignore_subpath(char *path, struct fts *fts)
-{
-    /*
-     * firewall
-     */
-    if (path == NULL || *path == '\0') {
-        /*
-         * ignore NULL path or empty string
-         */
-        return;
-    } else if (fts == NULL) {
-        err(55, __func__, "fts is NULL");
-        not_reached();
-    }
-
-
-
-    /*
-     * we have to determine if this is a certain file
-     */
-    if (!strcmp(path, AUTH_JSON_FILENAME)) {
-        if (ignore_auth) {
-            /*
-             * skip
-             */
-            return;
-        }
-        ignore_auth = true;
-    }
-
-    /*
-     * we also have to check for .info.json
-     */
-    else if (!strcmp(path, INFO_JSON_FILENAME)) {
-        if (ignore_info) {
-            /*
-             * skip
-             */
-            return;
-        }
-        ignore_info = true;
-    }
-
-    /*
-     * we also have to check for .entry.json
-     */
-    else if (!strcmp(path, ENTRY_JSON_FILENAME)) {
-        if (ignore_entry) {
-            /*
-             * skip
-             */
-            return;
-        }
-        ignore_entry = true;
-    }
-    /*
-     * we need to check for README.md
-     */
-    else if (!strcmp(path, README_MD_FILENAME)) {
-        if (ignore_README_md) {
-            /*
-             * skip
-             */
-            return;
-        }
-        ignore_README_md = true;
-    }
-    /*
-     * index.html
-     */
-    else if (!strcmp(path, INDEX_HTML_FILENAME)) {
-        if (ignore_index) {
-            /*
-             * skip
-             */
-            return;
-        }
-        ignore_index = true;
-    }
-    /*
-     * Makefile
-     */
-    else if (!strcmp(path, MAKEFILE_FILENAME)) {
-        if (ignore_Makefile) {
-            /*
-             * skip
-             */
-            return;
-        }
-        ignore_Makefile = true;
-    }
-    /*
-     * prog.c
-     */
-    else if (!strcmp(path, PROG_C_FILENAME)) {
-        if (ignore_prog_c) {
-            /*
-             * skip
-             */
-            return;
-        }
-        ignore_prog_c = true;
-    }
-    /*
-     * prog
-     */
-    else if (!strcmp(path, PROG_FILENAME)) {
-        if (ignore_prog) {
-            /*
-             * skip
-             */
-            return;
-        }
-        ignore_prog = true;
-    }
-    /*
-     * remarks.md
-     */
-    else if (!strcmp(path, REMARKS_FILENAME)) {
-        if (ignore_remarks_md) {
-            /*
-             * skip
-             */
-            return;
-        }
-        ignore_remarks_md = true;
-    }
-
-    /*
-     * this will not add the path if it is already there
-     */
-    append_path(&ignored_paths, path, true, false, false, false);
-    /*
-     * we have to add it to fts->ignore list too
-     */
-    append_path(&(fts->ignore), path, true, false, false, false);
-}
 
 
 int
 main(int argc, char *argv[])
 {
     char const *program = NULL;		/* our name */
-    char *submission_dir = NULL;       /* directory from which files are to be checked */
+    char *submission_dir = NULL;        /* directory from which files are to be checked */
     extern char *optarg;		/* option argument */
     extern int optind;			/* argv index of the next arg */
-    char const *auth_filename = ".";	/* .auth.json file to process, or NULL ==> no .auth.json to process */
-    char const *info_filename = ".";	/* .info.json file to process, or NULL ==> no .info.json to process */
-    char *auth_path = NULL;		/* full path of .auth.json or NULL */
-    char *info_path = NULL;		/* full path of .info.json or NULL */
-    FILE *auth_stream = NULL;		/* open .auth.json file stream */
-    FILE *info_stream = NULL;		/* open .info.json file stream */
-    struct json *auth_tree = NULL;	/* JSON parse tree for .auth.json, or NULL ==> not parsed */
-    struct json *info_tree = NULL;	/* JSON parse tree for .info.json, or NULL ==> not parsed */
-    bool auth_valid = false;		/* .auth.json is valid JSON */
-    bool info_valid = false;		/* .info.json is valid JSON */
-    struct dyn_array *auth_count_err = NULL;	/* JSON semantic count errors for .auth.json */
-    struct dyn_array *auth_val_err = NULL;	/* JSON semantic validation errors for .auth.json */
-    struct dyn_array *info_count_err = NULL;	/* JSON semantic count errors for .info.json */
-    struct dyn_array *info_val_err = NULL;	/* JSON semantic validation errors for .info.json */
-    uintmax_t auth_count_err_count = 0;	/* semantic count error count from json_sem_check() for .auth.json */
-    uintmax_t auth_val_err_count = 0;	/* semantic validation count from json_sem_check() for .auth.json */
-    uintmax_t auth_int_err_count = 0;	/* internal error count from json_sem_check() for .auth.json */
-    uintmax_t auth_all_err_count = 0;	/* number of errors (count+validation+internal) from json_sem_check() for .auth.json */
-    uintmax_t info_count_err_count = 0;	/* semantic count error count from json_sem_check() for .info.json */
-    uintmax_t info_val_err_count = 0;	/* semantic validation error count from json_sem_check() for .info.json */
-    uintmax_t info_int_err_count = 0;	/* internal error count from json_sem_check() for .info.json */
-    uintmax_t info_all_err_count = 0;	/* number of errors (count+validation+internal) from json_sem_check() for .info.json */
-    uintmax_t all_count_err_count = 0;	/* semantic count error count from json_sem_check() for .auth.json */
-    uintmax_t all_val_err_count = 0;	/* semantic validation error count from json_sem_check() for .auth.json */
-    uintmax_t all_int_err_count = 0;	/* internal error count from json_sem_check() for .auth.json */
-    uintmax_t all_all_err_count = 0;	/* number of errors (count+validation+internal) from json_sem_check() for .auth.json */
-    uintmax_t all_extra_err_count = 0;  /* depending on options and conditions, we might need this */
-    struct json_sem_count_err *sem_count_err = NULL;	/* semantic count error to print */
-    struct json_sem_val_err *sem_val_err = NULL;	/* semantic validation error to print */
-    uintmax_t c = 0;			/* dynamic array index and ignored lists iterator */
-    uintmax_t len = 0;                  /* dynamic array length */
-    int cwd = -1;                       /* for when we have to use find_path() */
-    int cwd2 = -1;                      /* cwd of program when we start */
-    struct fts fts;                     /* for when we have to use find_path() */
-    int i;
-    bool winning_entry_mode = false;    /* true ==> -w used, do other checks */
-    bool special_mode = false;          /* special features for the judges :-) */
-    bool submission_mode = false;       /* used by chksubmit(1) */
-    struct dyn_array *paths = NULL;     /* paths to find for find_paths() */
-    struct dyn_array *found = NULL;     /* paths found by find_paths() */
-    bool found_entry = false;           /* true ==> .entry.json found */
-    bool found_prog_c = false;          /* true ==> prog.c found */
-    bool found_prog = false;            /* true ==> prog found */
-    bool found_auth = false;            /* true ==> .auth.json found */
-    bool found_info = false;            /* true ==> .info.json found */
-    bool found_README = false;          /* true ==> README.md found */
-    bool found_index = false;           /* true ==> index.html found */
-    bool found_remarks = false;         /* true ==> remarks.md found */
-    bool found_Makefile = false;        /* true ==> Makefile found */
     bool opt_error = false;		/* fchk_inval_opt() return */
+    /**/
+    bool winning_entry_mode = false;    /* chkentry -w - true ==> -w used, do other checks */
+    bool special_mode = false;          /* chkentry -s - special features for the judges :-) */
+    bool submission_mode = false;       /* chkentry -S - also used by chksubmit(1) */
+    /**/
+    struct walk_stat wstat;		/* walk_stat being processed */
+    struct walk_set *wset_p = NULL;	/* pointer to a walk set */
+    char const *context = NULL;		/* string describing the context (tool and options) for debugging purposes */
+    char const *json_filename = NULL;	/* name of JSON file under submission_dir to check */
+    bool json_ok = true;		/* true ==> no JSON errors found, false ==> some JSON errors found */
+    bool walk_ok = true;		/* true ==> no walk errors found, false ==> some walk errors found */
+    /**/
+    struct item *i_p;			/* pointer to an element in the dynamic array */
+    intmax_t len;			/* number of elements in the dynamic array */
+    /**/
+    int cd_ret = -1;			/* chdir(2) return */
+    /**/
+    int i;
+    intmax_t j;
 
     /* IOCCC requires use of C locale */
     set_ioccc_locale();
-
-    /*
-     * we MUST take care of this first before we parse args because not only
-     * do specific checks require the FTS API but one of the options does too
-     * (-i path).
-     *
-     * IMPORTANT: make SURE to memset(&fts, 0, sizeof(struct fts)) first!
-     */
-    memset(&fts, 0,sizeof(struct fts));
-    reset_fts(&fts, false, false); /* false , false: don't clear out ignore or match lists (empty at this point) */
 
     /*
      * parse args
@@ -486,22 +208,15 @@ main(int argc, char *argv[])
 	    break;
 	}
     }
-
-    /*
-     * before we do anything with the args we have to check conflicting options
-     */
-    if (submission_mode && (special_mode || winning_entry_mode || ignore_permissions)) {
-	usage(3, program, "cannot use -S with -s, -w, -i and -P options"); /*ooo*/
-        not_reached();
-    }
-
     argc -= optind;
     argv += optind;
     switch (argc) {
     case 1:
         submission_dir = argv[0];
+	dbg(DBG_LOW, "submission_dir: %s", submission_dir);
 	break;
     case 2:
+	/* how dotty! */
         if (!strcmp(argv[0], ".") && !strcmp(argv[1], ".")) {
             vrergfB(-1, -1); /* Easter egg */
             not_reached();
@@ -513,1027 +228,517 @@ main(int argc, char *argv[])
 	break;
     }
 
-    if (submission_dir != NULL) {
-	/*
-	 * check if we can search / work within the directory
-	 */
-	if (!exists(submission_dir)) {
-	    err(56, __func__, "directory does not exist: %s", submission_dir);
+    /*
+     * set the struct walk_set and context string
+     */
+
+    /*
+     * case: chkentry -S
+     *
+     * This case is usually via the chksubmit tool.
+     */
+    if (submission_mode) {
+
+	/* set walk_set and context */
+	wset_p = &walk_chkentry_S;
+	context = "chkentry -S";
+
+	/* check for conflicting options */
+	if (special_mode) {
+	    usage(3, program, "cannot use -S with the -s option"); /*ooo*/
+	    not_reached();
+	} else if (winning_entry_mode) {
+	    usage(3, program, "cannot use -S with the -w option"); /*ooo*/
+	    not_reached();
+	} else if (ignore_permissions) {
+	    usage(3, program, "cannot use -S with the -P option"); /*ooo*/
 	    not_reached();
 	}
-	if (!is_dir(submission_dir)) {
-	    err(57, __func__, "is not a directory: %s", submission_dir);
+
+    /*
+     * case: chkentry -s
+     */
+    } else if (special_mode) {
+
+	/* set walk_set and context */
+	wset_p = &walk_chkentry_s;
+	context = "chkentry -s";
+
+	/* check for conflicting options */
+	if (submission_mode) {
+	    usage(3, program, "cannot use -s with the -S option"); /*ooo*/
+	    not_reached();
+	} else if (winning_entry_mode) {
+	    usage(3, program, "cannot use -s with the -w option"); /*ooo*/
 	    not_reached();
 	}
-	if (!is_exec(submission_dir)) {
-	    err(58, __func__, "directory is not searchable: %s", submission_dir);
+
+    /*
+     * case: chkentry -w
+     */
+    } else if (winning_entry_mode) {
+
+	/* set walk_set and context */
+	wset_p = &walk_chkentry_w;
+	context = "chkentry -w";
+
+	/* check for conflicting options */
+	if (submission_mode) {
+	    usage(3, program, "cannot use -s with the -S option"); /*ooo*/
+	    not_reached();
+	} else if (special_mode) {
+	    usage(3, program, "cannot use -s with the -s option"); /*ooo*/
 	    not_reached();
 	}
 
-        /*
-         * note the current directory so we can restore it later if necessary
-         */
-        errno = 0;			/* pre-clear errno for errp() */
-        cwd2 = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
-        if (cwd2 < 0) {
-            errp(59, __func__, "cannot open .");
-            not_reached();
-        }
-
-        /*
-         * add to ignore list the ignored directories
-         */
-        for (c = 0; ignored_dirnames[c] != NULL; ++c) {
-            add_ignore_subpath(ignored_dirnames[c], &fts);
-        }
-
-        if (winning_entry_mode) {
-            /*
-             * in winning mode we must also ignore certain filenames. The list,
-             * like all the others, can be updated if necessary. We only do this
-             * in winning mode as these files are dot files that are part of a
-             * winning entry which could be picked up by canon_path() as
-             * an error.
-             */
-            for (c = 0; ignored_filenames[c] != NULL; ++c) {
-                add_ignore_subpath(ignored_filenames[c], &fts);
-            }
-            /*
-             * and now we can set up fts
-             */
-            fts.depth = 0;
-            fts.match_case = true; /* we must match case here */
-            fts.type = FTS_TYPE_FILE; /* regular files only */
-            /*
-             * now for the FTS find_paths() function: we need to find all files
-             * that are NOT ignored (this is why there are two ignore lists)
-             */
-            append_path(&paths, "", true, false, false, false);
-            /*
-             * find paths
-             *
-             * NOTE: an empty string means find all files not ignored. And since the
-             * list of paths to ignore is already in the fts->ignore list we
-             * don't need to do anything special.
-             */
-            found = find_paths(paths, submission_dir, -1, &cwd, false, &fts);
-            if (found != NULL) {
-                /*
-                 * case: files were found, check that they are both allowed and
-                 * the right permissions.
-                 *
-                 * NOTE: we don't need to check anything if no files are found
-                 * because the requirements were checked above specially.
-                 */
-                char *u = NULL;
-                len = paths_in_array(found);
-                for (c = 0; c < len; ++c) {
-                    u = dyn_array_value(found, char *, c);
-                    if (u == NULL) {
-                        err(60, __func__, "NULL pointer in found files list");
-                        not_reached();
-                    }
-                    /*
-                     * now we have to determine what file this is
-                     */
-
-                    /*
-                     * Certain files have specific checks so we check those by
-                     * name explicitly.
-                     */
-                    if (!strcmp(u, AUTH_JSON_FILENAME)) {
-                        if (ignore_auth) {
-                            continue;
-                        }
-                        found_auth = true;
-                        ++all_extra_err_count;
-                    } else if (!strcmp(u, INFO_JSON_FILENAME)) {
-                        if (ignore_info) {
-                            continue;
-                        }
-                        ++all_extra_err_count;
-                        found_info = true;
-                    } else if (!strcmp(u, REMARKS_FILENAME)) {
-                        if (ignore_remarks_md) {
-                            continue;
-                        }
-
-                        ++all_extra_err_count;
-                        found_remarks = true;
-                    } else if (!strcmp(u, MAKEFILE_FILENAME)) {
-                        if (ignore_Makefile) {
-                            continue;
-                        }
-                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions %04o != 0444", u, filemode(u, true));/*ooo*/
-                            ++all_extra_err_count;
-                        }
-                        if (is_empty(u)) {
-                            werr(61, __func__, "%s: file is empty", u);
-                            ++all_extra_err_count;
-                        }
-
-                        found_Makefile = true;
-                    } else if (!strcmp(u, PROG_C_FILENAME)) {
-                        if (ignore_prog_c) {
-                            continue;
-                        }
-                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions %04o != 0444", u, filemode(u, true));/*ooo*/
-                            ++all_extra_err_count;
-                        }
-                        found_prog_c = true;
-                    } else if (!strcmp(u, PROG_FILENAME)) {
-                        if (ignore_prog) {
-                            continue;
-                        }
-                        ++all_extra_err_count;
-                        found_prog = true;
-                    } else if (!strcmp(u, ENTRY_JSON_FILENAME)) {
-                        if (ignore_entry) {
-                            continue;
-                        }
-                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions %04o != 0444", u, filemode(u, true));/*ooo*/
-                            ++all_extra_err_count;
-                        }
-                        if (is_empty(u)) {
-                            werr(62, __func__, "%s: file is empty", u);
-                            ++all_extra_err_count;
-                        }
-                        found_entry = true;
-                    } else if (!strcmp(u, README_MD_FILENAME)) {
-                        if (ignore_README_md) {
-                            continue;
-                        }
-                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions %04o != 0444", u, filemode(u, true));/*ooo*/
-                            ++all_extra_err_count;
-                        }
-                        if (is_empty(u)) {
-                            werr(63, __func__, "%s: file is empty", u);
-                            ++all_extra_err_count;
-                        }
-                        found_README = true;
-                    } else if (!strcmp(u, INDEX_HTML_FILENAME)) {
-                        if (ignore_index) {
-                            continue;
-                        }
-                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions %04o != 0444", u, filemode(u, true));/*ooo*/
-                            ++all_extra_err_count;
-                        }
-                        if (is_empty(u)) {
-                            werr(64, __func__, "%s: file is empty", u);
-                            ++all_extra_err_count;
-                        }
-                        found_index = true;
-                    } else {
-                        /*
-                         * not one of the specific filenames so we have to do
-                         * other tests, specifically verifying it is a sane
-                         * relative path and that the permissions are correct
-                         * based on the filename.
-                         */
-			if (canon_path(u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
-					  NULL, NULL, NULL, true, true, true, true, NULL) == NULL) {
-                            werr(1, __func__, "%s: not a sane relative path with max path len, filename len and depth "/*ooo*/
-                                    "of %d, %d, %d ", u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH);
-                            ++all_extra_err_count;
-                        }
-                        if (!ignore_permissions) {
-                            if (is_executable_filename(u)) {
-                                if (!is_mode(u, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) {
-                                    werr(1, __func__, "%s: permissions: %04o != 0555", u, filemode(u, true));/*ooo*/
-                                    ++all_extra_err_count;
-                                }
-                            } else {
-                                if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                                    werr(1, __func__, "%s: permissions: %04o != 0444", u, filemode(u, true));/*ooo*/
-                                    ++all_extra_err_count;
-                                }
-                            }
-                        }
-                    }
-                }
-
-            } else {
-                werr(1, __func__, "NO FILES FOUND in submission directory: %s", submission_dir);/*ooo*/
-                ++all_extra_err_count;
-            }
-
-            /*
-             * now we have to verify that certain files do exist or do not exist
-             * depending on the -i option
-             */
-            if (!ignore_entry && !found_entry) {
-                werr(1, __func__, "%s does NOT exist and -w USED and -i .entry.json NOT used", ENTRY_JSON_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            if (!ignore_auth && found_auth) {
-                werr(1, __func__, "%s EXISTS and -w USED and -i .auth.json NOT used", AUTH_JSON_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            if (!ignore_info && found_info) {
-                werr(1, __func__, "%s EXISTS and -w USED and -i .info.json NOT used", INFO_JSON_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            if (!ignore_README_md && !found_README) {
-                werr(1, __func__, "%s does NOT exist and -w USED and -i README.md NOT used", README_MD_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            if (!ignore_index && !found_index) {
-                werr(1, __func__, "%s does NOT exist and -w USED and -i index.html NOT used", INDEX_HTML_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            if (!ignore_Makefile && !found_Makefile) {
-                werr(1, __func__, "%s does NOT exist and -w USED and -i Makefile NOT used", MAKEFILE_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            if (!ignore_prog_c && !found_prog_c) {
-                werr(1, __func__, "%s does NOT exist and -w USED and -i prog.c NOT used", PROG_C_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            if (!ignore_prog && found_prog) {
-                werr(1, __func__, "%s EXISTS and -w USED and -i prog NOT used", PROG_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            if (!ignore_remarks_md && found_remarks) {
-                werr(1, __func__, "%s EXISTS and -w USED and -i remarks.md NOT used", REMARKS_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            /*
-             * move back to previous directory
-             */
-            (void) read_fts(NULL, -1, &cwd, NULL);
-
-            /*
-             * free paths arrays
-             *
-             */
-            free_paths_array(&found, false);
-            found = NULL; /* paranoia */
-            free_paths_array(&paths, false);
-            paths = NULL; /* paranoia */
-        } else {
-            /*
-             * case: -w NOT used
-             */
-            /*
-             * set up fts
-             */
-            fts.depth = 0;
-            fts.match_case = true; /* we must match case here */
-            fts.type = FTS_TYPE_FILE; /* regular files only */
-
-            /*
-             * additional checks: we have to verify the file permissions are correct
-             * of files if not ignored. Yes this does mean there is some duplicated
-             * checking of paths. That also happens when -i info is not used. This
-             * could be said to be a mis-feature or it could be said to be defence
-             * in depth. You may choose your poison, keeping in mind that:
-             *
-             *      osis sola facit venenum
-             *
-             *      -- Paracelsus
-             *
-             *  :-)
-             */
-
-            /*
-             * now for the FTS find_paths() function: we need to find all files
-             * that are NOT ignored (this is why there are two ignore lists)
-             */
-            append_path(&paths, "", true, false, false, false);
-            /*
-             * find paths
-             *
-             * NOTE: an empty string means find all files not ignored. And since the
-             * list of paths to ignore is already in the fts->ignore list we
-             * don't need to do anything special.
-             */
-            found = find_paths(paths, submission_dir, -1, &cwd, false, &fts);
-            if (found != NULL) {
-                /*
-                 * case: files were found, check that they are both allowed and
-                 * the right permissions.
-                 *
-                 * NOTE: we don't need to check anything if no files are found
-                 * because the requirements were checked above specially.
-                 */
-                char *u = NULL;
-                len = paths_in_array(found);
-                for (c = 0; c < len; ++c) {
-                    u = dyn_array_value(found, char *, c);
-                    if (u == NULL) {
-                        err(65, __func__, "NULL pointer in found files list");
-                        not_reached();
-                    }
-                    /*
-                     * now we have to determine what file this is
-                     *
-                     * Specific files have additional checks.
-                     */
-                    if (!strcmp(u, AUTH_JSON_FILENAME)) {
-                        if (ignore_auth) {
-                            continue;
-                        }
-                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions: %04o != 0444", u, filemode(u, true));/*ooo*/
-                            ++all_extra_err_count;
-                        }
-                        if (is_empty(u)) {
-                            werr(66, __func__, "%s: file is empty", u);
-                            ++all_extra_err_count;
-                        }
-                        found_auth = true;
-                    } else if (!strcmp(u, INFO_JSON_FILENAME)) {
-                        if (ignore_info) {
-                            continue;
-                        }
-                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions: %04o != 0444", u, filemode(u, true));/*ooo*/
-                            ++all_extra_err_count;
-                        }
-                        if (is_empty(u)) {
-                            werr(67, __func__, "%s: file is empty", u);
-                            ++all_extra_err_count;
-                        }
-                        found_info = true;
-                    } else if (!strcmp(u, REMARKS_FILENAME)) {
-                        if (ignore_remarks_md) {
-                            continue;
-                        }
-                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions: %04o != 0444", u, filemode(u, true));/*ooo*/
-                            ++all_extra_err_count;
-                        }
-                        if (is_empty(u)) {
-                            werr(68, __func__, "%s: file is empty", u);
-                            ++all_extra_err_count;
-                        }
-                        found_remarks = true;
-                    } else if (!strcmp(u, MAKEFILE_FILENAME)) {
-                        if (ignore_Makefile) {
-                            continue;
-                        }
-                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions: %04o != 0444", u, filemode(u, true));/*ooo*/
-                            ++all_extra_err_count;
-                        }
-                        if (is_empty(u)) {
-                            werr(69, __func__, "%s: file is empty", u);
-                            ++all_extra_err_count;
-                        }
-                        found_Makefile = true;
-                    } else if (!strcmp(u, PROG_C_FILENAME)) {
-                        if (ignore_prog_c) {
-                            continue;
-                        }
-                        if (!ignore_permissions && !is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                            werr(1, __func__, "%s: permissions: %04o != 0444", u, filemode(u, true));/*ooo*/
-                            ++all_extra_err_count;
-                        }
-                        found_prog_c = true;
-                    } else if (!strcmp(u, PROG_FILENAME)) {
-                        if (ignore_prog) {
-                            continue;
-                        }
-                        werr(1, __func__, "%s EXISTS and -i prog NOT used", PROG_FILENAME);/*ooo*/
-                        ++all_extra_err_count;
-                        found_prog = true;
-                    } else if (!strcmp(u, ENTRY_JSON_FILENAME)) {
-                        if (ignore_entry) {
-                            continue;
-                        }
-                        werr(1, __func__, "%s EXISTS and -w and -i .entry.json NOT used", ENTRY_JSON_FILENAME);/*ooo*/
-                        ++all_extra_err_count;
-                        found_entry = true;
-                    } else if (!strcmp(u, README_MD_FILENAME)) {
-                        if (ignore_README_md) {
-                            continue;
-                        }
-                        werr(1, __func__, "%s EXISTS and -w and -i README.md NOT used", README_MD_FILENAME);/*ooo*/
-                        ++all_extra_err_count;
-                        found_README = true;
-                    } else if (!strcmp(u, INDEX_HTML_FILENAME)) {
-                        if (ignore_index) {
-                            continue;
-                        }
-                        werr(1, __func__, "%s EXISTS and -w and -i index.html NOT used", INDEX_HTML_FILENAME);/*ooo*/
-                        ++all_extra_err_count;
-                        found_index = true;
-                    } else {
-                        /*
-                         * not one of the specific filenames so we have to do
-                         * other tests, specifically verifying it is a sane
-                         * relative path and that the permissions are correct
-                         * based on the filename.
-                         */
-			if (canon_path(u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
-					  NULL, NULL, NULL, true, true, true, true, NULL) == NULL) {
-                            werr(1, __func__, "%s: not a sane relative path with max path len, filename len and depth "/*ooo*/
-                                    "of %d, %d, %d ", u, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH);
-                            ++all_extra_err_count;
-                        }
-                        if (!ignore_permissions) {
-                            if (is_executable_filename(u)) {
-                                if (!is_mode(u, S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) {
-                                    werr(1, __func__, "%s: permissions: %04o != 0555", u, filemode(u, true));/*ooo*/
-                                    ++all_extra_err_count;
-                                }
-                            } else {
-                                if (!is_mode(u, S_IRUSR | S_IRGRP | S_IROTH)) {
-                                    werr(1, __func__, "%s: permissions: %04o != 0444", u, filemode(u, true));/*ooo*/
-                                    ++all_extra_err_count;
-                                }
-                            }
-                        }
-                    }
-                }
-
-            } else {
-                werr(1, __func__, "no files found in submission directory: %s", submission_dir);/*ooo*/
-                ++all_extra_err_count;
-            }
-            /*
-             * now we have to verify that certain files do exist or do not exist
-             * depending on the -i option
-             */
-            if (!ignore_entry && found_entry) {
-                werr(1, __func__, "%s EXISTS and -w and -i .entry.json NOT used and ", ENTRY_JSON_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            if (!ignore_auth && !found_auth) {
-                werr(1, __func__, "%s does NOT exist and -w and -i .auth.json NOT used", AUTH_JSON_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            if (!ignore_info && !found_info) {
-                werr(1, __func__, "%s does NOT exist and -w and -i .info.json NOT used", INFO_JSON_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            if (!ignore_README_md && found_README) {
-                werr(1, __func__, "%s EXISTS and -w and -i README.md NOT used", README_MD_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            if (!ignore_index && found_index) {
-                werr(1, __func__, "%s EXISTS and -w and -i index.html NOT used", INDEX_HTML_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            if (!ignore_Makefile && !found_Makefile) {
-                werr(1, __func__, "%s does NOT exist and -i Makefile NOT used", MAKEFILE_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            if (!ignore_prog_c && !found_prog_c) {
-                werr(1, __func__, "%s does NOT exist and -i prog.c NOT used", PROG_C_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            if (!ignore_prog && found_prog) {
-                werr(1, __func__, "%s EXISTS and -i prog NOT used", PROG_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-            if (!ignore_remarks_md && !found_remarks) {
-                werr(1, __func__, "%s does NOT exist and -i remarks.md NOT used", REMARKS_FILENAME);/*ooo*/
-                ++all_extra_err_count;
-            }
-
-            /*
-             * free paths arrays
-             *
-             */
-            free_paths_array(&found, false);
-            found = NULL; /* paranoia */
-            free_paths_array(&paths, false);
-            paths = NULL; /* paranoia */
-
-            /*
-             * move back to previous directory
-             */
-            (void) read_fts(NULL, -1, &cwd, NULL);
-        }
-
-        /*
-         * set up fts for additional checks
-         *
-         * First directories without regard to depth
-         */
-        fts.depth = 0;
-        fts.match_case = true; /* we must match case here */
-        fts.type = FTS_TYPE_DIR; /* directories */
-        /*
-         * now for the FTS find_paths() function: we need to find all
-         * directories that are NOT ignored (this is why there are two ignore
-         * lists)
-         */
-        append_path(&paths, "", true, false, false, false);
-        /*
-         * find paths
-         *
-         * NOTE: an empty string means find all paths not ignored. And since the
-         * list of paths to ignore is already in the fts->ignore list we
-         * don't need to do anything special.
-         */
-        found = find_paths(paths, submission_dir, -1, &cwd, false, &fts);
-        if (found != NULL) {
-            /*
-             * case: directories were found, check permissions
-             */
-            char *u = NULL;
-            len = paths_in_array(found);
-            for (c = 0; c < len; ++c) {
-                u = dyn_array_value(found, char *, c);
-                if (u == NULL) {
-                    err(70, __func__, "NULL pointer in found files list");
-                    not_reached();
-                }
-
-                /*
-                 * directories must be the right permissions.
-                 */
-                if (!ignore_permissions && !is_mode(u, S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)) {
-                    werr(1, __func__, "directory %s: permissions: %04o != 0755", u, filemode(u, true));/*ooo*/
-                    ++all_extra_err_count;
-                }
-            }
-            /*
-             * free found array again
-             */
-            free_paths_array(&found, false);
-            found = NULL;
-        }
-        /*
-         * move back to previous directory
-         */
-        (void) read_fts(NULL, -1, &cwd, NULL);
-        /*
-         * Now directories with depth checks.
-         */
-        fts.min_depth = MAX_PATH_DEPTH + 1;
-        fts.match_case = true; /* we must match case here */
-        fts.type = FTS_TYPE_DIR; /* directories */
-        /*
-         * now for the FTS find_paths() function: we need to find all
-         * directories that are NOT ignored (this is why there are two ignore
-         * lists)
-         */
-        /*
-         * find paths
-         *
-         * NOTE: an empty string means find all paths not ignored. And since the
-         * list of paths to ignore is already in the fts->ignore list we
-         * don't need to do anything special.
-         */
-        found = find_paths(paths, submission_dir, -1, &cwd, false, &fts);
-        if (found != NULL) {
-            /*
-             * case: directories beyond the max depth were found, report it as
-             * an error.
-             */
-            char *u = NULL;
-            len = paths_in_array(found);
-            for (c = 0; c < len; ++c) {
-                u = dyn_array_value(found, char *, c);
-                if (u == NULL) {
-                    err(71, __func__, "NULL pointer in found files list");
-                    not_reached();
-                }
-
-                /*
-                 * directories must be the right permissions.
-                 */
-                werr(1, __func__, "directory %s depth > max %d", u, MAX_PATH_DEPTH); /*ooo*/
-                ++all_extra_err_count;
-            }
-            /*
-             * free found array again
-             */
-            free_paths_array(&found, false);
-            found = NULL;
-        }
-
-        /*
-         * move back to previous directory
-         */
-        (void) read_fts(NULL, -1, &cwd, NULL);
-        /*
-         * Now anything other than files and directories
-         */
-        reset_fts(&fts, false, false);
-        fts.match_case = true; /* we must match case here */
-        fts.type = FTS_TYPE_ANY & ~(FTS_TYPE_FILE|FTS_TYPE_DIR);
-        /*
-         * now for the FTS find_paths() function: we need to find everything not
-         * a directory or file that are not ignored.
-         */
-        /*
-         * find paths
-         *
-         * NOTE: an empty string means find all paths not ignored. And since the
-         * list of paths to ignore is already in the fts->ignore list we
-         * don't need to do anything special.
-         */
-        found = find_paths(paths, submission_dir, -1, &cwd, false, &fts);
-        if (found != NULL) {
-            /*
-             * case: directories beyond the max depth were found, report it as
-             * an error.
-             */
-            char *u = NULL;
-            len = paths_in_array(found);
-            for (c = 0; c < len; ++c) {
-                u = dyn_array_value(found, char *, c);
-                if (u == NULL) {
-                    err(72, __func__, "NULL pointer in found files list");
-                    not_reached();
-                }
-
-                /*
-                 */
-                werr(1, __func__, "%s: not a file or directory", u);/*ooo*/
-                ++all_extra_err_count;
-            }
-            /*
-             * free found array again
-             */
-            free_paths_array(&found, false);
-            found = NULL;
-        }
-
-        /*
-         * before we continue, to be on the safe side, we will fchdir(2) to the
-         * original directory. We might be able to determine where we are but
-         * depending on the options and what or what not failed above, we cannot
-         * be sure where we are.
-         */
-        errno = 0; /* pre-clear errno for errp() */
-        if (fchdir(cwd2) != 0) {
-            errp(73, __func__, "failed to change back to original directory");
-            not_reached();
-        }
-
-
-        /*
-         * open the .auth.json file under submission_dir if !ignore_auth && -w not used
-         */
-        if (!ignore_auth && !winning_entry_mode) {
-            auth_filename = ".auth.json";
-            auth_stream = open_dir_file(submission_dir, auth_filename);
-            if (auth_stream == NULL) { /* paranoia */
-                err(74, __func__, "auth_stream = open_dir_file(%s, %s) returned NULL", submission_dir, auth_filename);
-                not_reached();
-            }
-            auth_path = calloc_path(submission_dir, auth_filename);
-            if (auth_path == NULL) {
-                err(75, __func__, "auth_path is NULL");
-                not_reached();
-            }
-        }
-
-        /*
-         * open the .info.json file under submission_dir if !ignore_info and -w not used
-         */
-        if (!ignore_info && !winning_entry_mode) {
-            info_filename = ".info.json";
-            info_stream = open_dir_file(submission_dir, info_filename);
-            if (info_stream == NULL) { /* paranoia */
-                err(76, __func__, "info_stream = open_dir_file(%s, %s) returned NULL", submission_dir, info_filename);
-                not_reached();
-            }
-            info_path = calloc_path(submission_dir, info_filename);
-            if (info_path == NULL) {
-                err(77, __func__, "info_path is NULL");
-                not_reached();
-            }
-        }
-
-        /*
-         * parse .auth.json if it is open
-         */
-        if (auth_stream != NULL && auth_path != NULL) {
-            auth_tree = parse_json_stream(auth_stream, auth_path, &auth_valid);
-            if (auth_valid == false || auth_tree == NULL) {
-                err(4, __func__, "failed to parse JSON in .auth.json file: %s", auth_path); /*ooo*/
-                not_reached();
-            }
-            dbg(DBG_LOW, "successful parse of JSON in .auth.json file: %s", auth_path);
-        }
-
-        /*
-         * parse .info.json if it is open
-         */
-        if (info_stream != NULL && info_path != NULL) {
-            info_tree = parse_json_stream(info_stream, info_path, &info_valid);
-            if (info_valid == false || info_tree == NULL) {
-                err(4, __func__, "failed to parse JSON in .info.json file: %s", info_path); /*ooo*/
-                not_reached();
-            }
-            dbg(DBG_LOW, "successful parse of JSON in .info.json file: %s", info_path);
-        }
-
-        /*
-         * check a JSON parse tree against a JSON semantic table for .auth.json, if open
-         */
-        if (auth_stream != NULL && auth_path != NULL) {
-
-            /*
-             * perform JSON semantic analysis on the .auth.json JSON parse tree
-             */
-            dbg(DBG_HIGH, "about to perform JSON semantic check for .auth.json file: %s", auth_path);
-            auth_all_err_count = json_sem_check(auth_tree, JSON_DEFAULT_MAX_DEPTH, sem_auth,
-                                              &auth_count_err, &auth_val_err, NULL);
-
-            /*
-             * firewall on json_sem_check() results AND count errors for .auth.json
-             */
-            if (auth_count_err == NULL) {
-                err(78, __func__, "json_sem_check() left auth_count_err as NULL for .auth.json file: %s", auth_path);
-                not_reached();
-            }
-            if (dyn_array_tell(auth_count_err) < 0) {
-                err(79, __func__, "dyn_array_tell(auth_count_err): %jd < 0 "
-                       "for .auth.json file: %s", dyn_array_tell(auth_count_err), auth_path);
-                not_reached();
-            }
-            auth_count_err_count = (uintmax_t) dyn_array_tell(auth_count_err);
-            if (auth_val_err == NULL) {
-                err(80, __func__, "json_sem_check() left auth_val_err as NULL for .auth.json file: %s", auth_path);
-                not_reached();
-            }
-            if (dyn_array_tell(auth_val_err) < 0) {
-                err(81, __func__, "dyn_array_tell(auth_val_err): %jd < 0 "
-                       "for .auth.json file: %s", dyn_array_tell(auth_val_err), auth_path);
-                not_reached();
-            }
-            auth_val_err_count = (uintmax_t)dyn_array_tell(auth_val_err);
-            if (auth_all_err_count < auth_count_err_count+auth_val_err_count) {
-                err(82, __func__, "auth_all_err_count: %ju < auth_count_err_count: %ju + auth_val_err_count: %ju "
-                       "for .auth.json file: %s",
-                       auth_all_err_count, auth_count_err_count, auth_val_err_count, auth_path);
-                not_reached();
-            }
-            auth_int_err_count = auth_all_err_count - (auth_count_err_count+auth_val_err_count);
-        }
-
-        /*
-         * check a JSON parse tree against a JSON semantic table for .info.json, if open
-         */
-        if (info_stream != NULL && info_path != NULL) {
-
-            /*
-             * perform JSON semantic analysis on the .info.json JSON parse tree
-             */
-            dbg(DBG_HIGH, "about to perform JSON semantic check for .info.json file: %s", info_path);
-            info_all_err_count = json_sem_check(info_tree, JSON_DEFAULT_MAX_DEPTH, sem_info,
-                                              &info_count_err, &info_val_err, submission_dir);
-
-            /*
-             * firewall on json_sem_check() results AND count errors for .info.json
-             */
-            if (info_count_err == NULL) {
-                err(83, __func__, "json_sem_check() left info_count_err as NULL for .info.json file: %s", info_path);
-                not_reached();
-            }
-            if (dyn_array_tell(info_count_err) < 0) {
-                err(84, __func__, "dyn_array_tell(info_count_err): %jd < 0 "
-                       "for .info.json file: %s",
-                       dyn_array_tell(info_count_err), info_path);
-                not_reached();
-            }
-            info_count_err_count = (uintmax_t)dyn_array_tell(info_count_err);
-            if (info_val_err == NULL) {
-                err(85, __func__, "json_sem_check() left info_val_err as NULL for .info.json file: %s", info_path);
-                not_reached();
-            }
-            if (dyn_array_tell(info_val_err) < 0) {
-                err(86, __func__, "dyn_array_tell(info_val_err): %jd < 0 "
-                       "for .info.json file: %ss",
-                       dyn_array_tell(info_val_err), info_path);
-                not_reached();
-            }
-            info_val_err_count = (uintmax_t)dyn_array_tell(info_val_err);
-            if (info_all_err_count < info_count_err_count+info_val_err_count) {
-                err(87, __func__, "info_all_err_count: %ju < info_count_err_count: %ju + info_val_err_count: %ju "
-                       "for .info.json file: %s",
-                       info_all_err_count, info_count_err_count, info_val_err_count, info_path);
-                not_reached();
-            }
-            info_int_err_count = info_all_err_count - (info_count_err_count+info_val_err_count);
-        }
-
-        /*
-         * count all errors
-         */
-        all_count_err_count = info_count_err_count + auth_count_err_count;
-        all_val_err_count = info_val_err_count + auth_val_err_count;
-        all_int_err_count = info_int_err_count + auth_int_err_count;
-        all_all_err_count = info_all_err_count + auth_all_err_count;
-
-        /*
-         * report details of any .auth.json errors
-         */
-        if (auth_all_err_count > 0) {
-            fpr(stderr, __func__, "What follows are errors for .auth.json file: %s\n", auth_path);
-            if (auth_count_err == NULL) {
-                fpr(stderr, __func__, "auth_count_err is NULL!!!\n");
-            } else {
-                for (c=0; c < auth_count_err_count; ++c) {
-                    sem_count_err = dyn_array_addr(auth_count_err, struct json_sem_count_err, c);
-                    fprint_count_err(stderr, ".auth.json count error ", sem_count_err, "\n");
-                }
-                for (c=0; c < auth_val_err_count; ++c) {
-                    sem_val_err = dyn_array_addr(auth_val_err, struct json_sem_val_err, c);
-                    fprint_val_err(stderr, ".auth.json validation error ", sem_val_err, "\n");
-                }
-            }
-            if (auth_int_err_count > 0) {
-                fpr(stderr, __func__, ".auth.json internal errors found: %ju", auth_int_err_count);
-            }
-        }
-
-        /*
-         * report details of any .info.json errors
-         */
-        if (info_all_err_count > 0) {
-            fpr(stderr, __func__, "What follows are errors for .info.json file: %s\n", info_path);
-            if (info_count_err == NULL) {
-                fpr(stderr, __func__, "info_count_err is NULL!!!\n");
-            } else {
-                for (c=0; c < info_count_err_count; ++c) {
-                    sem_count_err = dyn_array_addr(info_count_err, struct json_sem_count_err, c);
-                    fprint_count_err(stderr, ".info.json count error ", sem_count_err, "\n");
-                }
-                for (c=0; c < info_val_err_count; ++c) {
-                    sem_val_err = dyn_array_addr(info_val_err, struct json_sem_val_err, c);
-                    fprint_val_err(stderr, ".info.json validation error ", sem_val_err, "\n");
-                }
-            }
-            if (info_int_err_count > 0) {
-                fpr(stderr, __func__, ".info.json internal errors found: %ju", info_int_err_count);
-            }
-        }
-
-        /*
-         * report on error count
-         */
-        if (all_count_err_count > 0) {
-            if (auth_count_err_count > 0) {
-                dbg(DBG_LOW, "count errors for .auth.json: %ju", auth_count_err_count);
-            }
-            if (info_count_err_count > 0) {
-                dbg(DBG_LOW, "count errors for .info.json: %ju", info_count_err_count);
-            }
-            dbg(DBG_LOW, "count errors for both files: %ju", all_count_err_count);
-        }
-
-        /*
-         * report on validation errors
-         */
-        if (all_val_err_count > 0) {
-            if (auth_val_err_count > 0) {
-                dbg(DBG_LOW, "validation errors for .auth.json: %ju", auth_val_err_count);
-            }
-            if (info_val_err_count > 0) {
-                dbg(DBG_LOW, "validation errors for .info.json: %ju", info_val_err_count);
-            }
-            dbg(DBG_LOW, "validation errors for both files: %ju", all_val_err_count);
-        }
-
-        /*
-         * report on internal errors
-         */
-        if (all_int_err_count > 0) {
-            if (auth_int_err_count > 0) {
-                dbg(DBG_LOW, "internal errors for .auth.json: %ju", auth_int_err_count);
-            }
-            if (info_int_err_count > 0) {
-                dbg(DBG_LOW, "internal errors for .info.json: %ju", info_int_err_count);
-            }
-            dbg(DBG_LOW, "internal errors for both files: %ju", all_int_err_count);
-        }
-
-        /*
-         * report on total error counts
-         */
-        if (all_all_err_count > 0) {
-            if (auth_all_err_count > 0) {
-                dbg(DBG_LOW, "total errors for .auth.json: %ju", auth_all_err_count);
-            }
-            if (info_all_err_count > 0) {
-                dbg(DBG_LOW, "total errors for .info.json: %ju", info_all_err_count);
-            }
-            dbg(DBG_LOW, "total errors for both files: %ju", all_all_err_count);
-        }
-
-        /*
-         * summarize the JSON check status
-         */
-        if (auth_all_err_count > 0) {
-            if (auth_path == NULL) {
-                werr(1, __func__, "JSON check failed for .auth.json file: ((NULL))"); /*ooo*/
-            } else {
-                werr(1, __func__, "JSON check failed for .auth.json file: %s", auth_path); /*ooo*/
-            }
-        }
-        if (info_all_err_count > 0) {
-            if (info_path == NULL) {
-                werr(1, __func__, "JSON check failed for .info.json file: ((NULL))"); /*ooo*/
-            } else {
-                werr(1, __func__, "JSON check failed for .info.json file: %s", info_path); /*ooo*/
-            }
-        }
-        if (all_all_err_count == 0 && all_extra_err_count == 0) {
-            dbg(DBG_LOW, "checks OK");
-        }
-        /*
-         * cleanup - except for info_stream and auth_stream.
-         *
-         * We don't try closing info_stream or auth_stream because the json parser
-         * already does that at this point. This is because we no longer use yyin
-         * due to complications introduced when making the lexer re-entrant. This is
-         * not a problem under macOS but it is under linux.
-         */
-        if (auth_tree != NULL) {
-            json_tree_free(auth_tree, JSON_DEFAULT_MAX_DEPTH);
-            auth_tree = NULL;
-        }
-        if (info_tree != NULL) {
-            json_tree_free(info_tree, JSON_DEFAULT_MAX_DEPTH);
-            info_tree = NULL;
-        }
-        if (auth_count_err != NULL) {
-            free_count_err(auth_count_err);
-            auth_count_err = NULL;
-        }
-        if (auth_val_err != NULL) {
-            free_val_err(auth_val_err);
-            auth_val_err = NULL;
-        }
-        if (info_count_err != NULL) {
-            free_count_err(info_count_err);
-            info_count_err = NULL;
-        }
-        if (info_val_err != NULL) {
-            free_val_err(info_val_err);
-            info_val_err = NULL;
-        }
-        if (auth_path != NULL) {
-            free(auth_path);
-            auth_path = NULL;
-        }
-        if (info_path != NULL) {
-            free(info_path);
-            info_path = NULL;
-        }
-        /*
-         * also free the global ignored paths array
-         */
-        if (ignored_paths != NULL) {
-            free_paths_array(&ignored_paths, false);
-            ignored_paths = NULL;
-        }
-
-        /*
-         * make sure we're in the original directory
-         */
-        errno = 0; /* pre-clear errno for errp() */
-        if (fchdir(cwd2) != 0) {
-            errp(88, __func__, "failed to change back to previous directory");
-            not_reached();
-        }
-        /*
-         * close FD
-         *
-         * NOTE: read_fts() will have already closed cwd so we don't need to do
-         * that
-         */
-        errno = 0; /* pre-clear errno for errp */
-        if (close(cwd2) != 0) {
-            errp(89, __func__, "failed to close original directory FD");
-            not_reached();
-        }
-        /*
-         * free the array in fts if not NULL and reset to 0
-         */
-        reset_fts(&fts, true, true);
-        /*
-         * free the paths and found paths arrays too
-         */
-        free_paths_array(&paths, false);
-        paths = NULL; /* paranoia */
-        free_paths_array(&found, false);
-        found = NULL; /* paranoia */
+    /*
+     * case: neither -S, nor -s, nor -w used
+     *
+     * We will assume -S is used.
+     */
     } else {
-	usage(3, program, "invalid command line");/*ooo*/
+
+	/* set walk_set and context */
+	wset_p = &walk_chkentry_S;
+	context = "chkentry -S";
+	submission_mode = true;
+
+	/* check for conflicting options */
+	if (ignore_permissions) {
+	    usage(3, program, "cannot -P option when neither -S, nor -s, nor -w is used"); /*ooo*/
+	    not_reached();
+	}
+    }
+    dbg(DBG_LOW, "will use context: %s name: %s",
+		 context, (wset_p == NULL || wset_p->name == NULL) ? "((NULL))" : wset_p->name);
+
+    /*
+     * init_walk_stat - initialize a walk_stat
+     */
+    init_walk_stat(&wstat,
+		   submission_dir, wset_p, context,
+		   MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
+		   NULL);
+
+    /*
+     * walk a file system tree, recording steps
+     */
+    walk_ok = fts_walk(&wstat);
+    if (walk_ok == false) {
+	err(1, CHKENTRY_BASENAME, "failed to scan: %s", submission_dir); /*ooo*/
+	not_reached();
     }
 
+    /*
+     * sort walk_stat arrays by canonicalized path in a case independent way
+     */
+    sort_walk_istat(&wstat);
+
+    /*
+     * end walk and check if the walk was successful
+     */
+    walk_ok = chk_walk(&wstat, stderr, MAX_EXTRA_FILE_COUNT, MAX_EXTRA_DIR_COUNT, NO_COUNT, NO_COUNT, true);
+    if (walk_ok) {
+	dbg(DBG_LOW, "%s walk was successful for: %s", context, submission_dir);
+    } else {
+	dbg(DBG_LOW, "%s some walk errors were detected for: %s", context, submission_dir);
+    }
+
+    /*
+     * check permissions unless ignore_permissions
+     */
+    if (!ignore_permissions) {
+
+	/*
+	 * scan files for permissions
+	 */
+	len = dyn_array_tell(wstat.file);
+	for (j=0; j < len; ++j) {
+
+	    /*
+	     * obtain file permission
+	     */
+	    i_p = dyn_array_value(wstat.file, struct item *, j);
+	    if (i_p == NULL) {
+		err(10, CHKENTRY_BASENAME, "wstat.file[%jd] is NULL\n", j); /*coo*/
+		not_reached();
+	    } else if (i_p->fts_path == NULL) {
+		err(11, CHKENTRY_BASENAME, "wstat.file[%jd].fts_path is NULL\n", j);
+		not_reached();
+	    } else if (i_p->fts_name == NULL) {
+		err(12, CHKENTRY_BASENAME, "wstat.file[%jd].fts_name is NULL\n", j);
+		not_reached();
+	    }
+
+	    /*
+	     * case: file ends in .sh
+	     */
+	    if (i_p->fts_namelen >= LITLEN(".sh") &&
+		strcmp(i_p->fts_name + i_p->fts_namelen - LITLEN(".sh"), ".sh") == 0) {
+
+		/*
+		 * verify mode 0555
+		 */
+		if (ITEM_PERM(i_p->st_mode) != ITEM_PERM_0555) {
+		    dbg(DBG_LOW, "shell file: %s permission: %03o != %03o",
+				  i_p->fts_path, ITEM_PERM(i_p->st_mode), ITEM_PERM_0555);
+		    walk_ok = false;
+		}
+
+	    /*
+	     * case: file does NOT end in .sh
+	     */
+	    } else {
+
+		/*
+		 * verify mode 0444
+		 */
+		if (ITEM_PERM(i_p->st_mode) != ITEM_PERM_0444) {
+		    dbg(DBG_LOW, "non-shell file: %s permission: %03o != %03o",
+				  i_p->fts_path, ITEM_PERM(i_p->st_mode), ITEM_PERM_0444);
+		    walk_ok = false;
+		}
+	    }
+	}
+
+	/*
+	 * scan directories for permissions
+	 */
+	len = dyn_array_tell(wstat.dir);
+	for (j=0; j < len; ++j) {
+
+	    /*
+	     * obtain file permission
+	     */
+	    i_p = dyn_array_value(wstat.dir, struct item *, j);
+	    if (i_p == NULL) {
+		err(13, CHKENTRY_BASENAME, "wstat.dir[%jd] is NULL\n", j);
+		not_reached();
+	    } else if (i_p->fts_path == NULL) {
+		err(14, CHKENTRY_BASENAME, "wstat.dir[%jd].fts_path is NULL\n", j);
+		not_reached();
+	    }
+
+	    /*
+	     * verify mode 0755
+	     */
+	    if (ITEM_PERM(i_p->st_mode) != ITEM_PERM_0755) {
+		dbg(DBG_LOW, "directory: %s permission: %03o != %03o",
+			      i_p->fts_path, ITEM_PERM(i_p->st_mode), ITEM_PERM_0755);
+		walk_ok = false;
+	    }
+	}
+    }
+
+    /*
+     * cd to the submission directory for any final JSON file verification
+     *
+     * At this time we no longer need to remain at the current directory,
+     * so the cd below is OK.
+     */
+    errno = 0;	    /* pre-clear errno for errp() */
+    cd_ret = chdir(submission_dir);
+    if (cd_ret < 0) {
+
+	/* report failure to cd to submission_dir */
+        errp(1, CHKENTRY_BASENAME, "cannot cd: %s", submission_dir); /*ooo*/
+	not_reached();
+
+    /*
+     * case: verify .entry.json JSON file
+     */
+    } else if (winning_entry_mode) {
+
+	/*
+	 * check .entry.json
+	 *
+	 * TODO: until we have a struct json_sem for .entry.json, we pass NULL
+	 */
+	json_filename = ".entry.json";
+	json_ok = chk_json(stderr, ".", json_filename, NULL);
+	if (json_ok == false) {
+	    dbg(DBG_LOW, "invalid JSON file: %s/%s", submission_dir, json_filename);
+	    walk_ok = false;
+	}
+
+    /*
+     * case: verify .auth.json and .info.json JSON files
+     */
+    } else {
+
+	/*
+	 * check .auth.json
+	 */
+	json_filename = ".auth.json";
+	json_ok = chk_json(stderr, ".", json_filename, sem_auth);
+	if (json_ok == false) {
+	    dbg(DBG_LOW, "invalid JSON file: %s/%s", submission_dir, json_filename);
+	    walk_ok = false;
+	}
+
+	/*
+	 * check .info.json
+	 */
+	json_filename = ".info.json";
+	json_ok = chk_json(stderr, ".", json_filename, sem_info);
+	if (json_ok == false) {
+	    dbg(DBG_LOW, "invalid JSON file: %s/%s", submission_dir, json_filename);
+	    walk_ok = false;
+	}
+    }
+
+    /*
+     * free the walk_stat
+     */
+    free_walk_stat(&wstat);
 
     /*
      * All Done!!! All Done!!! -- Jessica Noll, Age 2
-     *
      */
-    if (all_all_err_count > 0 || all_extra_err_count > 0) {
-        err(1, __func__, "one or more tests failed");/*ooo*/
-        not_reached();
+    if (!walk_ok) {
+	err(1, CHKENTRY_BASENAME, "check failed for: %s", submission_dir); /*ooo*/
     }
     exit(0); /*ooo*/
+}
+
+
+/*
+ * usage - print usage to stderr
+ *
+ * Example:
+ *      usage(3, program, "wrong number of arguments");
+ *
+ * given:
+ *	exitcode        value to exit with
+ *	str		top level usage message
+ *	prog		our program name
+ *
+ * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ *       Normally one should NOT include newlines in warn messages.
+ *
+ * This function does not return.
+ */
+static void
+usage(int exitcode, char const *prog, char const *str)
+{
+    /*
+     * firewall
+     */
+    if (prog == NULL) {
+	prog = CHKENTRY_BASENAME;
+	warn(__func__, "\nin usage(): prog was NULL, forcing it to be: %s\n", prog);
+    }
+    if (str == NULL) {
+	str = "((NULL str))";
+	warn(__func__, "\nin usage(): str was NULL, forcing it to be: %s\n", str);
+    }
+
+    /*
+     * print the formatted usage stream
+     */
+    if (*str != '\0') {
+	fprintf_usage(DO_NOT_EXIT, stderr, "%s\n", str);
+    }
+    fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, JSON_DBG_DEFAULT,
+	    CHKENTRY_BASENAME, CHKENTRY_VERSION, JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
+    exit(exitcode); /*ooo*/
+    not_reached();
+}
+
+
+/*
+ * chk_json - check a JSON file
+ *
+ * given:
+ *	err		    stream on which to report errors
+ *	submission_dir	    directory from which files are to be checked
+ *	filename	    name of JSON file in submission_dir
+ *	sem		    != NULL ==> pointer to a JSON semantic table
+ *			    NULL => do not perform any semantic table checks
+ *
+ * returns:
+ *	true ==> all is OK
+ *	false ==> something failed
+ *
+ * The file, .auth.json, under the submission_dir will opened, checked for proper JSON
+ * syntax, and finally JSON semantic analysis will be performed.
+ */
+static bool
+chk_json(FILE *err, char const *submission_dir, char const *filename, struct json_sem *sem)
+{
+    FILE *stream = NULL;				/* file stream for the JSON file or NULL */
+    struct json *tree = NULL;				/* JSON parse tree or NULL ==> not parsed or invalid JSON */
+    bool json_valid = false;				/* true ==> JSON is valid, false ==> JSON is invalid */
+    struct dyn_array *count_err = NULL;			/* JSON semantic count errors */
+    struct dyn_array *val_err = NULL;			/* JSON semantic validation errors */
+    intmax_t all_err_count = 0;				/* number of errors (count+validation+internal) from semantic check */
+    intmax_t count_err_count = 0;			/* semantic count error count */
+    intmax_t int_err_count = 0;				/* internal error count */
+    intmax_t val_err_count = 0;				/* semantic validation count */
+    struct json_sem_count_err *sem_count_err = NULL;    /* semantic count error to print */
+    struct json_sem_val_err *sem_val_err = NULL;        /* semantic validation error to print */
+    intmax_t c;						/* dynamic array index and ignored lists iterator */
+
+    /*
+     * firewall
+     */
+    if (err == NULL) {
+	fwarn(stderr, __func__, "err is NULL");
+	return false;
+    }
+    if (submission_dir == NULL) {
+	fwarn(err, __func__, "submission_dir is NULL");
+	return false;
+    }
+    if (filename == NULL) {
+	fwarn(err, __func__, "filename is NULL");
+	return false;
+    }
+
+    /*
+     * open the JSON file under submission_dir
+     */
+    stream = open_dir_file(submission_dir, filename);
+    if (stream == NULL) {
+	fwarn(err, __func__, "failed to open: %s", filename);
+	return false;
+    }
+
+    /*
+     * parse the JSON file and check for valid JSON syntax
+     */
+    tree = parse_json_stream(stream, filename, &json_valid);
+    if (json_valid == false || tree == NULL) {
+	fwarn(err, __func__, "file contains invalid JSON: %s", filename);
+	return false;
+    }
+
+    /*
+     * perform JSON semantic checks if requested
+     */
+    if (sem != NULL) {
+
+	/*
+	 * perform JSON semantic analysis on the .auth.json JSON parse tree
+	 */
+	all_err_count = json_sem_check(tree, JSON_DEFAULT_MAX_DEPTH, sem, &count_err, &val_err, NULL);
+
+	/*
+	 * firewall for semantic analysis
+	 */
+	if (count_err == NULL) {
+
+	    /* report failure */
+	    fwarn(err, __func__, "left count_err as NULL for JSON file: %s", filename);
+
+	    /* free storage */
+	    if (val_err == NULL) {
+		free_count_err(val_err);
+		val_err = NULL;
+	    }
+	    if (tree == NULL) {
+		json_tree_free(tree, JSON_DEFAULT_MAX_DEPTH);
+		tree = NULL;
+	    }
+	    return false;
+	}
+	if (val_err == NULL) {
+
+	    /* report failure */
+	    fwarn(err, __func__, "cleft val_err as NULL for JSON file: %s", filename);
+
+	    /* free storage */
+	    if (count_err == NULL) {
+		free_count_err(count_err);
+		count_err = NULL;
+	    }
+	    if (tree == NULL) {
+		json_tree_free(tree, JSON_DEFAULT_MAX_DEPTH);
+		tree = NULL;
+	    }
+	    return false;
+	}
+
+	/*
+	 * determine semantic error count
+	 */
+	count_err_count = dyn_array_tell(count_err);
+	val_err_count = dyn_array_tell(val_err);
+	if (all_err_count < count_err_count + val_err_count) {
+
+	    /* report failure */
+	    fwarn(err, __func__, "all_err_count: %jd < count_err_count: %jd + val_err_count: %jd for JSON file: %s",
+		       all_err_count, count_err_count, val_err_count, filename);
+
+	    /* free storage */
+	    if (count_err == NULL) {
+		free_count_err(count_err);
+		count_err = NULL;
+	    }
+	    if (val_err == NULL) {
+		free_count_err(val_err);
+		val_err = NULL;
+	    }
+	    if (tree == NULL) {
+		json_tree_free(tree, JSON_DEFAULT_MAX_DEPTH);
+		tree = NULL;
+	    }
+	    return false;
+	}
+	int_err_count = all_err_count - (count_err_count + val_err_count);
+
+	/*
+	 * report in details of the semantic analysis
+	 */
+	if (all_err_count > 0) {
+
+	    /* report errors */
+	    fpr(err, __func__, "follows are errors for JSON file: %s\n", filename);
+	    for (c=0; c < count_err_count; ++c) {
+		sem_count_err = dyn_array_addr(count_err, struct json_sem_count_err, c);
+		fprint_count_err(err, "JSON semantic count error ", sem_count_err, "\n");
+	    }
+	    for (c=0; c < val_err_count; ++c) {
+		sem_val_err = dyn_array_addr(val_err, struct json_sem_val_err, c);
+		fprint_val_err(err, "JSON semantic validation error ", sem_val_err, "\n");
+	    }
+	    if (int_err_count > 0) {
+		fpr(err, __func__, "%s internal JSON semantic error(s) found: %ju\n", filename, int_err_count);
+	    }
+	    fpr(err, __func__, "%s total JSON semantic error(s) found: %ju\n", filename, all_err_count);
+
+	    /* free storage */
+	    if (count_err == NULL) {
+		free_count_err(count_err);
+		count_err = NULL;
+	    }
+	    if (val_err == NULL) {
+		free_count_err(val_err);
+		val_err = NULL;
+	    }
+	    if (tree == NULL) {
+		json_tree_free(tree, JSON_DEFAULT_MAX_DEPTH);
+		tree = NULL;
+	    }
+	    return false;
+	}
+
+	/*
+	 * free storage
+	 */
+	if (count_err == NULL) {
+	    free_count_err(count_err);
+	    count_err = NULL;
+	}
+	if (val_err == NULL) {
+	    free_count_err(val_err);
+	    val_err = NULL;
+	}
+    }
+    if (tree == NULL) {
+	json_tree_free(tree, JSON_DEFAULT_MAX_DEPTH);
+	tree = NULL;
+    }
+    dbg(DBG_LOW, "JSON file is OK: %s", filename);
+    return true;
 }

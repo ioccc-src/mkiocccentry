@@ -76,6 +76,11 @@
 #include "soup/foo.h"
 
 /*
+ * walk - walk directory trees and tar listings
+ */
+#include "soup/walk.h"
+
+/*
  * macros
  */
 

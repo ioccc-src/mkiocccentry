@@ -178,6 +178,11 @@
  * See also stat(2)
  */
 #define ITEM_TYPE(st_mode) ((st_mode) & (S_IFMT))
+#define ITEM_PERM_BITS (S_ISUID | S_ISGID | S_ISVTX | S_IRWXU | S_IRWXG | S_IRWXO)
+#define ITEM_PERM_0755 (S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)
+#define ITEM_PERM_0555 (S_IRUSR | S_IXUSR | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH)
+#define ITEM_PERM_0444 (S_IRUSR | S_IRGRP | S_IROTH)
+#define ITEM_PERM(st_mode) ((st_mode) & ITEM_PERM_BITS)
 /**/
 #define FILE_TYPE (S_IFREG)
 #define DIR_TYPE (S_IFDIR)

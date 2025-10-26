@@ -1005,26 +1005,11 @@ struct walk_set walk_txzchk = {
 
 
 /*
- * The chksubmit walk_rule set uses the same walk_rule set as the txzchk(1) tool.
- */
-
-
-/*
- * chksubmit walk_set
- */
-struct walk_set walk_chksubmit = {
-    "chksubmit walk_rule set",		/* walk_set name - for debugging purposes */
-    false,				/* true ==> walk_set initialized and setup */
-    NULL,				/* NUL terminated string describing context (tool + options) for debugging purposes */
-    0,					/* length of set NOT counting the final NULL walk_rule.pattern */
-    walk_rule_set_txzchk		/* array of walk rules, ending with a NULL walk_rule.pattern */
-};
-
-
-/*
  * chkentry -S walk_set
  *
  * Because chksubmit(1) calls chkentry -S, the chkentry -S case applies here.
+ *
+ * NOTE: The chkentry -S walk_rule set uses the same walk_rule set as the txzchk(1) tool.
  */
 struct walk_set walk_chkentry_S = {
     "chkentry -S walk_rule set",	/* walk_set name - for debugging purposes */

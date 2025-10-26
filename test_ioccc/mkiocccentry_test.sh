@@ -488,8 +488,8 @@ test -f "${topdir}"/Makefile || cat "${Makefile}" >"${topdir}"/Makefile
 test -f "${topdir}"/remarks.md || cat README.md >"${topdir}"/remarks.md
 test -f "${topdir}"/extra1 || echo "123" >"${topdir}"/extra1
 test -f "${topdir}"/extra2 || echo "456" >"${topdir}"/extra2
-test -f "${topdir}"/try.sh || touch "${topdir}"/try.sh
-test -f "${topdir}"/try.alt.sh || touch "${topdir}"/try.alt.sh
+test -f "${topdir}"/try.sh || echo "exit 0" > "${topdir}"/try.sh
+test -f "${topdir}"/try.alt.sh || echo "exit 0" > "${topdir}"/try.alt.sh
 test -f "${topdir}"/prog.alt.c || touch "${topdir}"/prog.alt.c
 
 # test a good submission

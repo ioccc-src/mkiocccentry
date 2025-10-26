@@ -400,23 +400,9 @@ main(int argc, char *argv[])
     }
 
     /*
-     * chksubmit walk_set WALK_SET_CHKSUBMIT or WALK_SET_ALL
+     * chkentry -S walk_set WALK_SET_CHKSUBMIT or WALK_SET_CHKENTRY_CAPS or WALK_SET_ALL
      */
-    if (set_num == WALK_SET_CHKSUBMIT || set_num == WALK_SET_ALL) {
-
-	/* test walk_set WALK_SET_TXZCHK */
-	walk_ok = test_walk(argc, argv, stdin, stdout,
-			    topdir, &walk_chksubmit, "chksubmit",
-			    max_path_len, max_filename_len, max_depth,
-			    max_file, max_dir, max_sym, max_other,
-			    tar_listing, sort_cpath);
-	exit_code = (walk_ok == false) ? 1 : exit_code;
-    }
-
-    /*
-     * chkentry -S walk_set WALK_SET_CHKENTRY_CAPS or WALK_SET_ALL
-     */
-    if (set_num == WALK_SET_CHKENTRY_CAPS || set_num == WALK_SET_ALL) {
+    if (set_num == WALK_SET_CHKSUBMIT || set_num == WALK_SET_CHKENTRY_CAPS || set_num == WALK_SET_ALL) {
 
 	/* test walk_set WALK_SET_CHKENTRY_CAPS */
 	walk_ok = test_walk(argc, argv, stdin, stdout,

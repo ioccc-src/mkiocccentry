@@ -84,12 +84,12 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.8.2 2025-10-23"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.8.3 2025-10-25"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "2.2.2 2025-10-23"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define SOUP_VERSION "2.2.2 2025-10-25"	/* format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official iocccsize version
@@ -137,7 +137,7 @@
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "2.1.3 2025-10-23"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define CHKENTRY_VERSION "2.1.5 2025-10-25"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_CHKENTRY_VERSION CHKENTRY_VERSION
 
 /*
@@ -166,12 +166,12 @@
  /*
   * try_fts_walk - walk a directory tree using one of the static walk_rule sets
   */
-#define TRY_FTS_WALK_VERSION "1.0.1 2025-10-22"	/* version format: major.minor[.patch] YYYY-MM-DD */
+#define TRY_FTS_WALK_VERSION "1.0.3 2025-10-25"	/* version format: major.minor[.patch] YYYY-MM-DD */
 
  /*
   * try_walk_set - try using one of the static walk_rule sets
   */
-#define TRY_WALK_SET_VERSION "1.0.1 2025-10-23"	/* version format: major.minor[.patch] YYYY-MM-DD */
+#define TRY_WALK_SET_VERSION "1.0.2 2025-10-25"	/* version format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*

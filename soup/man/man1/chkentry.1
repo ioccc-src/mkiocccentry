@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH chkentry 1 "28 August 2025" "chkentry" "IOCCC tools"
+.TH chkentry 1 "23 October 2025" "chkentry" "IOCCC tools"
 .SH NAME
 .B chkentry
 \- check an IOCCC entry directory
@@ -20,6 +20,7 @@
 .IR level \|]
 .RB [\| \-J
 .IR level \|]
+.RB [\| \-V \|]
 .RB [\| \-q \|]
 .RB [\| \-P \|]
 .RB [\| \-s \|]
@@ -68,7 +69,7 @@ It will also verify that the filenames are sane, relative paths, in the context 
 As a sanity check, the
 .BR mkiocccentry (1)
 program executes
-.BR chkentry \-S
+.BR chkentry\  \-S
 after forming the
 .B .auth.json
 and
@@ -111,22 +112,55 @@ Silences msg(), warn(), warnp() if verbosity level is 0.
 .TP
 .BI \-P
 Ignore permissions of files and directories.
-This option is for the judges.
-Use of this option by someone other than a judge might make them lose consciousness :\-)
+.sp
+This option is for the use by the IOCCC judges only.
+The use of this option by someone other than an IOCCC judge might cause the
+.B c
+key of your keyboard to go on an extended vacation. :\-)
+.sp
+This option conflicts with
+.BR \-S .
 .TP
 .BI \-s
 Enter special mode.
-This is for the judges only.
-Use of this option by someone other than a judge might make them lose the next IOCCC :\-)
+.sp
+This option is for the use by the IOCCC judges only.
+The use of this option by someone other than an IOCCC judge might cause your computer long for the use of
+an 8-inch floppy disk. :\-)
+.sp
+This option conflicts with
+.B \-S
+and
+.BR \-w .
 .TP
 .BI \-S
 Submission mode.
 This is used by
-.BR chkentry (1).
+.BR chksubmit (1).
 .TP
 .B \-w
 Perform winning entry tests instead of submission tests.
-This option is for the judges.
+.sp
+This option is for the use by the IOCCC judges only.
+The use of this option by someone other than an IOCCC judge might cause the IP address,
+.BR 127.0.0.1 ,
+to wish it was not associated with your computer on afternoons of days of the month
+that are a prime number. :\-)
+.sp
+This option conflicts with
+.B \-S
+and
+.BR \-s .
+.PP
+If neither
+.BR \-S ,
+nor
+.BR \-s ,
+nor
+.B \-w
+are used, then
+.B \-S
+will be assumed.
 .SH EXIT STATUS
 .TP
 0
@@ -154,9 +188,7 @@ It would be a good idea to note why you think it's clever.
 .PP
 Note that if you are testing that your submission directory is valid, you should
 .B NOT
-use either the
-.B \-w
-option as these exist for the judges only and not when validating the directory is a valid submission directory.
+use options that are intended for IOCCC judges.
 .SH BUGS
 .PP
 More than 0 humans work on it! :)
@@ -197,7 +229,8 @@ or
 .PP
 While the humans maintaining this code use a test suite to validate this code,
 and no so-called AI tool contributed to this tool's codebase,
-this tool's test suite was written by humans with the best of intentions. :)
+this tool's test suite was written by humans with the best of intentions.
+As such, the source code of this tool may be doubly dotty. :\-)
 .PP
 While of this tool does not guarantee that your submission will win the IOCCC,
 submitting something that fails to pass the important validation checks

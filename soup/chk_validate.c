@@ -1878,7 +1878,7 @@ chk_manifest(struct json const *node,
     /*
      * validate manifest
      */
-    test = test_manifest(&man, sem->data);
+    test = test_manifest(&man, ".");
     if (test == false) {
 	if (val_err != NULL) {
 	    *val_err = werr_sem_val(144, node, depth, sem, __func__,
