@@ -193,67 +193,83 @@ struct item {
 /*
  * walk_rule - rules for what to do when walking trees
  *
- * The p_preg element is only valid for a match of MATCH_REGEX, MATCH_REGEX_ANYCASE, MATCH_EXT_REGEX,
- * or MATCH_EXT_REGEX_ANYCASE.  Such prep values are initialized by regcomp(3) and later used by regexec().
- * In all other match cases, p_preg is ignored.
+ * The p_preg element is only valid for a match of MATCH_REGEX,
+ * MATCH_REGEX_ANYCASE, MATCH_EXT_REGEX, or MATCH_EXT_REGEX_ANYCASE. Such preg
+ * values are initialized by regcomp(3) and later used by regexec(). In all
+ * other match cases, p_preg is ignored.
  *
- * When initializing an array of walk_rules, the p_preg value may be initialized to NULL.
- * Before using an array of walk_rules, a walk_rule_setup() function should be called so that
- * any NULL p_preg may be replaced by a calls to regcomp(&w->p_preg, w->pattern, cflags).
- * For those pattern_type that do not involve the regexec(3) facility, *p_preg should be set to NULL.
+ * When initializing an array of walk_rules, the p_preg value may be initialized
+ * to NULL. Before using an array of walk_rules, a walk_rule_setup() function
+ * should be called so that any NULL p_preg may be replaced by a calls to
+ * regcomp(&w->p_preg, w->pattern, cflags). For those pattern_type that do not
+ * involve the regexec(3) facility, *p_preg should be set to NULL.
  *
- * In regards to cases where a fatal error is to be thrown, we recommend by that tools be able to
- * report the problem on standard error AND exit non-zero AFTER walking the tree.  The choice of when to
- * report the problem on standard error is up to the tool implementation: right away or just before exiting non-zero.
- * A tool may wish to have mode to immediately print on stderr and exit non-zero when first fatal error is thrown.
- * The default (abort on first fatal error, or collect all errors and report and exit after finishing the walk)
- * is tool implementation.  You may wish to add a command line option to the tool to switch to the non-default abort mode.
+ * In regards to cases where a fatal error is to be thrown, we recommend that
+ * tools be able to report the problem on standard error AND exit non-zero AFTER
+ * walking the tree. The choice of when to report the problem on standard error
+ * is up to the tool implementation: right away or just before exiting non-zero.
+ * A tool may wish to have mode to immediately print on stderr and exit non-zero
+ * when first fatal error is thrown. The default (abort on first fatal error,
+ * or collect all errors and report and exit after finishing the walk) is tool
+ * implementation. You may wish to add a command line option to the tool to
+ * switch to the non-default abort mode.
  *
- * When walking a tree and a walk_rule with ignore == true is matches for a directory, ALL files under that
- * ignored directory should be ignored.  In terms of fts(3) style tree walking, such an ignored directory
- * may be used to "prune" the tree walk, skipping over all paths under the ignored directory.
+ * When walking a tree and a walk_rule with ignore == true is matches for a
+ * directory, ALL files under that ignored directory should be ignored. In
+ * terms of fts(3) style tree walking, such an ignored directory may be used to
+ * "prune" the tree walk, skipping over all paths under the ignored directory.
  *
- * When walking a tree and a walk_rule with ignore == true is matches for non-directory such as a file,
- * in terms of fts(3) style tree walking, it will also be "pruned".  Because the non-directory
- * has nothing under it to "prune", that action has no effect on the walk.  Nevertheless the non-directory
- * will be indicated to the calling application as something to ignore.  So there is usefulness
- * in declaring a file as something to ignore.
+ * When walking a tree and a walk_rule with ignore == true is matches for
+ * non-directory such as a file, in terms of fts(3) style tree walking, it will
+ * also be "pruned". Because the non-directory has nothing under it to "prune",
+ * that action has no effect on the walk. Nevertheless the non-directory will be
+ * indicated to the calling application as something to ignore. So there is
+ * usefulness in declaring a file as something to ignore.
  *
- * When walking a tree and a walk_rule with prohibit == true is matches for a directory, ALL files under that
- * ignored directory should be ignored.  In terms of fts(3) style tree walking, such an ignored directory
- * may be used to "prune" the tree walk, skipping over all paths under the ignored directory.
+ * When walking a tree and a walk_rule with prohibit == true is matches for a
+ * directory, ALL files under that ignored directory should be ignored. In terms
+ * of fts(3) style tree walking, such an ignored directory may be used to
+ * "prune" the tree walk, skipping over all paths under the ignored directory.
  *
- * In the same way, whem king a tree and a walk_rule with ignore == true is matches for non-directory such as a file,
- * it will also be "pruned".  Because the non-directory has nothing under it to "prune", that action has no effect
+ * In the same way, when walking a tree and a walk_rule with ignore == true
+ * matches for non-directory such as a file, it will also be "pruned". Because
+ * the non-directory has nothing under it to "prune", that action has no effect
  * on the walk.
  *
- * NOTE: A pattern of "*" when the pattern_type is MATCH_FNMATCH or MATCH_FNMATCH_ANYCASE will match an
- *	 empty string path.
+ * NOTE: A pattern of "*" when the pattern_type is MATCH_FNMATCH or
+ * MATCH_FNMATCH_ANYCASE will match an empty string path.
  *
- * The match_count value is to be incremented when a item matches, even if ignore is true.
- * For rules that are required, a match_count value 0 after process all items is an error
- * as it indicates that the required item is missing.
+ * The match_count value is to be incremented when a item matches, even if
+ * ignore is true. For rules that are required, a match_count value 0 after
+ * process all items is an error as it indicates that the required item is
+ * missing.
  *
- * When initializing an array of walk_rules, the match_count values will be initialized to 0.
+ * When initializing an array of walk_rules, the match_count values will be
+ * initialized to 0.
  *
- * To match any item name, a pattern of "*" with a pattern_type of MATCH_ANY is recommended.
+ * To match any item name, a pattern of "*" with a pattern_type of MATCH_ANY is
+ * recommended.
  *
- * If pattern_type is TYPE_ANY, then the pattern is ignored.  In this case setting pattern to "*" is required.
+ * If pattern_type is TYPE_ANY, then the pattern is ignored. In this case
+ * setting pattern to "*" is required.
  *
- * The idea behind any array of struct walk_rule is on a first match basis.  I.e., of a given item,
- * the first struct walk_rule that applies of used.  All subsequent element in the struct walk_rule are ignored.
+ * The idea behind any array of struct walk_rule is on a first match basis.
+ * I.e., of a given item, the first struct walk_rule that applies of used. All
+ * subsequent element in the struct walk_rule are ignored.
  *
  * Disallow problematic paths containing ".." (dot-dot):
  *
- * To avoid complications with path items containing ".." (dot-dot), use the following early on in
- * the struct walk_rule array to prohibit (and prune the tree walk) such problematic paths:
+ * To avoid complications with path items containing ".." (dot-dot), use the
+ * following early on in the struct walk_rule array to prohibit (and prune the
+ * tree walk) such problematic paths:
  *
  *	{ "..",
  *	    false, false, false, false, true,
  *	    MATCH_STR, TYPE_ANY, LEVEL_ANY,
  *	    0, NULL },
  *
- * Suggested "catch all" walk_rules that may precede the final element of a struct walk_rule array:
+ * Suggested "catch all" walk_rules that may precede the final element of a
+ * struct walk_rule array:
  *
  * To allow and count any file, use:
  *
@@ -269,7 +285,8 @@ struct item {
  *	   MATCH_ANY, TYPE_FILEDIR, LEVEL_ANY,
  *	   0, NULL },
  *
- * To ignore anything else (i.e., item has no effect other than to prune the tree walk), use:
+ * To ignore anything else (i.e., item has no effect other than to prune the
+         * tree walk), use:
  *
  *	{ "*",
  *	   false, false, true, false, false,
@@ -285,18 +302,19 @@ struct item {
  *
  * Final element of a struct walk_rule array:
  *
- * An array of walk_rule structures MUST be terminated by a NULL pattern walk_rule structure.
- * When pattern is NULL, all other struct walk_rule are ignored.
- * To end an array of walk_rule structures, use:
+ * An array of walk_rule structures MUST be terminated by a NULL pattern
+ * walk_rule structure. When pattern is NULL, all other struct walk_rule are
+ * ignored. To end an array of walk_rule structures, use:
  *
  *	{ NULL,
  *	   false, false, false, false, false,
  *	   MATCH_UNSET, TYPE_UNSET, LEVEL_UNSET,
  *	   0, NULL }
  *
- * When processing an item against an array of walk_rule structures and the final NULL pattern
- * is reached, the item will have no effect.  To avoid this, precede the final NULL pattern
- * walk_rule with one of the above suggested "catch all" walk_rule structures.
+ * When processing an item against an array of walk_rule structures and the
+ * final NULL pattern is reached, the item will have no effect. To avoid this,
+ * precede the final NULL pattern walk_rule with one of the above suggested
+ * "catch all" walk_rule structures.
  */
 struct walk_rule {
     char const *pattern;	    /* how to match path item, ignored if match == MATCH_ANY, NULL if last in a walk_rule array */
@@ -312,7 +330,7 @@ struct walk_rule {
     enum allowed_level const allowed_level; /* when evaluating an item relative to topdir, which directly levels to apply */
 
     int match_count;		    /* number of times in a tree walk, this walk_rule is matched */
-    regex_t * restrict p_preg;	    /* pointer to a regex_t pointer compiled by regcomp(3) */
+    regex_t *restrict p_preg;	    /* pointer to a regex_t pointer compiled by regcomp(3) */
 };
 
 
@@ -485,7 +503,7 @@ extern void init_walk_stat(struct walk_stat *wstat_p, char const *topdir, struct
 			   size_t max_path_len, size_t max_filename_len, int_least32_t max_depth,
 			   bool tar_listing_used);
 extern bool record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode_t st_mode,
-		        bool *dup_p, char const **cpath_ret);
+		        bool *dup_p, char **cpath_ret);
 extern void fprintf_walk_stat(FILE *stream, struct walk_stat *wstat_p);
 extern void fprintf_walk_set(FILE *stream, struct walk_set *wset_p);
 int path_cmp(const void *pa, const void *pb);

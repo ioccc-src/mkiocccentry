@@ -1017,7 +1017,7 @@ chk_walk_stat(struct walk_stat *wstat_p)
     /*
      * must be ready
      */
-    if (! wstat_p->ready) {
+    if (!wstat_p->ready) {
 	warn(__func__, "*wstat_p is not ready");
 	return false;
     }
@@ -1662,7 +1662,7 @@ match_walk_rule(struct walk_rule *rule_p, struct item *i_p, int indx)
  */
 bool
 record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode_t st_mode,
-	    bool *dup_p, char const **cpath_ret)
+	    bool *dup_p, char **cpath_ret)
 {
     struct walk_rule *rule_p;	    /* pointer to a walk rule */
     struct walk_set *wset_p;	    /* pointer to a walk set */
@@ -1693,7 +1693,7 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
      * NOTE: Passing this check means that we do not have to do as much checking elsewhere
      *       in this function.
      */
-    if (! chk_walk_stat(wstat_p)) {
+    if (!chk_walk_stat(wstat_p)) {
 	err(50, __func__, "wstat_p failed chk_walk_stat");
 	not_reached();
     }

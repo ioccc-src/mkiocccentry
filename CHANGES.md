@@ -1,6 +1,20 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.8.4 2025-10-29
+
+Make some fixes for the txzchk walk table as well as a fix in some of the
+others. The dot star had `"."` instead of `".*"`. Also some of the entries had
+the wrong type. This solves one of the issues with updates to txzchk for issue
+#1325 but it is not complete yet.
+
+Make `char const **cpath_ret` non-const as txzchk will need to free it.
+
+Typo and format fixes (some) in some of the soup/walk files.
+
+Updated `SOUP_VERSION` to `"2.2.3 2025-10-29"`.
+
+
 ## Release 2.8.3 2025-10-25
 
 Release chkentry use of table-driven walk code.
