@@ -650,7 +650,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      */
     { "prog.alt.c",
 	false, false, true, false, false,		/* optional, free */
-	MATCH_STR_ANYCASE, TYPE_ANY, LEVEL_TOP,		/* match whole string any case, any type, at top level only */
+	MATCH_STR_ANYCASE, TYPE_FILE, LEVEL_TOP,	/* match whole string any case, file type, at top level only */
 	0, NULL },
 
     /*
@@ -679,7 +679,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      */
     { "prog.c",
 	true, false, true, false, false,		/* required, free */
-	MATCH_STR_ANYCASE, TYPE_ANY, LEVEL_TOP,		/* match whole string any case, any type, at top level only */
+	MATCH_STR_ANYCASE, TYPE_FILE, LEVEL_TOP,	/* match whole string any case, file type, at top level only */
 	0, NULL },
 
     /*
@@ -708,6 +708,28 @@ static struct walk_rule walk_rule_set_txzchk[] = {
     { "prog.orig.c",
 	false, false, false, false, true,		/* prohibited */
 	MATCH_STR_ANYCASE, TYPE_ANY, LEVEL_TOP,		/* match whole string any case, any type, at top level only */
+	0, NULL },
+
+    /*
+     * try.alt.sh
+     *
+     * Regarding types: We match files only and let "((anything))" rule below deal with any other
+     *			types to avoid "funny business" (as the expression goes).
+     */
+    { "try.alt.sh",
+	false, true, true, false, false,		/* optional, non-empty, free */
+	MATCH_STR_ANYCASE, TYPE_FILE, LEVEL_TOP,	/* match whole string any case, file type, at top level only */
+	0, NULL },
+
+    /*
+     * try.sh
+     *
+     * Regarding types: We match files only and let "((anything))" rule below deal with any other
+     *			types to avoid "funny business" (as the expression goes).
+     */
+    { "try.sh",
+	false, true, true, false, false,		/* optional, non-empty, free */
+	MATCH_STR_ANYCASE, TYPE_FILE, LEVEL_TOP,	/* match whole string any case, file type, at top level only */
 	0, NULL },
 
     /*

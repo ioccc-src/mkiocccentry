@@ -1032,7 +1032,7 @@ chk_walk_stat(struct walk_stat *wstat_p)
     /*
      * must be ready
      */
-    if (! wstat_p->ready) {
+    if (wstat_p->ready == false) {
 	warn(__func__, "*wstat_p is not ready");
 	return false;
     }
@@ -1769,7 +1769,7 @@ canonicalize_path(struct walk_stat *wstat_p, char const *fts_path,
      * NOTE: Passing this check means that we do not have to do as much checking elsewhere
      *       in this function.
      */
-    if (! chk_walk_stat(wstat_p)) {
+    if (chk_walk_stat(wstat_p) == false) {
 
 	/* warn about internal error, update non-NULL values and return NULL */
 	warn(__func__, "wstat_p failed the chk_walk_stat function test suite");
