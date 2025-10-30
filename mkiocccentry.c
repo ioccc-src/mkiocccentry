@@ -263,6 +263,7 @@ main(int argc, char *argv[])
     struct walk_set *wset_p = NULL;	/* pointer to a walk set */
     char const *context = NULL;		/* string describing the context (tool and options) for debugging purposes */
     bool skip_add_ret = false;		/* return from skip_add() */
+    bool walk_ok = true;                /* true ==> no walk errors found, false ==> some walk errors found */
     /**/
     int ret;				/* libc return code */
     int i;
@@ -898,6 +899,32 @@ main(int argc, char *argv[])
 	}
     }
 
+    /*
+     * walk a file system tree, recording steps
+     */
+    walk_ok = fts_walk(&wstat);
+    if (walk_ok == false) {
+        err(4, MKIOCCCENTRY_BASENAME, "failed to scan: %s", *topdir); /*ooo*/
+        not_reached();
+    }
+
+    /*
+     * sort walk_stat arrays by canonicalized path in a case independent way
+     */
+    sort_walk_istat(&wstat);
+
+    /*
+     * end walk and check if the walk was successful
+     */
+    walk_ok = chk_walk(&wstat, stderr, MAX_EXTRA_FILE_COUNT, MAX_EXTRA_DIR_COUNT, NO_COUNT, NO_COUNT, true);
+    if (walk_ok) {
+        dbg(DBG_LOW, "%s walk was successful for: %s", context, *topdir);
+    } else {
+        err(4, MKIOCCCENTRY_BASENAME, "topdir is invalid: %s", *topdir); /*ooo*/
+        not_reached();
+    }
+
+    /* XXX - pre-IOCCC29: remove the obsolete function call below - XXX */
     /*
      * scan and collect files and directories in topdir, copying to the
      * submission directory and then verify everything is in order (through
