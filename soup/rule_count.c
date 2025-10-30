@@ -164,6 +164,7 @@ static Word cwords[] = {
 	{ STRLEN("char"), "char" } ,				/* K&R */
 	{ STRLEN("compl"), "compl" } ,				/* +C89 iso646.h */
 	{ STRLEN("const"), "const" } ,				/* +C89 */
+	{ STRLEN("constexpr"), "constexpr" } ,			/* +C23 */
 	{ STRLEN("continue"), "continue" } ,			/* K&R */
 	{ STRLEN("default"), "default" } ,			/* K&R */
 	{ STRLEN("do"), "do" } ,				/* K&R */
