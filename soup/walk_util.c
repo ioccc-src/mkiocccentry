@@ -419,7 +419,7 @@ alloc_item(char const *fts_path, off_t st_size, mode_t st_mode, int_least32_t ft
     /*
      * allocate and zeroize a struct item
      */
-    i_p = calloc(sizeof(struct item), 1);
+    i_p = calloc(1, sizeof(struct item));
     if (i_p == NULL) {
 	errp(38, __func__, "failed to calloc 1 struct item");
 	not_reached();
