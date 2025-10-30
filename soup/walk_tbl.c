@@ -319,14 +319,14 @@ static struct walk_rule walk_rule_set_mkiocccentry[] = {
 	0, NULL },
 
     /*
-     * 2YYY_*.tar.bz2
+     * YYYY_*.tar.bz2
      *
      * We match any bzip2 compressed tarball file, at they are reserved for winning entries and it created by
      * bin tools that the IOCCC judges execute.
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
      */
-    { "2[0-9][0-9][0-9]_*.tar.bz2",
+    { "[0-9][0-9][0-9][0-9]_*.tar.bz2",
 	false, false, true, true, false,		/* optional, free, ignore */
 	MATCH_FNMATCH_ANYCASE, TYPE_ANY, LEVEL_TOP,	/* file glob any case, any type, at top level only */
 	0, NULL },
@@ -803,7 +803,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
 	0, NULL },
 
     /*
-     * 2YYY_*.tar.bz2
+     * YYYY_*.tar.bz2
      *
      * We match any bzip2 compressed tarball file, at they are reserved for winning entries and it created by
      * bin tools that the IOCCC judges execute.
@@ -814,7 +814,7 @@ static struct walk_rule walk_rule_set_txzchk[] = {
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
      */
-    { "2[0-9][0-9][0-9]_*.tar.bz2",
+    { "[0-9][0-9][0-9][0-9]_*.tar.bz2",
 	false, false, false, false, true,		/* prohibited */
 	MATCH_FNMATCH_ANYCASE, TYPE_ANY, LEVEL_TOP,	/* file glob any case, any type, at top level only */
 	0, NULL },
@@ -1341,7 +1341,7 @@ static struct walk_rule walk_rule_set_chkentry_s[] = {
 	0, NULL },
 
     /*
-     * 2YYY_*.tar.bz2
+     * YYYY_*.tar.bz2
      *
      * We match any bzip2 compressed tarball file, at they are reserved for winning entries and it created by
      * bin tools that the IOCCC judges execute.
@@ -1353,7 +1353,7 @@ static struct walk_rule walk_rule_set_chkentry_s[] = {
      * Regarding types: We match symlinks, and we match things avoid any potential for
      *			"funny business" (as the expression goes).
      */
-    { "2[0-9][0-9][0-9]_*.tar.bz2",
+    { "[0-9][0-9][0-9][0-9]_*.tar.bz2",
 	false, false, false, false, true,		/* prohibited */
 	MATCH_FNMATCH_ANYCASE, TYPE_ANY, LEVEL_TOP,	/* file glob any case, any type, at top level only */
 	0, NULL },
@@ -1762,6 +1762,28 @@ static struct walk_rule walk_rule_set_chkentry_w[] = {
 	0, NULL },
 
     /*
+     * try.alt.sh
+     *
+     * Regarding types: We match files only and let "((anything))" rule below deal with any other
+     *			types to avoid "funny business" (as the expression goes).
+     */
+    { "try.alt.sh",
+	false, true, true, false, false,		/* optional, non-empty, free */
+	MATCH_STR_ANYCASE, TYPE_FILE, LEVEL_TOP,	/* match whole string any case, file type, at top level only */
+	0, NULL },
+
+    /*
+     * try.sh
+     *
+     * Regarding types: We match files only and let "((anything))" rule below deal with any other
+     *			types to avoid "funny business" (as the expression goes).
+     */
+    { "try.sh",
+	false, true, true, false, false,		/* optional, non-empty, free */
+	MATCH_STR_ANYCASE, TYPE_FILE, LEVEL_TOP,	/* match whole string any case, file type, at top level only */
+	0, NULL },
+
+    /*
      * remarks.md
      *
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
@@ -1902,12 +1924,12 @@ static struct walk_rule walk_rule_set_chkentry_w[] = {
 	0, NULL },
 
     /*
-     * 2YYY_*.tar.bz2
+     * YYYY_*.tar.bz2
      *
      * Regarding types: We match files only and let "((anything))" rule below deal with any other
      *			types to avoid "funny business" (as the expression goes).
      */
-    { "2[0-9][0-9][0-9]_*.tar.bz2",
+    { "[0-9][0-9][0-9][0-9]_*.tar.bz2",
 	true, true, true, false, false,			/* required, non-empty, free */
 	MATCH_FNMATCH_ANYCASE, TYPE_ANY, LEVEL_TOP,	/* file glob any case, any type, at top level only */
 	0, NULL },

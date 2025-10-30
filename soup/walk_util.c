@@ -399,6 +399,8 @@ free_item(struct item *i_p)
  * returns:
  *	pointer to an calloced and filled out struct item with independently calloced strings.
  *
+ * NOTE: This function will NOT return NULL.
+ *
  * NOTE: This function does not return on an internal error.
  */
 static struct item *
@@ -580,6 +582,14 @@ free_walk_stat(struct walk_stat *wstat_p)
 
 	/* free the all dynamic array */
 	dyn_array_free(wstat_p->all);
+    }
+
+    /*
+     * free skip_set dynamic array
+     */
+    if (wstat_p->skip_set != NULL) {
+	dyn_array_free(wstat_p->skip_set);
+	wstat_p->skip_set = NULL;
     }
 
     /*
@@ -900,6 +910,11 @@ init_walk_stat(struct walk_stat *wstat_p, char const *topdir, struct walk_set *s
     wstat_p->steps = 0;
 
     /*
+     * allocate the skip_set dynamic array
+     */
+    wstat_p->skip_set = dyn_array_create(sizeof(struct item *), DEF_CHUNK, DEF_CHUNK, true);
+
+    /*
      * allocate dyn_array for items by type
      */
     wstat_p->file = dyn_array_create(sizeof(struct item *), DEF_CHUNK, DEF_CHUNK, true);
@@ -1053,6 +1068,14 @@ chk_walk_stat(struct walk_stat *wstat_p)
     rule_p = wset_p->rule;
     if (rule_p == NULL) {
 	warn(__func__, "wset_p has a NULL rule");
+	return false;
+    }
+
+    /*
+     * check skip_set is NULL
+     */
+    if (wstat_p->skip_set == NULL) {
+	warn(__func__, "wstat_p skip_set is NULL");
 	return false;
     }
 
@@ -1637,54 +1660,107 @@ match_walk_rule(struct walk_rule *rule_p, struct item *i_p, int indx)
 
 
 /*
- * record_step - record an item in a struct walk_stat
+ * canonicalize_path - canonicalize a path using limits from a struct walk_stat
  *
- * Record the step of a walk, given the original path.  We attempt to canonicalize the path.
- * If the path was successfully canonicalized, process the result.  If the path could
- * not be canonicalized, record the problem accordingly.
+ * We canonicalize a path using the path length (wstat_p->max_path_len and wstat_p->max_filename_len) limits
+ * and the depth (wstat_p->max_depth) limits from the a struct walk_stat.
+ *
+ * The *sanity_p, *len_p, and *depth_p pointers, if non-NULL, are updated with the
+ * enum path_sanity error code (or PATH_OK), path length, and path depth as determined by
+ * the canon_path() function.
+ *
+ * We use this canonicalize_path() function instead of just hard coding calls to the
+ * the canon_path() function, in order to be sure that paths are canonicalized in the
+ * same way throughout this walk code.
+ *
+ * In the case of these canonicalization problems:
+ *
+ *	PATH_ERR_PATH_TOO_LONG
+ *	PATH_ERR_NOT_RELATIVE
+ *	PATH_ERR_NAME_TOO_LONG
+ *	PATH_ERR_PATH_TOO_DEEP
+ *	PATH_ERR_NOT_SAFE
+ *	PATH_ERR_DOTDOT_OVER_TOPDIR
+ *
+ * A malloced but unmodified copy of fts_path is returned.  Like other canon_path() function
+ * detected problems, *sanity_p will be set if non-NULL.
+ *
+ * It is the responsibility of the calling function to free any non-NULL return by this function,
+ * after the calling function no longer needs the canonicalized path.
  *
  * given:
  *	wstat_p	    pointer to a struct walk_stat
  *	fts_path    "root path" from topdir of the item
- *	st_size	    size, in bytes in the form used by stat(2)
- *	st_mode	    inode protection mode in the form used by stat(2)
  *
- *	dup_p       != NULL ==> set *dup_p according to if canonicalized was already recorded in struct walk_stat
- *		    NULL ==> do not check for duplicates
- *	cpath_ret   != NULL ==> update with pointer to the canonical path
- *		    NULL ==> ignore
+ *      sanity_p    NULL ==> don't save canon_path path_sanity error, or PATH_OK
+ *                  != NULL ==> save enum path_sanity in *sanity_p
+ *      len_p       NULL ==> don't save canonical path length,
+ *                  != NULL ==> save canonical path length in *len_p
+ *      depth_p     NULL ==> don't save canonical depth,
+ *		    != NULL ==> record canonical depth in *depth_p
  *
  * returns:
- *	true ==> fts_path is to be processed: if walking a hierarchy, any descendants should be visited
- *	false ==> if walking a hierarchy prune walk below fts_path: do NOT visit descendants of fts_path
+ *      NULL ==> invalid path, internal error, critical canon_path() function error, or NULL pointer used
+ *      != NULL ==> malloced canonicalized path
  *
- * NOTE: This function does not return on an internal error.
+ * NOTE: When NULL is returned:
+ *
+ *	    if sanity_p is non-NULL, then
+ *		*sanity_p will be set some value that is != PATH_OK
+ *
+ * NOTE: When a non-NULL malloced path is returned:
+ *
+ *          if sanity_p is non-NULL, then
+ *
+ *		if all was OK, then
+ *		    *sanity_p will be set to PATH_OK
+ *		else
+ *		    *sanity_p will be set to non-critical canon_path() function error code that is != PATH_OK
+ *
+ * NOTE: This function will call warn(3) on internal errors and critical canon_path() function errors.
+ *	 In doing do, it will set values (*sanity_p, *len_p, *depth_p) as needed, and then return NULL.
  */
-bool
-record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode_t st_mode,
-	    bool *dup_p, char const **cpath_ret)
+char const *
+canonicalize_path(struct walk_stat *wstat_p, char const *fts_path,
+		  enum path_sanity *sanity_p, size_t *len_p, int_least32_t *depth_p)
 {
-    struct walk_rule *rule_p;	    /* pointer to a walk rule */
-    struct walk_set *wset_p;	    /* pointer to a walk set */
-    struct item *i_p = NULL;	    /* allocated item */
     char const *cpath = NULL;	    /* canonicalized path arg as a string */
-    int_least32_t deep = -1;	    /* canonicalized stack depth */
+    enum path_sanity sanity = PATH_ERR_UNSET;	    /* canon_path() error code, or PATH_ERR_UNSET, or PATH_OK */
     size_t path_len = 0;	    /* canonicalized path length */
-    enum path_sanity sanity = PATH_ERR_UNSET;	    /* canon_path() error code, or PATH_OK */
-    bool matched = false;	    /* true ==> walk rule matched */
-    bool visit_descendants = true;  /* true ==> OK to visit descendants, false ==> do NOT visit descendants */
-    int count;
+    int_least32_t deep = -1;	    /* canonicalized stack depth */
 
     /*
      * firewall - catch NULL ptrs
      */
     if (wstat_p == NULL) {
-	err(48, __func__, "called with NULL wstat_p");
-	not_reached();
+
+	/* warn about internal error, update non-NULL values and return NULL */
+	warn(__func__, "called with NULL wstat_p");
+	if (sanity_p != NULL) {
+	    *sanity_p = PATH_ERR_UNSET;
+	}
+	if (len_p != NULL) {
+	    *len_p = path_len;
+	}
+	if (depth_p != NULL) {
+	    *depth_p = deep;
+	}
+	return NULL;
     }
     if (fts_path == NULL) {
-	err(49, __func__, "called with NULL fts_path");
-	not_reached();
+
+	/* warn about internal error, update non-NULL values and return NULL */
+	warn(__func__, "called with NULL fts_path");
+	if (sanity_p != NULL) {
+	    *sanity_p = PATH_ERR_PATH_IS_NULL;
+	}
+	if (len_p != NULL) {
+	    *len_p = path_len;
+	}
+	if (depth_p != NULL) {
+	    *depth_p = deep;
+	}
+	return NULL;
     }
 
     /*
@@ -1694,8 +1770,19 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(50, __func__, "wstat_p failed chk_walk_stat");
-	not_reached();
+
+	/* warn about internal error, update non-NULL values and return NULL */
+	warn(__func__, "wstat_p failed the chk_walk_stat function test suite");
+	if (sanity_p != NULL) {
+	    *sanity_p = PATH_ERR_UNSET;
+	}
+	if (len_p != NULL) {
+	    *len_p = path_len;
+	}
+	if (depth_p != NULL) {
+	    *depth_p = deep;
+	}
+	return NULL;
     }
 
     /*
@@ -1717,12 +1804,39 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
 	 */
 	switch (sanity) {
 	case PATH_OK:
-	    err(51, __func__, "canon_path returned NULL but sanity is PATH_OK for: %s", fts_path);
-	    not_reached();
-	    break;
+
+	    /* warn about critical canon_path() function error, update non-NULL values and return NULL */
+	    warn(__func__, "invalid PATH_OK error: %s: %s", path_sanity_name(sanity), path_sanity_error(sanity));
+	    if (sanity_p != NULL) {
+		*sanity_p = PATH_ERR_UNSET;
+	    }
+	    if (len_p != NULL) {
+		*len_p = path_len;
+	    }
+	    if (depth_p != NULL) {
+		*depth_p = deep;
+	    }
+	    return NULL;
 
 	case PATH_ERR_PATH_EMPTY:
-	    cpath = str_dup(".");
+
+	    /* empty paths canonicalize to . (dot) */
+	    cpath = strdup(".");
+	    if (cpath == NULL) {
+
+		/* warn about internal error, update non-NULL values and return NULL */
+		warn(__func__, "strdup of . (dot) failed");
+		if (sanity_p != NULL) {
+		    *sanity_p = PATH_ERR_MALLOC;
+		}
+		if (len_p != NULL) {
+		    *len_p = path_len;
+		}
+		if (depth_p != NULL) {
+		    *depth_p = deep;
+		}
+		return NULL;
+	    }
 	    break;
 
 	case PATH_ERR_PATH_TOO_LONG:
@@ -1731,10 +1845,23 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
 	case PATH_ERR_PATH_TOO_DEEP:
 	case PATH_ERR_NOT_SAFE:
 	case PATH_ERR_DOTDOT_OVER_TOPDIR:
+
+	    /* just duplicate fts_path unmodified due to path problems found by canon_path() */
 	    cpath = strdup(fts_path);
 	    if (cpath == NULL) {
-		errp(52, __func__, "strdup of fts_path failed: %s", fts_path);
-		not_reached();
+
+		/* warn about internal error, update non-NULL values and return NULL */
+		warn(__func__, "strdup of fts_path failed: %s", fts_path);
+		if (sanity_p != NULL) {
+		    *sanity_p = PATH_ERR_MALLOC;
+		}
+		if (len_p != NULL) {
+		    *len_p = path_len;
+		}
+		if (depth_p != NULL) {
+		    *depth_p = deep;
+		}
+		return NULL;
 	    }
 	    break;
 
@@ -1743,20 +1870,263 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
 	case PATH_ERR_MALLOC:
 	case PATH_ERR_NULL_COMPONENT:
 	case PATH_ERR_WRONG_LEN:
-	    err(53, __func__, "canon_path reported internal error %s (%s) for: %s",
-			       path_sanity_name(sanity), path_sanity_error(sanity), fts_path);
-	    not_reached();
-	    break;
+
+	    /* warn about critical canon_path() function error, update non-NULL values and return NULL */
+	    warn(__func__, "canon_path function reported critical error %s (%s) for: %s",
+			   path_sanity_name(sanity), path_sanity_error(sanity), fts_path);
+	    if (sanity_p != NULL) {
+		*sanity_p = sanity;
+	    }
+	    if (len_p != NULL) {
+		*len_p = path_len;
+	    }
+	    if (depth_p != NULL) {
+		*depth_p = deep;
+	    }
+	    return NULL;
 
 	default:
-	    err(54, __func__, "canon_path reported unknown sanity value: %d for: %s", sanity, fts_path);
-	    not_reached();
-	    break;
+
+	    /* warn about critical canon_path() function error, update non-NULL values and return NULL */
+	    warn(__func__, "canon_path function set an unknown sanity value: %d for: %s", sanity, fts_path);
+	    if (sanity_p != NULL) {
+		*sanity_p = PATH_ERR_UNSET;
+	    }
+	    if (len_p != NULL) {
+		*len_p = path_len;
+	    }
+	    if (depth_p != NULL) {
+		*depth_p = deep;
+	    }
+	    return NULL;
 	}
     }
+
+    /*
+     * paranoia - cpath CANNOT be NULL at this point
+     */
+    if (cpath == NULL) {
+
+	/* report critical canon_path() function error */
+	warn(__func__, "cpath was NULL after the canon_path function processed: %s", fts_path);
+	if (sanity_p != NULL) {
+	    *sanity_p = PATH_ERR_PATH_IS_NULL;
+	}
+	if (len_p != NULL) {
+	    *len_p = path_len;
+	}
+	if (depth_p != NULL) {
+	    *depth_p = deep;
+	}
+	return NULL;
+    }
+
+    /*
+     * fill in return stats as required
+     */
+    if (sanity_p != NULL) {
+        *sanity_p = sanity;
+    }
+    if (len_p != NULL) {
+        *len_p = path_len;
+    }
+    if (depth_p != NULL) {
+        *depth_p = deep;
+    }
+
+    /*
+     * return canonicalized path
+     */
+    return cpath;
+}
+
+
+/*
+ * skip_add - add a canonicalized path to skip_set dynamic array
+ *
+ * For a given struct walk_stat, add canonicalized fts_path as an pointer to as
+ * "fake" struct item to wstat_p->skip_set.  By "fake", the st_size and st_mode
+ * will be set to 0.
+ *
+ * The skip_set dynamic array is used to skip record_step() processing for certain selected paths.
+ * For more information about how the skip_set dynamic array is used,
+ * see the comments in the record_step() function below.
+ *
+ * given:
+ *	wstat_p	    pointer to a struct walk_stat
+ *	fts_path    "root path" from topdir of the item
+ *
+ * returns:
+ *	true ==> canonicalized fts_path was added to the skip_set dynamic array
+ *	false ==> canonicalized fts_path was already in the skip_set dynamic array
+ *
+ * NOTE: This function does not return on an internal error.
+ */
+bool
+skip_add(struct walk_stat *wstat_p, char const *fts_path)
+{
+    char const *cpath = NULL;	    /* canonicalized path arg as a string */
+    int_least32_t deep = -1;	    /* canonicalized stack depth */
+    struct item *i_p = NULL;	    /* allocated item */
+
+    /*
+     * firewall - catch NULL ptrs
+     */
+    if (wstat_p == NULL) {
+	err(48, __func__, "called with NULL wstat_p");
+	not_reached();
+    }
+    if (fts_path == NULL) {
+	err(49, __func__, "called with NULL fts_path");
+	not_reached();
+    }
+
+    /*
+     * if walk_stat check fails, abort
+     *
+     * NOTE: Passing this check means that we do not have to do as much checking elsewhere
+     *       in this function.
+     */
+    if (! chk_walk_stat(wstat_p)) {
+	err(50, __func__, "wstat_p failed the chk_walk_stat function test suite");
+	not_reached();
+    }
+
+    /*
+     * canonicalize path
+     */
+    dbg(DBG_MED, "%s: fts_path: %s", __func__, fts_path);
+    cpath = canonicalize_path(wstat_p, fts_path, NULL, NULL, &deep);
     /* paranoia */
     if (cpath == NULL) {
-	err(55, __func__, "cpath is still NULL");
+	err(51, __func__, "canonicalize_path had an internal failure and returned NULL");
+	not_reached();
+    }
+
+    /*
+     * see if canonicalized path is already in the skip_set dynamic array
+     */
+    i_p = path_in_item_array(wstat_p->skip_set, cpath);
+    if (i_p != NULL) {
+	dbg(DBG_MED, "%s: fts_path already in skip_set: %s", __func__, fts_path);
+	return false;
+    }
+
+    /*
+     * form an allocated item
+     */
+    i_p = alloc_item(cpath, 0, 0, deep);
+    (void) dyn_array_append_value(wstat_p->skip_set, &i_p);
+
+    /*
+     * canonicalized fts_path added to skip_set
+     */
+    dbg(DBG_LOW, "%s: fts_path added to skip_set: %s", __func__, fts_path);
+    return true;
+}
+
+
+/*
+ * record_step - record an item in a struct walk_stat
+ *
+ * Record the step of a walk, given the original path.  We attempt to canonicalize the path.
+ * If the path was successfully canonicalized, process the result.  If the path could
+ * not be canonicalized, record the problem accordingly.
+ *
+ * This function WILL always:
+ *
+ *	- err(3) WILL be called if wstat_p is NULL
+ *	- err(3) WILL be called if fts_path is NULL
+ *	- err(3) WILL be called if chk_walk_stat(wstat_p) returns false
+ *	- canonicalize_path() WILL be called to canonicalized the fts_path
+ *
+ *	  NOTE: using length and depth restrictions that were set when init_walk_stat() was called
+ *
+ *	- fts_path will be checked if it is a duplicate under wstat_p->all
+ *	- If dup_p is non-NULL, *dup_p will be set
+ *
+ *	  NOTE: *dup_p set according to if canonicalized was already recorded in struct walk_stat or not
+ *
+ *	- if cpath_ret is non-NULL, *cpath_ret WILL be set to canonicalized path of fts_path
+ *
+ * If a path in the skip_set dynamic array of canonicalized paths matches the canonicalized path of fts_path:
+ *
+ *	- ALL of the "This function WILL always" actions WILL be performed
+ *
+ *	- path will NOT be added to ANY struct walk_stat dynamic array
+ *	- path will NOT be added to the all dynamic array
+ *	- path will NOT be added to the prune dynamic array
+ *
+ *	- wstat_p->walking will NOT be modified
+ *	- wstat_p->steps will NOT be modified
+ *
+ *	- return false
+ *
+ * given:
+ *	wstat_p	    pointer to a struct walk_stat
+ *	fts_path    "root path" from topdir of the item
+ *	st_size	    size, in bytes in the form used by stat(2)
+ *	st_mode	    inode protection mode in the form used by stat(2)
+ *
+ *	dup_p       != NULL ==> set *dup_p according to if canonicalized was already recorded in struct walk_stat
+ *		    NULL ==> do not check for duplicates
+ *	cpath_ret   != NULL ==> update with pointer to the canonical path
+ *		    NULL ==> ignore
+ *	skip_set   != NULL ==> dynamic_array of canonicalized paths from topdir to ignore
+ *		    NULL ==> ignore
+ *
+ * returns:
+ *	true ==> fts_path is to be processed: if walking a hierarchy, any descendants should be visited
+ *	false ==> if walking a hierarchy prune walk below fts_path: do NOT visit descendants of fts_path
+ *
+ * NOTE: This function does not return on an internal error.
+ */
+bool
+record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode_t st_mode,
+	    bool *dup_p, char const **cpath_ret)
+{
+    struct walk_rule *rule_p;	    /* pointer to a walk rule */
+    struct walk_set *wset_p;	    /* pointer to a walk set */
+    struct item *i_p = NULL;	    /* allocated item */
+    char const *cpath = NULL;	    /* canonicalized path arg as a string */
+    enum path_sanity sanity = PATH_ERR_UNSET;	    /* canonicalize_path() error code, or PATH_OK */
+    size_t path_len = 0;	    /* canonicalized path length */
+    int_least32_t deep = -1;	    /* canonicalized stack depth */
+    bool matched = false;	    /* true ==> walk rule matched */
+    bool visit_descendants = true;  /* true ==> OK to visit descendants, false ==> do NOT visit descendants */
+    int count;
+
+    /*
+     * firewall - catch NULL ptrs
+     */
+    if (wstat_p == NULL) {
+	err(52, __func__, "called with NULL wstat_p");
+	not_reached();
+    }
+    if (fts_path == NULL) {
+	err(53, __func__, "called with NULL fts_path");
+	not_reached();
+    }
+
+    /*
+     * if walk_stat check fails, abort
+     *
+     * NOTE: Passing this check means that we do not have to do as much checking elsewhere
+     *       in this function.
+     */
+    if (! chk_walk_stat(wstat_p)) {
+	err(54, __func__, "wstat_p failed the chk_walk_stat function test suite");
+	not_reached();
+    }
+
+    /*
+     d canonicalize path
+     */
+    dbg(DBG_HIGH, "%s: fts_path: %s", __func__, fts_path);
+    cpath = canonicalize_path(wstat_p, fts_path, &sanity, &path_len, &deep);
+    /* paranoia */
+    if (cpath == NULL) {
+	err(55, __func__, "canonicalize_path had an internal failure and returned NULL");
 	not_reached();
     }
 
@@ -1773,7 +2143,7 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
 	    dbg(DBG_V2_HIGH, "%s: not a duplicate path: %s", __func__, fts_path);
 	    *dup_p = false;
 	} else{
-	    dbg(DBG_LOW, "%s: duplicate path found: %s", __func__, fts_path);
+	    dbg(DBG_MED, "%s: duplicate path found: %s", __func__, fts_path);
 	    *dup_p = true;
 	    return false;
 	}
@@ -1784,6 +2154,21 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
      */
     if (cpath_ret != NULL) {
 	*cpath_ret = cpath;
+    }
+
+    /*
+     * check for a match with the skip_set
+     */
+    i_p = path_in_item_array(wstat_p->skip_set, cpath);
+    if (i_p != NULL) {
+
+	/* canonicalized path is in the skip_set, skip any further processing and just return false */
+	dbg(DBG_MED, "%s: skipping path: %s", __func__, fts_path);
+	if (cpath != NULL) {
+	    free((void *)cpath);
+	    cpath = NULL;
+	}
+	return false;
     }
 
     /*
@@ -1901,7 +2286,7 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
      */
     if (deep == 0) {
         /* We include the shallow vs too_deep check in case max_depth < 0 */
-	if (sanity == PATH_ERR_PATH_TOO_DEEP || deep > wstat_p->max_depth) {
+	if (sanity == PATH_ERR_PATH_TOO_DEEP || (wstat_p->max_depth > 0 && deep > wstat_p->max_depth)) {
 	    (void) dyn_array_append_value(wstat_p->too_deep, &i_p);
 	    dbg(DBG_HIGH, "too deep #0: fts_path: %s fts_name: %s", i_p->fts_path, i_p->fts_name);
 	    visit_descendants = false;
@@ -1914,7 +2299,7 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
      * record below top level
      */
     } else if (deep > 0) {
-	if (sanity == PATH_ERR_PATH_TOO_DEEP || deep > wstat_p->max_depth) {
+	if (sanity == PATH_ERR_PATH_TOO_DEEP || (wstat_p->max_depth > 0 && deep > wstat_p->max_depth)) {
 	    (void) dyn_array_append_value(wstat_p->too_deep, &i_p);
 	    dbg(DBG_HIGH, "too deep #1: fts_path: %s fts_name: %s", i_p->fts_path, i_p->fts_name);
 	    visit_descendants = false;
@@ -2237,7 +2622,7 @@ fprintf_walk_stat(FILE *stream, struct walk_stat *wstat_p)
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(62, __func__, "wstat_p failed chk_walk_stat");
+	err(62, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
     wset_p = wstat_p->set;
@@ -2269,6 +2654,11 @@ fprintf_walk_stat(FILE *stream, struct walk_stat *wstat_p)
     }
     fprint(stream, "steps: %ju\n", wstat_p->steps);
     fprstr(stream, "\n");
+
+    /*
+     * print info about skip_set dynamic array
+     */
+    fprintf_dyn_array_item(stream, "skip_set", wstat_p->skip_set);
 
     /*
      * items by type
@@ -2811,7 +3201,7 @@ sort_walk_stat(struct walk_stat *wstat_p)
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(69, __func__, "wstat_p failed chk_walk_stat");
+	err(69, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
 
@@ -2925,7 +3315,7 @@ sort_walk_istat(struct walk_stat *wstat_p)
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(71, __func__, "wstat_p failed chk_walk_stat");
+	err(71, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
 
@@ -3067,7 +3457,7 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(73, __func__, "wstat_p failed chk_walk_stat");
+	err(73, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
     wset_p = wstat_p->set;
@@ -3638,6 +4028,7 @@ fts_walk(struct walk_stat *wstat_p)
     char *subpath = NULL;	    /* path that is below canonicalized topdir + / (slash) */
     int fts_set_ret = -1;	    /* fts_set() return */
     int fts_close_ret = -1;	    /* fts_close() return */
+    bool process = false;	    /* false ==> prune walk below the path, true ==> continue to walk path */
 
     /*
      * firewall
@@ -3654,7 +4045,7 @@ fts_walk(struct walk_stat *wstat_p)
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(95, __func__, "wstat_p failed chk_walk_stat");
+	err(95, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
 
@@ -3842,7 +4233,33 @@ fts_walk(struct walk_stat *wstat_p)
 	    dbg(DBG_V1_HIGH, "  %s: depth: %d\n", __func__, ftsent->fts_level);
 
 	    /* record walk step with sub-path below canonicalized wstat_p->topdir */
-	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL, NULL);
+	    process = record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL, NULL);
+	    if (process == false) {
+
+		/* prune walk below the path that caused an fts error */
+		fts_set_ret = fts_set(ftsp, ftsent, FTS_SKIP);
+		if (fts_set_ret != 0) {
+
+		    /* warn about fts_path not starting with canonicalized wstat_p->topdir + / (slash) */
+		    warn(__func__, "fts_set() returned error: %d for path:  %s", fts_set_ret, ftsent->fts_path);
+
+		    /* close file hierarchy traversal */
+		    errno = 0;	/* pre-clear for warnp() */
+		    fts_close_ret = fts_close(ftsp);
+		    if (fts_close_ret != 0) {
+
+			/* report problem on stderr, free storage and return indicating an traversing error */
+			warnp(__func__, "fts_close() #7: failed: %d", fts_close_ret);
+		    }
+
+		    /* free storage and return indicating walk error */
+		    if (path_set != NULL) {
+			free(path_set);
+			path_set = NULL;
+		    }
+		    return false;
+		}
+	    }
 	    break;
 
 	case FTS_DC:
@@ -3869,7 +4286,33 @@ fts_walk(struct walk_stat *wstat_p)
 	    dbg(DBG_V1_HIGH, "  %s: depth: %d\n", __func__, ftsent->fts_level);
 
 	    /* record walk step with sub-path below canonicalized wstat_p->topdir */
-	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL, NULL);
+	    process = record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL, NULL);
+	    if (process == false) {
+
+		/* prune walk below the path that caused an fts error */
+		fts_set_ret = fts_set(ftsp, ftsent, FTS_SKIP);
+		if (fts_set_ret != 0) {
+
+		    /* warn about fts_path not starting with canonicalized wstat_p->topdir + / (slash) */
+		    warn(__func__, "fts_set() returned error: %d for path:  %s", fts_set_ret, ftsent->fts_path);
+
+		    /* close file hierarchy traversal */
+		    errno = 0;	/* pre-clear for warnp() */
+		    fts_close_ret = fts_close(ftsp);
+		    if (fts_close_ret != 0) {
+
+			/* report problem on stderr, free storage and return indicating an traversing error */
+			warnp(__func__, "fts_close() #7: failed: %d", fts_close_ret);
+		    }
+
+		    /* free storage and return indicating walk error */
+		    if (path_set != NULL) {
+			free(path_set);
+			path_set = NULL;
+		    }
+		    return false;
+		}
+	    }
 	    break;
 
 	case FTS_DNR:
@@ -4045,7 +4488,33 @@ fts_walk(struct walk_stat *wstat_p)
 	    dbg(DBG_V1_HIGH, "  %s: depth: %d\n", __func__, ftsent->fts_level);
 
 	    /* record walk step with sub-path below canonicalized wstat_p->topdir */
-	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL, NULL);
+	    process = record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL, NULL);
+	    if (process == false) {
+
+		/* prune walk below the path that caused an fts error */
+		fts_set_ret = fts_set(ftsp, ftsent, FTS_SKIP);
+		if (fts_set_ret != 0) {
+
+		    /* warn about fts_path not starting with canonicalized wstat_p->topdir + / (slash) */
+		    warn(__func__, "fts_set() returned error: %d for path:  %s", fts_set_ret, ftsent->fts_path);
+
+		    /* close file hierarchy traversal */
+		    errno = 0;	/* pre-clear for warnp() */
+		    fts_close_ret = fts_close(ftsp);
+		    if (fts_close_ret != 0) {
+
+			/* report problem on stderr, free storage and return indicating an traversing error */
+			warnp(__func__, "fts_close() #7: failed: %d", fts_close_ret);
+		    }
+
+		    /* free storage and return indicating walk error */
+		    if (path_set != NULL) {
+			free(path_set);
+			path_set = NULL;
+		    }
+		    return false;
+		}
+	    }
 	    break;
 
 	case FTS_NS:
@@ -4147,7 +4616,33 @@ fts_walk(struct walk_stat *wstat_p)
 	    dbg(DBG_V1_HIGH, "  %s: depth: %d\n", __func__, ftsent->fts_level);
 
 	    /* record walk step with sub-path below canonicalized wstat_p->topdir */
-	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL, NULL);
+	    process = record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL, NULL);
+	    if (process == false) {
+
+		/* prune walk below the path that caused an fts error */
+		fts_set_ret = fts_set(ftsp, ftsent, FTS_SKIP);
+		if (fts_set_ret != 0) {
+
+		    /* warn about fts_path not starting with canonicalized wstat_p->topdir + / (slash) */
+		    warn(__func__, "fts_set() returned error: %d for path:  %s", fts_set_ret, ftsent->fts_path);
+
+		    /* close file hierarchy traversal */
+		    errno = 0;	/* pre-clear for warnp() */
+		    fts_close_ret = fts_close(ftsp);
+		    if (fts_close_ret != 0) {
+
+			/* report problem on stderr, free storage and return indicating an traversing error */
+			warnp(__func__, "fts_close() #7: failed: %d", fts_close_ret);
+		    }
+
+		    /* free storage and return indicating walk error */
+		    if (path_set != NULL) {
+			free(path_set);
+			path_set = NULL;
+		    }
+		    return false;
+		}
+	    }
 	    break;
 
 	case FTS_SLNONE:
@@ -4160,7 +4655,33 @@ fts_walk(struct walk_stat *wstat_p)
 	    dbg(DBG_V1_HIGH, "  %s: depth: %d\n", __func__, ftsent->fts_level);
 
 	    /* record walk step with sub-path below canonicalized wstat_p->topdir */
-	    record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL, NULL);
+	    process = record_step(wstat_p, subpath, ftsent->fts_statp->st_size, ftsent->fts_statp->st_mode, NULL, NULL);
+	    if (process == false) {
+
+		/* prune walk below the path that caused an fts error */
+		fts_set_ret = fts_set(ftsp, ftsent, FTS_SKIP);
+		if (fts_set_ret != 0) {
+
+		    /* warn about fts_path not starting with canonicalized wstat_p->topdir + / (slash) */
+		    warn(__func__, "fts_set() returned error: %d for path:  %s", fts_set_ret, ftsent->fts_path);
+
+		    /* close file hierarchy traversal */
+		    errno = 0;	/* pre-clear for warnp() */
+		    fts_close_ret = fts_close(ftsp);
+		    if (fts_close_ret != 0) {
+
+			/* report problem on stderr, free storage and return indicating an traversing error */
+			warnp(__func__, "fts_close() #7: failed: %d", fts_close_ret);
+		    }
+
+		    /* free storage and return indicating walk error */
+		    if (path_set != NULL) {
+			free(path_set);
+			path_set = NULL;
+		    }
+		    return false;
+		}
+	    }
 	    break;
 
 	default:
@@ -4236,6 +4757,111 @@ fts_walk(struct walk_stat *wstat_p)
 
 
 /*
+ * path_in_item_array
+ *
+ * Given a dynamic array of struct items for a struct item with a fts_path that is identical to c_path.
+ *
+ * NOTE: Because the functions such as record_step() work on canonicalized paths,
+ *	 the c_path should be called with a canonicalized path using canonicalize_path():
+ *
+ *	    struct walk_stat wstat;
+ *	    char const *c_path;
+ *	    chat *path;
+ *	    enum path_sanity sanity_p = PATH_ERR_UNSET;
+ *	    size_t path_len = 0;
+ *	    int_least32_t deep = -1;
+ *	    struct item *i_p;
+ *
+ *	    ... call init_walk_stat() as neeed ...
+ *
+ *	    memset(&wstat, 0, sizeof(wstat));
+ *	    init_walk_stat(&wstat, ...);
+ *
+ *	    ... set path as needed ...
+ *
+ *	    c_path = canonicalize_path(&wstat, path, &sanity, &path_len, &deep);
+ *	    if (cpath == NULL) {
+ *		... report that canonicalize_path had an internal failure and returned NULL ...
+ *	    }
+ *
+ *	    ... look canonicalized path in the file dynamic array of struct item pointers ...
+ *
+ *	    i_p = path_in_item_array(c_path->file, c_path);
+ *	    if (i_p == NULL) {
+ *		.. process c_path NOT found in the file items dynamic array ..
+ *	    } else {
+ *		.. process c_path found in the file items dynamic array ..
+ *	    }
+ *
+ *	    if (c_path != NULL) {
+ *		free(c_path);
+ *		c_path = NULL;
+ *	    }
+ *
+ * given:
+ *	item_array	    - dynamic array of pointers to struct item
+ *	c_path		    - canonicalized path to search for on the struct walk_stat all dynamic array
+ *
+ * returns:
+ *	!= NULL ==> struct item pointer where fts_path matches path
+ *	NULL ==> path not found on the struct walk_stat all dynamic array, or internal error
+ *
+ * NOTE: This function does not return on an internal error.
+ */
+struct item *
+path_in_item_array(struct dyn_array *item_array, char const *c_path)
+{
+    struct item *i_p;	    /* pointer to an element in the dynamic array */
+    size_t c_path_len;	    /* length of c_path */
+    intmax_t len;	    /* number of elements in the dynamic array */
+    intmax_t i;
+
+    /*
+     * firewall
+     */
+    if (item_array == NULL) {
+	err(96, __func__, "item_array is NULL");
+	not_reached();
+    }
+    if (c_path == NULL) {
+	err(97, __func__, "c_path is NULL");
+	not_reached();
+    }
+    if (item_array->elm_size != sizeof(struct item *)) {
+	err(98, __func__, "item_array->elm_size: %zu != sizeof(struct item *): %zu",
+			  item_array->elm_size, sizeof(struct item *));
+	not_reached();
+    }
+
+    /*
+     * scan the all array
+     */
+    c_path_len = strlen(c_path);
+    len = dyn_array_tell(item_array);
+    for (i=0; i < len; ++i) {
+
+	/*
+	 * compare the fts_path of the current item
+	 */
+	i_p = dyn_array_value(item_array, struct item *, i);
+	if (i_p == NULL) {
+	    dbg(DBG_V1_HIGH, "%s: item_array[%zu] is NULL", __func__, i);
+	} else if (c_path_len == i_p->fts_pathlen && strcmp(c_path, i_p->fts_path) == 0) {
+	    /* report match found */
+	    dbg(DBG_V1_HIGH, "%s: item_array[%zu] matches: %s", __func__, i, c_path);
+	    return i_p;
+	}
+    }
+
+    /*
+     * report no match
+     */
+    dbg(DBG_V1_HIGH, "%s: c_path not found: %s", __func__, c_path);
+    return NULL;
+}
+
+
+/*
  * path_in_walk_stat
  *
  * Given a struct walk_stat *wstat_p, search the wstat_p->all dynamic array of struct items
@@ -4244,19 +4870,33 @@ fts_walk(struct walk_stat *wstat_p)
  * dynamic array, regardless of the type of path.
  *
  * NOTE: Because the functions such as record_step() work on canonicalized paths,
- *	 the c_path should be called with a canonicalized path.  The record_step()
- *	 function calls canon_path() with rel_only, lower_case, safe_chk, and dotdot_err
- *	 all true, so the canon_path should be likewise canonicalized:
+ *	 the c_path should be called with a canonicalized path using canonicalize_path():
  *
- *	    c_path = canon_path(orig_path, 0, 0, 0, NULL, NULL, NULL, true, true, true, NULL);
+ *	    struct walk_stat wstat;
+ *	    char const *c_path;
+ *	    chat *path;
+ *	    enum path_sanity sanity_p = PATH_ERR_UNSET;
+ *	    size_t path_len = 0;
+ *	    int_least32_t deep = -1;
+ *
+ *	    ... call init_walk_stat() as neeed ...
+ *
+ *	    memset(&wstat, 0, sizeof(wstat));
+ *	    init_walk_stat(&wstat, ...);
+ *
+ *	    ... set path as needed ...
+ *
+ *	    c_path = canonicalize_path(&wstat, path, &sanity, &path_len, &deep);
  *	    if (cpath == NULL) {
- *		... report that orig_path cannot be canonicalized ..
+ *		... report that canonicalize_path had an internal failure and returned NULL ...
  *	    }
- *
- *	There is no need to set limits on orig_path just to compare path.
  *
  *	Do not forget that c_path is a calloced canonicalized path, so when finished
  *	calling this function, free c_path:
+ *
+ *	    struct item *i_p;
+ *
+ *	    ...
  *
  *	    i_p = path_in_walk_stat(&wstat, c_path);
  *	    if (i_p == NULL) {
@@ -4284,19 +4924,16 @@ struct item *
 path_in_walk_stat(struct walk_stat *wstat_p, char const *c_path)
 {
     struct item *i_p;	    /* pointer to an element in the dynamic array */
-    size_t c_path_len;	    /* length of c_path */
-    intmax_t len;	    /* number of elements in the dynamic array */
-    intmax_t i;
 
     /*
      * firewall
      */
     if (wstat_p == NULL) {
-	err(96, __func__, "wstat_p is NULL");
+	err(99, __func__, "wstat_p is NULL");
 	not_reached();
     }
     if (c_path == NULL) {
-	err(97, __func__, "c_path is NULL");
+	err(100, __func__, "c_path is NULL");
 	not_reached();
     }
 
@@ -4307,28 +4944,19 @@ path_in_walk_stat(struct walk_stat *wstat_p, char const *c_path)
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(98, __func__, "wstat_p failed chk_walk_stat");
+	err(101, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
 
     /*
      * scan the all array
      */
-    c_path_len = strlen(c_path);
-    len = dyn_array_tell(wstat_p->all);
-    for (i=0; i < len; ++i) {
+    i_p = path_in_item_array(wstat_p->all, c_path);
+    if (i_p != NULL) {
 
-	/*
-	 * compare the fts_path of the current item
-	 */
-	i_p = dyn_array_value(wstat_p->all, struct item *, i);
-	if (i_p == NULL) {
-	    dbg(DBG_V1_HIGH, "%s: wstat_p->all[%zu] is NULL", __func__, i);
-	} else if (c_path_len == i_p->fts_pathlen && strcmp(c_path, i_p->fts_path) == 0) {
-	    /* report match found */
-	    dbg(DBG_V1_HIGH, "%s: wstat_p->all[%zu] matches: %s", __func__, i, c_path);
-	    return i_p;
-	}
+	/* report match found */
+	dbg(DBG_V1_HIGH, "%s: c_path found: %s", __func__, c_path);
+	return i_p;
     }
 
     /*

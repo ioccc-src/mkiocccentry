@@ -397,6 +397,9 @@ struct walk_stat {
     int_least32_t max_depth;		/* max depth of subdirectory tree, 0 ==> no limit, <0 ==> reserved for future use */
     uintmax_t steps;			/* number of steps taken during the walk */
 
+    /* skip certain canonicalized paths */
+    struct dyn_array *skip_set;		/* skip processing any canonicalized path that matches a skip_set item */
+
     /* items by type - See enum allowed_type */
     struct dyn_array *file;		/* file items */
     struct dyn_array *dir;		/* directory items */
@@ -499,7 +502,12 @@ extern bool chk_walk(struct walk_stat *wstat_p, FILE *stream,
 extern int fts_cmp(const FTSENT **a, const FTSENT **b);
 extern int fts_icmp(const FTSENT **a, const FTSENT **b);
 extern bool fts_walk(struct walk_stat *wstat_p);
+extern char const *canonicalize_path(struct walk_stat *wstat_p, char const *fts_path,
+                                     enum path_sanity *sanity_p, size_t *len_p, int_least32_t *depth_p);
+extern bool skip_add(struct walk_stat *wstat_p, char const *fts_path);
+extern struct item *path_in_item_array(struct dyn_array *item_array, char const *c_path);
 extern struct item *path_in_walk_stat(struct walk_stat *wstat_p, char const *c_path);
+
 
 
 #endif /* INCLUDE_WALK_H */

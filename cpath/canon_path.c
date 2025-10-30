@@ -545,8 +545,19 @@ safe_path_str(char const *path_str, bool any_case, bool slash_ok)
  *	NULL ==> invalid path, internal error, or NULL pointer used
  *	!= NULL ==> malloced canonicalized path
  *
- * NOTE: When NULL is returned:                     if sanity_p is non-NULL, then *sanity_p will be set != PATH_OK.
- *	 When a non-NULL malloced path is returned: if sanity_p is non-NULL, then *sanity_p == PATH_OK.
+ * NOTE: When NULL is returned:
+ *
+ *          if sanity_p is non-NULL, then
+ *              *sanity_p will be set some value that is != PATH_OK
+ *
+ * NOTE: When a non-NULL malloced path is returned:
+ *
+ *          if sanity_p is non-NULL, then
+ *
+ *              if all was OK, then
+ *                  *sanity_p will be set to PATH_OK
+ *              else
+ *                  *sanity_p will be set to non-critical canon_path() function error code that is != PATH_OK
  */
 char *
 canon_path(char const *orig_path,

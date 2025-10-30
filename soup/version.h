@@ -84,12 +84,12 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.8.3 2025-10-25"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.8.4 2025-10-29"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "2.2.2 2025-10-25"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define SOUP_VERSION "2.2.4 2025-10-29"	/* format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official iocccsize version
@@ -137,7 +137,7 @@
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "2.1.5 2025-10-25"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define CHKENTRY_VERSION "2.1.6 2025-10-29"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_CHKENTRY_VERSION CHKENTRY_VERSION
 
 /*

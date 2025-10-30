@@ -665,7 +665,6 @@ main(int argc, char *argv[])
 	print("Welcome to mkiocccentry version: %s\n", MKIOCCCENTRY_VERSION);
     }
 
-
     /*
      * warn about -Y option
      */
@@ -705,7 +704,6 @@ main(int argc, char *argv[])
         }
     }
 
-
     /*
      * save our version
      */
@@ -723,6 +721,7 @@ main(int argc, char *argv[])
 	     "",
 	     NULL);
     }
+
     /*
      * environment sanity checks
      */
@@ -733,6 +732,7 @@ main(int argc, char *argv[])
     if (!quiet) {
 	para("... environment looks OK", "", NULL);
     }
+
     /*
      * if -a answers was specified and answers file exists, prompt user if they
      * want to overwrite it; if they don't tell them how to use it and abort.
@@ -1106,8 +1106,6 @@ main(int argc, char *argv[])
         }
     }
 
-
-
     /*
      * free storage
      */
@@ -1319,6 +1317,7 @@ check_ent(FTS *fts, FTSENT *ent)
 }
 
 
+/* XXX - pre-IOCCC29: remove the obsolete function below - XXX */
 /*
  * scan_topdir
  *
@@ -2033,6 +2032,7 @@ scan_topdir(char *args, struct info *infop, char const *make, char const *submis
 }
 
 
+/* XXX - pre-IOCCC29: remove the obsolete function below - XXX */
 /*
  * copy_topdir
  *
@@ -2828,6 +2828,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
 }
 
 
+/* XXX - pre-IOCCC29: rewrite the function below in accordance with the new use of table-driven walk code - XXX */
 /*
  * check_submission_dir
  *

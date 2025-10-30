@@ -296,7 +296,7 @@ main(int argc, char *argv[])
      */
     if (chkentry == NULL) {
         find_utils(NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, &found_chkentry, &chkentry,
-                NULL, NULL, NULL, NULL, NULL, NULL);
+                   NULL, NULL, NULL, NULL, NULL, NULL);
     }
 
     /*
