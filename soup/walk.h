@@ -12,8 +12,7 @@
  *		   might be one application of walking, so to is processing
  *		   the listing of a tar(1) command.
  *
- * Copyright (c) 2025 by Landon Curt Noll and Cody Boone Ferguson. All Rights
- * Reserved.
+ * Copyright (c) 2025 by Landon Curt Noll and Cody Boone Ferguson. All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -180,13 +179,13 @@ enum allowed_level {
  * item - describe a file, directory or other file system member
  */
 struct item {
-    char *fts_path;                 /* malloced copy of the "root path" from topdir - typicality canonicalized */
-    size_t fts_pathlen;             /* strlen(fts_path) */
-    char *fts_name;                 /* malloced copy of the "file name", i.e., basename of fts_path */
-    size_t fts_namelen;             /* strlen(fts_name) */
-    int_least32_t fts_level;	    /* fts_path depth, 0 ==> topdir, 1 ==> directly under topdir, 2 ==> in sub-dir under topdir */
-    off_t st_size;                  /* file size, in bytes in struct stat st_size form */
-    mode_t st_mode;                 /* inode protection mode in struct stat st_mode form */
+    char *fts_path;             /* malloced copy of the "root path" from topdir - typicality canonicalized */
+    size_t fts_pathlen;         /* strlen(fts_path) */
+    char *fts_name;             /* malloced copy of the "file name", i.e., basename of fts_path */
+    size_t fts_namelen;         /* strlen(fts_name) */
+    int_least32_t fts_level;	/* fts_path depth, 0 ==> topdir, 1 ==> directly under topdir, 2 ==> in sub-dir under topdir */
+    off_t st_size;              /* file size, in bytes in struct stat st_size form */
+    mode_t st_mode;             /* inode protection mode in struct stat st_mode form */
 };
 
 
@@ -415,6 +414,9 @@ struct walk_stat {
     int_least32_t max_depth;		/* max depth of subdirectory tree, 0 ==> no limit, <0 ==> reserved for future use */
     uintmax_t steps;			/* number of steps taken during the walk */
 
+    /* skip certain canonicalized paths */
+    struct dyn_array *skip_set;		/* skip processing any canonicalized path that matches a skip_set item */
+
     /* items by type - See enum allowed_type */
     struct dyn_array *file;		/* file items */
     struct dyn_array *dir;		/* directory items */
@@ -503,7 +505,7 @@ extern void init_walk_stat(struct walk_stat *wstat_p, char const *topdir, struct
 			   size_t max_path_len, size_t max_filename_len, int_least32_t max_depth,
 			   bool tar_listing_used);
 extern bool record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode_t st_mode,
-		        bool *dup_p, char **cpath_ret);
+		        bool *dup_p, char const **cpath_ret);
 extern void fprintf_walk_stat(FILE *stream, struct walk_stat *wstat_p);
 extern void fprintf_walk_set(FILE *stream, struct walk_set *wset_p);
 int path_cmp(const void *pa, const void *pb);
@@ -517,6 +519,10 @@ extern bool chk_walk(struct walk_stat *wstat_p, FILE *stream,
 extern int fts_cmp(const FTSENT **a, const FTSENT **b);
 extern int fts_icmp(const FTSENT **a, const FTSENT **b);
 extern bool fts_walk(struct walk_stat *wstat_p);
+extern char const *canonicalize_path(struct walk_stat *wstat_p, char const *fts_path,
+                                     enum path_sanity *sanity_p, size_t *len_p, int_least32_t *depth_p);
+extern bool skip_add(struct walk_stat *wstat_p, char const *fts_path);
+extern struct item *path_in_item_array(struct dyn_array *item_array, char const *c_path);
 extern struct item *path_in_walk_stat(struct walk_stat *wstat_p, char const *c_path);
 
 

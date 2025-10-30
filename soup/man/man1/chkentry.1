@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH chkentry 1 "23 October 2025" "chkentry" "IOCCC tools"
+.TH chkentry 1 "29 October 2025" "chkentry" "IOCCC tools"
 .SH NAME
 .B chkentry
 \- check an IOCCC entry directory
@@ -22,6 +22,9 @@
 .IR level \|]
 .RB [\| \-V \|]
 .RB [\| \-q \|]
+.RB [\| \-b \|]
+.RB [\| \-I
+.IR path \|] \ ...
 .RB [\| \-P \|]
 .RB [\| \-s \|]
 .RB [\| \-S \|]
@@ -61,10 +64,14 @@ Some files must exist whereas others may not exist, depending on the
 .B \-w
 option.
 .PP
-In either case, even if the manifest is being ignored, it will verify that the files in the directories are valid permissions (again, unless it's an ignored subpath or the
+In either case, even if the manifest is being ignored, it will verify that the files in the directories are valid permissions (again, unless it's an ignored
+.BR \-I path
+or the
 .B \-P
-option is used), whether specific files are missing (unless it was ignored) and if specific files in the directory are not, by name, allowed (unless it was ignored).
-It will also verify that the filenames are sane, relative paths, in the context of the IOCCC rules, at least when not in winning entry mode and if not ignored.
+option is used), whether specific files are missing (unless it was ignored) and if specific files in the directory are not,
+by name, allowed (unless it was ignored).
+It will also verify that the filenames are sane, relative paths, in the context of the IOCCC rules,
+at least when not in winning entry mode and if not ignored.
 .PP
 As a sanity check, the
 .BR mkiocccentry (1)
@@ -110,13 +117,62 @@ Print version and exit.
 Set quiet mode.
 Silences msg(), warn(), warnp() if verbosity level is 0.
 .TP
+.BI \-b
+This is the option that goes
+.BR BING !!!
+.TP
+.BI \-I\  path
+Ignore
+.I path
+if found.
+If
+.I path
+is a sub-directory under
+.BR dir ,
+do not process anything below that directory.
+.sp
+The of multiple
+.BI \-I\  path
+are allowed on the command line.
+.sp
+Internally each
+.I path
+is canonicalized by a call to
+.BR canon_path (3)
+such that any path whose canonicalized form matches
+.I path
+will also be ignored.
+.sp
+Ignoring a required path does
+.B NOT
+cause the requirement for that path to be ignored.
+For example, the path
+.B prog.c
+is required, so while
+.BI \-I\  prog.c
+will prevent the processing of
+.BR prog.c ,
+the command will fail because
+the required file will be considered "missing".
+.sp
+This option is for the use by the IOCCC judges only.
+The use of this option by someone other than an IOCCC judge might result in the integer
+.B 4
+exiting your real number line: thus potentially causing general confusion amongst multiples of that integer
+as to if they are prime or not. :\-)
+.sp
+This option conflicts with
+.BR \-S .
+.TP
 .BI \-P
 Ignore permissions of files and directories.
+Ignore IOCCC limits for the maximum lengths of path, the maximum length of path elements,
+and to ignore the maximum directory depth on paths.
 .sp
 This option is for the use by the IOCCC judges only.
 The use of this option by someone other than an IOCCC judge might cause the
 .B c
-key of your keyboard to go on an extended vacation. :\-)
+key in your keyboard to go on an extended vacation. :\-)
 .sp
 This option conflicts with
 .BR \-S .
@@ -125,7 +181,7 @@ This option conflicts with
 Enter special mode.
 .sp
 This option is for the use by the IOCCC judges only.
-The use of this option by someone other than an IOCCC judge might cause your computer long for the use of
+The use of this option by someone other than an IOCCC judge might cause your computer to long for the use of
 an 8-inch floppy disk. :\-)
 .sp
 This option conflicts with
@@ -161,6 +217,12 @@ nor
 are used, then
 .B \-S
 will be assumed.
+.PP
+The
+.BR chksubmit (1)
+tool calls this tool with the
+.B \-S
+option in order to perform important validation checks on a submission.
 .SH EXIT STATUS
 .TP
 0
@@ -192,7 +254,11 @@ use options that are intended for IOCCC judges.
 .SH BUGS
 .PP
 More than 0 humans work on it! :)
-.PP
+.sp
+While the humans maintaining this code use a test suite to validate this code,
+and while no so-called "AI tool" contributed to this tool's codebase,
+this tool's test suite was written by humans with the best of intentions.
+.sp
 The IOCCC uses the term
 .B entry
 to refer to a submission that won the IOCCC whereas the term
@@ -202,20 +268,20 @@ Nevertheless, this tool is able to perform checks in a submission when the
 .B \-S
 option is used.
 .PP
-The
-.BR chksubmit (1)
-tool calls this tool with the
-.B \-S
-option in order to perform important validation checks on a submission.
-.PP
 Astute proof readers might find circumstances where variables, comments, error messages and prompt strings use
 .B entry
 instead of
 .BR submission .
-You are welcome to submit pull requests to
-.I https://github.com/ioccc-src/mkiocccentry/pulls
+You are welcome to submit pull requests to:
 correct such oversights in variables,
-comments, error messages and prompt strings.
+comments, error messages and prompt strings:
+.sp
+.RS 4
+.ft B
+https://github.com/ioccc-src/mkiocccentry/pulls
+.ft R
+.RE
+.sp
 Note, however, that there are many cases where the words
 .B entry
 and
@@ -225,16 +291,29 @@ In other words if it refers to submissions won then it should be
 .B entry
 or
 .BR entries .
-.SH BUGS
+.sp
+Using the
+.B \-w
+option on IOCCC winners before 2014 will fail because prior to 2014 the winning source file was
+.B NOT
+named
+.BR prog.c ,
+.B NOR
+was the original source file named
+.BR prog.orig.c .
+.sp
+After reading source code of a certain function called by
+.BR chkentry (1),
+one may become
+.BR doubly\ dotty .\ :\-)
 .PP
-While the humans maintaining this code use a test suite to validate this code,
-and no so-called AI tool contributed to this tool's codebase,
-this tool's test suite was written by humans with the best of intentions.
-As such, the source code of this tool may be doubly dotty. :\-)
+Some people might find that the cautions in this man page,
+especially those involving the use of certain command line options by non-IOCCC judges,
+to be a tad bit silly. :\-)
 .PP
 While of this tool does not guarantee that your submission will win the IOCCC,
 submitting something that fails to pass the important validation checks
-.B will guarantee
+.B will\ guarantee
 that your submission will be
 .BR rejected .
 .PP
@@ -242,7 +321,7 @@ If you have an issue with the tool you can open an issue at:
 .sp
 .RS 4
 .ft B
-https://github.com/ioccc\-src/mkiocccentry/issues
+https://github.com/ioccc-src/mkiocccentry/pulls
 .ft R
 .RE
 .SH EXAMPLES
@@ -259,5 +338,7 @@ chkentry ./test_ioccc/workdir/test\-1
 .PP
 .BR chksubmit_test (8),
 .BR mkiocccentry (1),
+.BR cpath (1),
+.BR canon_path (3),
 .BR chksubmit (1),
 .BR jparse (1)

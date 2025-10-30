@@ -5,6 +5,10 @@ Change `int32_t` (which is not required by the standard to exist) to
 done through `sgit(1)` and that means the man page was indeed updated. Also a
 typo fixes: `an int...` (instead of `a int...`).
 
+Improve comments in `canon_path()` function source code about return values.
+
+Fix minor typos in the `canon_path(3)` man page.
+
 
 ## Release 2.0.0 2025-10-16
 

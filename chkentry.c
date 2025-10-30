@@ -76,7 +76,7 @@ static bool quiet = false;		    /* true ==> quiet mode */
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-P] [-s] [-S] [-w] dir\n"
+    "usage: %s [-h] [-v level] [-J level] [-V] [-q] [-b] [-I path] ... [-P] [-s] [-S] [-w] dir\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
@@ -84,10 +84,16 @@ static const char * const usage_msg =
     "\t-V\t\tprint version string and exit\n"
     "\t-q\t\tquiet mode (def: loud :-) )\n"
     "\t\t\t    NOTE: -q will also silence msg(), warn(), warnp() if -v 0\n"
-    "\t-P\t\tIOCCC judge use only: ignore permissions\n"
+    "\t-b\t\tBING!!!\n"
+    "\t-I path\t\tIgnore path under dir if found\n"
+    "\n"
+    "\t-P\t\tIOCCC judge use only: ignore permissions, ignore counts, and ignore path depth limits\n"
     "\t-s\t\tIOCCC judge use only: enter special mode\n"
+    "\t\t\t    NOTE: -s conflicts with -w\n"
     "\t-S\t\tenter submission mode: used by the chksubmit(1) tool\n"
+    "\t\t\t    NOTE: -S conflicts with -I path, -P, -s, and -w\n"
     "\t-w\t\tIOCCC judge use only: winning entry checks\n"
+    "\t\t\t    NOTE: -w conflicts with -s\n"
     "\n"
     "\tdir\tthe directory to be checked (entry directory if -w, submission directory otherwise)\n"
     "\n"
@@ -133,6 +139,9 @@ main(int argc, char *argv[])
     struct item *i_p;			/* pointer to an element in the dynamic array */
     intmax_t len;			/* number of elements in the dynamic array */
     /**/
+    bool cap_I_seen = false;		/* The -i path was seen on the command line */
+    bool skip_add_ret = false;		/* return from skip_add() */
+    /**/
     int cd_ret = -1;			/* chdir(2) return */
     /**/
     int i;
@@ -145,7 +154,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:J:VqPwsS")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:J:VqbI:PwsS")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, "");	/*ooo*/
@@ -183,7 +192,13 @@ main(int argc, char *argv[])
 	    quiet = true;
 	    msg_warn_silent = true;
 	    break;
-        case 'P': /* ignore permissions of paths */
+	case 'b':
+	    msg("This is the option that goes \aBING!!!");
+	    exit(0); /*ooo*/
+	case 'I':
+	    cap_I_seen = true;
+	    break;
+        case 'P':		/* -P - ignore permissions of paths */
             ignore_permissions = true;
             break;
         case 'w':
@@ -208,16 +223,13 @@ main(int argc, char *argv[])
 	    break;
 	}
     }
-    argc -= optind;
-    argv += optind;
-    switch (argc) {
+    switch (argc-optind) {
     case 1:
-        submission_dir = argv[0];
-	dbg(DBG_LOW, "submission_dir: %s", submission_dir);
+        submission_dir = argv[optind];
 	break;
     case 2:
 	/* how dotty! */
-        if (!strcmp(argv[0], ".") && !strcmp(argv[1], ".")) {
+        if (!strcmp(argv[optind], ".") && !strcmp(argv[optind+1], ".")) {
             vrergfB(-1, -1); /* Easter egg */
             not_reached();
         }
@@ -252,6 +264,9 @@ main(int argc, char *argv[])
 	    not_reached();
 	} else if (ignore_permissions) {
 	    usage(3, program, "cannot use -S with the -P option"); /*ooo*/
+	    not_reached();
+	} else if (cap_I_seen) {
+	    usage(3, program, "cannot use -S with the -I path option"); /*ooo*/
 	    not_reached();
 	}
 
@@ -305,20 +320,74 @@ main(int argc, char *argv[])
 
 	/* check for conflicting options */
 	if (ignore_permissions) {
-	    usage(3, program, "cannot -P option when neither -S, nor -s, nor -w is used"); /*ooo*/
+	    usage(3, program, "cannot use -P option when neither -S, nor -s, nor -w are used"); /*ooo*/
+	    not_reached();
+	} else if (cap_I_seen) {
+	    usage(3, program, "cannot use -I path option when neither -S, nor -s, nor -w are used"); /*ooo*/
 	    not_reached();
 	}
     }
+    dbg(DBG_LOW, "submission_dir: %s", submission_dir);
     dbg(DBG_LOW, "will use context: %s name: %s",
 		 context, (wset_p == NULL || wset_p->name == NULL) ? "((NULL))" : wset_p->name);
 
     /*
      * init_walk_stat - initialize a walk_stat
      */
-    init_walk_stat(&wstat,
-		   submission_dir, wset_p, context,
-		   MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
-		   NULL);
+    if (ignore_permissions) {
+	init_walk_stat(&wstat,
+		       submission_dir, wset_p, context,
+		       0, 0, 0,
+		       NULL);
+    } else {
+	init_walk_stat(&wstat,
+		       submission_dir, wset_p, context,
+		       MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
+		       NULL);
+    }
+
+    /*
+     * if we had -I path, rescan the command line looking for and processing -I path options
+     */
+    if (cap_I_seen) {
+
+	optind = 1;	/* reset getopt(3) processing */
+	while ((i = getopt(argc, argv, ":hv:J:VqI:PwsSb")) != -1) {
+	    switch (i) {
+	    case 'h':		/* -h - print help to stderr and exit 0 */
+	    case 'v':		/* -v verbosity */
+	    case 'J':		/* -J json_verbosity */
+	    case 'V':		/* -V - print version and exit */
+	    case 'q':
+	    case 'P':		/* -P - ignore permissions of paths */
+	    case 'w':
+	    case 's':
+	    case 'S':
+	    case 'b':
+		/* already processed, nothing to do now */
+		break;
+	    case 'I':
+		skip_add_ret = skip_add(&wstat, optarg);
+		if (skip_add_ret) {
+		    dbg(DBG_LOW, "context will ignore, when canonicalized: %s", optarg);
+		} else {
+		    dbg(DBG_MED, "path: %s is already marked for skipping", optarg);
+		}
+		break;
+	    case ':':   /* option requires an argument */
+	    case '?':   /* illegal option */
+	    default:    /* anything else but should not actually happen */
+		opt_error = fchk_inval_opt(stderr, program, i, optopt);
+		if (opt_error) {
+		    usage(3, program, ""); /*ooo*/
+		    not_reached();
+		} else {
+		    fwarn(stderr, __func__, "getopt() 2nd return: %c optopt: %c", (char)i, (char)optopt);
+		}
+		break;
+	    }
+	}
+    }
 
     /*
      * walk a file system tree, recording steps
@@ -337,7 +406,11 @@ main(int argc, char *argv[])
     /*
      * end walk and check if the walk was successful
      */
-    walk_ok = chk_walk(&wstat, stderr, MAX_EXTRA_FILE_COUNT, MAX_EXTRA_DIR_COUNT, NO_COUNT, NO_COUNT, true);
+    if (winning_entry_mode) {
+	walk_ok = chk_walk(&wstat, stderr, ANY_COUNT, ANY_COUNT, NO_COUNT, NO_COUNT, true);
+    } else {
+	walk_ok = chk_walk(&wstat, stderr, MAX_EXTRA_FILE_COUNT, MAX_EXTRA_DIR_COUNT, NO_COUNT, NO_COUNT, true);
+    }
     if (walk_ok) {
 	dbg(DBG_LOW, "%s walk was successful for: %s", context, submission_dir);
     } else {

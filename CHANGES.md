@@ -3,16 +3,62 @@
 
 ## Release 2.8.4 2025-10-29
 
-Make some fixes for the txzchk walk table as well as a fix in some of the
-others. The dot star had `"."` instead of `".*"`. Also some of the entries had
-the wrong type. This solves one of the issues with updates to txzchk for issue
-#1325 but it is not complete yet.
+Release use of canonicalize_path() and skip_add().
 
-Make `char const **cpath_ret` non-const as txzchk will need to free it.
+Added `path_in_item_array()` to make is easier to find a path
+in one of the dynamic arrays in a `struct walk_stat`.
 
-Typo and format fixes (some) in some of the soup/walk files.
+Added `canonicalize_path()` to `soup/walk_util.c` so that the use of
+`canon_path()` in the table-driven walk code is consistent.
 
-Updated `SOUP_VERSION` to `"2.2.3 2025-10-29"`.
+Added `skip_add()` to add a path (after canonicalization) to
+the list of paths that `record_step()` will "skip".  See
+comments in the `record_step()` function for details.
+
+The `record_step()` function is now able to skip over paths
+that were added to the skip_set dynamic array.  See
+comments in the `record_step()` function for details.
+
+Added comment to `mkiocccentry.c` about how `check_submission_dir()`
+needs to be re-written and how `scan_topdir()` and `copy_topdir()`
+need to be removed.
+
+Added `-I path` to `chkentry(1)` (older versions of `chkentry(1)` used
+`-i path`: changed to `I path` to to similar to `mkiocccentry(1)`)
+in order to ignore `path`.
+
+Added the `-b` option to `chkentry(1).
+
+Improved the `chkentry -h` help message.
+
+Fixed tables in `soup/walk_tbl.c` so that `chkentry -w` will
+correctly process `try.sh` and `try.alt.sh`.
+
+Fixed `record_step()` to honor a max depth of 0 (no depth limit).
+
+The `chkentry -P` will also ignore the IOCCC limit for the maximum lengths
+of path, the maximum length of path elements, and to ignore the maximum
+directory depth on paths.
+
+Fixed a few typos in the `chkentry(1)` man page.
+
+Improved "fun" comments about non-IOCCC judges using certain
+`chkentry(1)` command line options in the `chkentry(1)` man page.
+
+Added to the **BUGS** section of the `chkentry(1)` man page.
+
+Updated `chkentry(1)` man page according to the above.
+
+Synced with the [cpath repo](https://github.com/lcn2/cpath).
+
+Changed `MKIOCCCENTRY_REPO_VERSION` from "2.8.3 2025-10-25"
+to "2.8.4 2025-10-29".
+
+Changed `SOUP_VERSION` from "2.2.3 2025-10-25"
+to "2.2.4 2025-10-29".
+
+Changed `CHKENTRY_VERSION` from "2.1.5 2025-10-25"
+to "2.1.6 2025-10-29".
 
 
 ## Release 2.8.3 2025-10-25
