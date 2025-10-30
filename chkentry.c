@@ -338,12 +338,12 @@ main(int argc, char *argv[])
 	init_walk_stat(&wstat,
 		       submission_dir, wset_p, context,
 		       0, 0, 0,
-		       NULL);
+		       false);
     } else {
 	init_walk_stat(&wstat,
 		       submission_dir, wset_p, context,
 		       MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
-		       NULL);
+		       false);
     }
 
     /*

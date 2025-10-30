@@ -258,7 +258,13 @@ main(int argc, char *argv[])
     bool found_rm = false;                      /* for find_utils */
     bool found_chksubmit = false;               /* for find_utils */
     bool opt_error = false;			/* fchk_inval_opt() return */
-    int ret;					/* libc return code */
+    /**/
+    struct walk_stat wstat;		/* walk_stat being processed */
+    struct walk_set *wset_p = NULL;	/* pointer to a walk set */
+    char const *context = NULL;		/* string describing the context (tool and options) for debugging purposes */
+    bool skip_add_ret = false;		/* return from skip_add() */
+    /**/
+    int ret;				/* libc return code */
     int i;
 
     /* IOCCC requires use of C locale */
@@ -280,6 +286,17 @@ main(int argc, char *argv[])
      */
     memset(&topdir_st, 0, sizeof(topdir_st));
     memset(&workdir_st, 0, sizeof(workdir_st));
+    memset(&wstat, 0, sizeof(wstat));
+
+    /*
+     * initialize the walk_stat structure
+     */
+    wset_p = &walk_mkiocccentry;
+    context = "mkiocccentry";
+    init_walk_stat(&wstat,
+		   ".", wset_p, context,
+		   MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
+		   false);
 
     /*
      * parse args
@@ -431,6 +448,13 @@ main(int argc, char *argv[])
             make = optarg;
             break;
         case 'I': /* ignore a path */
+	    skip_add_ret = skip_add(&wstat, optarg);
+	    if (skip_add_ret) {
+		dbg(DBG_LOW, "context will ignore, when canonicalized: %s", optarg);
+	    } else {
+		dbg(DBG_MED, "path: %s is already marked for skipping", optarg);
+	    }
+	    /* XXX - pre-IOCCC29: remove the obsolete function call below - XXX */
             append_path(&info.ignore_paths, optarg, true, false, false, true);
             break;
         case 'M':
@@ -637,6 +661,13 @@ main(int argc, char *argv[])
     if (seed_used) {
 	dbg(DBG_MED, "pseudo random seed: %u", (unsigned)answer_seed);
     }
+
+    /*
+     * The wstat initialization happened before we had the topdir argument.
+     * We now set the topdir within wstat.
+     */
+    wstat.topdir = *topdir;
+    wstat.topdir_len = strlen(wstat.topdir);
 
     /*
      * record the time

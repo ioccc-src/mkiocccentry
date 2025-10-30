@@ -141,6 +141,11 @@
  */
 #include "soup/random_answers.h"
 
+/*
+ * walk - walk directory trees and tar listings
+ */
+#include "soup/walk.h"
+
 
 /*
  * definitions
