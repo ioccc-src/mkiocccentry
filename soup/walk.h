@@ -526,4 +526,5 @@ extern struct item *path_in_item_array(struct dyn_array *item_array, char const 
 extern struct item *path_in_walk_stat(struct walk_stat *wstat_p, char const *c_path);
 
 
+
 #endif /* INCLUDE_WALK_H */
