@@ -24,10 +24,10 @@ needs to be re-written and how `scan_topdir()` and `copy_topdir()`
 need to be removed.
 
 Added `-I path` to `chkentry(1)` (older versions of `chkentry(1)` used
-`-i path`: changed to `I path` to to similar to `mkiocccentry(1)`)
+`-i path`: changed to `-I path` to be similar to the `mkiocccentry -I path`)
 in order to ignore `path`.
 
-Added the `-b` option to `chkentry(1).
+Added the `-b` option to `chkentry(1). :-)
 
 Improved the `chkentry -h` help message.
 
@@ -42,7 +42,7 @@ directory depth on paths.
 
 Fixed a few typos in the `chkentry(1)` man page.
 
-Improved "fun" comments about non-IOCCC judges using certain
+Improved a few "fun" comments about non-IOCCC judges using certain
 `chkentry(1)` command line options in the `chkentry(1)` man page.
 
 Added to the **BUGS** section of the `chkentry(1)` man page.
