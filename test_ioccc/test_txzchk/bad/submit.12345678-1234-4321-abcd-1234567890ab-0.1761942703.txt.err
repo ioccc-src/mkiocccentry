@@ -1,0 +1,6 @@
+Warning: txzchk: unknown type 'w' in permission: wr--r--r--: file: 12345678-1234-4321-abcd-1234567890ab-0/try.sh
+txzchk found 1 prohibited items
+   prohibited other: try.sh
+non-files/dirs/symlinks: no counted (non-free) allowed, found: 1
+Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761942703.txt
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761942703.txt: found 2 feathers stuck in the tarball

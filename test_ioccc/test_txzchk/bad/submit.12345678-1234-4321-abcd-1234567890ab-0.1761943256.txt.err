@@ -1,0 +1,2 @@
+Warning: txzchk: other exec permission 't' in file 12345678-1234-4321-abcd-1234567890ab-0/try.sh invalid
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761943256.txt: found 1 feather stuck in the tarball
