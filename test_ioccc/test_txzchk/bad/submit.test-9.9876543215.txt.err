@@ -1,22 +1,16 @@
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: found a non-directory non-regular non-hard-linked item: vrw-r--r--  0 501    20          4 Feb  6 02:28 test-9/extra1
-Warning: txzchk: found non-executable non-directory file test-9/extra1 with wrong permissions: vrw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: found empty .info.json file
-Warning: txzchk: found non-executable non-directory file test-9/.info.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: found empty remarks.md
-Warning: txzchk: found non-executable non-directory file test-9/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: found empty .auth.json file
-Warning: txzchk: found non-executable non-directory file test-9/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-9/inventory.html with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-9/index.html with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-9/GNUmakefile with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-9/README.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-9/prog with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-9/prog.c with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: found a non-directory non-regular non-hard-linked item: srw-r--r--  0 501    20          4 Feb  6 02:28 test-9/extra2
-Warning: txzchk: found non-executable non-directory file test-9/extra2 with wrong permissions: srw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-9/Makefile with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: filename test-9/prog (basename prog) not allowed
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: filename test-9/README.md (basename README.md) not allowed
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: filename test-9/GNUmakefile (basename GNUmakefile) not allowed
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: filename test-9/index.html (basename index.html) not allowed
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: found 21 feathers stuck in the tarball
+Warning: txzchk: unknown type 'v' in permission: vrw-r--r--: file: test-9/extra1
+txzchk required: remarks.md not found
+txzchk required: .auth.json not found
+txzchk required: .info.json not found
+txzchk found 8 prohibited items
+   prohibited socket: extra2
+   prohibited file: prog
+   prohibited file: readme.md
+   prohibited file: index.html
+   prohibited empty file: .auth.json
+   prohibited empty file: remarks.md
+   prohibited empty file: .info.json
+   prohibited other: extra1
+non-files/dirs/symlinks: no counted (non-free) allowed, found: 2
+Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543215.txt: found 2 feathers stuck in the tarball

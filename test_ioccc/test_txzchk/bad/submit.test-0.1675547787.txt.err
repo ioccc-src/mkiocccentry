@@ -1,17 +1,7 @@
-Warning: txzchk: found non-executable non-directory file curds/file with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: found incorrect top level directory in filename curds/file
-Warning: txzchk: found non-executable non-directory file curds/whey/extra with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: found incorrect top level directory in filename curds/whey/extra
-Warning: txzchk: found non-executable non-directory file test-0/./extra1 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-0/extra1 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-0/.info.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-0/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-0/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-0/prog.c with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-0/extra2 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-0/Makefile with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: bogus field found after filename: bogus
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: bogus field found after filename: data
-Warning: txzchk: found non-executable non-directory file test-0/file with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: not all files in correct directory
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: found 16 feathers stuck in the tarball
+Warning: txzchk: file extra1 is a duplicate file
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: found incorrect top level directory in filename curds/whey/extra
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: found incorrect top level directory in filename curds/file
+Warning: txzchk: file file is a duplicate file
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-0.1675547787.txt: found 6 feathers stuck in the tarball

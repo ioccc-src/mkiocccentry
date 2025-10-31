@@ -6,6 +6,9 @@
  *	-- Gandalf to Pippin, the Fellowship of the Ring.
  *
  * Copyright (c) 2025 by Landon Curt Noll.  All Rights Reserved.
+ * Minor portability improvements were made by Cody Boone Ferguson.
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -265,7 +268,7 @@ main(int argc, char *argv[])
 	    errno = 0;
 	    max_depth = (int_least32_t) strtol(optarg, NULL, 0);
 	    if (errno != 0) {
-		errp(3, program, "unable to convert -d %s into a int_least32_t", optarg); /*ooo*/
+		errp(3, program, "unable to convert -d %s into an int_least32_t", optarg); /*ooo*/
 		not_reached();
 	    }
 	    break;
@@ -294,7 +297,7 @@ main(int argc, char *argv[])
 	    errno = 0;
 	    max_file = (int_least32_t) strtol(optarg, NULL, 0);
 	    if (errno != 0) {
-		errp(3, program, "unable to convert -F %s into a int_least32_t", optarg); /*ooo*/
+		errp(3, program, "unable to convert -F %s into an int_least32_t", optarg); /*ooo*/
 		not_reached();
 	    }
 	    break;
@@ -302,7 +305,7 @@ main(int argc, char *argv[])
 	    errno = 0;
 	    max_dir = (int_least32_t) strtol(optarg, NULL, 0);
 	    if (errno != 0) {
-		errp(3, program, "unable to convert -S %s into a int_least32_t", optarg); /*ooo*/
+		errp(3, program, "unable to convert -S %s into an int_least32_t", optarg); /*ooo*/
 		not_reached();
 	    }
 	    break;
@@ -310,7 +313,7 @@ main(int argc, char *argv[])
 	    errno = 0;
 	    max_sym = (int_least32_t) strtol(optarg, NULL, 0);
 	    if (errno != 0) {
-		errp(3, program, "unable to convert -S %s into a int_least32_t", optarg); /*ooo*/
+		errp(3, program, "unable to convert -S %s into an int_least32_t", optarg); /*ooo*/
 		not_reached();
 	    }
 	    break;
@@ -318,7 +321,7 @@ main(int argc, char *argv[])
 	    errno = 0;
 	    max_depth = (int_least32_t) strtol(optarg, NULL, 0);
 	    if (errno != 0) {
-		errp(3, program, "unable to convert -O %s into a int_least32_t", optarg); /*ooo*/
+		errp(3, program, "unable to convert -O %s into an int_least32_t", optarg); /*ooo*/
 		not_reached();
 	    }
 	    break;
@@ -853,7 +856,7 @@ test_walk(int argc, char **argv, FILE *in, FILE *out,
     char *type_str = NULL;	    /* arg as a single character string */
     char *size_str = NULL;	    /* item size as a string */
     char *path = NULL;		    /* path arg as a string (pre-canonicalized) */
-    char const *cpath = NULL;	    /* canonicalized path unless error in which case is just path */
+    char *cpath = NULL;	    /* canonicalized path unless error in which case is just path */
     bool walk_ok = true;	    /* true ==> no walk errors found, false ==> some walk errors found */
     bool dup = false;		    /* true ==> entry is a duplicate, false ==> entry is NOT a duplicate */
     int i;

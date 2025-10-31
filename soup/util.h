@@ -108,8 +108,6 @@
  * external function declarations
  */
 extern char *str_dup(char const *str);
-/* XXX - pre-IOCCC29: remove the obsolete function below - XXX */
-extern bool sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_checkp, intmax_t *count_checkp);
 extern bool is_empty(char const *path);
 extern char *cmdprintf(char const *format, ...);
 extern char *vcmdprintf(char const *format, va_list ap);

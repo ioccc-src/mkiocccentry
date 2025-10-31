@@ -1,12 +1,4 @@
-Warning: txzchk: found non-executable non-directory file test-4/extra1 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-4/.info.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-4/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-4/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-4/prog.c with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-4/.foo with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-4.9876543210.txt: found non .auth.json and .info.json dot file: .foo
-Warning: txzchk: found non-executable non-directory file test-4/extra2 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: found non-executable non-directory file test-4/Makefile with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-4.9876543210.txt: filename test-4/.foo (basename .foo) not allowed
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-4.9876543210.txt: found a total of 1 invalidly named dot file
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-4.9876543210.txt: found 10 feathers stuck in the tarball
+txzchk found 1 prohibited items
+   prohibited file: .foo
+Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.test-4.9876543210.txt
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-4.9876543210.txt: found 1 feather stuck in the tarball

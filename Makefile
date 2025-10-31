@@ -2170,4 +2170,4 @@ txzchk.o: cpath/cpath.h dbg/c_bool.h dbg/c_compat.h dbg/dbg.h \
     soup/chk_sem_auth.h soup/chk_sem_info.h soup/chk_validate.h \
     soup/default_handle.h soup/entry_util.h soup/file_util.h \
     soup/limit_ioccc.h soup/location.h soup/sanity.h soup/soup.h \
-    soup/util.h soup/version.h txzchk.c txzchk.h
+    soup/util.h soup/version.h soup/walk.h txzchk.c txzchk.h

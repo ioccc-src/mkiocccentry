@@ -1,6 +1,26 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.8.5 2025-10-31
+
+Resolve issue #1325 - use walk code. The struct `tarball` is significantly
+smaller. The test error files have been rebuilt. Unless something was missed or
+comes up after this is merged then this issue should be completed.
+
+Remove obsolete `sum_and_count()` function.
+
+Typo fixes in `test_ioccc/try*walk.c`.
+
+Typo fix in `chkentry.c` comment.
+
+Ran `make prep` to verify everything works locally.
+
+Removed obsolete `test_ioccc/static_analysis.md`.
+
+Updated `TXZCHK_VERSION` to `"2.0.10 2025-10-31"`.
+Updated `SOUP_VERSION` to `"2.2.5 2025-10-31"`.
+
+
 ## Release 2.8.4 2025-10-29
 
 Release use of canonicalize_path() and skip_add().
