@@ -175,7 +175,7 @@
 /*
  * st_mode related convenience macros
  *
- * See also stat(2)
+ * See also stat(2) and chmod(2)
  */
 #define ITEM_TYPE(st_mode) ((st_mode) & (S_IFMT))
 #define ITEM_PERM_BITS (S_ISUID | S_ISGID | S_ISVTX | S_IRWXU | S_IRWXG | S_IRWXO)
