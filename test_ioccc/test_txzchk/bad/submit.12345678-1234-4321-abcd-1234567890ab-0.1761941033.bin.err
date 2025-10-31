@@ -1,0 +1,4 @@
+Warning: txzchk: found NUL before end of line: errno[0]: Undefined error: 0
+Warning: txzchk: found NUL before end of line: errno[0]: Undefined error: 0
+Warning: readline: line does not end in newline: ‘ºß=Y8_ÿÂ”¸\aäOF|½¬*†*ğèÜıqíçşß÷z¤¿ÚXwŞ²2ª}¨„ß.9*7uÂ¤Ø6»ø
+ERROR[39]: parse_txz_line: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761941033.txt: NULL pointer encountered trying to parse line

@@ -1,0 +1,4 @@
+txzchk found 1 unsafe paths
+   file has an unsafe path: subdir.1/*extra4
+Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-6.1761934324.txt
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-6.1761934324.txt: found 1 feather stuck in the tarball

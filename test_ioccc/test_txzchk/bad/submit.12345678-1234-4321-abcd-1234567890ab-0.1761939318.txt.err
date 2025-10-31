@@ -1,0 +1,17 @@
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761939318.txt: found incorrect top level directory in filename D:\Makefile
+Warning: txzchk: no directory found in filename: D:\Makefile
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761939318.txt: found incorrect top level directory in filename D:\.auth.json
+Warning: txzchk: no directory found in filename: D:\.auth.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761939318.txt: found incorrect top level directory in filename D:\prog.c
+Warning: txzchk: no directory found in filename: D:\prog.c
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761939318.txt: found incorrect top level directory in filename D:\remarks.md
+Warning: txzchk: no directory found in filename: D:\remarks.md
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761939318.txt: found incorrect top level directory in filename D:\.info.json
+Warning: txzchk: no directory found in filename: D:\.info.json
+txzchk required: Makefile not found
+txzchk required: prog.c not found
+txzchk required: remarks.md not found
+txzchk required: .auth.json not found
+txzchk required: .info.json not found
+Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761939318.txt
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761939318.txt: found 11 feathers stuck in the tarball

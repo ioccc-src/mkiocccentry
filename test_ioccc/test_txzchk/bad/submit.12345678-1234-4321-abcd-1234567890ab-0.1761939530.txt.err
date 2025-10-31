@@ -1,0 +1,4 @@
+txzchk found 1 prohibited items
+   prohibited file: .entry.json
+Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761939530.txt
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761939530.txt: found 1 feather stuck in the tarball
