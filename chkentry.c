@@ -139,7 +139,7 @@ main(int argc, char *argv[])
     struct item *i_p;			/* pointer to an element in the dynamic array */
     intmax_t len;			/* number of elements in the dynamic array */
     /**/
-    bool cap_I_seen = false;		/* The -i path was seen on the command line */
+    bool cap_I_seen = false;		/* The -I path was seen on the command line */
     bool skip_add_ret = false;		/* return from skip_add() */
     /**/
     int cd_ret = -1;			/* chdir(2) return */

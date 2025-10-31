@@ -1,6 +1,7 @@
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.1675547786.txt: no .info.json found
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.1675547786.txt: no .auth.json found
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.1675547786.txt: no prog.c found
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.1675547786.txt: no Makefile found
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.1675547786.txt: no remarks.md found
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.1675547786.txt: found 5 feathers stuck in the tarball
+txzchk required: Makefile not found
+txzchk required: prog.c not found
+txzchk required: remarks.md not found
+txzchk required: .auth.json not found
+txzchk required: .info.json not found
+Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.test-1.1675547786.txt
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.1675547786.txt: found 1 feather stuck in the tarball

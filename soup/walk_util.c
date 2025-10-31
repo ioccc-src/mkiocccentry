@@ -2361,7 +2361,7 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
      *		false, false, false, false, false,
      *		0, NULL }
      *
-     * In particular, ignore is false.  This we assume that the current
+     * In particular, ignore is false.  Thus we assume that the current
      * item should NOT be pruned.
      */
     if (rule_p->pattern == NULL) {
@@ -2369,8 +2369,8 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
 	/*
 	 * append to unmatched
 	 *
-	 * Normally we should not get here as normally because the 2nd to last pattern
-	 * should be something of the form:
+	 * Normally we should not get here because the 2nd to last pattern
+         * should be something of the form:
 	 *
 	 *	{ "*",
 	 *	    false, false, false, false, true,
@@ -4092,7 +4092,7 @@ fts_walk(struct walk_stat *wstat_p)
 	/*
 	 * paranoia - avoid NULL fts_path
 	 *
-	 * NOTE: This should never happpen, but in case there a fts_read(3) bug, we check.
+	 * NOTE: This should never happen, but in case there an fts_read(3) bug, we check.
 	 */
 	if (ftsent->fts_path == NULL) {
 
@@ -4118,7 +4118,7 @@ fts_walk(struct walk_stat *wstat_p)
 	/*
 	 * paranoia - avoid fts_path that is shorter than the canonicalized wstat_p->topdir length
 	 *
-	 * NOTE: This should never happen, but in case there a fts_read(3) bug, we check.
+	 * NOTE: This should never happen, but in case there an fts_read(3) bug, we check.
 	 */
 	} else if (ftsent->fts_pathlen < wstat_p->topdir_len) {
 
@@ -4156,7 +4156,7 @@ fts_walk(struct walk_stat *wstat_p)
 	/*
 	 * paranoia - avoid fts_path that is same as canonicalized wstat_p->topdir length but isn't wstat_p->topdir
 	 *
-	 * NOTE: This should never happen, but in case there a fts_read(3) bug, we check.
+	 * NOTE: This should never happen, but in case there an fts_read(3) bug, we check.
 	 */
 	} else if (ftsent->fts_pathlen == wstat_p->topdir_len) {
 
@@ -4185,7 +4185,7 @@ fts_walk(struct walk_stat *wstat_p)
 	/*
 	 * paranoia - avoid fts_path that does NOT start with canonicalized wstat_p->topdir followed by / (slash)
 	 *
-	 * NOTE: This should never happen, but in case there is a fts_read(3) bug, we check.
+	 * NOTE: This should never happen, but in case there is an fts_read(3) bug, we check.
 	 */
 	} else if (ftsent->fts_path[wstat_p->topdir_len] != '/' ||
 		   strncmp(wstat_p->topdir, ftsent->fts_path, wstat_p->topdir_len) != 0) {
@@ -4358,7 +4358,7 @@ fts_walk(struct walk_stat *wstat_p)
 
 	    /*
 	     * This should never happen because we do not use FTS_SEEDOT with fts_open(3).
-	     * We handle these as errors in case there is a fts_read(3) bug.
+	     * We handle these as errors in case there is an fts_read(3) bug.
 	     *
 	     * We will silently "forgive" . (dot), but all other cases we return indicating walk error.
 	     */
@@ -4759,7 +4759,7 @@ fts_walk(struct walk_stat *wstat_p)
 /*
  * path_in_item_array
  *
- * Given a dynamic array of struct items for a struct item with a fts_path that is identical to c_path.
+ * Given a dynamic array of struct items for a struct item with an fts_path that is identical to c_path.
  *
  * NOTE: Because the functions such as record_step() work on canonicalized paths,
  *	 the c_path should be called with a canonicalized path using canonicalize_path():
@@ -4772,7 +4772,7 @@ fts_walk(struct walk_stat *wstat_p)
  *	    int_least32_t deep = -1;
  *	    struct item *i_p;
  *
- *	    ... call init_walk_stat() as neeed ...
+ *	    ... call init_walk_stat() as needed ...
  *
  *	    memset(&wstat, 0, sizeof(wstat));
  *	    init_walk_stat(&wstat, ...);
@@ -4865,7 +4865,7 @@ path_in_item_array(struct dyn_array *item_array, char const *c_path)
  * path_in_walk_stat
  *
  * Given a struct walk_stat *wstat_p, search the wstat_p->all dynamic array of struct items
- * for a struct item with a fts_path that is identical to c_path.  We can the wstat_p->all
+ * for a struct item with an fts_path that is identical to c_path.  We can the wstat_p->all
  * dynamic array because functions such as record_step() stores all valid items on this
  * dynamic array, regardless of the type of path.
  *
@@ -4879,7 +4879,7 @@ path_in_item_array(struct dyn_array *item_array, char const *c_path)
  *	    size_t path_len = 0;
  *	    int_least32_t deep = -1;
  *
- *	    ... call init_walk_stat() as neeed ...
+ *	    ... call init_walk_stat() as needed ...
  *
  *	    memset(&wstat, 0, sizeof(wstat));
  *	    init_walk_stat(&wstat, ...);

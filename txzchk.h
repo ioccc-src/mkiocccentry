@@ -100,6 +100,11 @@
  */
 #include "soup/util.h"
 
+/*
+ * soup/walk - for walking through the tar pit
+ */
+#include "soup/walk.h"
+
 
 /*
  * macros
@@ -125,44 +130,8 @@
  */
 struct tarball
 {
-    bool has_info_json;			    /* true ==> has a .info.json file */
-    bool empty_info_json;		    /* true ==> .info.json size == 0 */
-    off_t info_json_size;		    /* .info.json file size */
-    bool has_auth_json;			    /* true ==> has an .auth.json file */
-    off_t auth_json_size;		    /* .auth.json file size */
-    bool empty_auth_json;		    /* true ==> .auth.json size == 0 */
-    bool has_prog_c;			    /* true ==> has a prog.c file */
-    bool empty_prog_c;			    /* true ==> prog.c size == 0 (this is for debugging information only) */
-    off_t prog_c_size;			    /* prog.c file size */
-    bool has_remarks_md;		    /* true ==> has a remarks.md file */
-    bool empty_remarks_md;		    /* true ==> remarks.md size == 0 */
-    off_t remarks_md_size;		    /* remarks.md file size */
-    bool has_Makefile;			    /* true ==> has a Makefile */
-    bool empty_Makefile;		    /* true ==> Makefile size == 0 */
-    uintmax_t invalid_filename_lengths;     /* > 0 ==> some filenames are <= 0 or > MAX_FILENAME_LEN */
-    off_t Makefile_size;		    /* Makefile file size */
-    uintmax_t unsafe_chars;		    /* > 0 ==> unsafe characters found in this number of filenames (posix_plus_safe()) */
     off_t size;				    /* size of the tarball itself */
-    off_t files_size;			    /* total size of all the files combined */
-    off_t previous_files_size;		    /* the previous total size of all files combined */
-    uintmax_t invalid_files_count;	    /* > 0 ==> number of times file count went <= 0 */
-    uintmax_t negative_files_size;	    /* > 0 ==> number of times the total files reached < 0 */
-    uintmax_t files_size_too_big;	    /* > 0 ==> total number of times files size sum > MAX_SUM_FILELEN */
-    uintmax_t files_size_shrunk;	    /* > 0 ==> total files size shrunk this many times */
-    uintmax_t correct_directories;	    /* number of files in the correct directory */
-    uintmax_t invalid_dot_files;	    /* number of dot files that aren't .auth.json and .info.json */
-    uintmax_t named_dot;		    /* number of files called just '.' */
-    uintmax_t total_files;		    /* total files in the tarball */
-    uintmax_t extra_filenames;              /* total number of extra files */
-    uintmax_t required_filenames;           /* total number of required files */
-    uintmax_t optional_filenames;           /* total number of optional files */
-    uintmax_t forbidden_filenames;          /* total number of forbidden files */
-    uintmax_t directories;                  /* total number of subdirectories counting the required top level directory */
-    uintmax_t invalid_perms;                /* total number of files with invalid permissions */
-    uintmax_t total_exec_files;             /* total number of executable FILES */
-    uintmax_t invalid_dirnames;             /* number of invalid directory names */
-    uintmax_t invalid_directories;          /* invalid directory */
-    uintmax_t depth_errors;                 /* number of directories > max depth */
+    off_t total_size;			    /* total size of all the files combined */
     uintmax_t total_feathers;		    /* number of total feathers stuck in tarball (i.e. issues found) */
 };
 
@@ -183,13 +152,11 @@ struct txz_file
 {
     char *basename;			    /* basename of _this_ file */
     char *filename;			    /* full path of _this_ file */
+    char *dirname;                          /* dirname (to compare against fnamchk) */
     char *top_dirname;                      /* top directory name of _this_ file (i.e. up to first '/') */
-    uintmax_t count;			    /* number of times _this_ file has been seen */
-    bool isfile;			    /* true ==> is normal file (count size and number of files) */
     intmax_t length;			    /* size as determined by string_to_intmax2() */
-    bool isdir;                             /* true ==> is a directory */
     char *perms;                            /* permission bits */
-    bool isexec;                            /* true ==> executable (+x) file */
+    mode_t mode;                            /* perms -> mode_t */
     struct txz_file *next;		    /* the next file in the txz_files list */
 };
 
@@ -216,26 +183,20 @@ struct txz_line
  * function prototypes
  */
 static void txzchk_sanity_chks(char const *tar, char const *fnamchk);
-static void parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tarball_path, intmax_t *sum,
-        intmax_t *count);
+static void parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tarball_path);
 static void parse_linux_txz_line(char *p, char *line, char *line_dup, char const *dirname,
-	char const *tarball_path, char **saveptr, bool normal_file, intmax_t *sum, intmax_t *count, bool isdir,
-        char *perms, bool isexec);
+	char const *tarball_path, char **saveptr, char *perms);
 static void parse_bsd_txz_line(char *p, char *line, char *line_dup, char const *dirname, char const *tarball_path,
-	char **saveptr, bool normal_file, intmax_t *sum, intmax_t *count, bool isdir, char *perms, bool isexec);
+	char **saveptr, char *perms);
 static uintmax_t check_tarball(char const *tar, char const *fnamchk);
 static void show_tarball_info(char const *tarball_path);
-static void check_file_size(char const *tarball_path, off_t size, struct txz_file *file);
-static void count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t length);
-static void check_txz_file(char const *tarball_path, char const *dirname, struct txz_file *file);
 static void check_all_txz_files(void);
-static void check_directory(struct txz_file *file, char const *dirname, char const *tarball_path);
-static bool has_special_bits(struct txz_file *file);
+static mode_t get_mode(char const *filename, char const *perms);
 static void add_txz_line(char const *str, uintmax_t line_num);
 static void parse_all_txz_lines(char const *dirname, char const *tarball_path);
 static void free_txz_lines(void);
-static struct txz_file *alloc_txz_file(char const *path, char const *dirname, char *perms, bool isdir,
-        bool isfile, bool isexec, intmax_t length);
+static void check_directory(struct txz_file *file, char const *dirname, char const *tarball_path);
+static struct txz_file *alloc_txz_file(char const *path, char const *dirname, char *perms, off_t length);
 static void add_txz_file_to_list(struct txz_file *file);
 static void free_txz_file(struct txz_file **file);
 static void free_txz_files_list(void);

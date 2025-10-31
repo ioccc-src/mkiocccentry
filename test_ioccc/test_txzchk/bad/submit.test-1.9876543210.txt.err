@@ -1,32 +1,19 @@
-Warning: txzchk: found non-executable non-directory file test-0/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/remarks.md
-Warning: txzchk: found non-executable non-directory file test-0/prog.c with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/prog.c
-Warning: txzchk: found non-executable non-directory file test-0/extra2 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/extra2
-Warning: txzchk: found non-executable non-directory file test-0/extra1 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/extra1
-Warning: txzchk: found non-executable non-directory file test-0/Makefile with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/Makefile
-Warning: txzchk: found non-executable non-directory file test-0/extra1 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/extra1
-Warning: txzchk: found non-executable non-directory file test-0/.info.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/.info.json
-Warning: txzchk: found non-executable non-directory file test-0/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/remarks.md
-Warning: txzchk: found non-executable non-directory file test-0/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/.auth.json
-Warning: txzchk: found non-executable non-directory file test-0/prog.c with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/prog.c
-Warning: txzchk: found non-executable non-directory file test-0/extra2 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/extra2
-Warning: txzchk: found non-executable non-directory file test-0/Makefile with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/Makefile
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found a total of 2 files with the name Makefile in the same directory
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found a total of 2 files with the name extra1 in the same directory
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found a total of 2 files with the name extra2 in the same directory
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found a total of 2 files with the name prog.c in the same directory
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found a total of 2 files with the name remarks.md in the same directory
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: not all files in correct directory
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found 31 feathers stuck in the tarball
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/Makefile
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/extra2
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/prog.c
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/.auth.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/remarks.md
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/.info.json
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/extra1
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/Makefile
+Warning: txzchk: file makefile is a duplicate file
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/extra1
+Warning: txzchk: file extra1 is a duplicate file
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/extra2
+Warning: txzchk: file extra2 is a duplicate file
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/prog.c
+Warning: txzchk: file prog.c is a duplicate file
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/remarks.md
+Warning: txzchk: file remarks.md is a duplicate file
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found 18 feathers stuck in the tarball
