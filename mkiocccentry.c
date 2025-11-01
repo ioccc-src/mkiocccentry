@@ -181,10 +181,11 @@ static const char * const usage_msg5 =
     "jparse UTF-8 version: %s\n"
     "jparse library version: %s";
 
+
 /*
  * globals
  */
-static bool quiet = false;			/* true ==> quiet mode */
+static bool quiet = false;		/* true ==> quiet mode */
 static bool need_confirm = true;	/* true ==> ask for confirmations */
 static bool need_hints = true;		/* true ==> show hints */
 static bool ignore_warnings = false;	/* true ==> ignore all warnings (this does NOT mean the judges will! :) */
@@ -196,22 +197,66 @@ static uintmax_t feathery = 3;		/* for entertain option of txzchk (-e) */
 static bool silence_prompt = false;	/* true ==> do not display prompts */
 static bool read_answers_flag_used = false;	/* true ==> -i read answers from answers file */
 static bool seed_used = false;		/* true ==> -d or -s seed given */
-static bool copying_topdir = false;    /* true ==> copying topdir and checking submission dir */
+static bool copying_topdir = false;	/* true ==> copying topdir and checking submission dir */
 static bool saved_answer_yes = false;   /* set to answer_yes before modifying it for scanning/copying topdir */
-static bool saved_silence_prompt = false;   /* set to silence_prompt before modifying it for scanning/copying topdir */
+static bool saved_silence_prompt = false;	/* set to silence_prompt before modifying it for scanning/copying topdir */
 static bool force_yes = false;          /* force -y even when scanning/copying/verifying in -i answers mode */
 static struct stat topdir_st;           /* stat(2) information of topdir */
 static struct stat workdir_st;          /* stat(2) information of workdir */
 static int answersfd = -1;              /* -i answers fd */
 static struct stat answers_st;
 static off_t total_file_size = 0;       /* total size of all files to be copied (in topdir) */
+static long answer_seed = NO_SEED;	/* if != 0 ==> srandom argument used to seed generation of answers */
+
 
 /*
- * forward declarations
+ * static forward declarations
  */
-static void usage(int exitcode, char const *program, char const *str) __attribute__((noreturn));
-static bool noprompt_yes_or_no(void);
+static void warn_empty_prog(void);
+static void warn_rule_2a_size(struct info *infop, int mode, RuleCount size);
+static void warn_trigraph(void);
+static void warn_wordbuf(void);
+static void warn_ungetc(void);
+static void warn_rule_2b_size(struct info *infop);
+static RuleCount check_prog_c(struct info *infop, char const *prog_c);
 static void append_unique_filename(struct dyn_array *array, char *str, bool fn);
+static bool check_ent(FTS *fts, FTSENT *ent);
+static void scan_topdir(char const *args, struct info *infop, char const *make, char const *submission_dir, RuleCount *size);
+static void copy_topdir(struct info *infop, char const *make, char const *submission_dir, char *topdir_path,
+			char *submit_path, int topdir, int cwd, RuleCount *size);
+static void check_submission_dir(struct info *infop, char *submit_path, char *topdir_path,
+				 char const *make, RuleCount *size, int cwd);
+static void usage(int exitcode, char const *program, char const *str) __attribute__((noreturn));
+static void mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar,
+				     char *ls, char *txzchk, char *fnamchk, char *chksubmit,
+                                     char *make, char *rm);
+static char *prompt(char const *str, size_t *lenp);
+static char *get_contest_id(bool *testp, char const *uuidf, char *uuidstr);
+static int get_submit_slot(struct info *infop);
+static char *mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
+			  char **tarball_path, time_t tstamp, bool test_mode, bool force_remove,
+                          char const *rm);
+static bool inspect_Makefile(char const *Makefile, struct info *infop);
+static void warn_Makefile(struct info *infop);
+static void check_Makefile(struct info *infop, char const *Makefile);
+static void check_remarks_md(struct info *infop, char const *remarks_md);
+static bool yes_or_no(char const *question, bool def_answer);
+static char *get_title(struct info *infop);
+static char *get_abstract(struct info *infop);
+static bool noprompt_yes_or_no(void);
+static int get_author_info(struct author **author_set_p);
+static void verify_submission_dir(char const *submission_dir, char const *ls);
+static void write_json_files(struct auth *authp, struct info *infop, char const *submission_dir, char const *chksubmit);
+static void form_auth(struct auth *authp, struct info *infop, int author_count, struct author *authorp);
+static void form_info(struct info *infop);
+static void form_tarball(char const *workdir, char const *submission_dir, char const *tarball_path, char const *tar,
+			 char const *ls, char const *txzchk, char const *fnamchk, bool test_mode);
+static void remind_user(char const *workdir, char const *submission_dir, char const *tar, char const *tarball_path,
+			bool test_mode, int submit_slot);
+static void show_registration_url(void);
+static void show_submit_url(char const *workdir, char const *tarball_path, int slot_number);
+static void read_manifest(char const *manifest, struct info *infop);
+static void read_ignore(char const *ignore, struct info *infop);
 
 
 int
@@ -221,11 +266,11 @@ main(int argc, char *argv[])
     extern char *optarg;			/* option argument */
     extern int optind;				/* argv index of the next arg */
     struct timeval tp;				/* gettimeofday time value */
-    char const *workdir = NULL;		/* where the submission directory and tarball are formed */
+    char const *workdir = NULL;			/* where the submission directory and tarball are formed */
     char *prog_c = NULL;			/* path to prog.c */
-    char *Makefile = NULL;		/* path to Makefile */
-    char *remarks_md = NULL;		/* path to remarks.md */
-    char **topdir = NULL;          /* directory from which files are to be copied to the workdir */
+    char *Makefile = NULL;			/* path to Makefile */
+    char *remarks_md = NULL;			/* path to remarks.md */
+    char const *topdir = NULL;			/* directory from which files are to be copied to the workdir */
     char *tar = TAR_PATH_0;			/* path to tar executable that supports the -J (xz) option */
     char *rm = RM_PATH_0;                       /* path to rm tool */
     char *ls = LS_PATH_0;			/* path to ls executable */
@@ -259,11 +304,12 @@ main(int argc, char *argv[])
     bool found_chksubmit = false;               /* for find_utils */
     bool opt_error = false;			/* fchk_inval_opt() return */
     /**/
-    struct walk_stat wstat;		/* walk_stat being processed */
-    struct walk_set *wset_p = NULL;	/* pointer to a walk set */
-    char const *context = NULL;		/* string describing the context (tool and options) for debugging purposes */
-    bool skip_add_ret = false;		/* return from skip_add() */
-    bool walk_ok = true;                /* true ==> no walk errors found, false ==> some walk errors found */
+    struct walk_stat wstat;			/* walk_stat being processed */
+    struct walk_set *wset_p = NULL;		/* pointer to a walk set */
+    char const *context = NULL;			/* string describing context (tool & options) for debugging purposes */
+    bool skip_add_ret = false;			/* return from skip_add() */
+    bool walk_ok = true;			/* true ==> no walk errors found, false ==> some walk errors found */
+    enum path_sanity sanity = PATH_ERR_UNSET;   /* canon_path path_sanity error, or PATH_OK */
     /**/
     int ret;				/* libc return code */
     int i;
@@ -609,43 +655,63 @@ main(int argc, char *argv[])
 	read_answers_flag_used = true;
     }
 
-    dbg(DBG_MED, "tar: %s", tar);
-    dbg(DBG_MED, "ls: %s", ls);
-    dbg(DBG_MED, "rm: %s", rm);
-    workdir = argv[optind];
-    if (workdir == NULL || *workdir == '\0') {
-        err(3, __func__, "workdir is NULL or empty string"); /*ooo*/
+
+    /*
+     * canonicalize workdir argument
+     */
+    workdir = canon_path(argv[optind],
+			 0, 0, 0,
+			 &sanity, NULL, NULL,
+			 false, false, false, false,
+			 NULL);
+    if (workdir == NULL || sanity != PATH_OK) {
+        err(3, __func__, "failed to canonicalize workdir: %s error: %s (%s)", /*ooo*/
+			 argv[optind], path_sanity_name(sanity), path_sanity_error(sanity));
         not_reached();
     }
+
+    /*
+     * workdir must be a writable and searchable directory
+     */
     if (!is_dir(workdir) || !is_write(workdir) || !is_exec(workdir)) {
         err(3, __func__, "workdir is not a writable and searchable directory: %s", workdir); /*ooo*/
         not_reached();
     }
-    /*
-     * get stat(2) info for workdir
-     */
+    /* get stat(2) info for workdir */
     errno = 0; /* pre-clear errno for errp() */
     if (stat(workdir, &workdir_st) != 0) {
         errp(3, __func__, "failed to get stat(2) info for workdir: %s", workdir); /*ooo*/
         not_reached();
     }
-    topdir = argv + optind + REQUIRED_ARGS - 1;
-    if (topdir == NULL || *topdir == NULL || **topdir == '\0') {
-        err(3, __func__, "topdir is NULL or empty string"); /*ooo*/
-        not_reached();
-    }
-    if (!is_dir(*topdir) || !is_read(*topdir) || !is_exec(*topdir)) {
-        err(3, __func__, "topdir is not a readable and searchable directory: %s", *topdir); /*ooo*/
-        not_reached();
-    }
+
     /*
-     * get stat(2) info for topdir
+     * canonicalize topdir argument
      */
-    errno = 0; /* pre-clear errno for errp() */
-    if (stat(*topdir, &topdir_st) != 0) {
-        errp(3, __func__, "failed to get stat(2) info for topdir: %s", *topdir); /*ooo*/
+    topdir = canon_path(argv[optind+1],
+			 0, 0, 0,
+			 &sanity, NULL, NULL,
+			 false, false, false, false,
+			 NULL);
+    if (topdir == NULL || sanity != PATH_OK) {
+        err(3, __func__, "failed to canonicalize topdir: %s error: %s (%s)", /*ooo*/
+			 argv[optind+1], path_sanity_name(sanity), path_sanity_error(sanity));
         not_reached();
     }
+
+    /*
+     * topdir readable and searchable directory
+     */
+    if (!is_dir(topdir) || !is_read(topdir) || !is_exec(topdir)) {
+        err(3, __func__, "topdir is not a readable and searchable directory: %s", topdir); /*ooo*/
+        not_reached();
+    }
+    /* get stat(2) info for topdir */
+    errno = 0; /* pre-clear errno for errp() */
+    if (stat(topdir, &topdir_st) != 0) {
+        errp(3, __func__, "failed to get stat(2) info for topdir: %s", topdir); /*ooo*/
+        not_reached();
+    }
+
     /*
      * check if topdir is the same as workdir
      */
@@ -654,8 +720,14 @@ main(int argc, char *argv[])
         not_reached();
     }
 
+    /*
+     * print debug debug information if -v level is high enough
+     */
+    dbg(DBG_MED, "tar: %s", tar);
+    dbg(DBG_MED, "ls: %s", ls);
+    dbg(DBG_MED, "rm: %s", rm);
     dbg(DBG_MED, "workdir: %s", workdir);
-    dbg(DBG_MED, "topdir: %s", *topdir);
+    dbg(DBG_MED, "topdir: %s", topdir);
     if (answers != NULL) {
         dbg(DBG_MED, "answers file: %s", answers);
     }
@@ -667,9 +739,9 @@ main(int argc, char *argv[])
      * The wstat initialization happened before we had the topdir argument.
      * We now set the topdir within wstat.
      */
-    wstat.topdir = strdup(*topdir);
+    wstat.topdir = strdup(topdir);
     if (wstat.topdir == NULL) {
-	errp(12, __func__, "strdup() of *topdir failed: %s", *topdir);
+	errp(12, __func__, "strdup() of topdir failed: %s", topdir);
 	not_reached();
     }
     wstat.topdir_len = strlen(wstat.topdir);
@@ -908,7 +980,7 @@ main(int argc, char *argv[])
      */
     walk_ok = fts_walk(&wstat);
     if (walk_ok == false) {
-        err(4, MKIOCCCENTRY_BASENAME, "failed to scan: %s", *topdir); /*ooo*/
+        err(4, MKIOCCCENTRY_BASENAME, "failed to scan: %s", topdir); /*ooo*/
         not_reached();
     }
 
@@ -922,9 +994,9 @@ main(int argc, char *argv[])
      */
     walk_ok = chk_walk(&wstat, stderr, MAX_EXTRA_FILE_COUNT, MAX_EXTRA_DIR_COUNT, NO_COUNT, NO_COUNT, true);
     if (walk_ok) {
-        dbg(DBG_LOW, "%s walk was successful for: %s", context, *topdir);
+        dbg(DBG_LOW, "%s walk was successful for: %s", context, topdir);
     } else {
-        err(4, MKIOCCCENTRY_BASENAME, "topdir is invalid: %s", *topdir); /*ooo*/
+        err(4, MKIOCCCENTRY_BASENAME, "topdir is invalid: %s", topdir); /*ooo*/
         not_reached();
     }
 
@@ -934,7 +1006,7 @@ main(int argc, char *argv[])
      * submission directory and then verify everything is in order (through
      * copy_topdir() and then check_submission_dir()).
      */
-    scan_topdir(*topdir, &info, make, submission_dir, &size);
+    scan_topdir(topdir, &info, make, submission_dir, &size);
 
     /*
      * obtain the title
@@ -1183,7 +1255,6 @@ main(int argc, char *argv[])
     memset(&info, 0, sizeof(info));
     free_auth(&auth);
     memset(&auth, 0, sizeof(auth));
-
     if (prog_c != NULL) {
         free(prog_c);
         prog_c = NULL;
@@ -1192,11 +1263,19 @@ main(int argc, char *argv[])
         free(Makefile);
         Makefile = NULL;
     }
-
     if (remarks_md != NULL) {
         free(remarks_md);
         remarks_md = NULL;
     }
+    if (workdir != NULL) {
+	free((void *)workdir);
+	workdir = NULL;
+    }
+    if (topdir != NULL) {
+	free((void *)topdir);
+	topdir = NULL;
+    }
+    free_walk_stat(&wstat);
 
     /*
      * we need to free the paths to the tools too
@@ -1229,7 +1308,6 @@ main(int argc, char *argv[])
         free(rm);
         rm = NULL;
     }
-    free_walk_stat(&wstat);
 
     /*
      * All Done!!! All Done!!! -- Jessica Noll, Age 2
@@ -1423,7 +1501,7 @@ check_ent(FTS *fts, FTSENT *ent)
  *       and not a dot file.
  */
 static void
-scan_topdir(char *args, struct info *infop, char const *make, char const *submission_dir, RuleCount *size)
+scan_topdir(char const *args, struct info *infop, char const *make, char const *submission_dir, RuleCount *size)
 {
     char *filename = NULL;              /* current filename (for arrays) */
     FTSENT *ent = NULL;                 /* FTSENT for each entry from read_fts() */
