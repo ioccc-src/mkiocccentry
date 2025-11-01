@@ -832,9 +832,10 @@ main(int argc, char *argv[])
     }
 
     /*
-     * if -a answers was specified and answers file exists, prompt user if they
-     * want to overwrite it; if they don't tell them how to use it and abort.
-     * Else it will be overwritten.
+     * if -a answers was specified and answers file exists and they did not
+     * request to overwrite it, prompt user if they want to overwrite it; if
+     * they don't tell them how to use it and abort.  Else it will be
+     * overwritten.
      */
     if (answers_flag_used && !overwrite_answers_flag_used && answers != NULL && strlen(answers) > 0 && exists(answers)) {
 	overwrite_answers = yes_or_no("WARNING: The answers file already exists! Do you wish to overwrite it? [Ny]", false);

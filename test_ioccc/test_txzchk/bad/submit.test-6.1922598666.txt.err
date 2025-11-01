@@ -1,3 +1,15 @@
+Warning: txzchk: found non-executable non-directory file test-6/.auth.json with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-6/prögög.c with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-6/prög.c with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-6/prog.c with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-6/remarks.md with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found incorrect top level directory in filename .test
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found incorrect top level directory in filename .
+Warning: txzchk: found non-executable non-directory file test-6//.file.json with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-6//.test.json with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-6//.info.json with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-6/Makefile with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-6/prog.c with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: txzchk: file . is a duplicate file
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found incorrect top level directory in filename .
 Warning: txzchk: no directory found in filename: .
@@ -17,4 +29,4 @@ txzchk found 3 non-relative paths
    file has an absolute path: /.test.json
    file has an absolute path: /.file.json
 Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found 7 feathers stuck in the tarball
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598666.txt: found 19 feathers stuck in the tarball
