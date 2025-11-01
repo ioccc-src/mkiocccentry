@@ -121,7 +121,6 @@
  * These will work for our purposes but the singular or plural one is in truth
  * much more complicated than what we're making it seem like.
  */
-#define HAS_DOES_NOT_HAVE(b) ((b)?"has":"does not have")
 #define SINGULAR_OR_PLURAL(x) ((x)==1?"":"s")
 
 
