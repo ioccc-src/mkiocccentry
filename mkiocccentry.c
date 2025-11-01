@@ -1505,7 +1505,7 @@ check_ent(FTS *fts, FTSENT *ent)
  * NOTE: a sane relative path is a path that does not start with a '/' (however,
  *       see comment below about the function canon_path()) and where
  *       each component of the path (between the '/' or if no '/' found then the
- *       string itself) matches the regexp: '^[0-9A-Za-z]+[0-9A-Za-z_+.-]*$'
+ *       string itself) matches the regexp: '^[0-9A-Za-z._][0-9A-Za-z._+-]*$'
  *       (w/o quotes). In other words it is POSIX plus + safe only characters
  *       and not a dot file.
  */
@@ -2407,7 +2407,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
                 para("",
                     "We ignore files and directories that do not match the regexp:",
                     "",
-                    "\t^[0-9A-Za-z]+[0-9A-Za-z_+.-]*$",
+                    "\t^[0-9A-Za-z._][0-9A-Za-z._+-]*$",
                     "",
                     "because they are not POSIX plus + chars only."
                     "",
@@ -2485,7 +2485,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
                 para("",
                     "We ignore files and directories that do not match the regexp:",
                     "",
-                    "\t^[0-9A-Za-z]+[0-9A-Za-z_+.-]*$",
+                    "\t^[0-9A-Za-z._][0-9A-Za-z._+-]*$",
                     "",
                     "because they are not POSIX plus + chars only.",
                     NULL);
@@ -2912,7 +2912,7 @@ copy_topdir(struct info *infop, char const *make, char const *submission_dir, ch
  * NOTE: a sane relative path is a path that does not start with a '/' (however,
  * see comment below about the function canon_path()) and where each
  * component of the path (between the '/' or if no '/' found then the string
- * itself) matches the regexp: '^[0-9A-Za-z]+[0-9A-Za-z_+.-]*$' (w/o quotes). In
+ * itself) matches the regexp: '^[0-9A-Za-z._][0-9A-Za-z._+-]*$' (w/o quotes). In
  * other words it is POSIX plus + safe only characters and not a dot file.
  * NOTE: if a path is already in an array and it is found again it is an error.
  */
@@ -6344,7 +6344,7 @@ get_title(struct info *infop)
 	 * verify that the title has only POSIX portable filename and + chars
 	 */
 	safe = safe_path_str(title, false, false); /* ^[0-9a-z._][0-9a-z._+-]*$ */
-	if (safe == false) {
+	if (!isascii(title[0]) || !isalnum(title[0]) || safe == false) {
 
 	    /*
 	     * reject invalid chars in title

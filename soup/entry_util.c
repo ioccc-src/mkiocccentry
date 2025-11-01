@@ -2599,7 +2599,7 @@ test_author_handle(char const *str)
     }
     /* IOCCC author_handle must use POSIX portable filename and + chars */
     test = safe_path_str(str, true, false); /* ^[0-9A-Za-z._][0-9A-Za-z._+-]*$ */
-    if (test == false) {
+    if (!isascii(str[0]) || !isalnum(str[0]) || test == false) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: author_handle does not match regexp: ^[0-9A-Za-z][0-9A-Za-z._+-]*$");
 	json_dbg(JSON_DBG_HIGH, __func__,
