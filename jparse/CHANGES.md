@@ -1,6 +1,18 @@
 # Significant changes in the JSON parser repo
 
 
+## Release 2.5.1 2025-10-31
+
+Change `string_to_intmax()` and `string_to_uintmax()`
+to use `warn(3)` so that the `test_ioccc/txzchk_test.sh`
+from [the other repo](https://github.com/ioccc-src/mkiocccentry)
+won't trigger a test error due to system implementation
+differences with various `errno` values.
+
+Updated `JPARSE_REPO_VERSION` to "2.5.1 2025-10-31".
+Updated `JPARSE_UTILS_VERSION` to "2.1.6 2025-10-31".
+
+
 ## Release 2.5.0 2025-10-02
 
 Added `#include` of `pr.h` and `dyn_array.h` in `jparse.h`.

@@ -175,7 +175,7 @@ string_to_intmax(char const *str, intmax_t *ret)
     /*
      * perform the conversion
      */
-    errno = 0;		/* pre-clear errno for warnp() */
+    errno = 0;		/* pre-clear errno */
     num = strtoimax(str, &endptr, 10);
     saved_errno = errno;
     if (endptr == str) {
@@ -186,7 +186,7 @@ string_to_intmax(char const *str, intmax_t *ret)
 	return false;
     } else if (saved_errno != 0) {
 	errno = saved_errno;
-	warnp(__func__, "error converting string \"%s\" to intmax_t", str);
+	warn(__func__, "error converting string \"%s\" to intmax_t", str);
 	return false;
     } else if (num <= INTMAX_MIN || num >= INTMAX_MAX) {
 	warn(__func__, "number %s out of range for intmax_t (must be > %jd && < %jd)", str, INTMAX_MIN, INTMAX_MAX);
@@ -237,7 +237,7 @@ string_to_uintmax(char const *str, uintmax_t *ret)
     /*
      * perform the conversion
      */
-    errno = 0;		/* pre-clear errno for warnp() */
+    errno = 0;		/* pre-clear errno */
     num = strtoumax(str, &endptr, 10);
     saved_errno = errno;
     if (endptr == str) {
@@ -248,7 +248,7 @@ string_to_uintmax(char const *str, uintmax_t *ret)
 	return false;
     } else if (saved_errno != 0) {
 	errno = saved_errno;
-	warnp(__func__, "error converting string \"%s\" to uintmax_t", str);
+	warn(__func__, "error converting string \"%s\" to uintmax_t", str);
 	return false;
     } else if (num <= 0 || num >= UINTMAX_MAX) {
 	warn(__func__, "number %s out of range for uintmax_t (must be >= %d && < %ju)", str, 0, UINTMAX_MAX);

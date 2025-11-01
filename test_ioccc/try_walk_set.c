@@ -180,7 +180,7 @@ static void parse_3_args(struct parsed_data *data_p, char const *type_str, char 
 static void free_parsed_data(struct parsed_data *data_p);
 static bool parse_stream(FILE *stream, char **line_p, char **type_str_p, char **size_str_p, char **path_p);
 static bool test_walk(int argc, char **argv, FILE *in, FILE *out,
-		      char *topdir, struct walk_set *set, char *context,
+		      char const *topdir, struct walk_set *set, char const *context,
 		      size_t max_path_len, size_t max_filename_len, int_least32_t max_depth,
 		      int_least32_t max_file, int_least32_t max_dir, int_least32_t max_sym, int_least32_t max_other,
 		      bool tar_listing, bool sort_cpath);
@@ -844,7 +844,7 @@ parse_stream(FILE *stream, char **line_p, char **type_str_p, char **size_str_p, 
  */
 static bool
 test_walk(int argc, char **argv, FILE *in, FILE *out,
-	  char *topdir, struct walk_set *set, char *context,
+	  char const *topdir, struct walk_set *set, char const *context,
           size_t max_path_len, size_t max_filename_len, int_least32_t max_depth,
           int_least32_t max_file, int_least32_t max_dir, int_least32_t max_sym, int_least32_t max_other,
           bool tar_listing, bool sort_cpath)
@@ -856,7 +856,7 @@ test_walk(int argc, char **argv, FILE *in, FILE *out,
     char *type_str = NULL;	    /* arg as a single character string */
     char *size_str = NULL;	    /* item size as a string */
     char *path = NULL;		    /* path arg as a string (pre-canonicalized) */
-    char *cpath = NULL;	    /* canonicalized path unless error in which case is just path */
+    char const *cpath = NULL;	    /* canonicalized path unless error in which case is just path */
     bool walk_ok = true;	    /* true ==> no walk errors found, false ==> some walk errors found */
     bool dup = false;		    /* true ==> entry is a duplicate, false ==> entry is NOT a duplicate */
     int i;
