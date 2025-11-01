@@ -330,5 +330,7 @@ extern int mkdirs(int dirfd, const char *str, mode_t mode);
 extern bool path_has_component(char const *path, char const *name);
 extern char *calloc_path(char const *dirname, char const *filename);
 extern char const *file_type_name(mode_t st_mode);
+extern int chdir_save_cwd(char const *newdir);
+extern void restore_cwd(int prev_cwd);
 
 #endif				/* INCLUDE_FILE_UTIL_H */
