@@ -5,8 +5,11 @@
 
 Further address issue #1325. Added back missing checks and additional checks.
 
+Fix memory leaks in chkentry.
+
 Updated `TXZCHK_VERSION` to `"2.0.11 2025-11-01"`
 Updated `SOUP_VERSION` to `"2.2.6 2025-11-01"`.
+Updated `CHKENTRY_VERSION` to `"2.1.7 2025-11-01"`.
 
 
 ## Release 2.8.5 2025-10-31
