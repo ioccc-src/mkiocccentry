@@ -121,7 +121,6 @@
  * These will work for our purposes but the singular or plural one is in truth
  * much more complicated than what we're making it seem like.
  */
-#define HAS_DOES_NOT_HAVE(b) ((b)?"has":"does not have")
 #define SINGULAR_OR_PLURAL(x) ((x)==1?"":"s")
 
 
@@ -133,6 +132,13 @@ struct tarball
     off_t size;				    /* size of the tarball itself */
     off_t total_size;			    /* total size of all the files combined */
     uintmax_t total_feathers;		    /* number of total feathers stuck in tarball (i.e. issues found) */
+    off_t previous_files_size;		    /* the previous total size of all files combined */
+    uintmax_t invalid_files_count;	    /* > 0 ==> number of times file count went <= 0 */
+    uintmax_t negative_files_size;	    /* > 0 ==> number of times the total files reached < 0 */
+    uintmax_t files_size_too_big;	    /* > 0 ==> total number of times files size sum > MAX_SUM_FILELEN */
+    uintmax_t files_size_shrunk;	    /* > 0 ==> total files size shrunk this many times */
+    uintmax_t invalid_perms;                /* total number of files with invalid permissions */
+    uintmax_t total_exec_files;             /* total number of executable FILES */
 };
 
 
@@ -154,11 +160,18 @@ struct txz_file
     char *filename;			    /* full path of _this_ file */
     char *dirname;                          /* dirname (to compare against fnamchk) */
     char *top_dirname;                      /* top directory name of _this_ file (i.e. up to first '/') */
+    uintmax_t count;			    /* number of times _this_ file has been seen */
+    bool isfile;			    /* true ==> is normal file (count size and number of files) */
     intmax_t length;			    /* size as determined by string_to_intmax2() */
+    bool isdir;                             /* true ==> is a directory */
     char *perms;                            /* permission bits */
+    bool isexec;                            /* true ==> executable (+x) file */
     mode_t mode;                            /* perms -> mode_t */
     struct txz_file *next;		    /* the next file in the txz_files list */
 };
+
+
+
 
 
 /*
@@ -178,25 +191,28 @@ struct txz_line
     struct txz_line *next;		/* pointer to the next line or NULL if last line */
 };
 
-
 /*
  * function prototypes
  */
 static void txzchk_sanity_chks(char const *tar, char const *fnamchk);
-static void parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tarball_path);
-static void parse_linux_txz_line(char *p, char *line, char *line_dup, char const *dirname,
-	char const *tarball_path, char **saveptr, char *perms);
-static void parse_bsd_txz_line(char *p, char *line, char *line_dup, char const *dirname, char const *tarball_path,
-	char **saveptr, char *perms);
 static uintmax_t check_tarball(char const *tar, char const *fnamchk);
+static void parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tarball_path, intmax_t *sum,
+        intmax_t *count);
+static void parse_linux_txz_line(char *p, char *line, char *line_dup, char const *dirname,
+	char const *tarball_path, char **saveptr, bool normal_file, intmax_t *sum, intmax_t *count, bool isdir,
+        char *perms, bool isexec);
 static void show_tarball_info(char const *tarball_path);
 static void check_all_txz_files(void);
 static mode_t get_mode(char const *filename, char const *perms);
 static void add_txz_line(char const *str, uintmax_t line_num);
 static void parse_all_txz_lines(char const *dirname, char const *tarball_path);
 static void free_txz_lines(void);
+static void check_txz_file(char const *tarball_path, char const *dirname, struct txz_file *file);
 static void check_directory(struct txz_file *file, char const *dirname, char const *tarball_path);
-static struct txz_file *alloc_txz_file(char const *path, char const *dirname, char *perms, off_t length);
+static struct txz_file *alloc_txz_file(char const *path, char const *dirname, char *perms, bool isdir,
+        bool isfile, bool isexec, intmax_t length);
+static void count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t length);
+static bool has_special_bits(struct txz_file *file);
 static void add_txz_file_to_list(struct txz_file *file);
 static void free_txz_file(struct txz_file **file);
 static void free_txz_files_list(void);

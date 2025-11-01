@@ -269,11 +269,12 @@ vrergfB(int four, int two)
      * The next comment might be empty.
      */
 
-    /* This comment is empty.
+    /*
+     * This comment is NOT empty.
      */
 
     /*
-     * This comment mightn't be empty but the previous one wasn't and the above one
+     * This comment might not be empty but the previous one wasn't and the above one
      * was. We can provide no opinion on the emptiness of the next comment.
      */
     if (last_c != '\n') {

@@ -721,11 +721,11 @@ chk_json(FILE *err, char const *submission_dir, char const *filename, struct jso
 	    fwarn(err, __func__, "cleft val_err as NULL for JSON file: %s", filename);
 
 	    /* free storage */
-	    if (count_err == NULL) {
+	    if (count_err != NULL) {
 		free_count_err(count_err);
 		count_err = NULL;
 	    }
-	    if (tree == NULL) {
+	    if (tree != NULL) {
 		json_tree_free(tree, JSON_DEFAULT_MAX_DEPTH);
 		tree = NULL;
 	    }
@@ -744,15 +744,15 @@ chk_json(FILE *err, char const *submission_dir, char const *filename, struct jso
 		       all_err_count, count_err_count, val_err_count, filename);
 
 	    /* free storage */
-	    if (count_err == NULL) {
+	    if (count_err != NULL) {
 		free_count_err(count_err);
 		count_err = NULL;
 	    }
-	    if (val_err == NULL) {
+	    if (val_err != NULL) {
 		free_count_err(val_err);
 		val_err = NULL;
 	    }
-	    if (tree == NULL) {
+	    if (tree != NULL) {
 		json_tree_free(tree, JSON_DEFAULT_MAX_DEPTH);
 		tree = NULL;
 	    }
@@ -781,15 +781,15 @@ chk_json(FILE *err, char const *submission_dir, char const *filename, struct jso
 	    fpr(err, __func__, "%s total JSON semantic error(s) found: %ju\n", filename, all_err_count);
 
 	    /* free storage */
-	    if (count_err == NULL) {
+	    if (count_err != NULL) {
 		free_count_err(count_err);
 		count_err = NULL;
 	    }
-	    if (val_err == NULL) {
+	    if (val_err != NULL) {
 		free_count_err(val_err);
 		val_err = NULL;
 	    }
-	    if (tree == NULL) {
+	    if (tree != NULL) {
 		json_tree_free(tree, JSON_DEFAULT_MAX_DEPTH);
 		tree = NULL;
 	    }
@@ -799,16 +799,16 @@ chk_json(FILE *err, char const *submission_dir, char const *filename, struct jso
 	/*
 	 * free storage
 	 */
-	if (count_err == NULL) {
+	if (count_err != NULL) {
 	    free_count_err(count_err);
 	    count_err = NULL;
 	}
-	if (val_err == NULL) {
+	if (val_err != NULL) {
 	    free_count_err(val_err);
 	    val_err = NULL;
 	}
     }
-    if (tree == NULL) {
+    if (tree != NULL) {
 	json_tree_free(tree, JSON_DEFAULT_MAX_DEPTH);
 	tree = NULL;
     }

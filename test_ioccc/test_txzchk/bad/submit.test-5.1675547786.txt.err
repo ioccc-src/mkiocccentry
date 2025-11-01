@@ -1,11 +1,15 @@
+Warning: txzchk: found non-executable non-directory file test-5/foo/test_file with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-numerical GID in file in line -rw-rw-r-- 1017/staff       896 2022-01-25 14:05 test-5/test
+Warning: txzchk: found non-executable non-directory file test-5/test with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-numerical UID in line -rw-rw-r-- cody/staff       896 2022-01-25 14:05 test-5/Makefile
 Warning: txzchk: found non-numerical GID in file in line -rw-rw-r-- cody/staff       896 2022-01-25 14:05 test-5/Makefile
+Warning: txzchk: found non-executable non-directory file test-5/Makefile with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-numerical UID in line -rw-rw-r-- cody/1018       896 2022-01-25 14:05 test-5/Makefile
+Warning: txzchk: found non-executable non-directory file test-5/Makefile with wrong permissions: -rw-rw-r-- != -r--r--r-- (0444)
 Warning: txzchk: file makefile is a duplicate file
 txzchk required: prog.c not found
 txzchk required: remarks.md not found
 txzchk required: .auth.json not found
 txzchk required: .info.json not found
 Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.test-5.1675547786.txt
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-5.1675547786.txt: found 6 feathers stuck in the tarball
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-5.1675547786.txt: found 10 feathers stuck in the tarball
