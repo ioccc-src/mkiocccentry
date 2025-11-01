@@ -178,43 +178,6 @@ char *optional_filenames[] =
 };
 
 /*
- * directories that should be skipped
- */
-char *ignored_dirnames[] =
-{
-    BAZAAR_DIRNAME,
-    CIRCLECI_DIRNAME,
-    FOSSIL_DIRNAME0,
-    GIT_DIRNAME,
-    GITHUB_DIRNAME,
-    GITLAB_DIRNAME,
-    MERCURIAL_DIRNAME,
-    JETBRAIN_DIRNAME,
-    SVN_DIRNAME,
-    BITKEEPER_DIRNAME,
-    CVS_DIRNAME,
-    RCCS_DIRNAME,
-    FOSSIL_DIRNAME1,
-    MONOTONE_DIRNAME,
-    DARCS_DIRNAME,
-    SCCS_DIRNAME,
-    RCS_DIRNAME,
-    NULL /* MUST BE LAST!! */
-};
-
-/*
- * filenames that should be ignored
- */
-char *ignored_filenames[] =
-{
-    GITIGNORE_FILENAME,
-    DS_STORE_FILENAME0,
-    DS_STORE_FILENAME1,
-    DOT_PATH_FILENAME,
-    NULL /* MUST BE LAST!! */
-};
-
-/*
  * filenames (in top level submission directory only) that should be mode 0555
  */
 char *executable_filenames[] =
@@ -3174,23 +3137,6 @@ test_extra_filename(char const *str)
                  "invalid: extra_file matches a mandatory file: <%s>", str);
         return false;
     }
-    /* also verify it does not match a disallowed filename */
-    if (is_forbidden_filename(str)) {
-        json_dbg(JSON_DBG_MED, __func__,
-                "invalid: extra_file matches disallowed filename");
-        json_dbg(JSON_DBG_HIGH, __func__,
-                "invalid: extra_file matches disallowed filename: <%s>", str);
-        return false;
-    }
-
-    /* also verify it does not match a forbidden directory name */
-    if (is_ignored_dirname(str)) {
-        json_dbg(JSON_DBG_MED, __func__,
-                "invalid: extra_file matches an ignored directory name");
-        json_dbg(JSON_DBG_HIGH, __func__,
-                "invalid: extra_file matches an ignored directory name: <%s>", str);
-        return false;
-    }
 
     json_dbg(JSON_DBG_MED, __func__, "extra_file is valid");
     return true;
@@ -5449,45 +5395,6 @@ is_mandatory_filename(char const *str)
 
 
 /*
- * is_forbidden_filename  - check if str is a forbidden filename
- *
- *  given:
- *          str      - name to check
- *
- * NOTE: if str is NULL we return false.
- */
-bool
-is_forbidden_filename(char const *str)
-{
-    size_t i = 0;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-        warn(__func__, "str is NULL");
-        return false;
-    }
-
-    for (i = 0; forbidden_filenames[i] != NULL; ++i) {
-        if (!strcasecmp(forbidden_filenames[i], str)) {
-            return true;
-        }
-    }
-
-    /*
-     * also if it starts with '.' and it's not a required file that starts with
-     * a dot it is also forbidden
-     */
-    if (!is_mandatory_filename(str) && *str == '.') {
-        return true;
-    }
-
-    return false;
-}
-
-
-/*
  * is_optional_filename  - check if str is a optional filename
  *
  *  given:
@@ -5510,69 +5417,6 @@ is_optional_filename(char const *str)
 
     for (i = 0; optional_filenames[i] != NULL; ++i) {
         if (!strcasecmp(optional_filenames[i], str)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-
-/*
- * is_ignored_dirname  - check if str is an ignored directory name
- *
- *  given:
- *          str      - name to check
- *
- * NOTE: if str is NULL we return false.
- */
-bool
-is_ignored_dirname(char const *str)
-{
-    size_t i = 0;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-        warn(__func__, "str is NULL");
-        return false;
-    }
-
-    for (i = 0; ignored_dirnames[i] != NULL; ++i) {
-        if (!strncasecmp(ignored_dirnames[i], str, strlen(ignored_dirnames[i]))) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-
-/*
- * has_ignored_dirname   - check if path has ignored dirname in it
- *
- * given:
- *
- *      path    - path to check
- *
- * NOTE: this function returns false if path is NULL.
- */
-bool
-has_ignored_dirname(char const *path)
-{
-    size_t i = 0;
-    /*
-     * firewall
-     */
-    if (path == NULL) {
-        return false;
-    } else if (*path == '\0') {
-        return false;
-    }
-
-    for (i = 0; ignored_dirnames[i] != NULL; ++i) {
-        if (path_has_component(path, ignored_dirnames[i])) {
             return true;
         }
     }

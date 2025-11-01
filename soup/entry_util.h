@@ -119,40 +119,9 @@
 #define TRY_ALT_SH "try.alt.sh"                 /* try.alt.sh for prog.alt.c */
 #define TRY_SH "try.sh"                         /* try.sh for prog.c */
 
-/*
- * directory names that should be ignored
- */
-#define BAZAAR_DIRNAME ".bzr"                   /* for Bazaar */
-#define CIRCLECI_DIRNAME ".circleci"            /* CircleCI */
-#define FOSSIL_DIRNAME0 ".fslckout"             /* For Fossil */
-#define GIT_DIRNAME ".git"                      /* for git */
-#define GITHUB_DIRNAME ".github"                /* For GitHub */
-#define GITLAB_DIRNAME ".gitlab"                /* For GitLab */
-#define MERCURIAL_DIRNAME ".hg"                 /* for Mercurial */
-#define JETBRAIN_DIRNAME ".idea"                /* JetBrains IDE */
-#define SVN_DIRNAME ".svn"                      /* for svn */
-#define BITKEEPER_DIRNAME "BitKeeper"           /* For BitKeeper */
-#define CVS_DIRNAME "CVS"                       /* for CVS */
-#define RCCS_DIRNAME "RCCS"                     /* for RCCS */
-#define FOSSIL_DIRNAME1 "_FOSSIL_"              /* For Fossil */
-#define MONOTONE_DIRNAME "_MTN"                 /* For Monotone */
-#define DARCS_DIRNAME "_darcs"                  /* For Darcs */
-#define SCCS_DIRNAME "SCCS"                     /* For SCCS */
-#define RCS_DIRNAME "RCS"                       /* for RCS */
-
-/*
- * filenames that should be ignored, mostly for chkentry -w but it can be used
- * in mkiocccentry too (although it is implicit since these are dot files)
- */
-#define GITIGNORE_FILENAME      ".gitignore"            /* ignore list for git */
-#define DS_STORE_FILENAME0      ".DS_Store"             /* Apple's annoying .DS_Store file */
-#define DS_STORE_FILENAME1      "._.DS_Store"           /* Apple's annoying ._.DS_Store file */
-#define DOT_PATH_FILENAME       ".path"                 /* IOCCC .path dot file */
-
 extern char *mandatory_filenames[];             /* filenames that MUST exist in the top level directory */
 extern char *forbidden_filenames[];             /* filenames that must NOT exist in the top level directory */
 extern char *optional_filenames[];              /* filenames that are OPTIONAL in top level directory */
-extern char *ignored_dirnames[];                /* directory names that should be ignored */
 extern char *ignored_filenames[];               /* ignored filenames like .gitignore, .DS_Store etc. */
 extern char *executable_filenames[];            /* filenames that should have mode 0555 */
 extern struct dyn_array *ignored_paths;         /* ignored paths from chkentry -i path */
@@ -425,9 +394,7 @@ extern bool test_url(char const *str);
 extern bool test_alt_url(char const *str);
 extern bool test_wordbuf_warning(bool boolean);
 extern bool is_mandatory_filename(char const *str);
-extern bool is_forbidden_filename(char const *str);
 extern bool is_optional_filename(char const *str);
-extern bool is_ignored_dirname(char const *str);
 extern bool is_executable_filename(char const *str);
 extern bool has_ignored_dirname(char const *path);
 extern size_t count_char(char const *str, int ch);
