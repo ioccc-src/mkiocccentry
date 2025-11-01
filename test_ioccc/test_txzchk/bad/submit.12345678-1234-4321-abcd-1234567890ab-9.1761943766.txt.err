@@ -1,0 +1,2 @@
+Warning: txzchk: directory with incorrect permissions found: 12345678-1234-4321-abcd-1234567890ab-9/subdir.1b/subdir.2b/: d--------- != drwxr-xr-x
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-9.1761943766.txt: found 1 feather stuck in the tarball

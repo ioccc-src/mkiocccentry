@@ -1,5 +1,7 @@
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-3.1761934319.txt: found a non-directory non-regular non-hard-linked item: cr--r--r--  0 501    20          4 Oct 31 10:52 12345678-1234-4321-abcd-1234567890ab-3/extra1
+Warning: txzchk: found non-executable non-directory file 12345678-1234-4321-abcd-1234567890ab-3/extra1 with wrong permissions: cr--r--r-- != -r--r--r-- (0444)
 txzchk found 1 prohibited items
    prohibited cdev: extra1
 non-files/dirs/symlinks: no counted (non-free) allowed, found: 1
 Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-3.1761934319.txt
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-3.1761934319.txt: found 1 feather stuck in the tarball
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-3.1761934319.txt: found 3 feathers stuck in the tarball

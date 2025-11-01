@@ -1,0 +1,2 @@
+Warning: txzchk: in tarball: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-8.1761934327.txt: length -1856 < 0
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-8.1761934327.txt: found 1 feather stuck in the tarball
