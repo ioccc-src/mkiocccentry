@@ -1,9 +1,11 @@
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761940279.txt: found a non-directory non-regular non-hard-linked item: X-r--r--r--  0 501    20       5565 Oct 31 10:52 12345678-1234-4321-abcd-1234567890ab-0/try.sh
 Warning: txzchk: unknown type 'X' in permission: X-r--r--r--: file: 12345678-1234-4321-abcd-1234567890ab-0/try.sh
 Warning: txzchk: user write permission 'r' in file 12345678-1234-4321-abcd-1234567890ab-0/try.sh invalid
 Warning: txzchk: group write permission 'r' in file 12345678-1234-4321-abcd-1234567890ab-0/try.sh invalid
 Warning: txzchk: other write permission 'r' in file 12345678-1234-4321-abcd-1234567890ab-0/try.sh invalid
+Warning: txzchk: found executable filename 12345678-1234-4321-abcd-1234567890ab-0/try.sh that does not match mode 0555: X-r--r--r-- != -r-xr-xr-x
 txzchk found 1 prohibited items
    prohibited other: try.sh
 non-files/dirs/symlinks: no counted (non-free) allowed, found: 1
 Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761940279.txt
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761940279.txt: found 5 feathers stuck in the tarball
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761940279.txt: found 7 feathers stuck in the tarball

@@ -374,7 +374,7 @@ free_info(struct info *infop)
     free_paths_array(&infop->extra_files, false);
     infop->extra_files = NULL;
     /*
-     * directories found in etopdir
+     * directories found in topdir
      */
     free_paths_array(&infop->directories, false);
     infop->directories = NULL;

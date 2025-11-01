@@ -107,6 +107,7 @@
 /*
  * external function declarations
  */
+extern bool sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_checkp, intmax_t *count_checkp);
 extern char *str_dup(char const *str);
 extern bool is_empty(char const *path);
 extern char *cmdprintf(char const *format, ...);

@@ -1,3 +1,10 @@
+Warning: txzchk: found non-executable non-directory file test-0/extra1 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-0/.info.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-0/remarks.md with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-0/.auth.json with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-0/foo/prog.c with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-0/extra2 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
+Warning: txzchk: found non-executable non-directory file test-0/Makefile with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 txzchk required: prog.c not found
 Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.test-0.19248687209.txt
-Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-0.19248687209.txt: found 1 feather stuck in the tarball
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-0.19248687209.txt: found 8 feathers stuck in the tarball

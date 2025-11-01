@@ -1,0 +1,3 @@
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761940107.txt: found a non-directory non-regular non-hard-linked item:  -r--r--r--  0 501    20       1565 Oct 31 10:52 12345678-1234-4321-abcd-1234567890ab-0/try.sh
+Warning: txzchk: found executable filename 12345678-1234-4321-abcd-1234567890ab-0/try.sh that does not match mode 0555: -r--r--r-- != -r-xr-xr-x
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761940107.txt: found 2 feathers stuck in the tarball

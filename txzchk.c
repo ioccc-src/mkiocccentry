@@ -90,6 +90,8 @@
 /*
  * static globals
  */
+static intmax_t sum_check;			/* negative of previous sum */
+static intmax_t count_check;			/* negative of previous count */
 static char const *tarball_path = NULL;		/* the tarball (by path) being checked */
 static char const *program = NULL;		/* our name */
 static bool read_from_text_file = false;	/* true ==> assume tarball_path refers to a text file */
@@ -374,6 +376,10 @@ show_tarball_info(char const *tarball_path)
 	para("", "The following information about the tarball was collected:", NULL);
         dbg(DBG_MED, "tarball size: %lld", (long long)tarball.size);
         dbg(DBG_MED, "total file size: %lld", (long long)tarball.total_size);
+        dbg(DBG_MED, "total file size shrunk %lld time%s", (long long)tarball.files_size_shrunk,
+                SINGULAR_OR_PLURAL(tarball.files_size_shrunk));
+        dbg(DBG_MED, "total number of files with invalid permissions: %lld", (long long)tarball.invalid_perms);
+        dbg(DBG_MED, "total number of executable files: %lld\n", (long long)tarball.total_exec_files);
 	if (tarball.total_feathers > 0) {
 	    dbg(DBG_VHIGH, "%s has %ju feather%s stuck in tarball :-(", tarball_path, tarball.total_feathers,
 		    SINGULAR_OR_PLURAL(tarball.total_feathers));
@@ -763,6 +769,76 @@ check_directory(struct txz_file *file, char const *dirname, char const *tarball_
     }
 }
 
+/*
+ * count_and_sum - wrapper to sum_and_count (util.c) related checks
+ *
+ * given:
+ *
+ *	tarball_path	- path to the tarball being checked for feathers
+ *	sum		- corresponds to the sum pointer in sum_and_count()
+ *	count		- corresponds to the count pointer in sum_and_count()
+ *	length		- corresponds to the length in sum_and_count()
+ */
+static void
+count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t length)
+{
+    bool test = false;	    /* status of various tests */
+
+    /*
+     * firewall
+     */
+    if (tarball_path == NULL) {
+	err(25, __func__, "tarball_path is NULL");
+	not_reached();
+    } else if (sum == NULL) {
+	err(26, __func__, "sum is NULL");
+	not_reached();
+    } else if (count == NULL) {
+	err(27, __func__, "count is NULL");
+	not_reached();
+    }
+    test = sum_and_count(length, sum, count, &sum_check, &count_check);
+    if (!test) {
+	/*
+	 * sum_and_count() will have reported the issue so we don't report anything
+	 * specially. We do however increase the number of feathers.
+	 */
+	++tarball.total_feathers;
+    }
+
+    /* update the tarball files size total */
+    tarball.total_size = *sum;
+
+    /* check for negative total file length */
+    if (*sum < 0) {
+	++tarball.total_feathers;
+	++tarball.negative_files_size;
+	warn("txzchk", "%s: total file size went below 0: %jd", tarball_path, *sum);
+	if (*sum < tarball.previous_files_size) {
+	    ++tarball.files_size_shrunk;
+	    warn("txzchk", "%s: total files size %jd < previous file size %lld", tarball_path, *sum,
+		(long long)tarball.previous_files_size);
+	}
+    }
+    /* check for sum of total file lengths being too big */
+    if (*sum > MAX_SUM_FILELEN) {
+        if (tarball.previous_files_size <= MAX_SUM_FILELEN) {
+            ++tarball.total_feathers;
+            ++tarball.files_size_too_big;
+        }
+	warn("txzchk", "%s: total file size too big: %jd > %jd", tarball_path,
+	    *sum, (intmax_t)MAX_SUM_FILELEN);
+    }
+    /* update the previous files size */
+    tarball.previous_files_size = *sum;
+
+    /* check for no or negative file count */
+    if (*count <= 0) {
+	++tarball.total_feathers;
+	++tarball.invalid_files_count;
+	warn("txzchk", "%s: files count <= 0: %jd", tarball_path, *count);
+    }
+}
 
 /*
  * parse_linux_txz_line - parse linux tar output
@@ -775,7 +851,12 @@ check_directory(struct txz_file *file, char const *dirname, char const *tarball_
  *	dirname	        - directory name retrieved from fnamchk or NULL if it failed
  *	tarball_path	- the tarball path
  *	saveptr		- pointer to char * to save context between each strtok_r() call
+ *	isfile	        - true ==> normal file, check size and number of files
+ *	sum		- pointer to sum for sum_and_count() (which we use in count_and_sum())
+ *	count		- pointer to count for sum_and_count() (which we use in count_and_sum())
+ *	isdir           - true ==> is a directory
  *	perms           - permission line of file
+ *	isexec          - if executable bit (+x) found in permissions
  *
  * If everything goes okay the line will be completely parsed and the calling
  * function (parse_txz_line()) will return to its caller (parse_all_lines()) which
@@ -786,7 +867,8 @@ check_directory(struct txz_file *file, char const *dirname, char const *tarball_
  */
 static void
 parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
-	char const *tarball_path, char **saveptr, char *perms)
+	char const *tarball_path, char **saveptr, bool isfile, intmax_t *sum, intmax_t *count,
+        bool isdir, char *perms, bool isexec)
 {
     intmax_t length = 0; /* file size */
     struct txz_file *file = NULL;   /* allocated struct of file info */
@@ -797,8 +879,8 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
      * firewall
      */
     if (p == NULL || linep == NULL || line_dup == NULL || tarball_path == NULL || saveptr == NULL ||
-	perms == NULL) {
-	err(25, __func__, "called with NULL arg(s)");
+	sum == NULL || count == NULL || perms == NULL) {
+	err(28, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -813,7 +895,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
 	p = strchr(p, '/');
     }
     if (p == NULL) {
-	err(26, __func__, "txzchk: encountered NULL pointer when parsing line %s", line_dup);
+	err(29, __func__, "txzchk: encountered NULL pointer when parsing line %s", line_dup);
         not_reached();
     }
     ++p;
@@ -831,7 +913,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
     }
     p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
-	err(27, __func__, "%s: NULL pointer encountered trying to parse line", tarball_path);
+	err(30, __func__, "%s: NULL pointer encountered trying to parse line", tarball_path);
 	not_reached();
     }
 
@@ -839,10 +921,24 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
     if (!test) {
 	warn("txzchk", "%s: trying to parse file size in on line: <%s>: token: <%s>", tarball_path, line_dup, p);
 	++tarball.total_feathers;
+
+	/*
+	 * we still have to add to the total number of files before we return to
+	 * next line but only if it's a normal file
+	 */
+	if (isfile) {
+	    count_and_sum(tarball_path, sum, count, length);
+	}
 	if (verbosity_level) {
 	    msg("skipping to next line due to inability to parse file size");
 	}
 	return;
+    } else if (length < 0) {
+        ++tarball.total_feathers;
+        warn("txzchk", "in tarball: %s: length %lld < 0", tarball_path, (long long)length);
+    } else if (isfile) {
+        /* add to total number of files and total size if it's a normal file */
+	count_and_sum(tarball_path, sum, count, length);
     }
 
     /*
@@ -852,16 +948,15 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
     for (i = 0; i < 3; ++i) {
 	p = strtok_r(NULL, tok_sep, saveptr);
 	if (p == NULL) {
-            err(28, __func__, "%s: NULL pointer trying to parse line", tarball_path);
+            err(31, __func__, "%s: NULL pointer trying to parse line", tarball_path);
             not_reached();
 	}
     }
 
-    tarball.total_size += length;
     /* p should now contain the filename. */
-    file = alloc_txz_file(p, dirname, perms, (off_t) length);
+    file = alloc_txz_file(p, dirname, perms, isdir, isfile, isexec, length);
     if (file == NULL) {
-	err(29, __func__, "alloc_txz_file() returned NULL");
+	err(32, __func__, "alloc_txz_file() returned NULL");
 	not_reached();
     }
 
@@ -873,9 +968,11 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
 	}
     } while (p != NULL);
 
+    /* checks on this specific file */
+    check_txz_file(tarball_path, dirname, file);
+
     add_txz_file_to_list(file);
 }
-
 
 
 /*
@@ -889,7 +986,12 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
  *	dirname	        - directory name retrieved from fnamchk or NULL if it failed
  *	tarball_path	- the tarball path
  *	saveptr		- pointer to char * to save context between each strtok_r() call
+ *	isfile	        - true ==> normal file, check size and number of files
+ *	sum		- pointer to sum for sum_and_count() (which we use in count_and_sum())
+ *	count		- pointer to count for sum_and_count() (which we use in count_and_sum())
+ *	isdir           - true ==> is a directory
  *	perms           - permission string
+ *	isexec          - executable bit found (+x)
  *
  * If everything goes okay the line will be completely parsed and the calling
  * function (parse_txz_line()) will return to its caller (parse_all_lines()) which
@@ -900,7 +1002,9 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
  */
 static void
 parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
-	char const *tarball_path, char **saveptr, char *perms)
+	char const *tarball_path, char **saveptr,
+		    bool isfile, intmax_t *sum, intmax_t *count, bool isdir,
+                    char *perms, bool isexec)
 {
     intmax_t length = 0; /* file size */
     struct txz_file *file = NULL;   /* allocated struct of file info */
@@ -910,14 +1014,15 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
     /*
      * firewall
      */
-    if (p == NULL || linep == NULL || line_dup == NULL || tarball_path == NULL || saveptr == NULL) {
-	err(30, __func__, "called with NULL arg(s)");
+    if (p == NULL || linep == NULL || line_dup == NULL || tarball_path == NULL || saveptr == NULL ||
+	sum == NULL || count == NULL) {
+	err(33, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
     p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
-        err(31, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
+        err(34, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
         not_reached();
     }
 
@@ -939,7 +1044,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
      */
     p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
-        err(32, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
+        err(35, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
         not_reached();
     }
 
@@ -958,7 +1063,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
 
     p = strtok_r(NULL, tok_sep, saveptr);
     if (p == NULL) {
-	err(33, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
+	err(36, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
         not_reached();
     }
 
@@ -967,10 +1072,23 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
 	warn("txzchk", "%s: trying to parse file size in on line: <%s>: token: <%s>", tarball_path, line_dup, p);
 	++tarball.total_feathers;
 
+	/*
+	 * we still have to add to the total number of files before we return to
+	 * next line but only if it's a normal file
+	 */
+	if (isfile) {
+	    count_and_sum(tarball_path, sum, count, length);
+	}
 	if (verbosity_level) {
 	    msg("skipping to next line due to inability to parse file size");
 	}
 	return;
+    } else if (length < 0) {
+        ++tarball.total_feathers;
+        warn("txzchk", "in tarball: %s: length %lld < 0", tarball_path, (long long)length);
+    } else if (isfile) {
+        /* add to total number of files and total size if it's a normal file */
+	count_and_sum(tarball_path, sum, count, length);
     }
 
     /*
@@ -980,17 +1098,14 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
     for (i = 0; i < 4; ++i) {
 	p = strtok_r(NULL, tok_sep, saveptr);
 	if (p == NULL) {
-	    err(34, __func__, "txzchk: %s: NULL pointer trying to parse line", tarball_path);
+	    err(37, __func__, "txzchk: %s: NULL pointer trying to parse line", tarball_path);
             not_reached();
 	}
     }
-
-    tarball.total_size += length;
-
     /* p should now contain the filename. */
-    file = alloc_txz_file(p, dirname, perms, (off_t) length);
+    file = alloc_txz_file(p, dirname, perms, isdir, isfile, isexec, length);
     if (file == NULL) {
-	err(35, __func__, "txzchk: alloc_txz_file() returned NULL");
+	err(38, __func__, "txzchk: alloc_txz_file() returned NULL");
 	not_reached();
     }
 
@@ -1002,10 +1117,114 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
 	}
     } while (p != NULL);
 
+    /* checks on this specific file */
+    check_txz_file(tarball_path, dirname, file);
+
     add_txz_file_to_list(file);
 }
 
+/*
+ * check_txz_file - checks on the current filename only
+ *
+ * given:
+ *
+ *	tarball_path	- the tarball (or text file) we're processing
+ *	dirname	- the directory name (if fnamchk passed - else NULL)
+ *	file		- txz_file structure
+ *
+ * Report feathers stuck in the current tarball.
+ *
+ * Returns void. Does not return on error.
+ *
+ */
+static void
+check_txz_file(char const *tarball_path, char const *dirname, struct txz_file *file)
+{
+    /*
+     * firewall
+     */
+    if (tarball_path == NULL || file == NULL || file->basename == NULL || file->filename == NULL) {
+	err(39, __func__, "passed NULL arg(s)");
+	not_reached();
+    }
 
+    if (has_special_bits(file) || file->mode == 0) {
+        dbg(DBG_MED, "file %s: has invalid perms: %s", file->filename, file->perms);
+        ++tarball.total_feathers;
+    }
+
+    /* check the dirs in the path */
+    check_directory(file, dirname, tarball_path);
+}
+
+
+
+/*
+ * has_special_bits - determine if the file permission has any special bits
+ *
+ * given:
+ *
+ *	file	    - the file (as a struct txz_file) to test
+ *
+ * This function does not return on NULL pointers (file itself or required
+ * pointers in the struct).
+ */
+static bool
+has_special_bits(struct txz_file *file)
+{
+    /*
+     * firewall
+     */
+    if (file == NULL) {
+	err(40, __func__, "called with NULL file");
+	not_reached();
+    }
+    if (file->filename == NULL) {
+        err(41, __func__, "file->filename is NULL");
+        not_reached();
+    }
+    if (file->perms == NULL) {
+        err(42, __func__, "file->perms is NULL");
+        not_reached();
+    }
+
+    if (file->isdir) {
+        if (strcmp(file->perms, "drwxr-xr-x") != 0) {
+	    warn("txzchk", "directory with incorrect permissions found: %s: %s != drwxr-xr-x", file->filename, file->perms);
+            ++tarball.invalid_perms;
+            return true;
+        }
+    } else if (is_executable_filename(file->basename)) {
+        ++tarball.total_exec_files;
+        if (strcmp(file->perms, "-r-xr-xr-x") != 0) {
+            warn("txzchk", "found executable filename %s that does not match mode 0555: %s != -r-xr-xr-x",
+                    file->filename, file->perms);
+            /*
+             * NOTE: the caller will increment the tarball.total_feathers so do
+             * NOT do it here.
+             */
+            return true;
+        }
+    /*
+     * if we get here we have to verify that the file is a specific
+     * permission too, namely read only (-r--r--r--).
+     */
+    } else if (strcmp(file->perms, "-r--r--r--") != 0) {
+        warn("txzchk", "found non-executable non-directory file %s with wrong permissions: %s != -r--r--r-- (0444)",
+                file->filename, file->perms);
+        ++tarball.invalid_perms;
+        /*
+         * NOTE: the caller will increment the tarball.total_feathers so do
+         * NOT do it here.
+         */
+        return true;
+    }
+
+    /*
+     * all good
+     */
+    return false;
+}
 /*
  * parse_txz_line - parse a line in the tarball listing
  *
@@ -1015,30 +1234,54 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
  *	line_dup	-   pointer to the duplicated line
  *	dirname	-   the directory name reported by fnamchk or NULL if it failed
  *	tarball_path	-   the tarball path
+ *	sum		-   corresponds to sum pointer in sum_and_count()
+ *	count		-   corresponds to count pointer in sum_and_count()
  *
  *  Function updates tarball.total_feathers, tarball.files_size and dir_count. Returns void.
  *
  *  Function does not return on error.
  */
 static void
-parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tarball_path)
+parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tarball_path, intmax_t *sum, intmax_t *count)
 {
     char *p = NULL; /* each field in the line extracted from strtok_r() */
     char *saveptr = NULL; /* for strtok_r() context */
+    bool isfile = false; /* normal file counts against file size and count */
+    bool isdir = false;       /* if it's a directory */
+    bool isexec = false;      /* if executable bit found */
     char *perms = NULL;     /* permissions string */
 
     /*
      * firewall
      */
-    if (linep == NULL || line_dup == NULL || tarball_path == NULL) {
-	err(36, __func__, "called with NULL arg(s)");
+    if (linep == NULL || line_dup == NULL || tarball_path == NULL ||
+	    sum == NULL || count == NULL) {
+	err(43, __func__, "called with NULL arg(s)");
 	not_reached();
+    }
+
+    /*
+     * look for non-directory non-regular non-hard-linked items
+     */
+    if (*linep != '-' && *linep != 'd') {
+	warn("txzchk", "%s: found a non-directory non-regular non-hard-linked item: %s",
+	    tarball_path, linep);
+	++tarball.total_feathers;
+    } else {
+        /*
+         * record if it's a directory or not
+         */
+        if (*linep == 'd') {
+            isdir = true;
+        } else {
+            isfile = true; /* we have to count this as a normal file */
+        }
     }
 
     /* extract each field, one at a time, to do various tests */
     p = strtok_r(linep, tok_sep, &saveptr);
     if (p == NULL) {
-	err(37, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
+	err(44, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
         not_reached();
     }
 
@@ -1048,9 +1291,24 @@ parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tar
     errno = 0;      /* pre-clear errno for errp() */
     perms = strdup(p);
     if (perms == NULL) {
-        errp(38, __func__, "txzchk: failed to strdup permissions string");
+        errp(45, __func__, "txzchk: failed to strdup permissions string");
         not_reached();
     }
+
+    /*
+     * now that we have the permissions string we have to check for +x bit.
+     *
+     * We make the assumption that it's in the right place because it does not
+     * actually matter. If it has any executable bit we check for a specific
+     * permission string in the has_special_bits() function and if it does not
+     * match or it's not a file that is allowed to be +x then it is an error.
+     */
+    if (strchr(perms, 'x') != NULL) {
+        isexec = true;
+    } else {
+        isexec = false;
+    }
+
 
     /*
      * we have to check this next field for a '/': this will tell us whether to
@@ -1058,18 +1316,17 @@ parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tar
      */
     p = strtok_r(NULL, tok_sep, &saveptr);
     if (p == NULL) {
-	err(39, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
+	err(46, __func__, "txzchk: %s: NULL pointer encountered trying to parse line", tarball_path);
         not_reached();
     }
     if (strchr(p, '/') != NULL) {
 	/* found linux output */
-	parse_linux_txz_line(p, linep, line_dup, dirname, tarball_path, &saveptr, perms);
+	parse_linux_txz_line(p, linep, line_dup, dirname, tarball_path, &saveptr, isfile, sum, count, isdir, perms, isexec);
     } else {
 	/* assume macOS/BSD output */
-	parse_bsd_txz_line(p, linep, line_dup, dirname, tarball_path, &saveptr, perms);
+	parse_bsd_txz_line(p, linep, line_dup, dirname, tarball_path, &saveptr, isfile, sum, count, isdir, perms, isexec);
     }
 }
-
 
 /*
  * check_tarball - perform tests on tarball, validating it for the IOCCC
@@ -1105,7 +1362,7 @@ check_tarball(char const *tar, char const *fnamchk)
      */
     if ((!read_from_text_file && tar == NULL) || fnamchk == NULL || tarball_path == NULL)
     {
-	err(40, __func__, "called with NULL arg(s)");
+	err(47, __func__, "called with NULL arg(s)");
 	not_reached();
     }
 
@@ -1208,14 +1465,14 @@ check_tarball(char const *tar, char const *fnamchk)
                 errno = 0; /* pre-clear errno for errp() */
                 fnamchk_stream = pipe_open(__func__, false, true, "% -t -T -E % -- %", fnamchk, ext, tarball_path);
                 if (fnamchk_stream == NULL) {
-                    errp(41, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
+                    errp(48, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
                     not_reached();
                 }
             } else {
                 errno = 0; /* pre-clear errno for errp() */
                 fnamchk_stream = pipe_open(__func__, false, true, "% -T -E % -- %", fnamchk, ext, tarball_path);
                 if (fnamchk_stream == NULL) {
-                    errp(42, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
+                    errp(49, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
                     not_reached();
                 }
             }
@@ -1232,7 +1489,7 @@ check_tarball(char const *tar, char const *fnamchk)
                 fnamchk_stream = pipe_open(__func__, false, true, "% -E % -- %", fnamchk, ext, tarball_path);
             }
             if (fnamchk_stream == NULL) {
-                errp(43, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
+                errp(50, __func__, "popen for reading failed for: %s -- %s", fnamchk, tarball_path);
                 not_reached();
             }
         }
@@ -1257,7 +1514,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	fnamchk_stream = NULL;
 
 	if (dirname == NULL || *dirname == '\0') {
-	    err(44, __func__, "txzchk: unexpected NULL pointer from fnamchk -- %s", tarball_path);
+	    err(51, __func__, "txzchk: unexpected NULL pointer from fnamchk -- %s", tarball_path);
 	    not_reached();
 	}
     }
@@ -1266,7 +1523,7 @@ check_tarball(char const *tar, char const *fnamchk)
     tarball.size = file_size(tarball_path);
     /* report size if too big */
     if (tarball.size < 0) {
-	err(45, __func__, "%s: impossible error: txzchk_sanity_chks() found tarball but file_size() did not", tarball_path);
+	err(52, __func__, "%s: impossible error: txzchk_sanity_chks() found tarball but file_size() did not", tarball_path);
 	not_reached();
     } else if (tarball.size > MAX_TARBALL_LEN) {
 	++tarball.total_feathers;
@@ -1293,7 +1550,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	input_stream = fopen(tarball_path, "r");
 	if (input_stream == NULL)
 	{
-	    errp(46, __func__, "fopen of %s failed", tarball_path);
+	    errp(53, __func__, "fopen of %s failed", tarball_path);
 	    not_reached();
 	}
 	errno = 0;		/* pre-clear errno for warnp() */
@@ -1317,7 +1574,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	    exit_code = shell_cmd(__func__, false, true, "% -tJvf % >/dev/null", tar, tarball_path);
 	}
 	if (exit_code != 0) {
-	    err(47, __func__, "%s -tJvf %s failed with exit code: %d",
+	    err(54, __func__, "%s -tJvf %s failed with exit code: %d",
 			      tar, tarball_path, WEXITSTATUS(exit_code));
 	    not_reached();
 	}
@@ -1326,7 +1583,7 @@ check_tarball(char const *tar, char const *fnamchk)
         errno = 0; /* pre-clear errno for errp() */
 	input_stream = pipe_open(__func__, false, true, "% -tJvf %", tar, tarball_path);
 	if (input_stream == NULL) {
-	    errp(48, __func__, "popen for reading failed for: %s -tJvf %s",
+	    errp(55, __func__, "popen for reading failed for: %s -tJvf %s",
 			      tar, tarball_path);
 	    not_reached();
 	}
@@ -1468,21 +1725,21 @@ add_txz_line(char const *str, uintmax_t line_num)
      * firewall
      */
     if (str == NULL) {
-	err(49, __func__, "passed NULL str");
+	err(56, __func__, "passed NULL str");
 	not_reached();
     }
 
     errno = 0;
     line = calloc(1, sizeof *line);
     if (line == NULL) {
-	errp(50, __func__, "unable to allocate struct txz_line *");
+	errp(57, __func__, "unable to allocate struct txz_line *");
 	not_reached();
     }
 
     errno = 0;
     line->line = strdup(str);
     if (line->line == NULL) {
-	errp(51, __func__, "unable to strdup string '%s' for lines list", str);
+	errp(58, __func__, "unable to strdup string '%s' for lines list", str);
 	not_reached();
     }
     line->line_num = line_num;
@@ -1514,12 +1771,14 @@ parse_all_txz_lines(char const *dirname, char const *tarball_path)
 {
     struct txz_line *line = NULL;	/* for txz_lines list */
     char *line_dup = NULL;	/* strdup()d line */
+    intmax_t sum = 0;		/* sum for sum_and_count() checks */
+    intmax_t count = 0;		/* count for sum_and_count() checks */
 
     /*
      * firewall
      */
     if (tarball_path == NULL) {
-	err(52, __func__, "passed NULL tarball_path");
+	err(59, __func__, "passed NULL tarball_path");
 	not_reached();
     }
 
@@ -1532,11 +1791,11 @@ parse_all_txz_lines(char const *dirname, char const *tarball_path)
 
 	line_dup = strdup(line->line);
 	if (line_dup == NULL) {
-	    err(53, __func__, "%s: duplicating %s failed", tarball_path, line->line);
+	    err(60, __func__, "%s: duplicating %s failed", tarball_path, line->line);
 	    not_reached();
 	}
 
-	parse_txz_line(line->line, line_dup, dirname, tarball_path);
+	parse_txz_line(line->line, line_dup, dirname, tarball_path, &sum, &count);
 	free(line_dup);
 	line_dup = NULL;
     }
@@ -1577,15 +1836,17 @@ free_txz_lines(void)
     txz_lines = NULL;
 }
 
-
 /*
  * alloc_txz_file - allocate a struct txz_file *
  *
  * given:
  *
  *	path	    - file path
- *	dirname     - dirname from fnamchk or NULL if it failed
+ *	dirname    - directory name from fnamchk or NULL if fnamchk failed
  *	perms       - permissions string
+ *	isdir       - true ==> is a directory
+ *	isfile      - true ==> is a regular file
+ *	isexec      - true ==> executable bit (+x) found
  *	length	    - length of file as calculated by string_to_intmax (validating
  *		      size of files will be done later)
  *
@@ -1595,7 +1856,7 @@ free_txz_lines(void)
  * This function does not return on error.
  */
 static struct txz_file *
-alloc_txz_file(char const *path, char const *dirname, char *perms, off_t length)
+alloc_txz_file(char const *path, char const *dirname, char *perms, bool isdir, bool isfile, bool isexec, intmax_t length)
 {
     struct txz_file *file;  /* the file structure */
 
@@ -1603,25 +1864,25 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, off_t length)
      * firewall
      */
     if (path == NULL) {
-	err(54, __func__, "passed NULL path");
+	err(61, __func__, "passed NULL path");
 	not_reached();
     }
     if (perms == NULL) {
-        err(55, __func__, "passed NULL perms");
+        err(62, __func__, "passed NULL perms");
         not_reached();
     }
 
     errno = 0; /* pre-clear errno for errp() */
     file = calloc(1, sizeof *file);
     if (file == NULL) {
-	errp(56, __func__, "%s: unable to allocate a struct txz_file *", tarball_path);
+	errp(63, __func__, "%s: unable to allocate a struct txz_file *", tarball_path);
 	not_reached();
     }
 
     errno = 0; /* pre-clear errno for errp() */
     file->filename = strdup(path);
     if (!file->filename) {
-	errp(57, __func__, "%s: unable to strdup filename %s", tarball_path, path);
+	errp(64, __func__, "%s: unable to strdup filename %s", tarball_path, path);
 	not_reached();
     }
 
@@ -1630,7 +1891,7 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, off_t length)
      */
     file->top_dirname = dir_name(path);
     if (file->top_dirname == NULL || *(file->top_dirname) == '\0') {
-	err(58, __func__, "%s: unable to strdup top dirname of filename %s", tarball_path, path);
+	err(65, __func__, "%s: unable to strdup top dirname of filename %s", tarball_path, path);
 	not_reached();
     }
 
@@ -1641,7 +1902,7 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, off_t length)
         errno = 0; /* pre-clear errno for errp() */
         file->dirname = strdup(dirname);
         if (file->dirname == NULL) {
-            err(59, __func__, "%s: unable to strdup dirname %s", tarball_path, dirname);
+            err(66, __func__, "%s: unable to strdup dirname %s", tarball_path, dirname);
             not_reached();
         }
     } else {
@@ -1653,7 +1914,7 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, off_t length)
      */
     file->basename = base_name(path);
     if (file->basename == NULL || *(file->basename) == '\0') {
-	err(60, __func__, "%s: unable to strdup basename of filename %s", tarball_path, path);
+	err(67, __func__, "%s: unable to strdup basename of filename %s", tarball_path, path);
 	not_reached();
     }
 
@@ -1668,6 +1929,21 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, off_t length)
 
     /* record the length */
     file->length = length;
+
+    /*
+     * record if a directory
+     */
+    file->isdir = isdir;
+
+    /*
+     * record if regular file (i.e. first char in mode/perms is '-')
+     */
+    file->isfile = isfile;
+
+    /*
+     * record if +x
+     */
+    file->isexec = isexec;
 
     return file;
 }
@@ -1846,7 +2122,7 @@ add_txz_file_to_list(struct txz_file *txzfile)
      * firewall
      */
     if (txzfile == NULL || txzfile->filename == NULL || txzfile->basename == NULL) {
-	err(61, __func__, "called with NULL pointer(s)");
+	err(68, __func__, "called with NULL pointer(s)");
 	not_reached();
     }
 
@@ -1875,7 +2151,7 @@ free_txz_file(struct txz_file **file)
      * firewall
      */
     if (file == NULL || *file == NULL) {
-        err(62, __func__, "file is NULL");
+        err(69, __func__, "file is NULL");
         not_reached();
     }
 
