@@ -1,6 +1,15 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.8.7 2025-11-02
+
+Address issue #1324. The mkiocccentry tool now uses the walk table code. Some of
+the struct info was nuked. There might be some room for clean up with this but
+this can be considered a checkpoint at the least in that case.
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.1.6 2025-11-02"`.
+
+
 ## Release 2.8.6 2025-11-01
 
 Further address issue #1325. Added back missing checks and additional checks.

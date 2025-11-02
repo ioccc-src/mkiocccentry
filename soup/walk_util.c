@@ -4074,7 +4074,7 @@ fts_walk(struct walk_stat *wstat_p)
     if (ftsp == NULL || errno != 0) {
 
 	/* warn about fts_open failure */
-	warnp(__func__, "filed to open for file hierarchy traversal: %s", strerror(errno));
+	warnp(__func__, "failed to open for file hierarchy traversal: %s", strerror(errno));
 
 	/* free storage and return indicating walk error */
 	if (path_set != NULL) {

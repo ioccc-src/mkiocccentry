@@ -271,20 +271,6 @@ struct info
     bool test_mode;		/* true ==> test mode entered */
 
     /*
-     * dynamic arrays for files and directories
-     */
-    struct dyn_array *required_files;   /* required three files */
-    struct dyn_array *extra_files;      /* extra files to be added to tarball */
-    struct dyn_array *directories;      /* directories seen */
-    struct dyn_array *ignored_dirs;     /* ignored directories */
-    struct dyn_array *forbidden_files;  /* forbidden files */
-    struct dyn_array *unsafe_files;     /* unsafe files */
-    struct dyn_array *unsafe_dirs;      /* unsafe directories */
-    struct dyn_array *ignored_symlinks; /* ignored symlinks files */
-    struct dyn_array *ignore_paths;     /* list of paths user requested we ignore (-I foo -I bar) */
-    struct dyn_array *manifest_paths;   /* list of paths to include from -M file */
-
-    /*
      * JSON stuff
      */
     char const *info_file;	/* .info.json filename */

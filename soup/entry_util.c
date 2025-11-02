@@ -360,61 +360,6 @@ free_info(struct info *infop)
     }
 
     /*
-     * free arrays
-     */
-
-    /*
-     * required files (prog.c, Makefile, remarks.md)
-     */
-    free_paths_array(&infop->required_files, false);
-    infop->required_files = NULL;
-    /*
-     * extra files (anything not a required file)
-     */
-    free_paths_array(&infop->extra_files, false);
-    infop->extra_files = NULL;
-    /*
-     * directories found in topdir
-     */
-    free_paths_array(&infop->directories, false);
-    infop->directories = NULL;
-    /*
-     * ignored directories (.git, CVS etc.)
-     */
-    free_paths_array(&infop->ignored_dirs, false);
-    infop->ignored_dirs = NULL;
-    /*
-     * forbidden files (prog, prog.alt, GNUMakefile, README.md etc.)
-     */
-    free_paths_array(&infop->forbidden_files, false);
-    infop->forbidden_files = NULL;
-    /*
-     * unsafe files: canon_path() sets sanity to PATH_ERR_NOT_POSIX_SAFE
-     */
-    free_paths_array(&infop->unsafe_files, false);
-    infop->unsafe_files = NULL;
-    /*
-     * unsafe directories: canon_path() sets sanity to PATH_ERR_NOT_POSIX_SAFE
-     */
-    free_paths_array(&infop->unsafe_dirs, false);
-    infop->unsafe_dirs = NULL;
-    /*
-     * ignored symlinks (any symlinks found in topdir)
-     */
-    free_paths_array(&infop->ignored_symlinks, false);
-    infop->ignored_symlinks = NULL;
-   /*
-     * user requested ignored files
-     */
-    free_paths_array(&infop->ignore_paths, false);
-    infop->ignore_paths = NULL;
-   /*
-     * user requested files from manifest file
-     */
-    free_paths_array(&infop->manifest_paths, false);
-    infop->manifest_paths = NULL;
-
-    /*
      * zeroize the info structure
      */
     memset(infop, 0, sizeof(*infop));
