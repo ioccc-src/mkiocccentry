@@ -611,7 +611,7 @@ main(int argc, char *argv[])
      * path of the topdir so we have to change there first.
      */
     errno = 0; /* pre-clear errno for errp() */
-    if (chdir(topdir) != 0) {
+    if (fchdir(topdirfd) != 0) {
         errp(26, __func__, "failed to cd to topdir");
         not_reached();
     }
