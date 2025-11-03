@@ -108,6 +108,13 @@
 
 
 /*
+ * certain BOGUS environments, such as GitHub's test environment, do not have O_SEARCH
+ */
+#if !defined(O_SEARCH)
+  #define O_SEARCH 0	/* fake O_SEARCH so BOGUS environments do not fail to compile */
+#endif
+
+/*
  * usage message
  *
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
@@ -550,7 +557,7 @@ main(int argc, char *argv[])
     /*
      * note workdir FD
      *
-     * NOTE: This will also verify that topdir readable and searchable directory.
+     * NOTE: This will also verify that workdir is readable and searchable directory.
      */
     errno = 0; /* pre-clear errno for errp() */
     workdirfd = open(workdir, O_RDONLY|O_SEARCH|O_DIRECTORY|O_CLOEXEC);
@@ -585,7 +592,7 @@ main(int argc, char *argv[])
     /*
      * note topdir FD
      *
-     * NOTE: This will also verify that topdir readable and searchable directory.
+     * NOTE: This will also verify that topdir is a readable and searchable directory.
      */
     errno = 0; /* pre-clear errno for errp() */
     topdirfd = open(topdir, O_RDONLY|O_SEARCH|O_DIRECTORY|O_CLOEXEC);
