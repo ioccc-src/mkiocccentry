@@ -89,7 +89,7 @@
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "2.2.6 2025-11-01"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define SOUP_VERSION "2.2.7 2025-11-02"	/* format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official iocccsize version

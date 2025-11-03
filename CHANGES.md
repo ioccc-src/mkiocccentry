@@ -7,7 +7,103 @@ Address issue #1324. The mkiocccentry tool now uses the walk table code. Some of
 the struct info was nuked. There might be some room for clean up with this but
 this can be considered a checkpoint at the least in that case.
 
-Updated `MKIOCCCENTRY_VERSION` to `"2.1.6 2025-11-02"`.
+Added pre-canonicalization information to `struct item`.
+
+Added marks, values for calling functions that `alloc_item()` initializes,
+other otherwise is unused by walk code.
+
+The `mkiocccentry.c` uses `fchdir(2)` to avoid filesystem race condition.
+
+For a convenience to calling functions, added the following items to `struct item`,
+AND we added information about the pre-canonicalization path:
+
+```c
+struct item {
+
+    ...
+
+    /*
+     * pre-canonicalization information
+     */
+    char *orig_path;        /* malloced copy of the "root path" from topdir before canonicalization */
+    size_t orig_pathlen;    /* strlen(orig_path) */
+    char *orig_name;        /* malloced copy of the "original file name", i.e., basename of orig_path */
+    size_t orig_namelen;    /* strlen(orig_name) */
+
+    /*
+     * marks - values for calling functions that alloc_item() initializes, other otherwise is unused by walk code
+     */
+    bool mark_bool;             /* for use by calling function ONLY, initialized to false */
+    intmax_t mark_intmax;       /* for use by calling function ONLY, initialized to 0 */
+    size_t mark_size;           /* for use by calling function ONLY, initialized to 0 */
+    off_t mark_off;             /* for use by calling function ONLY, initialized to 0 */
+    mode_t mark_mode;           /* for use by calling function ONLY, initialized to 0 */
+    void *mark_ptr;             /* for use by calling function ONLY, initialized to NULL */
+};
+```
+
+The manifest written into `.info.json` by the `write_json_files()` function uses
+the basename of the original path before canonicalization so that filenames such as
+the `Makefile` have their case preserved.
+
+The "_mark_` structure elements added above are a bit of "_overkill_".
+The `write_json_files()` function only uses the `mark_ptr` structure
+element.  Nevertheless there may be use for these values sometime in
+the future so add them to the `struct item`.
+
+The "_pre-canonicalization information_" structure elements added above
+are a bit of "_overkill_".  The `write_json_files()` function only uses
+`orig_name` structure element.  Nevertheless there may be use for these
+values sometime in the future so add them to the `struct item`.
+
+Fixed manifest formation in the `write_json_files()` function in `mkiocccentry.sh`.
+
+Proposed adding these "manifest types":
+
+```c
+/*
+ * XXX - consider adding the following manifest types - XXX
+ *
+ *      prog.alt.c  as  "c_alt_src"
+ *      try.sh      as  "try_sh"
+ *      try.alt.sh  as  "try_alt_sh"
+ *      *.sh        as  "shell_script"      (i.e., files ending in ".sh")
+ *
+ * When this happens, INFO_VERSION for .info.json will need to be updated.
+ * The tests and code related to .info.json filed will need to be updated.
+ * Moreover, the MIN_TIMESTAMP will need to be updated.
+ */
+```
+
+Removed use of `-q` when `mkiocccntry(1)` executes `chksubmit(1)`.
+
+Sync [pr repo](https://github.com/lcn2/pr) as per release "1.1.5 2025-10-02".
+
+All uses of the `canon_path()` function a false "lower_case".
+
+The `path_in_item_array()` searches for a duplicate in a **CASE INDEPENDENT&& way.
+
+Ran `make rebuild_txzchk_test_errors` to account canonicalization in a case dependent way.
+
+**IMPORTANT POINT** about file case:
+
+Consider a compressed tarball for a submission that is created on a case dependent filesystem
+that contains BOTH the file "foo", and the file "Foo".  Assume that submission becomes a
+winning entry.  Now consider someone who downloads the winning entry tarball onto a filesystem
+that is case dependent.  When that the "Foo" file will overwrite the previously extracted "foo".
+
+On the other hand, we CANNOT canonicalize with the "lower_case" arg to canon_path() as true.
+Consider case dependent filesystem where a submission is being created.  Assume that submission
+as a "Makefile".  If the "lower_case" arg to canon_path() were true, then the copyfile() function
+would attempt to copy the lower case form of "makefile" and fail because the case dependent filesystem
+has "Makefile" instead.
+
+So we must canonicalize WITHOUT changing case. I.e., call canon_path() with the "lower_case" arg as false.
+However, we when we check for duplicate files, we MUST compare strings WITHOUT regards to case.
+
+Updated `MKIOCCCENTRY_REPO_VERSION` to "2.8.7 2025-11-02".
+Updated `SOUP_VERSION` to "2.2.7 2025-11-02".
+Updated `MKIOCCCENTRY_VERSION` to "2.1.6 2025-11-02".
 
 
 ## Release 2.8.6 2025-11-01
@@ -16,9 +112,9 @@ Further address issue #1325. Added back missing checks and additional checks.
 
 Fix memory leaks in chkentry.
 
-Updated `TXZCHK_VERSION` to `"2.0.11 2025-11-01"`
-Updated `SOUP_VERSION` to `"2.2.6 2025-11-01"`.
-Updated `CHKENTRY_VERSION` to `"2.1.7 2025-11-01"`.
+Updated `TXZCHK_VERSION` to "2.0.11 2025-11-01"
+Updated `SOUP_VERSION` to "2.2.6 2025-11-01".
+Updated `CHKENTRY_VERSION` to "2.1.7 2025-11-01".
 
 
 ## Release 2.8.5 2025-10-31

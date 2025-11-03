@@ -719,7 +719,7 @@ clobber: legacy_clobber clean
 	${E} ${RM} ${RM_V} -f ${TARGETS}
 	${E} ${RM} ${RM_V} -f ${EXTERN_CLOBBER}
 	${E} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
-	${E} ${RM} ${RM_V} -f Makefile.orig
+	${E} ${RM} ${RM_V} -f Makefile.orig .local.dir.tags
 	${E} ${RM} ${RM_V} -f ${PR_MAN3_DUPS}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"

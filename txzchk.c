@@ -246,7 +246,8 @@ main(int argc, char **argv)
 	usage(3, program, "wrong number of arguments"); /*ooo*/
 	not_reached();
     }
-    tarball_path = canon_path(argv[optind], 0, 0, 0, &sanity, NULL, NULL, false, true, true, true, NULL);
+    /* IMPORTANT: canon_path() MUST use a false "lower_case" arg!  See the path_in_item_array() function. */
+    tarball_path = canon_path(argv[optind], 0, 0, 0, &sanity, NULL, NULL, false, false, true, true, NULL);
     if (tarball_path == NULL) {
 	err(3, program, "bogus tarball path: %s error: %s", argv[optind], path_sanity_error(sanity)); /*ooo*/
 	not_reached();

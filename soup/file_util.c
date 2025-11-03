@@ -273,8 +273,9 @@ dir_name(char const *path)
      * We do not put any limits on the canonicalization process, nor are we interested in
      * any of the usual stats that canon_path() might otherwise return.
      */
+    /* IMPORTANT: canon_path() MUST use a false "lower_case" arg!  See the path_in_item_array() function. */
     cpath = canon_path(path, 0, 0, 0,
-		       &sanity, NULL, NULL, false, true, false, false, NULL);
+		       &sanity, NULL, NULL, false, false, false, false, NULL);
     switch (sanity) {
     case PATH_ERR_UNSET:
     case PATH_ERR_PATH_IS_NULL:
@@ -414,7 +415,8 @@ count_dirs(char const *path)
     /*
      * use canon_path to determine path depth
      */
-    cpath = canon_path(path, 0, 0, 0, NULL, NULL, &deep, false, true, false, false, NULL);
+    /* IMPORTANT: canon_path() MUST use a false "lower_case" arg!  See the path_in_item_array() function. */
+    cpath = canon_path(path, 0, 0, 0, NULL, NULL, &deep, false, false, false, false, NULL);
     if (cpath == NULL) {
         err(11, __func__, "failed to canonicalize path");
         not_reached();

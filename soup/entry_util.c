@@ -3064,8 +3064,9 @@ test_extra_filename(char const *str)
     /*
      * validate that the filename is POSIX portable safe plus + chars
      */
+    /* IMPORTANT: canon_path() MUST use a false "lower_case" arg!  See the path_in_item_array() function. */
     (void) canon_path(str, MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
-		      &sanity, NULL, NULL, true, true, true, true, NULL);
+		      &sanity, NULL, NULL, true, false, true, true, NULL);
     if (sanity != PATH_OK) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: canon_path safely check on extra_file failed");

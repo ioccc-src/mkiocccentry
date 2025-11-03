@@ -19,7 +19,7 @@ txzchk required: .info.json not found
 txzchk found 8 prohibited items
    prohibited socket: extra2
    prohibited file: prog
-   prohibited file: readme.md
+   prohibited file: README.md
    prohibited file: index.html
    prohibited empty file: .auth.json
    prohibited empty file: remarks.md

@@ -543,6 +543,7 @@ main(int argc, char *argv[])
     /*
      * canonicalize workdir argument
      */
+    /* IMPORTANT: canon_path() MUST use a false "lower_case" arg!  See the path_in_item_array() function. */
     workdir = canon_path(argv[optind],
 			 0, 0, 0,
 			 &sanity, NULL, NULL,
@@ -562,7 +563,7 @@ main(int argc, char *argv[])
     errno = 0; /* pre-clear errno for errp() */
     workdirfd = open(workdir, O_RDONLY|O_SEARCH|O_DIRECTORY|O_CLOEXEC);
     if (workdirfd < 0) {
-        errp(25, __func__, "workdir is not a readable and searchable directory: %s", workdir); /*ooo*/
+        errp(3, __func__, "workdir is not a readable and searchable directory: %s", workdir); /*ooo*/
         not_reached();
     }
 
@@ -578,6 +579,7 @@ main(int argc, char *argv[])
     /*
      * canonicalize topdir argument
      */
+    /* IMPORTANT: canon_path() MUST use a false "lower_case" arg!  See the path_in_item_array() function. */
     topdir = canon_path(argv[optind+1],
 			 0, 0, 0,
 			 &sanity, NULL, NULL,
@@ -597,7 +599,7 @@ main(int argc, char *argv[])
     errno = 0; /* pre-clear errno for errp() */
     topdirfd = open(topdir, O_RDONLY|O_SEARCH|O_DIRECTORY|O_CLOEXEC);
     if (topdirfd < 0) {
-        errp(25, __func__, "topdir is not a readable and searchable directory: %s", topdir); /*ooo*/
+        errp(3, __func__, "topdir is not a readable and searchable directory: %s", topdir); /*ooo*/
         not_reached();
     }
 

@@ -1740,6 +1740,8 @@ match_walk_rule(struct walk_rule *rule_p, struct item *i_p, int indx)
  * It is the responsibility of the calling function to free any non-NULL return by this function,
  * after the calling function no longer needs the canonicalized path.
  *
+ * IMPORTANT: canon_path() MUST use a false "lower_case" arg!  See the path_in_item_array() function.
+ *
  * given:
  *	wstat_p	    pointer to a struct walk_stat
  *	fts_path    "root path" from topdir of the item
@@ -1841,8 +1843,9 @@ canonicalize_path(struct walk_stat *wstat_p, char const *fts_path,
      * canonicalize path
      */
     dbg(DBG_HIGH, "%s: fts_path: %s", __func__, fts_path);
+    /* IMPORTANT: canon_path() MUST use a false "lower_case" arg!  See the path_in_item_array() function. */
     cpath = canon_path(fts_path, wstat_p->max_path_len, wstat_p->max_filename_len, wstat_p->max_depth,
-		       &sanity, &path_len, &deep, true, true, true, true, NULL);
+		       &sanity, &path_len, &deep, true, false, true, true, NULL);
     if (cpath == NULL || sanity != PATH_OK) {
 
 	/*
@@ -4809,9 +4812,26 @@ fts_walk(struct walk_stat *wstat_p)
 
 
 /*
- * path_in_item_array
+ * path_in_item_array - determine if path already in a dynamic array of struct item pointers
  *
- * Given a dynamic array of struct items for a struct item with an fts_path that is identical to c_path.
+ * Given a dynamic array of struct items for a struct item with an fts_path that is
+ * the same as to c_path in a CASE INDEPENDENT way.
+ *
+ * IMPORTANT POINT about file case:
+ *
+ * Consider a compressed tarball for a submission that is created on a case dependent filesystem
+ * that contains BOTH the file "foo", and the file "Foo".  Assume that submission becomes a
+ * winning entry.  Now consider someone who downloads the winning entry tarball onto a filesystem
+ * that is case dependent.  When that the "Foo" file will overwrite the previously extracted "foo".
+ *
+ * On the other hand, we CANNOT canonicalize with the "lower_case" arg to canon_path() as true.
+ * Consider case dependent filesystem where a submission is being created.  Assume that submission
+ * as a "Makefile".  If the "lower_case" arg to canon_path() were true, then the copyfile() function
+ * would attempt to copy the lower case form of "makefile" and fail because the case dependent filesystem
+ * has "Makefile" instead.
+ *
+ * So we must canonicalize WITHOUT changing case. I.e., call canon_path() with the "lower_case" arg as false.
+ * However, we when we check for duplicate files, we MUST compare strings WITHOUT regards to case.
  *
  * NOTE: Because the functions such as record_step() work on canonicalized paths,
  *	 the c_path should be called with a canonicalized path using canonicalize_path():
@@ -4898,7 +4918,7 @@ path_in_item_array(struct dyn_array *item_array, char const *c_path)
 	i_p = dyn_array_value(item_array, struct item *, i);
 	if (i_p == NULL) {
 	    dbg(DBG_V1_HIGH, "%s: item_array[%zu] is NULL", __func__, i);
-	} else if (c_path_len == i_p->fts_pathlen && strcmp(c_path, i_p->fts_path) == 0) {
+	} else if (c_path_len == i_p->fts_pathlen && strcasecmp(c_path, i_p->fts_path) == 0) {
 	    /* report match found */
 	    dbg(DBG_V1_HIGH, "%s: item_array[%zu] matches: %s", __func__, i, c_path);
 	    return i_p;
