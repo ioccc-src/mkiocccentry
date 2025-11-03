@@ -5220,14 +5220,13 @@ is_executable_filename(char const *str)
     }
 
     /*
-     * now use fnmatch(3) to check for files with the glob:
+     * if this ends in .sh then it is an executable filename.
      *
-     *      *.sh
-     *
-     * Yes that would ignore files like .foo.sh but that is a forbidden
+     * Yes this will ignore files like .foo.sh but that is a forbidden
      * filename.
      */
-    if (!fnmatch("*.sh", str, FNM_PERIOD)) {
+    if (strlen(str) >= LITLEN(".sh") &&
+        !strcmp(str + strlen(str) - LITLEN(".sh"), ".sh")) {
         return true;
     }
 

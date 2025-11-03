@@ -163,5 +163,6 @@ extern char *calloc_path(char const *dirname, char const *filename);
 extern char const *file_type_name(mode_t st_mode);
 extern int chdir_save_cwd(char const *newdir);
 extern void restore_cwd(int prev_cwd);
+extern bool file_mode_size(char const *path, mode_t *st_mode, off_t *st_size);
 
 #endif				/* INCLUDE_FILE_UTIL_H */

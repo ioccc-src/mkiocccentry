@@ -2463,3 +2463,50 @@ restore_cwd(int prev_cwd)
     }
     return;
 }
+
+/*
+ * file_mode_size - if path exists, get st_mode and st_size from stat(2)
+ *
+ * given:
+ *
+ *      path        path to check
+ *      st_mode     pointer to mode_t to record st_mode
+ *      st_size     pointer to off_t to record st_size
+ *
+ * NOTE: if st_mode is NULL then do not record st_mode.
+ * NOTE: if st_size is NULL then do not record st_size.
+ * NOTE: if path is NULL or does not exist we return false, else true.
+ */
+bool
+file_mode_size(char const *path, mode_t *st_mode, off_t *st_size)
+{
+    int ret;			/* return code holder */
+    struct stat buf;		/* path status */
+
+    /*
+     * firewall
+     */
+    if (path == NULL || *path == '\0') {
+	warn(__func__, "called with NULL or empty path");
+        return false;
+    }
+
+    /*
+     * test for existence of path
+     */
+    errno = 0;
+    ret = stat(path, &buf);
+    if (ret < 0) {
+	dbg(DBG_HIGH, "path %s does not exist, stat returned: %s", path, strerror(errno));
+	return false;
+    }
+
+    if (st_mode != NULL) {
+        *st_mode = buf.st_mode;
+    }
+    if (st_size != NULL) {
+        *st_size = buf.st_size;
+    }
+
+    return true;
+}
