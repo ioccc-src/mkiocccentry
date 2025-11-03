@@ -513,6 +513,7 @@ extern struct walk_set walk_chksubmit;		/* chksubmit walk_set */
 extern struct walk_set walk_chkentry_S;		/* chkentry -S walk_set */
 extern struct walk_set walk_chkentry_s;		/* chkentry -s walk_set */
 extern struct walk_set walk_chkentry_w;		/* chkentry -w walk_set */
+extern struct walk_set walk_anything;		/* anything goes walk_set */
 
 
 /*

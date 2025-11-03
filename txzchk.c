@@ -612,7 +612,6 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 }
 
 
-
 /*
  * check_all_txz_files - check txz_files list after parsing tarball (or text file)
  *
@@ -770,6 +769,7 @@ check_directory(struct txz_file *file, char const *dirname, char const *tarball_
     }
 }
 
+
 /*
  * count_and_sum - wrapper to sum_and_count (util.c) related checks
  *
@@ -840,6 +840,7 @@ count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t
 	warn(TXZCHK_BASENAME, "%s: files count <= 0: %jd", tarball_path, *count);
     }
 }
+
 
 /*
  * parse_linux_txz_line - parse linux tar output
@@ -1124,6 +1125,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
     add_txz_file_to_list(file);
 }
 
+
 /*
  * check_txz_file - checks on the current filename only
  *
@@ -1157,7 +1159,6 @@ check_txz_file(char const *tarball_path, char const *dirname, struct txz_file *f
     /* check the dirs in the path */
     check_directory(file, dirname, tarball_path);
 }
-
 
 
 /*
@@ -1200,12 +1201,10 @@ has_special_bits(struct txz_file *file)
         if (strcmp(file->perms, "-r-xr-xr-x") != 0) {
             warn(TXZCHK_BASENAME, "found executable filename %s that does not match mode 0555: %s != -r-xr-xr-x",
                     file->filename, file->perms);
-            /*
-             * NOTE: the caller will increment the tarball.total_feathers so do
-             * NOT do it here.
-             */
+            /* NOTE: the caller will increment the tarball.total_feathers so do NOT do it here  */
             return true;
         }
+
     /*
      * if we get here we have to verify that the file is a specific
      * permission too, namely read only (-r--r--r--).
@@ -1226,6 +1225,8 @@ has_special_bits(struct txz_file *file)
      */
     return false;
 }
+
+
 /*
  * parse_txz_line - parse a line in the tarball listing
  *
@@ -1329,6 +1330,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tar
     }
 }
 
+
 /*
  * check_tarball - perform tests on tarball, validating it for the IOCCC
  *
@@ -1387,6 +1389,7 @@ check_tarball(char const *tar, char const *fnamchk)
      *
      */
     if (read_from_text_file) {
+
         /*
          * In test mode (-T) we must ignore the timestamp failing. This is
          * important because otherwise the test script (txzchk_test.sh) would
@@ -1445,6 +1448,7 @@ check_tarball(char const *tar, char const *fnamchk)
      * with the submit slot number and directory.
      */
     if (fnamchk_okay) {
+
 	/*
 	 * form pipe to the fnamchk command
          *
@@ -1454,6 +1458,7 @@ check_tarball(char const *tar, char const *fnamchk)
          * will fail!
          */
         if (read_from_text_file) {
+
             /*
              * In text file mode (-T) we must ignore the timestamp failing. This
              * is important because otherwise the test script (txzchk_test.sh)
@@ -1478,6 +1483,7 @@ check_tarball(char const *tar, char const *fnamchk)
                 }
             }
         } else {
+
             /*
              * In real mode (not reading from a text file) we MUST check the timestamp so
              * we must NOT use the -T option to fnamchk. Depending on whether we
@@ -1520,9 +1526,14 @@ check_tarball(char const *tar, char const *fnamchk)
 	}
     }
 
-    /* determine size of tarball */
+    /*
+     * determine size of tarball
+     */
     tarball.size = file_size(tarball_path);
-    /* report size if too big */
+
+    /*
+     * report size if too big
+     */
     if (tarball.size < 0) {
 	err(52, __func__, "%s: impossible error: txzchk_sanity_chks() found tarball but file_size() did not", tarball_path);
 	not_reached();
@@ -1705,6 +1716,7 @@ check_tarball(char const *tar, char const *fnamchk)
     return tarball.total_feathers;
 }
 
+
 /*
  * add_txz_line - add line to txz_lines list
  *
@@ -1839,6 +1851,7 @@ free_txz_lines(void)
     txz_lines = NULL;
 }
 
+
 /*
  * alloc_txz_file - allocate a struct txz_file *
  *
@@ -1950,6 +1963,7 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, bool isdir, b
 
     return file;
 }
+
 
 /*
  * get_mode - convert tar(1) mode output into a mode_t

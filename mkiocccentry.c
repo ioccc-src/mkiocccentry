@@ -1389,6 +1389,7 @@ main(int argc, char *argv[])
     exit(0); /*ooo*/
 }
 
+
 /*
  * scan_topdir
  *

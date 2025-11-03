@@ -2141,14 +2141,14 @@ chkentry.o: chkentry.c chkentry.h cpath/cpath.h dbg/c_bool.h dbg/c_compat.h \
     soup/default_handle.h soup/entry_util.h soup/file_util.h soup/foo.h \
     soup/limit_ioccc.h soup/location.h soup/sanity.h soup/soup.h \
     soup/util.h soup/version.h soup/walk.h
-chksubmit.o: chksubmit.c chksubmit.h dbg/c_bool.h dbg/c_compat.h dbg/dbg.h \
-    dyn_array/dyn_array.h jparse/jparse.h jparse/jparse.tab.h \
-    jparse/json_parse.h jparse/json_sem.h jparse/json_utf8.h \
-    jparse/json_util.h jparse/util.h jparse/version.h pr/pr.h \
-    soup/chk_sem_auth.h soup/chk_sem_info.h soup/chk_validate.h \
+chksubmit.o: chksubmit.c chksubmit.h cpath/cpath.h dbg/c_bool.h \
+    dbg/c_compat.h dbg/dbg.h dyn_array/dyn_array.h jparse/jparse.h \
+    jparse/jparse.tab.h jparse/json_parse.h jparse/json_sem.h \
+    jparse/json_utf8.h jparse/json_util.h jparse/util.h jparse/version.h \
+    pr/pr.h soup/chk_sem_auth.h soup/chk_sem_info.h soup/chk_validate.h \
     soup/default_handle.h soup/entry_util.h soup/file_util.h soup/foo.h \
     soup/limit_ioccc.h soup/location.h soup/sanity.h soup/soup.h \
-    soup/util.h soup/version.h
+    soup/util.h soup/version.h soup/walk.h
 iocccsize.o: dbg/c_bool.h dbg/c_compat.h dbg/dbg.h dyn_array/dyn_array.h \
     iocccsize.c iocccsize.h jparse/jparse.h jparse/jparse.tab.h \
     jparse/json_parse.h jparse/json_sem.h jparse/json_utf8.h \

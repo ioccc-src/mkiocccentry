@@ -166,12 +166,12 @@
  /*
   * try_fts_walk - walk a directory tree using one of the static walk_rule sets
   */
-#define TRY_FTS_WALK_VERSION "1.0.3 2025-10-25"	/* version format: major.minor[.patch] YYYY-MM-DD */
+#define TRY_FTS_WALK_VERSION "1.0.4 2025-11-02"	/* version format: major.minor[.patch] YYYY-MM-DD */
 
  /*
   * try_walk_set - try using one of the static walk_rule sets
   */
-#define TRY_WALK_SET_VERSION "1.0.2 2025-10-25"	/* version format: major.minor[.patch] YYYY-MM-DD */
+#define TRY_WALK_SET_VERSION "1.0.3 2025-11-02"	/* version format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
