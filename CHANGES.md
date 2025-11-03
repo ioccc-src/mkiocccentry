@@ -1,6 +1,22 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.8.8 2025-11-03
+
+Further address #1324. The `-M manifest` and `-X ignore` options were added
+back. With this update the `fnmatch(3)` is not yet used. This will be dealt with
+later.
+
+Improved `is_executable_filename()` to not use `fnmatch(3)`.
+
+Added function `file_mode_size()` which takes a path and a pointer to an `off_t`
+and a `mode_t` and, if not NULL, sets them to the `st_size` and `st_mode` of the
+`stat(2)` call.
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.1.7 2025-11-03"`.
+Updated `SOUP_VERSION` to `"2.2.8 2025-11-03"`.
+
+
 ## Release 2.8.7 2025-11-02
 
 Address issue #1324. The mkiocccentry tool now uses the walk table code. Some of
