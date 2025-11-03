@@ -60,6 +60,11 @@
  */
 #include "../jparse/jparse.h"
 
+/*
+ * walk - walk directory trees and tar listings
+ */
+#include "walk.h"
+
 
 /*
  * defines
@@ -127,31 +132,7 @@ extern char *executable_filenames[];            /* filenames that should have mo
 extern struct dyn_array *ignored_paths;         /* ignored paths from chkentry -i path */
 extern bool ignore_permissions;                 /* true ==> ignore permissions of files and directories */
 
-/*
- * enums
- */
 
-/*
- * manifest_path - used by test_manifest_path
- *
- * Technically the MAN_PATH_EPERM is not exactly the best analogue for EPERM but
- * since both are about permissions (EPERM being permission denied,
- * MAN_PATH_EPERM being the path is the wrong permission) this works okay.
- *
- * BTW: we explicitly set MAN_PATH_OK to 0 to be like other functions where the
- * return value of 0 indicates success. And although we could have the others >
- * 0 like we chose < 0 as a lot of functions also do that, though the errno is >
- * 0.
- */
-enum manifest_path
-{
-    MAN_PATH_ERR = -5,      /* some unexpected condition occurred (should never happen) */
-    MAN_PATH_NULL = -4,     /* path is NULL */
-    MAN_PATH_EMPTY = -3,    /* path is empty string */
-    MAN_PATH_ENOENT = -2,    /* path does not exist */
-    MAN_PATH_EPERM = -1,     /* path wrong permissions */
-    MAN_PATH_OK = 0,        /* path exists and right mode */
-};
 /*
  * IOCCC author information
  *
@@ -271,25 +252,10 @@ struct info
     bool test_mode;		/* true ==> test mode entered */
 
     /*
-     * dynamic arrays for files and directories
-     */
-    struct dyn_array *required_files;   /* required three files */
-    struct dyn_array *extra_files;      /* extra files to be added to tarball */
-    struct dyn_array *directories;      /* directories seen */
-    struct dyn_array *ignored_dirs;     /* ignored directories */
-    struct dyn_array *forbidden_files;  /* forbidden files */
-    struct dyn_array *unsafe_files;     /* unsafe files */
-    struct dyn_array *unsafe_dirs;      /* unsafe directories */
-    struct dyn_array *ignored_symlinks; /* ignored symlinks files */
-    struct dyn_array *ignore_paths;     /* list of paths user requested we ignore (-I foo -I bar) */
-    struct dyn_array *manifest_paths;   /* list of paths to include from -M file */
-
-    /*
      * JSON stuff
      */
     char const *info_file;	/* .info.json filename */
     char const *auth_file;	/* .auth.json filename */
-    size_t extra_count;		/* number of extra files */
 
     /*
      * .info.json information after the file name array
@@ -368,8 +334,6 @@ extern bool test_IOCCC_year(int IOCCC_year);
 extern bool test_iocccsize_version(char const *str);
 extern bool test_location_code(char const *str);
 extern bool test_manifest(struct manifest *manp, char *submission_dir);
-enum manifest_path check_manifest_path(char *path, char const *name, mode_t mode);
-void test_manifest_path(char *path, char const *name, enum manifest_path error, mode_t mode);
 extern bool test_min_timestamp(time_t tstamp);
 extern bool test_mkiocccentry_version(char const *str);
 extern bool test_name(char const *str);

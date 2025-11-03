@@ -1063,12 +1063,13 @@ chk_sem_info.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
     ../jparse/json_util.h ../jparse/util.h ../pr/pr.h chk_sem_info.c \
     chk_sem_info.h
-chk_validate.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
-    ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
-    ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
-    ../jparse/json_util.h ../jparse/util.h ../jparse/version.h ../pr/pr.h \
-    chk_sem_auth.h chk_sem_info.h chk_validate.c chk_validate.h \
-    entry_util.h location.h version.h
+chk_validate.o: ../cpath/cpath.h ../dbg/c_bool.h ../dbg/c_compat.h \
+    ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
+    ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
+    ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
+    ../jparse/version.h ../pr/pr.h chk_sem_auth.h chk_sem_info.h \
+    chk_validate.c chk_validate.h entry_util.h file_util.h location.h \
+    util.h version.h walk.h
 default_handle.o: ../cpath/cpath.h ../dbg/c_bool.h ../dbg/c_compat.h \
     ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/jparse.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
@@ -1079,7 +1080,8 @@ entry_util.o: ../cpath/cpath.h ../dbg/c_bool.h ../dbg/c_compat.h \
     ../jparse/jparse.tab.h ../jparse/json_parse.h ../jparse/json_sem.h \
     ../jparse/json_utf8.h ../jparse/json_util.h ../jparse/util.h \
     ../jparse/verge.h ../jparse/version.h ../pr/pr.h entry_util.c \
-    entry_util.h file_util.h limit_ioccc.h location.h util.h version.h
+    entry_util.h file_util.h limit_ioccc.h location.h util.h version.h \
+    walk.h
 file_util.o: ../cpath/cpath.h ../dbg/c_bool.h ../dbg/c_compat.h \
     ../dbg/dbg.h ../dyn_array/dyn_array.h ../jparse/util.h ../pr/pr.h \
     file_util.c file_util.h util.h walk.h
@@ -1108,13 +1110,13 @@ random_answers.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     random_answers.h util.h version.h
 rule_count.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h ../iocccsize.h \
     iocccsize_err.h limit_ioccc.h rule_count.c version.h
-sanity.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
+sanity.o: ../cpath/cpath.h ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../jparse/jparse.h ../jparse/jparse.tab.h \
     ../jparse/json_parse.h ../jparse/json_sem.h ../jparse/json_utf8.h \
     ../jparse/json_util.h ../jparse/util.h ../jparse/version.h ../pr/pr.h \
     chk_sem_auth.h chk_sem_info.h chk_validate.h default_handle.h \
     entry_util.h file_util.h limit_ioccc.h location.h sanity.c sanity.h \
-    soup.h util.h version.h
+    soup.h util.h version.h walk.h
 util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../jparse/util.h ../pr/pr.h file_util.h util.c \
     util.h

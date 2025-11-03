@@ -3,8 +3,10 @@
 ?
 *.[ao]
 *.dSYM/
+/.local.dir.tags
 /man/man3/chk_stdio_printf_err.3
 /man/man3/clearerr_or_fclose.3
+/man/man3/fchk_inval_opt.3
 /man/man3/fpara.3
 /man/man3/fpr.3
 /man/man3/fprint_line_buf.3
@@ -15,7 +17,6 @@
 /man/man3/readline.3
 /man/man3/readline_dup.3
 /man/man3/vfpr.3
-/man/man3/fchk_inval_opt.3
 pr_test
 .*.swp
 /tags

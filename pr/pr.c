@@ -1459,12 +1459,12 @@ fprint_line_str(FILE *stream, char *str, size_t *retlen, int start, int end)
 FILE *
 open_dir_file(char const *dir, char const *file)
 {
-    struct stat dbuf;		/* dir status */
     struct stat fbuf;		/* file status */
     FILE *ret_stream = NULL;	/* open file stream to return */
     int fd;			/* ret_stream as a file descriptor */
     int ret = 0;		/* libc function return */
     int cwd = -1;		/* current working directory */
+    int dirfd = -1;		/* dir file descriptor */
 
     /*
      * firewall
@@ -1476,7 +1476,7 @@ open_dir_file(char const *dir, char const *file)
 
     /*
      * note the current directory so we can restore it later, after the
-     * chdir(dir) below
+     * fchdir(dir) below
      */
     errno = 0;                  /* pre-clear errno for errp() */
     cwd = open(".", O_RDONLY|O_DIRECTORY|O_CLOEXEC);
@@ -1491,21 +1491,19 @@ open_dir_file(char const *dir, char const *file)
     if (dir != NULL && cwd >= 0) {
 
 	/*
-	 * check if we can search / work within the directory
+	 * open dir so we can check it and then fchdir(2) to it
+	 *
+	 * This "complication" avoids a filesystem race condition.
+	 *
+	 * NOTE: This will also verify that dir is a readable and searchable directory.
 	 */
-	errno = 0;
-	ret = stat(dir, &dbuf);
-	if (ret < 0) {
-	    err(104, __func__, "directory does not exist: %s", dir);
-	    not_reached();
-	}
-	if (!S_ISDIR(dbuf.st_mode)) {
-	    err(105, __func__, "is not a directory: %s", dir);
-	    not_reached();
-	}
-	ret = access(dir, X_OK);
-	if (ret < 0) {
-	    err(106, __func__, "directory is not searchable: %s", dir);
+#if defined(O_SEARCH)
+	dirfd = open(dir, O_RDONLY|O_SEARCH|O_DIRECTORY|O_CLOEXEC);
+#else
+	dirfd = open(dir, O_RDONLY|O_DIRECTORY|O_CLOEXEC);
+#endif
+	if (dirfd < 0) {
+	    errp(104, __func__, "dir is not a readable and searchable directory: %s", dir);
 	    not_reached();
 	}
 
@@ -1513,9 +1511,18 @@ open_dir_file(char const *dir, char const *file)
 	 * chdir to to the directory
 	 */
 	errno = 0;		/* pre-clear errno for errp() */
-	ret = chdir(dir);
+	ret = fchdir(dirfd);
 	if (ret < 0) {
-	    errp(107, __func__, "cannot cd %s", dir);
+	    errp(105, __func__, "cannot cd %s", dir);
+	    not_reached();
+	}
+
+	/*
+	 * close the dir file descriptor now that we have changed to the directory
+	 */
+	errno = 0; /* pre-clear errno for errp() */
+	if (close(dirfd) != 0) {
+	    errp(106, __func__, "failed to close(dirfd)");
 	    not_reached();
 	}
     }
@@ -1526,12 +1533,12 @@ open_dir_file(char const *dir, char const *file)
     errno = 0;		/* pre-clear errno for errp() */
     ret_stream = fopen(file, "r");
     if (ret_stream == NULL) {
-	errp(108, __func__, "cannot open file: %s", file);
+	errp(107, __func__, "cannot open file: %s", file);
 	not_reached();
     }
     fd = fileno(ret_stream);
     if (fd < 0) {
-	errp(109, __func__, "cannot determine fileno for open file: %s", file);
+	errp(108, __func__, "cannot determine fileno for open file: %s", file);
 	not_reached();
     }
 
@@ -1541,11 +1548,11 @@ open_dir_file(char const *dir, char const *file)
     errno = 0;
     ret = fstat(fd, &fbuf);
     if (ret < 0) {
-	errp(110, __func__, "file does not exist: %s", file);
+	errp(109, __func__, "file does not exist: %s", file);
 	not_reached();
     }
     if (!S_ISREG(fbuf.st_mode)) {
-	err(111, __func__, "file is not a regular file: %s", file);
+	err(110, __func__, "file is not a regular file: %s", file);
 	not_reached();
     }
 
@@ -1560,13 +1567,13 @@ open_dir_file(char const *dir, char const *file)
 	errno = 0;                  /* pre-clear errno for errp() */
 	ret = fchdir(cwd);
 	if (ret < 0) {
-	    errp(112, __func__, "cannot fchdir to the previous current directory");
+	    errp(111, __func__, "cannot fchdir to the previous current directory");
 	    not_reached();
 	}
 	errno = 0;                  /* pre-clear errno for errp() */
 	ret = close(cwd);
 	if (ret < 0) {
-	    errp(113, __func__, "close of previous current directory failed");
+	    errp(112, __func__, "close of previous current directory failed");
 	    not_reached();
 	}
     }
@@ -1874,7 +1881,7 @@ flush_tty(char const *name, bool flush_stdin, bool abort_on_error)
 	    if (ret < 0) {
 		/* exit or error return depending on abort_on_error */
 		if (abort_on_error) {
-		    errp(114, name, "fflush(stdin): error code: %d", ret);
+		    errp(113, name, "fflush(stdin): error code: %d", ret);
 		    not_reached();
 		} else {
 		    dbg(DBG_HIGH, "%s: called via %s: fflush(stdin) failed: %s", __func__, name, strerror(errno));
@@ -1899,7 +1906,7 @@ flush_tty(char const *name, bool flush_stdin, bool abort_on_error)
 	if (ret < 0) {
 	    /* exit or error return depending on abort_on_error */
 	    if (abort_on_error) {
-		errp(115, name, "fflush(stdout): error code: %d", ret);
+		errp(114, name, "fflush(stdout): error code: %d", ret);
 		not_reached();
 	    } else {
 		dbg(DBG_HIGH, "%s: called from %s: fflush(stdout) failed: %s", __func__, name, strerror(errno));
@@ -1923,7 +1930,7 @@ flush_tty(char const *name, bool flush_stdin, bool abort_on_error)
 	if (ret < 0) {
 	    /* exit or error return depending on abort_on_error */
 	    if (abort_on_error) {
-		errp(116, name, "fflush(stderr): error code: %d", ret);
+		errp(115, name, "fflush(stderr): error code: %d", ret);
 		not_reached();
 	    } else {
 		dbg(DBG_HIGH, "%s: called from %s: fflush(stderr) failed: %s", __func__, name, strerror(errno));

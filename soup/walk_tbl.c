@@ -2094,3 +2094,58 @@ struct walk_set walk_chkentry_w = {
     0,					/* length of set NOT counting the final NULL walk_rule.pattern */
     walk_rule_set_chkentry_w		/* array of walk rules, ending with a NULL walk_rule.pattern */
 };
+
+
+/************/
+/* anything */
+/************/
+
+
+/*
+ * anything goes set
+ *
+ * Path items are compared, in order, to each walk_rule UNTIL a match is found, OR until the NULL entry is found.
+ */
+static struct walk_rule walk_rule_set_anything[] = {
+
+    /*
+     * ((anything))
+     *
+     * This MUST be first and 2ND to LAST !!!
+     *
+     * Everything free.
+     *
+     * We match any type.
+     */
+    { "*",
+	false, false, true, false, false,		/* optional, free */
+	MATCH_ANY, TYPE_ANY, LEVEL_ANY,			/* match anything, any type, at any level */
+	0, NULL },
+
+    /*
+     * NULL
+     *
+     * This MUST be LAST !!!
+     *
+     * This is a mandatory end an array of walk_rule structures.
+     *
+     * Regarding types: A NULL pattern means that all of the other elements of struct walk_rule,
+     *			including the type, are ignored.
+     */
+    { NULL,
+	false, false, false, false, false,		/* end of array */
+	MATCH_UNSET, TYPE_UNSET, LEVEL_UNSET,		/* everything UNSET */
+	0, NULL }
+};
+
+
+/*
+ * anything goes
+ */
+struct walk_set walk_anything = {
+    "anything goes set",		/* walk_set name - for debugging purposes */
+    false,				/* true ==> walk_set initialized and setup */
+    NULL,				/* NUL terminated string describing context (tool + options) for debugging purposes */
+    0,					/* length of set NOT counting the final NULL walk_rule.pattern */
+    walk_rule_set_anything		/* array of walk rules, ending with a NULL walk_rule.pattern */
+};

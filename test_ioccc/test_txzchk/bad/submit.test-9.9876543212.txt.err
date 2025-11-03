@@ -29,7 +29,7 @@ txzchk required: .info.json not found
 txzchk found 7 prohibited items
    prohibited file: prog
    prohibited file: prog.orig.c
-   prohibited file: readme.md
+   prohibited file: README.md
    prohibited file: index.html
    prohibited empty file: .auth.json
    prohibited empty file: remarks.md

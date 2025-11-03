@@ -24,7 +24,7 @@ txzchk required: remarks.md not found
 txzchk required: .auth.json not found
 txzchk required: .info.json not found
 txzchk found 8 prohibited items
-   prohibited cdev: makefile
+   prohibited cdev: Makefile
    prohibited bdev: extra2
    prohibited symlink: foo
    prohibited fifo: prog.c

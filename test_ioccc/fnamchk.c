@@ -197,7 +197,8 @@ main(int argc, char *argv[])
     }
 
     /* collect arg */
-    filepath = canon_path(argv[optind], 0, 0, 0, &sanity, NULL, NULL, false, true, true, true, NULL);
+    /* IMPORTANT: canon_path() MUST use a false "lower_case" arg!  See the path_in_item_array() function. */
+    filepath = canon_path(argv[optind], 0, 0, 0, &sanity, NULL, NULL, false, false, true, true, NULL);
     if (filepath == NULL) {
 	err(3, program, "bogus filepath: %s error: %s", argv[optind], path_sanity_error(sanity)); /*ooo*/
 	not_reached();

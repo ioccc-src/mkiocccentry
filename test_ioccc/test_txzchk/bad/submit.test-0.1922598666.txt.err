@@ -11,7 +11,7 @@ Warning: txzchk: found non-numerical UID in line drwxr-xr-x cody/1000         0 
 txzchk required: Makefile not found
 txzchk required: .auth.json not found
 txzchk found 2 prohibited items
-   prohibited empty file: makefile
+   prohibited empty file: Makefile
    prohibited empty file: .auth.json
 Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.test-0.1922598666.txt
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-0.1922598666.txt: found 11 feathers stuck in the tarball

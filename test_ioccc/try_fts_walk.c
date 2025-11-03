@@ -79,6 +79,7 @@ enum walk_set_num {
     WALK_SET_CHKENTRY_CAPS = 4,	/* chkentry -S walk_set */
     WALK_SET_CHKENTRY_S = 5,	/* chkentry -s walk_set */
     WALK_SET_CHKENTRY_W = 6,	/* chkentry -w walk_set */
+    WALK_SET_ANYTHING = 7,	/* anything goes walk_set */
 };
 #define WALK_SET_DEFAULT (1)	/* default walk set number */
 
@@ -133,6 +134,7 @@ static char const * const usage_msg =
     "\t\t\t    4 - chkentry -S walk_set\n"
     "\t\t\t    5 - chkentry -s walk_set\n"
     "\t\t\t    6 - chkentry -w walk_set\n"
+    "\t\t\t    7 - anything goes\n"
     "\n"
     "\ttopdir\tdirectory tree to walk\n"
     "\n"
@@ -253,7 +255,8 @@ main(int argc, char *argv[])
 			      "3 - chksubmit walk_set\n"
 			      "4 - chkentry -S walk_set\n"
 			      "5 - chkentry -s walk_set\n"
-			      "6 - chkentry -w walk_set\n");
+			      "6 - chkentry -w walk_set\n"
+			      "7 - anything goes walk_set\n");
 		exit(0); /*ooo*/
 		break;
 	    }
@@ -342,6 +345,9 @@ main(int argc, char *argv[])
     case WALK_SET_CHKENTRY_W:
 	dbg(DBG_MED, "set number WALK_SET_CHKENTRY_W: %d", set_num);
 	break;
+    case WALK_SET_ANYTHING:
+	dbg(DBG_MED, "set number WALK_SET_ANYTHING: %d", set_num);
+	break;
     default:
 	err(4,  __func__, "unknown set number: %d", set_num); /*ooo*/
 	not_reached();
@@ -413,6 +419,20 @@ main(int argc, char *argv[])
 			    topdir, &walk_chkentry_w, "chkentry -w",
 			    max_path_len, max_filename_len, max_depth,
 			    max_file, max_dir, max_sym, max_other,
+			    sort_cpath);
+	exit_code = (walk_ok == false) ? 1 : exit_code;
+    }
+
+    /*
+     * anything goes walk_set (WALK_SET_ANYTHING) or WALK_SET_ALL
+     */
+    if (set_num == WALK_SET_ANYTHING || set_num == WALK_SET_ALL) {
+
+	/* test walk_set WALK_SET_ANYTHING */
+	walk_ok = test_walk(stdout,
+			    topdir, &walk_anything, "anything goes",
+			    max_path_len, max_filename_len, max_depth,
+			    max_file, max_dir, ANY_COUNT, ANY_COUNT,
 			    sort_cpath);
 	exit_code = (walk_ok == false) ? 1 : exit_code;
     }

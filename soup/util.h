@@ -58,51 +58,6 @@
 #include "../dbg/dbg.h"
 #include "../dyn_array/dyn_array.h"
 
-#if 0	/* XXX - pre-IOCCC29: remove the obsolete #if block below - XXX */
-/*
- * byte as octet constants
- */
-#if !defined(CHAR_BIT)
-# define CHAR_BIT (8)		/* paranoia - in case limits.h is very old */
-#endif
-
-/*
- * definitions
- */
-#define LITLEN(x) (sizeof(x)-1)	/* length of a literal string w/o the NUL byte */
-#define TBLLEN(x) (sizeof(x)/sizeof((x)[0]))	/* number of elements in an initialized table array */
-#define UNUSED_ARG(x) (void)(x)			/* prevent compiler from complaining about an unused arg */
-
-/*
- * invalid exit codes (values < 0) that may be returned by shell_cmd()
- */
-#define EXIT_CALLOC_FAILED (-2)		/* invalid exit code - calloc() failure */
-#define EXIT_SYSTEM_FAILED (-3)		/* invalid exit code - system() failed - returned exit 127 */
-#define EXIT_FFLUSH_FAILED (-4)		/* invalid exit code - fflush() failed */
-#define EXIT_NULL_ARGS (-5)		/* invalid exit code - function called with a NULL arg */
-
-
-/*
- * fpr() and pr() related macros
- */
-#define fprint(stream, fmt, ...) fpr((stream), __func__, (fmt), __VA_ARGS__)
-#define fprstr(stream, fmt) fpr((stream), __func__, (fmt))
-/**/
-#define print(fmt, ...) pr(__func__, (fmt), __VA_ARGS__)
-#define prstr(fmt) pr(__func__, (fmt))
-
-/*
- * bit macros
- */
-#define IS_SET(flag,bit)  ((flag) & (bit))
-#define SET_BIT(var,bit)  ((var) |= ((uintmax_t)bit))
-#define REMOVE_BIT(var,bit)  ((var) &= ~((uintmax_t)bit))
-#define TOGGLE_BIT(var,bit) ((var)) = ((var)) ^ ((uintmax_t)bit)
-
-#define LSET_BIT(var,bit)  ((var) | ((uintmax_t)bit))
-#define LREMOVE_BIT(var,bit)  ((var) & ~((uintmax_t)bit))
-#define LTOGGLE_BIT(var,bit) ((var) ^ ((uintmax_t)bit))
-#endif	/* XXX - pre-IOCCC29: remove the obsolete #if block above - XXX */
 
 /*
  * external function declarations

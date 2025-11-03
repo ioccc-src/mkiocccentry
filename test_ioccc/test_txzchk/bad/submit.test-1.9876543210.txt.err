@@ -32,7 +32,7 @@ Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found 
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/.info.json
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/extra1
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/Makefile
-Warning: txzchk: file makefile is a duplicate file
+Warning: txzchk: file Makefile is a duplicate file
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/extra1
 Warning: txzchk: file extra1 is a duplicate file
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.9876543210.txt: found incorrect top level directory in filename test-0/extra2
