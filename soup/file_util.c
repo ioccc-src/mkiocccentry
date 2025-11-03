@@ -2464,6 +2464,7 @@ restore_cwd(int prev_cwd)
     return;
 }
 
+
 /*
  * file_mode_size - if path exists, get st_mode and st_size from stat(2)
  *
@@ -2501,12 +2502,18 @@ file_mode_size(char const *path, mode_t *st_mode, off_t *st_size)
 	return false;
     }
 
+    /*
+     * save st_mode if allowed
+     */
     if (st_mode != NULL) {
         *st_mode = buf.st_mode;
     }
+
+    /*
+     * save st_size if allowed
+     */
     if (st_size != NULL) {
         *st_size = buf.st_size;
     }
-
     return true;
 }

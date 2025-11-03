@@ -7584,6 +7584,7 @@ show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
     return;
 }
 
+
 /*
  * read_manifest - read in the manifest file, recording each file
  *
@@ -7609,7 +7610,6 @@ read_manifest(struct walk_stat *wstat)
     int_least32_t deep = -1;        /* canonicalised stack depth */
     bool dup = false;
 
-
     /*
      * firewall
      */
@@ -7622,17 +7622,39 @@ read_manifest(struct walk_stat *wstat)
         not_reached();
     }
 
+    /*
+     * process all lines from the manifest
+     */
     while ((readline_len = readline(&line, manifest)) >= 0) {
+
+	/*
+	 * skip empty lines
+	 */
+	if (readline_len == 0) {
+	    continue;
+	}
+
+	/*
+	 * skip lines that start with a "#" (hash)
+	 */
+	if (line[0] == '#') {
+	    continue;
+	}
+
+	/*
+	 * canonicalise the path from the line
+	 */
         cpath = canonicalize_path(wstat, line, &sanity, &path_len, &deep);
         if (cpath == NULL) {
             warn(__func__, "canonicalize_path had an internal error and returned NULL: %s", line);
             continue;
         }
+
         /*
          * check that the path was not already added in a previous line
          */
         if (path_in_walk_stat(wstat, cpath) != NULL) {
-            warn(__func__, "path already found in list: %s", cpath);
+            dbg(DBG_LOW, "in %s: path already found in list: %s", __func__, cpath);
             if (cpath != NULL) {
                 free((void *)cpath);
                 cpath = NULL;
@@ -7640,10 +7662,13 @@ read_manifest(struct walk_stat *wstat)
             continue;
         }
 
+	/*
+	 * record canonicalised path as if we had found the path
+	 */
         if (file_mode_size(cpath, &st_mode, &st_size)) {
             process = record_step(wstat, cpath, st_size, st_mode, &dup, NULL);
             if (dup) {
-                warn(__func__, "file %s is a duplicate file", cpath);
+                dbg(DBG_LOW, "in %s: file %s is a duplicate file", __func__, cpath);
                 if (cpath != NULL) {
                     free((void *)cpath);
                     cpath = NULL;
@@ -7655,6 +7680,7 @@ read_manifest(struct walk_stat *wstat)
         } else {
             warn(__func__, "path in manifest does not exist: %s", line);
         }
+
         /*
          * free storage
          */
@@ -7706,7 +7732,28 @@ read_ignore(char const *ignore, struct walk_stat *wstat)
         not_reached();
     }
 
+    /*
+     * process all lines from the ignore file
+     */
     while ((readline_len = readline(&line, ignorefp)) >= 0) {
+
+	/*
+	 * skip empty lines
+	 */
+	if (readline_len == 0) {
+	    continue;
+	}
+
+	/*
+	 * skip lines that start with a "#" (hash)
+	 */
+	if (line[0] == '#') {
+	    continue;
+	}
+
+	/*
+	 * add the path to the list of paths under topdir to skip
+	 */
         skip_add_ret = skip_add(wstat, line);
         if (skip_add_ret) {
             dbg(DBG_LOW, "context will ignore, when canonicalized: %s", line);
@@ -7723,8 +7770,12 @@ read_ignore(char const *ignore, struct walk_stat *wstat)
         }
     }
 
+    /*
+     * close the ignore file
+     */
     errno = 0; /* pre-clear errno for warnp() */
     if (fclose(ignorefp) != 0) {
         warnp(__func__, "failed to close ignore file %s", ignore);
     }
+    return;
 }
