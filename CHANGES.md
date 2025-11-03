@@ -16,6 +16,8 @@ and a `mode_t` and, if not NULL, sets them to the `st_size` and `st_mode` of the
 Cleaned up the three functions `scan_topdir()`, `copy_topdir()` and
 `check_submission_dir()`, mostly making comments up to date.
 
+Add missing calls to `not_reached()` in mkiocccentry.c.
+
 Updated `MKIOCCCENTRY_VERSION` to `"2.1.7 2025-11-03"`.
 Updated `SOUP_VERSION` to `"2.2.8 2025-11-03"`.
 

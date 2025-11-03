@@ -3678,6 +3678,7 @@ warn_empty_prog(void)
 	  NULL);
 	if (abort_on_warning) {
 	    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+            not_reached();
 	}
 	yorn = yes_or_no("Are you sure you want to submit an empty prog.c file? [Ny]", false);
 	if (!yorn) {
@@ -3736,6 +3737,7 @@ warn_rule_2a_size(struct info *infop, int mode, RuleCount size)
 	      NULL);
 	    if (abort_on_warning) {
 		err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+                not_reached();
 	    }
 	    yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [Ny]", false);
 	    if (!yorn) {
@@ -3761,6 +3763,7 @@ warn_rule_2a_size(struct info *infop, int mode, RuleCount size)
 	    }
 	    if (abort_on_warning) {
 		err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+                not_reached();
 	    }
 	    yorn = yes_or_no("Are you sure you want to proceed? [Ny]", false);
 	    if (!yorn) {
@@ -3918,6 +3921,7 @@ warn_rule_2b_size(struct info *infop)
 	      NULL);
 	if (abort_on_warning) {
 	    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+            not_reached();
 	}
 	yorn = yes_or_no("Are you sure you want to submit such a large prog.c file? [Ny]", false);
 	if (!yorn) {
@@ -4780,6 +4784,7 @@ get_title(struct info *infop)
 		  NULL);
 	    if (abort_on_warning) {
 		err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+                not_reached();
 	    }
 
 	    /*
@@ -4847,6 +4852,7 @@ get_title(struct info *infop)
 		  NULL);
 	    if (abort_on_warning) {
 		err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+                not_reached();
 	    }
 
 	    /*
@@ -4957,6 +4963,7 @@ get_abstract(struct info *infop)
 		  NULL);
 	    if (abort_on_warning) {
 		err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+                not_reached();
 	    }
 
 	    /*
@@ -5412,6 +5419,7 @@ get_author_info(struct author **author_set_p)
 		      NULL);
 		if (abort_on_warning) {
 		    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+                    not_reached();
 		}
 
 		/*
@@ -5543,6 +5551,7 @@ get_author_info(struct author **author_set_p)
 		}
 		if (abort_on_warning) {
 		    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+                    not_reached();
 		}
 
 		/*
@@ -5709,6 +5718,7 @@ get_author_info(struct author **author_set_p)
 		      NULL);
 		if (abort_on_warning) {
 		    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+                    not_reached();
 		}
 
 		/*
@@ -5804,6 +5814,7 @@ get_author_info(struct author **author_set_p)
 			  NULL);
 		    if (abort_on_warning) {
 			err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+                        not_reached();
 		    }
 
 		    /*
@@ -5900,6 +5911,7 @@ get_author_info(struct author **author_set_p)
 			  NULL);
 		    if (abort_on_warning) {
 			err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+                        not_reached();
 		    }
 
 		    /*
@@ -5988,6 +6000,7 @@ get_author_info(struct author **author_set_p)
 			  NULL);
 		    if (abort_on_warning) {
 			err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+                        not_reached();
 		    }
 
 		    /*
@@ -6076,6 +6089,7 @@ get_author_info(struct author **author_set_p)
 			  NULL);
 		    if (abort_on_warning) {
 			err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+                        not_reached();
 		    }
 
 		    /*
@@ -6310,6 +6324,7 @@ get_author_info(struct author **author_set_p)
 			}
 			if (abort_on_warning) {
 			    err(1, __func__, "-E forcing exit on 1st warning"); /*ooo*/
+                            not_reached();
 			}
 
 			/*
