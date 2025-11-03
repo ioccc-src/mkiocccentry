@@ -201,9 +201,10 @@ static bool copying_topdir = false;	/* true ==> copying topdir and checking subm
 static bool saved_answer_yes = false;   /* set to answer_yes before modifying it for scanning/copying topdir */
 static bool saved_silence_prompt = false;	/* set to silence_prompt before modifying it for scanning/copying topdir */
 static bool force_yes = false;          /* force -y even when scanning/copying/verifying in -i answers mode */
-static struct stat topdir_st;           /* stat(2) information of topdir */
-static struct stat workdir_st;          /* stat(2) information of workdir */
+static struct stat topdir_st;           /* fstat(2) information of topdir */
+static struct stat workdir_st;          /* fstat(2) information of workdir */
 static int topdirfd = -1;               /* topdir FD */
+static int workdirfd = -1;              /* workdir FD */
 static int cwd = -1;                    /* initial directory FD */
 static int answersfd = -1;              /* -i answers fd */
 static struct stat answers_st;
@@ -547,16 +548,23 @@ main(int argc, char *argv[])
     }
 
     /*
-     * workdir must be a writable and searchable directory
+     * note workdir FD
+     *
+     * NOTE: This will also verify that topdir readable and searchable directory.
      */
-    if (!is_dir(workdir) || !is_write(workdir) || !is_exec(workdir)) {
-        err(3, __func__, "workdir is not a writable and searchable directory: %s", workdir); /*ooo*/
+    errno = 0; /* pre-clear errno for errp() */
+    workdirfd = open(workdir, O_RDONLY|O_SEARCH|O_DIRECTORY|O_CLOEXEC);
+    if (workdirfd < 0) {
+        errp(25, __func__, "workdir is not a readable and searchable directory: %s", workdir); /*ooo*/
         not_reached();
     }
-    /* get stat(2) info for workdir */
+
+    /*
+     * get stat(2) info for workdir
+     */
     errno = 0; /* pre-clear errno for errp() */
-    if (stat(workdir, &workdir_st) != 0) {
-        errp(3, __func__, "failed to get stat(2) info for workdir: %s", workdir); /*ooo*/
+    if (fstat(workdirfd, &workdir_st) != 0) {
+        errp(3, __func__, "failed to get fstat(2) info for workdir: %s", workdir); /*ooo*/
         not_reached();
     }
 
@@ -575,16 +583,23 @@ main(int argc, char *argv[])
     }
 
     /*
-     * topdir readable and searchable directory
+     * note topdir FD
+     *
+     * NOTE: This will also verify that topdir readable and searchable directory.
      */
-    if (!is_dir(topdir) || !is_read(topdir) || !is_exec(topdir)) {
-        err(3, __func__, "topdir is not a readable and searchable directory: %s", topdir); /*ooo*/
+    errno = 0; /* pre-clear errno for errp() */
+    topdirfd = open(topdir, O_RDONLY|O_SEARCH|O_DIRECTORY|O_CLOEXEC);
+    if (topdirfd < 0) {
+        errp(25, __func__, "topdir is not a readable and searchable directory: %s", topdir); /*ooo*/
         not_reached();
     }
-    /* get stat(2) info for topdir */
+
+    /*
+     * get stat(2) info for topdir
+     */
     errno = 0; /* pre-clear errno for errp() */
-    if (stat(topdir, &topdir_st) != 0) {
-        errp(3, __func__, "failed to get stat(2) info for topdir: %s", topdir); /*ooo*/
+    if (fstat(topdirfd, &topdir_st) != 0) {
+        errp(3, __func__, "failed to get fstat(2) info for topdir: %s", topdir); /*ooo*/
         not_reached();
     }
 
@@ -597,22 +612,12 @@ main(int argc, char *argv[])
     }
 
     /*
-     * note topdir FD
-     */
-    errno = 0; /* pre-clear errno for errp() */
-    topdirfd = open(topdir, O_RDONLY|O_DIRECTORY|O_CLOEXEC);
-    if (topdirfd < 0) {
-        errp(25, __func__, "cannot open topdir");
-        not_reached();
-    }
-
-    /*
      * we have the starting directory in cwd but we need to get the absolute
      * path of the topdir so we have to change there first.
      */
     errno = 0; /* pre-clear errno for errp() */
     if (fchdir(topdirfd) != 0) {
-        errp(26, __func__, "failed to cd to topdir");
+        errp(25, __func__, "failed to cd to topdir");
         not_reached();
     }
 
@@ -623,7 +628,7 @@ main(int argc, char *argv[])
     errno = 0; /* pre-clear errno for errp() */
     topdir_path = getcwd(NULL, 0);
     if (topdir_path == NULL) {
-        errp(27, __func__, "couldn't get absolute path of topdir");
+        errp(26, __func__, "couldn't get absolute path of topdir");
         not_reached();
     }
 
@@ -632,7 +637,7 @@ main(int argc, char *argv[])
      */
     errno = 0; /* pre-clear errno for errp() */
     if (fchdir(cwd) != 0) {
-        errp(28, __func__, "failed to switch to original directory");
+        errp(27, __func__, "failed to switch to original directory");
         not_reached();
     }
 
@@ -832,7 +837,7 @@ main(int argc, char *argv[])
     errno = 0;			/* pre-clear errno for errp() */
     ret = gettimeofday(&tp, NULL);
     if (ret < 0) {
-	errp(29, __func__, "gettimeofday failed");
+	errp(28, __func__, "gettimeofday failed");
 	not_reached();
     }
     info.tstamp = tp.tv_sec;
@@ -933,10 +938,10 @@ main(int argc, char *argv[])
 	    errno = 0;		/* pre-clear errno for errp() */
 	    ret = printf("\nTo use the answers file, try:\n\n\t./mkiocccentry -i %s [...]\n\n", answers);
 	    if (ret <= 0) {
-		errp(30, __func__, "printf error telling the user how to use the answers file");
+		errp(29, __func__, "printf error telling the user how to use the answers file");
 		not_reached();
 	    }
-	    err(31, __func__, "won't overwrite answers file");
+	    err(30, __func__, "won't overwrite answers file");
 	    not_reached();
 	}
     }
@@ -946,13 +951,13 @@ main(int argc, char *argv[])
      */
     if (read_answers_flag_used && answers != NULL && strlen(answers) > 0) {
 	if (!is_read(answers)) {
-	    errp(32, __func__, "answers file not readable");
+	    errp(31, __func__, "answers file not readable");
 	    not_reached();
 	}
 	errno = 0;		/* pre-clear errno for errp() */
 	answersp = fopen(answers, "r");
 	if (answersp == NULL) {
-	    errp(33, __func__, "cannot open answers file");
+	    errp(32, __func__, "cannot open answers file");
 	    not_reached();
 	}
 	input_stream = answersp;
@@ -979,7 +984,7 @@ main(int argc, char *argv[])
         errno = 0;			/* pre-clear errno for errp() */
         answersfd = open(answers, O_RDONLY|O_CLOEXEC);
         if (answersfd < 0) {
-            errp(34, __func__, "cannot obtain answers FD");
+            errp(33, __func__, "cannot obtain answers FD");
             not_reached();
         }
         /*
@@ -1011,7 +1016,7 @@ main(int argc, char *argv[])
     errno = 0;
     info.tarball = strdup(tarball_path);
     if (info.tarball == NULL) {
-	errp(35, __func__, "strdup() tarball path %s failed", tarball_path);
+	errp(34, __func__, "strdup() tarball path %s failed", tarball_path);
 	not_reached();
     }
 
@@ -1027,13 +1032,13 @@ main(int argc, char *argv[])
 	errno = 0;			/* pre-clear errno for errp() */
 	answersp = fopen(answers, "w");
 	if (answersp == NULL) {
-	    errp(36, __func__, "cannot create answers file: %s", answers);
+	    errp(35, __func__, "cannot create answers file: %s", answers);
 	    not_reached();
 	}
         errno = 0; /* pre-clear errno for errp() */
         ret = fprintf(answersp, "%s\n", MKIOCCCENTRY_ANSWERS_VERSION);
 	if (ret <= 0) {
-	    errp(37, __func__, "fprintf error printing header to the answers file");
+	    errp(36, __func__, "fprintf error printing header to the answers file");
             not_reached();
 	}
     }
@@ -1045,13 +1050,13 @@ main(int argc, char *argv[])
 	errno = 0;			/* pre-clear errno for errp() */
         ret = fprintf(answersp, "%s\n", info.ioccc_id);
 	if (ret <= 0) {
-	    errp(38, __func__, "fprintf error printing IOCCC contest id to the answers file");
+	    errp(37, __func__, "fprintf error printing IOCCC contest id to the answers file");
             not_reached();
 	}
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = fprintf(answersp, "%d\n", info.submit_slot);
 	if (ret <= 0) {
-	    errp(39, __func__, "fprintf error printing submit slot number to the answers file");
+	    errp(38, __func__, "fprintf error printing submit slot number to the answers file");
             not_reached();
 	}
     }
@@ -1072,7 +1077,7 @@ main(int argc, char *argv[])
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = fprintf(answersp, "%s\n", info.title);
 	if (ret <= 0) {
-	    errp(40, __func__, "fprintf error printing title to the answers file");
+	    errp(39, __func__, "fprintf error printing title to the answers file");
             not_reached();
 	}
     }
@@ -1086,7 +1091,7 @@ main(int argc, char *argv[])
 	errno = 0;			/* pre-clear errno for errp() */
 	ret = fprintf(answersp, "%s\n", info.abstract);
 	if (ret <= 0) {
-	    errp(41, __func__, "fprintf error printing abstract to the answers file");
+	    errp(40, __func__, "fprintf error printing abstract to the answers file");
             not_reached();
 	}
     }
@@ -1104,7 +1109,7 @@ main(int argc, char *argv[])
 	errno = 0;			/* pre-clear errno for errp() */
         ret = fprintf(answersp, "%d\n", author_count);
 	if (ret <= 0) {
-	    errp(42, __func__, "fprintf error printing IOCCC author count to the answers file");
+	    errp(41, __func__, "fprintf error printing IOCCC author count to the answers file");
             not_reached();
 	}
 
@@ -1134,7 +1139,7 @@ main(int argc, char *argv[])
 		author_set[i].affiliation,
 		author_set[i].author_handle);
 	    if (ret <= 0) {
-		errp(43, __func__, "fprintf error printing author info to the answers file");
+		errp(42, __func__, "fprintf error printing author info to the answers file");
                 not_reached();
 	    }
 	}
@@ -1183,7 +1188,7 @@ main(int argc, char *argv[])
 		}
 	    }
 	    if (error) {
-	        errp(44, __func__, "expected ANSWERS_EOF marker at the end of the answers file");
+	        errp(43, __func__, "expected ANSWERS_EOF marker at the end of the answers file");
 	        not_reached();
 	    }
 	    input_stream = stdin;
@@ -1195,7 +1200,7 @@ main(int argc, char *argv[])
 	    errno = 0;		/* pre-clear errno for errp() */
 	    ret = fprintf(answersp, "%s\n", MKIOCCCENTRY_ANSWERS_EOF);
 	    if (ret <= 0) {
-	        errp(45, __func__, "fprintf error writing ANSWERS_EOF marker to the answers file");
+	        errp(44, __func__, "fprintf error writing ANSWERS_EOF marker to the answers file");
                 not_reached();
 	    }
 	}
@@ -1203,7 +1208,7 @@ main(int argc, char *argv[])
 	    errno = 0;		/* pre-clear errno for errp() */
 	    ret = fclose(answersp);
 	    if (ret != 0) {
-	        errp(46, __func__, "error in fclose to the answers file");
+	        errp(45, __func__, "error in fclose to the answers file");
                 not_reached();
 	    }
 	}
@@ -1290,7 +1295,7 @@ main(int argc, char *argv[])
     if (answersfd > 0 && read_answers_flag_used) {
         errno = 0; /* pre-clear errno for errp() */
         if (close(answersfd) != 0) {
-            errp(47, __func__, "failed to close(answers)");
+            errp(46, __func__, "failed to close(answers)");
             not_reached();
         }
     }
@@ -1432,7 +1437,7 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
      */
     if (wstat == NULL || context == NULL || infop == NULL || make == NULL || submission_dir == NULL ||
 	size == NULL || wstat2 == NULL) {
-        err(48, __func__, "passed NULL pointer(s)");
+        err(47, __func__, "passed NULL pointer(s)");
         not_reached();
     }
     topdir = wstat->topdir;
@@ -1450,7 +1455,7 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
      */
     errno = 0; /* pre-clear errno for errp() */
     if (chdir(submission_dir) != 0) {
-        errp(49, __func__, "unable to change to submission directory");
+        errp(48, __func__, "unable to change to submission directory");
         not_reached();
     }
 
@@ -1461,7 +1466,7 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
     errno = 0; /* pre-clear errno for errp() */
     submit_path = getcwd(NULL, 0);
     if (submit_path == NULL) {
-        errp(50, __func__, "couldn't get absolute path of submission directory");
+        errp(49, __func__, "couldn't get absolute path of submission directory");
         not_reached();
     }
 
@@ -1470,7 +1475,7 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
      */
     errno = 0; /* pre-clear errno for errp() */
     if (fchdir(topdirfd) != 0) {
-        err(51, __func__, "failed to switch back to original directory");
+        err(50, __func__, "failed to switch back to original directory");
         not_reached();
     }
 
@@ -1606,7 +1611,7 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
     errno = 0;          /* pre-clear errno for errp() */
     ret = fchdir(cwd);
     if (ret < 0) {
-        errp(52, __func__, "unable to fchdir(cwd)");
+        errp(51, __func__, "unable to fchdir(cwd)");
         not_reached();
     }
 
@@ -1626,10 +1631,10 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
             for (i = 0; i < len; ++i) {
                 p = dyn_array_value(wstat->skip_set, struct item *, i);
                 if (p == NULL) {
-                    err(53, __func__, "found NULL pointer in ignored path list, element: %jd", i);
+                    err(52, __func__, "found NULL pointer in ignored path list, element: %jd", i);
                     not_reached();
                 } else if (p->fts_path == NULL) {
-                    err(54, __func__, "found NULL Path in ignored path list set, element: %jd", i);
+                    err(53, __func__, "found NULL Path in ignored path list set, element: %jd", i);
                     not_reached();
                 }
                 print("%s\n", p->fts_path);
@@ -1663,10 +1668,10 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
             for (i = 0; i < len; ++i) {
                 p = dyn_array_value(wstat->prune, struct item *, i);
                 if (p == NULL) {
-                    err(55, __func__, "found NULL pointer in ignored dirname list, element: %jd", i);
+                    err(54, __func__, "found NULL pointer in ignored dirname list, element: %jd", i);
                     not_reached();
                 } else if (p->fts_path == NULL) {
-                    err(56, __func__, "found NULL path in ignored dirname list, element: %jd", i);
+                    err(55, __func__, "found NULL path in ignored dirname list, element: %jd", i);
                     not_reached();
                 }
                 print("%s\n", p->fts_path);
@@ -1714,10 +1719,10 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
             for (i = 0; i < len; ++i) {
                 p = dyn_array_value(wstat->unsafe, struct item *, i);
                 if (p == NULL) {
-                    err(57, __func__, "found NULL pointer in unsafe directory names list, element: %jd", i);
+                    err(56, __func__, "found NULL pointer in unsafe directory names list, element: %jd", i);
                     not_reached();
                 } else if (p->fts_path == NULL) {
-                    err(58, __func__, "found NULL path in unsafe directory name list, element: %jd\n", i);
+                    err(57, __func__, "found NULL path in unsafe directory name list, element: %jd\n", i);
                     not_reached();
                 }
                 print("%s\n", p->fts_path);
@@ -1750,10 +1755,10 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
             for (i = 0; i < len; ++i) {
                 p = dyn_array_value(wstat->prohibit, struct item *, i);
                 if (p == NULL) {
-                    err(59, __func__, "found NULL pointer in forbidden paths list, element: %jd", i);
+                    err(58, __func__, "found NULL pointer in forbidden paths list, element: %jd", i);
                     not_reached();
                 } else if (p->fts_path == NULL) {
-                    err(60, __func__, "found NULL path in forbidden paths list, element: %jd", i);
+                    err(59, __func__, "found NULL path in forbidden paths list, element: %jd", i);
                     not_reached();
                 }
                 print("%s\n", p->fts_path);
@@ -1794,10 +1799,10 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
             for (i = 0; i < len; ++i) {
                 p = dyn_array_value(wstat->symlink, struct item *, i);
                 if (p == NULL) {
-                    err(61, __func__, "found NULL pointer in ignored symlinks list, element: %jd", i);
+                    err(60, __func__, "found NULL pointer in ignored symlinks list, element: %jd", i);
                     not_reached();
                 } else if (p->fts_path == NULL) {
-                    err(62, __func__, "found NULL path in ignored symlinks list, element: %jd", i);
+                    err(61, __func__, "found NULL path in ignored symlinks list, element: %jd", i);
                     not_reached();
                 }
                 print("%s\n", p->fts_path);
@@ -1835,10 +1840,10 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
             for (i = 0; i < len; ++i) {
                 p = dyn_array_value(wstat->counted_dir, struct item *, i);
                 if (p == NULL) {
-                    err(63, __func__, "found NULL pointer in directories list, element: %jd", i);
+                    err(62, __func__, "found NULL pointer in directories list, element: %jd", i);
                     not_reached();
                 } else if (p->fts_path == NULL) {
-                    err(64, __func__, "found NULL path in directories list, element: %jd", i);
+                    err(63, __func__, "found NULL path in directories list, element: %jd", i);
                     not_reached();
                 }
                 print("%s\n", p->fts_path);
@@ -1885,10 +1890,10 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
             for (i = 0; i < len; ++i) {
                 p = dyn_array_value(wstat->file, struct item *, i);
                 if (p == NULL) {
-                    err(65, __func__, "found NULL pointer in files list, element: %jd", i);
+                    err(64, __func__, "found NULL pointer in files list, element: %jd", i);
                     not_reached();
                 } else if (p->fts_path == NULL) {
-                    err(66, __func__, "found NULL path in files list, element: %jd", i);
+                    err(65, __func__, "found NULL path in files list, element: %jd", i);
                     not_reached();
                 }
                 total_file_size += p->st_size;
@@ -1941,10 +1946,10 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
                          */
                         p = dyn_array_value(wstat->counted_dir, struct item *, i);
                         if (p == NULL) {
-                            err(67, __func__, "found NULL pointer in directories list, element: %jd", i);
+                            err(66, __func__, "found NULL pointer in directories list, element: %jd", i);
                             not_reached();
                         } else if (p->fts_path == NULL) {
-                            err(68, __func__, "found NULL path in directories list, element: %jd", i);
+                            err(67, __func__, "found NULL path in directories list, element: %jd", i);
                             not_reached();
                         }
 
@@ -1962,7 +1967,7 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
              */
             errno = 0;
             if (fchdir(topdirfd) != 0) {
-                errp(69, __func__, "cannot change to topdir");
+                errp(68, __func__, "cannot change to topdir");
                 not_reached();
             }
 
@@ -1970,21 +1975,21 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
              * copy every file to correct location
              */
             if (wstat->file == NULL) {
-                err(70, __func__, "file set is NULL");
+                err(69, __func__, "file set is NULL");
                 not_reached();
             }
             len = dyn_array_tell(wstat->file);
             if (len <= 0) {
-                err(71, __func__, "list of files is empty");
+                err(70, __func__, "list of files is empty");
                 not_reached();
             }
             for (i = 0; i < len; ++i) {
                 p = dyn_array_value(wstat->file, struct item *, i);
                 if (p == NULL) {
-                    err(72, __func__, "found NULL pointer in files list, element: %jd", i);
+                    err(71, __func__, "found NULL pointer in files list, element: %jd", i);
                     not_reached();
                 } else if (p->fts_path == NULL) {
-                    err(73, __func__, "found NULL path in files list, element: %jd", i);
+                    err(72, __func__, "found NULL path in files list, element: %jd", i);
                     not_reached();
                 }
 
@@ -1996,7 +2001,7 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
                  */
                 fname = calloc_path(wstat->topdir, p->fts_path);
                 if (fname == NULL) {
-                    err(74, __func__, "couldn't allocate path to copy");
+                    err(73, __func__, "couldn't allocate path to copy");
                     not_reached();
                 }
                 if (target_path != NULL) {
@@ -2014,7 +2019,7 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
                 errno = 0; /* pre-clear errno for errp() */
                 target_path = calloc(1, strlen(submit_path) + LITLEN("/") + strlen(p->fts_path) + 1);
                 if (target_path == NULL) {
-                    errp(75, __func__, "failed to allocate target path for %s", p->fts_path);
+                    errp(74, __func__, "failed to allocate target path for %s", p->fts_path);
                     not_reached();
                 }
 
@@ -2024,7 +2029,7 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
                 errno = 0; /* pre-clear errno for errp() */
                 ret = snprintf(target_path, strlen(submit_path) + 1 + strlen(p->fts_path) + 1, "%s/%s", submit_path, p->fts_path);
                 if (ret <= 0) {
-                    errp(76, __func__, "snprintf to form target path for %s failed", fname);
+                    errp(75, __func__, "snprintf to form target path for %s failed", fname);
                     not_reached();
                 }
 
@@ -2067,11 +2072,16 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
     }
 
     /*
-     * close our temporary file descriptor
+     * close our temporary file descriptors
      */
     errno = 0; /* pre-clear errno for errp() */
+    if (close(workdirfd) != 0) {
+        errp(76, __func__, "failed to close(workdirfd)");
+        not_reached();
+    }
+    errno = 0; /* pre-clear errno for errp() */
     if (close(topdirfd) != 0) {
-        errp(77, __func__, "failed to close(topdir)");
+        errp(77, __func__, "failed to close(topdirfd)");
         not_reached();
     }
 
