@@ -1430,8 +1430,8 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
     /*
      * firewall
      */
-    if (wstat == NULL | context == NULL || infop == NULL || make == NULL || submission_dir == NULL || size == NULL ||
-            wstat2 == NULL) {
+    if (wstat == NULL || context == NULL || infop == NULL || make == NULL || submission_dir == NULL ||
+	size == NULL || wstat2 == NULL) {
         err(48, __func__, "passed NULL pointer(s)");
         not_reached();
     }
