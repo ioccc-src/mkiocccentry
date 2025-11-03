@@ -48,7 +48,6 @@
 #include <sys/types.h>  /* various things */
 #include <sys/stat.h>   /* for stat(2) and others */
 #include <fts.h>        /* FTS and FTSENT */
-#include <fnmatch.h>    /* for fnmatch(3) (for ignored paths - if desired) */
 #include <limits.h>	/* for CHAR_BIT */
 
 /*

@@ -1,5 +1,13 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.5.2 2025-11-03
+
+Removed `#include <fnmatch.h>` from util.h. This is no longer needed once the
+artefacts here for the [other repo](https://github.com/ioccc-src/mkiocccentry)
+were removed.
+
+Updated `JPARSE_UTILS_VERSION` to `"2.1.7 2025-11-02"`.
+
 
 ## Release 2.5.1 2025-10-31
 
