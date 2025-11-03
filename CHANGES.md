@@ -5,13 +5,16 @@
 
 Further address #1324. The `-M manifest` and `-X ignore` options were added
 back. With this update the `fnmatch(3)` is not yet used. This will be dealt with
-later.
+later (or not :-) ).
 
 Improved `is_executable_filename()` to not use `fnmatch(3)`.
 
 Added function `file_mode_size()` which takes a path and a pointer to an `off_t`
 and a `mode_t` and, if not NULL, sets them to the `st_size` and `st_mode` of the
 `stat(2)` call.
+
+Cleaned up the three functions `scan_topdir()`, `copy_topdir()` and
+`check_submission_dir()`, mostly making comments up to date.
 
 Updated `MKIOCCCENTRY_VERSION` to `"2.1.7 2025-11-03"`.
 Updated `SOUP_VERSION` to `"2.2.8 2025-11-03"`.

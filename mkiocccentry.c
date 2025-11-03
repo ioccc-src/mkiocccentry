@@ -1418,16 +1418,17 @@ main(int argc, char *argv[])
  * scan_topdir
  *
  * Traverse topdir, verifying everything is in order, creating lists of files
- * and directories to be added and ignored.
+ * and directories to be added/ignored, whilst checking for too many files,
+ * invalid files, directory depth > the max etc.
  *
  * If no errors are encountered during traversal, and if prog.c, Makefile and
- * remarks.md exist and if there are not too many files (other than the required
- * and optional files), this function will call copy_topdir().
+ * remarks.md exist and if chk_walk() checks out okay then this function will
+ * call copy_topdir().
  *
  * given:
- *      wstat           - pointer to walk_stat struct used in walking topdir
+ *      wstat           - pointer to walk_stat struct used in walking (climbing :-) ) topdir
  *      context		- string describing context (tool & options) for debugging purposes
- *      infop           - pointer to struct info
+ *      infop           - pointer to struct info (passed down to check_submission_dir())
  *      make            - path to make(1) for check_submission_dir() (called from
  *                        copy_topdir())
  *      submission_dir  - submission directory
@@ -1436,32 +1437,13 @@ main(int argc, char *argv[])
  *      wstat2          - pointer to struct walk_stat for submission directory
  *
  * NOTE: this function does not return on NULL pointers.
- * NOTE: if an error is encountered traversing the topdir, it is an error.
- * NOTE: if the depth becomes too deep or if a filename length is too long or
- *       if there are too many files or directories it is an error.
- * NOTE: if we can't get a certain directory (absolute path OR file descriptor)
- *       or a change in directory (chdir(2) or fchdir(2)) fails or a function
- *       returns NULL or some other error is returned by a function it is an
- *       error.
- * NOTE: this function does not return on any other error.
- * NOTE: this function does not return if the user says something is not right.
- * NOTE: if prog.c, Makefile or remarks.md do not exist in the topdir it is an
- *       error.
- * NOTE: if a path is already in an array and it is found again it is an error.
- * NOTE: if a path that is not a sane relative path is found it is an error
- *       (this is not the same thing as an unsafe filename or dirname).
- * NOTE: a sane relative path is a path that does not start with a '/' (however,
- *       see comment below about the function canon_path()) and where
- *       each component of the path (between the '/' or if no '/' found then the
- *       string itself) matches the regexp: '^[0-9A-Za-z._][0-9A-Za-z._+-]*$'
- *       (w/o quotes). In other words it is POSIX plus + safe only characters
- *       and not a dot file.
+ * NOTE: if an error is encountered it is an error.
  */
 static void
 scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, char const *make, char const *submission_dir,
         RuleCount *size, struct walk_stat *wstat2)
 {
-    bool walk_ok = true;	/* true ==> no walk errors found, false ==> some walk errors found */
+    bool walk_ok = true;	/* true ==> no climbing errors found, false ==> some climbing errors found (fell :-) )*/
     char *topdir = NULL;        /* will point to wstat->topdir */
     char *submit_path = NULL;   /* absolute path of submission directory */
     int exit_code = -1;         /* return value for shell_cmd() */
@@ -1484,8 +1466,8 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
     }
 
     /*
-     * change to the submission directory so we can get its descriptor and
-     * absolute path for copying files in copy_topdir()
+     * change to the submission directory so we can get the absolute path for
+     * copying files (in copy_topdir())
      */
     errno = 0; /* pre-clear errno for errp() */
     if (chdir(submission_dir) != 0) {
@@ -1494,8 +1476,8 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
     }
 
     /*
-     * get absolute path of the submission directory for copying files in
-     * copy_topdir()
+     * actually get absolute path of the submission directory for copying files
+     * in copy_topdir()
      */
     errno = 0; /* pre-clear errno for errp() */
     submit_path = getcwd(NULL, 0);
@@ -1514,7 +1496,12 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
     }
 
     /*
-     * run make clobber on Makefile
+     * run make clobber on Makefile.
+     *
+     * NOTE: if this fails it is not an error. However this will mean that files
+     * that should not be included could be included and it also risks violating
+     * the rules/guidelines as not being a modified version of the example
+     * Makefile.
      */
     dbg(DBG_HIGH, "about to perform: make -f Makefile clobber");
     para("",
@@ -1528,8 +1515,7 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
 
     /*
      * if -M manifest was specified we do not do an fts_walk() but we still need
-     * wstat. If the manifest is an empty string or does not exist it is an
-     * error.
+     * wstat.
      */
     if (manifest != NULL) {
         read_manifest(wstat);
@@ -1539,7 +1525,7 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
          */
 
         /*
-         * walk a file system tree, recording steps
+         * climb a file system tree, recording steps
          */
         walk_ok = fts_walk(wstat);
         if (!walk_ok) {
@@ -1591,16 +1577,16 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
  *      wstat2          - pointer to submission directory walk_stat (for main())
  *
  * This function takes the lists from which scan_topdir() created (as it
- * traversed the topdir) and lists them to the user (it also shows the files
- * that the user requested to ignore and if that is not empty it shows the user
- * that list too). Assuming the user agrees that everything is okay this
- * function will copy the files to the submission directory. Assuming that goes
- * well the check_submission_dir() function will be called.
+ * traversed and checked the topdir) and lists them to the user (it also shows
+ * the files that the user requested to ignore as well as files/directories we
+ * ignore, and if any are not empty it shows the user those lists too).
  *
- * NOTE: this function does not return on NULL pointers, invalid file
- * descriptors (topdir < 0 or cwd < 0 - that's all we can check, at least
- * without trying to use fchdir() which seems unnecessary), errors or if the
- * user says something is not okay.
+ * Assuming the user agrees that everything is okay this function will copy the
+ * files to the submission directory. Assuming that goes well the
+ * check_submission_dir() function will be called.
+ *
+ * NOTE: this function does not return on NULL pointers or errors, including the
+ * user saying not everything is well and cwd and topdirfd < 0.
  */
 static void
 copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, char const *make,
@@ -1623,7 +1609,7 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
         not_reached();
     }
     if (topdirfd < 0) {
-        err(4, __func__, "passed invalid topdir file descriptors"); /*ooo*/
+        err(4, __func__, "invalid topdir file descriptors"); /*ooo*/
         not_reached();
     }
     if (cwd < 0) {
@@ -2001,8 +1987,8 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
                         }
 
                         /*
-                         * create path: -1 is from current (working) directory, p is the
-                         * path and 0755 is the mode
+                         * create path: -1 is from current (working) directory,
+                         * p->fts_path is the path and 0755 is the mode
                          */
                         mkdirs(-1, p->fts_path, ITEM_PERM_0755);
                     }
@@ -2140,9 +2126,10 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
  * check_submission_dir
  *
  * After files are copied to submission directory, run make -f Makefile clobber
- * and verify everything is okay by checking the submission directory and (if no
- * errors) asking the user if everything seems in order. This function will also
- * use the check_prog_c(), check_Makefile() and check_remarks_md() functions.
+ * (again) and verify everything is okay by checking the submission directory
+ * and (if no errors) asking the user if everything seems in order. This
+ * function will also use the check_prog_c(), check_Makefile() and
+ * check_remarks_md() functions.
  *
  * given:
  *
@@ -2161,12 +2148,6 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
  * NOTE: although we use make -f Makefile clobber, we do NOT want a pointer to
  * the path to the Makefile as we must have it in the submission directory after
  * copy_topdir().
- * NOTE: a sane relative path is a path that does not start with a '/' (however,
- * see comment below about the function canon_path()) and where each
- * component of the path (between the '/' or if no '/' found then the string
- * itself) matches the regexp: '^[0-9A-Za-z._][0-9A-Za-z._+-]*$' (w/o quotes). In
- * other words it is POSIX plus + safe only characters and not a dot file.
- * NOTE: if a path is already in an array and it is found again it is an error.
  */
 static void
 check_submission_dir(struct walk_stat *wstat, char const *context, struct info *infop, char *submit_path,
@@ -2175,8 +2156,8 @@ check_submission_dir(struct walk_stat *wstat, char const *context, struct info *
     intmax_t len = 0;                   /* length of arrays in info struct */
     int exit_code = 0;                  /* for make clobber */
     intmax_t len2 = 0;                  /* length of this function's arrays */
-    struct item *p = NULL;              /* temp value to check lists (arrays) */
-    struct item *p2 = NULL;             /* temp value to check lists */
+    struct item *p = NULL;              /* temp value to check lists (arrays in topdir) */
+    struct item *p2 = NULL;             /* temp value to check lists (arrays in submission directory) */
     struct walk_set *wset_p2 = NULL;	/* pointer to a walk set */
     bool walk_ok = false;               /* true ==> walk okay */
     char const *context2 = NULL;	/* string describing context (tool & options) for debugging purposes */
@@ -2192,7 +2173,10 @@ check_submission_dir(struct walk_stat *wstat, char const *context, struct info *
         not_reached();
     }
     /*
-     * cwd must be >= 0
+     * cwd must be >= 0.
+     *
+     * NOTE: the topdirfd and workdirfd were already closed as we don't need
+     * them in this function.
      */
     if (cwd < 0) {
         err(80, __func__, "original directory file descriptor < 0");
@@ -2207,9 +2191,13 @@ check_submission_dir(struct walk_stat *wstat, char const *context, struct info *
         errp(4, __func__, "unable to change to submission directory: %s", submit_path); /*ooo*/
         not_reached();
     }
-
     /*
-     * run make clobber on Makefile
+     * run make clobber on Makefile.
+     *
+     * NOTE: if this fails it is not an error. However this will mean that files
+     * that should not be included could be included and it also risks violating
+     * the rules/guidelines as not being a modified version of the example
+     * Makefile.
      */
     dbg(DBG_HIGH, "about to perform: make -f Makefile clobber");
     para("",
@@ -2233,7 +2221,13 @@ check_submission_dir(struct walk_stat *wstat, char const *context, struct info *
 		   MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
 		   false);
     /*
-     * walk a file system tree, recording steps
+     * climb a file system tree, recording steps
+     *
+     * NOTE: whereas in scan_topdir() we only use fts_walk() if the user did not
+     * specify a manifest file here we MUST do the fts_walk() because we're
+     * checking the submission directory. We do this as we have to verify that
+     * not only the directory passes the IOCCC rules but also that the directory
+     * matches what was supposed to be copied.
      */
     walk_ok = fts_walk(wstat2);
     if (!walk_ok) {
@@ -2270,7 +2264,7 @@ check_submission_dir(struct walk_stat *wstat, char const *context, struct info *
         len2 = dyn_array_tell(wstat2->counted_dir);
         if (len != len2) {
             err(81, __func__, "number of directories in submission directory differs from topdir: %ju != %ju",
-                    len, len2); /*ooo*/
+                    len, len2);
             not_reached();
         } else {
             for (i = 0; i < len; ++i) {
@@ -2306,7 +2300,7 @@ check_submission_dir(struct walk_stat *wstat, char const *context, struct info *
         len2 = dyn_array_tell(wstat2->file);
         if (len != len2) {
             err(87, __func__, "mismatch in file count in topdir and submission dir: %ju != %ju",
-                    len, len2); /*ooo*/
+                    len, len2);
             not_reached();
         }
         for (i = 0; i < len; ++i) {
@@ -2326,11 +2320,10 @@ check_submission_dir(struct walk_stat *wstat, char const *context, struct info *
             /*
              * depending on what file this is we have to run different checks
              *
-             * NOTE: p is the name in the topdir and fname is in the submission
-             * directory. If they are not the same or the one from the topdir is not
-             * in the submission directory it is added to the missing list (as
-             * above) but here we check the name against that which is in the
-             * submission directory.
+             * NOTE: p2->fts_name is the name from within the submission directory (see
+             * above about fts_walk()) whereas p2->fts_path is the full path
+             * there (i.e. p2->fts_name is the basename and p2->fts_path is the
+             * path in the submission directory).
              */
             if (!strcmp(p2->fts_name, PROG_C_FILENAME)) {
                 if (!quiet) {
@@ -2364,7 +2357,8 @@ check_submission_dir(struct walk_stat *wstat, char const *context, struct info *
     }
 
     /*
-     * show list of directories in the directory listing and verify it is OK
+     * show list of directories in the directory list of the submission
+     * directory and ask user to verify all is OK
      */
     if (wstat2->counted_dir != NULL) {
         len = dyn_array_tell(wstat2->counted_dir);
@@ -6927,19 +6921,14 @@ write_json_files(struct walk_stat *wstat, struct auth *authp, struct info *infop
 	 */
 	if (strcasecmp(p->orig_name, INFO_JSON_FILENAME) == 0) {
 	    p->mark_ptr = "info_JSON";
-
 	} else if (strcmp(p->orig_name, AUTH_JSON_FILENAME) == 0) {
 	    p->mark_ptr = "auth_JSON";
-
 	} else if (strcmp(p->orig_name, PROG_C_FILENAME) == 0) {
 	    p->mark_ptr = "c_src";
-
-	} else if (strcmp(p->orig_name, "Makefile") == 0) {
+	} else if (strcmp(p->orig_name, MAKEFILE_FILENAME) == 0) {
 	    p->mark_ptr = "Makefile";
-
-	} else if (strcmp(p->orig_name, "remarks.md") == 0) {
+	} else if (strcmp(p->orig_name, REMARKS_FILENAME) == 0) {
 	    p->mark_ptr = "remarks";
-
 	/*
 	 * XXX - consider adding the following manifest types - XXX
 	 *
