@@ -62,7 +62,8 @@ static void init_walk_rule(struct walk_rule *wrule_p);
 static void free_walk_set(struct walk_set *wset_p);
 static void init_walk_set(struct walk_set *wset_p, char const *context);
 static void free_item(struct item *i_p);
-static struct item *alloc_item(char const *fts_path, off_t st_size, mode_t st_mode, int_least32_t fts_level);
+static struct item *alloc_item(char const *orig_path, char const *fts_path,
+			       off_t st_size, mode_t st_mode, int_least32_t fts_level);
 static void free_items_in_dyn_array(struct dyn_array *dyn_array_p);
 static bool chk_walk_stat(struct walk_stat *wstat_p);
 static bool match_walk_rule(struct walk_rule *rule_p, struct item *i_p, int indx);
@@ -354,6 +355,22 @@ free_item(struct item *i_p)
     }
 
     /*
+     * free orig_path
+     */
+    if (i_p->orig_path != NULL) {
+	free(i_p->orig_path);
+	i_p->orig_path = NULL;
+    }
+
+    /*
+     * free orig_name
+     */
+    if (i_p->orig_name != NULL) {
+	free(i_p->orig_name);
+	i_p->orig_name = NULL;
+    }
+
+    /*
      * free fts_path
      */
     if (i_p->fts_path != NULL) {
@@ -391,6 +408,7 @@ free_item(struct item *i_p)
  * All of the struct item are calloced, including the struct item itself, are calloced.
  *
  * given:
+ *	orig_path   original pre-canonicalization path
  *	fts_path    "root path" from topdir of the item
  *	st_size	    size, in bytes in the form used by stat(2)
  *	st_mode	    inode protection mode in the form used b by stat(2)
@@ -404,15 +422,20 @@ free_item(struct item *i_p)
  * NOTE: This function does not return on an internal error.
  */
 static struct item *
-alloc_item(char const *fts_path, off_t st_size, mode_t st_mode, int_least32_t fts_level)
+alloc_item(char const *orig_path, char const *fts_path,
+	   off_t st_size, mode_t st_mode, int_least32_t fts_level)
 {
     struct item *i_p;		/* struct item pointer that has been calloced */
 
     /*
      * firewall - catch NULL ptrs
      */
+    if (orig_path == NULL) {
+	err(37, __func__, "called with NULL orig_path");
+	not_reached();
+    }
     if (fts_path == NULL) {
-	err(37, __func__, "called with NULL fts_path");
+	err(38, __func__, "called with NULL fts_path");
 	not_reached();
     }
 
@@ -421,22 +444,38 @@ alloc_item(char const *fts_path, off_t st_size, mode_t st_mode, int_least32_t ft
      */
     i_p = calloc(1, sizeof(struct item));
     if (i_p == NULL) {
-	errp(38, __func__, "failed to calloc 1 struct item");
+	errp(39, __func__, "failed to calloc 1 struct item");
 	not_reached();
     }
+
+    /*
+     * save orig_path information
+     */
+    i_p->orig_path = strdup(orig_path);
+    if (i_p->orig_path == NULL) {
+	errp(40, __func__, "failed strdup of orig_path");
+	not_reached();
+    }
+    i_p->orig_pathlen = strlen(i_p->orig_path);
+
+    /*
+     * obtain the basename of the original path
+     */
+    i_p->orig_name = base_name(i_p->orig_path);
+    i_p->orig_namelen = strlen(i_p->orig_name);
 
     /*
      * duplicate the fts_name
      */
     i_p->fts_path = strdup(fts_path);
     if (i_p->fts_path == NULL) {
-	errp(39, __func__, "failed strdup of fts_path");
+	errp(41, __func__, "failed strdup of fts_path");
 	not_reached();
     }
     i_p->fts_pathlen = strlen(i_p->fts_path);
 
     /*
-     * obtain the basename of the original path
+     * obtain the basename of the path
      */
     i_p->fts_name = base_name(i_p->fts_path);
     i_p->fts_namelen = strlen(i_p->fts_name);
@@ -455,6 +494,19 @@ alloc_item(char const *fts_path, off_t st_size, mode_t st_mode, int_least32_t ft
      * save st_mode
      */
     i_p->st_mode = st_mode;
+
+    /*
+     * initialize marks
+     *
+     * IMPORTANT: This is the ONLY place in the walk code that uses marks.
+     *		  These mark values are for the used by calling functions ONLY.
+     */
+    i_p->mark_bool = false;
+    i_p->mark_intmax = 0;
+    i_p->mark_size = 0;
+    i_p->mark_off = 0;
+    i_p->mark_mode = 0;
+    i_p->mark_ptr = NULL;
 
     /*
      * return calloced struct item
@@ -482,11 +534,11 @@ free_items_in_dyn_array(struct dyn_array *dyn_array_p)
      * firewall - catch NULL ptrs
      */
     if (dyn_array_p == NULL) {
-	err(40, __func__, "called with NULL dyn_array_p");
+	err(42, __func__, "called with NULL dyn_array_p");
 	not_reached();
     }
     if (dyn_array_p->data == NULL) {
-	err(41, __func__, "dyn_array_p->data is NULL");
+	err(43, __func__, "dyn_array_p->data is NULL");
 	not_reached();
     }
 
@@ -527,7 +579,7 @@ free_walk_stat(struct walk_stat *wstat_p)
      * firewall - catch NULL ptrs
      */
     if (wstat_p == NULL) {
-	err(42, __func__, "called with NULL wstat_p");
+	err(44, __func__, "called with NULL wstat_p");
 	not_reached();
     }
 
@@ -832,19 +884,19 @@ init_walk_stat(struct walk_stat *wstat_p, char const *topdir, struct walk_set *s
      * firewall - catch NULL ptrs
      */
     if (wstat_p == NULL) {
-	err(43, __func__, "called with NULL wstat_p");
+	err(45, __func__, "called with NULL wstat_p");
 	not_reached();
     }
     if (topdir == NULL) {
-	err(44, __func__, "called with NULL topdir");
+	err(46, __func__, "called with NULL topdir");
 	not_reached();
     }
     if (set == NULL) {
-	err(45, __func__, "called with NULL set");
+	err(47, __func__, "called with NULL set");
 	not_reached();
     }
     if (context == NULL) {
-	err(46, __func__, "called with NULL context");
+	err(48, __func__, "called with NULL context");
 	not_reached();
     }
 
@@ -864,7 +916,7 @@ init_walk_stat(struct walk_stat *wstat_p, char const *topdir, struct walk_set *s
      */
     wstat_p->topdir = strdup(topdir);
     if (wstat_p->topdir == NULL) {
-	errp(47,  __func__, "failed to strdup topdir string");
+	errp(49,  __func__, "failed to strdup topdir string");
 	not_reached();
     }
     wstat_p->topdir_len = strlen(wstat_p->topdir);
@@ -1973,11 +2025,11 @@ skip_add(struct walk_stat *wstat_p, char const *fts_path)
      * firewall - catch NULL ptrs
      */
     if (wstat_p == NULL) {
-	err(48, __func__, "called with NULL wstat_p");
+	err(50, __func__, "called with NULL wstat_p");
 	not_reached();
     }
     if (fts_path == NULL) {
-	err(49, __func__, "called with NULL fts_path");
+	err(51, __func__, "called with NULL fts_path");
 	not_reached();
     }
 
@@ -1988,7 +2040,7 @@ skip_add(struct walk_stat *wstat_p, char const *fts_path)
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(50, __func__, "wstat_p failed the chk_walk_stat function test suite");
+	err(52, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
 
@@ -1999,7 +2051,7 @@ skip_add(struct walk_stat *wstat_p, char const *fts_path)
     cpath = canonicalize_path(wstat_p, fts_path, NULL, NULL, &deep);
     /* paranoia */
     if (cpath == NULL) {
-	err(51, __func__, "canonicalize_path had an internal failure and returned NULL");
+	err(53, __func__, "canonicalize_path had an internal failure and returned NULL");
 	not_reached();
     }
 
@@ -2015,7 +2067,7 @@ skip_add(struct walk_stat *wstat_p, char const *fts_path)
     /*
      * form an allocated item
      */
-    i_p = alloc_item(cpath, 0, 0, deep);
+    i_p = alloc_item(fts_path, cpath, 0, 0, deep);
     (void) dyn_array_append_value(wstat_p->skip_set, &i_p);
 
     /*
@@ -2100,11 +2152,11 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
      * firewall - catch NULL ptrs
      */
     if (wstat_p == NULL) {
-	err(52, __func__, "called with NULL wstat_p");
+	err(54, __func__, "called with NULL wstat_p");
 	not_reached();
     }
     if (fts_path == NULL) {
-	err(53, __func__, "called with NULL fts_path");
+	err(55, __func__, "called with NULL fts_path");
 	not_reached();
     }
 
@@ -2115,7 +2167,7 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(54, __func__, "wstat_p failed the chk_walk_stat function test suite");
+	err(56, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
 
@@ -2126,7 +2178,7 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
     cpath = canonicalize_path(wstat_p, fts_path, &sanity, &path_len, &deep);
     /* paranoia */
     if (cpath == NULL) {
-	err(55, __func__, "canonicalize_path had an internal failure and returned NULL");
+	err(57, __func__, "canonicalize_path had an internal failure and returned NULL");
 	not_reached();
     }
 
@@ -2174,7 +2226,7 @@ record_step(struct walk_stat *wstat_p, char const *fts_path, off_t st_size, mode
     /*
      * form an allocated item
      */
-    i_p = alloc_item(cpath, st_size, st_mode, deep);
+    i_p = alloc_item(fts_path, cpath, st_size, st_mode, deep);
 
     /*
      * first, record every item in the all dynamic array
@@ -2532,19 +2584,19 @@ fprintf_dyn_array_item(FILE *stream, char const *element_name, struct dyn_array 
      * firewall - catch NULL ptrs
      */
     if (stream == NULL) {
-	err(56, __func__, "called with NULL stream");
+	err(58, __func__, "called with NULL stream");
 	not_reached();
     }
     if (element_name == NULL) {
-	err(57, __func__, "called with NULL element_name");
+	err(59, __func__, "called with NULL element_name");
 	not_reached();
     }
     if (dyn_array_p == NULL) {
-	err(58, __func__, "called with NULL dyn_array_p");
+	err(60, __func__, "called with NULL dyn_array_p");
 	not_reached();
     }
     if (dyn_array_p->data == NULL) {
-	err(59, __func__, "called with NULL dyn_array_p->data for: %s", element_name);
+	err(61, __func__, "called with NULL dyn_array_p->data for: %s", element_name);
 	not_reached();
     }
 
@@ -2598,11 +2650,11 @@ fprintf_walk_stat(FILE *stream, struct walk_stat *wstat_p)
      * firewall - catch NULL ptrs
      */
     if (stream == NULL) {
-	err(60, __func__, "called with NULL stream");
+	err(62, __func__, "called with NULL stream");
 	not_reached();
     }
     if (wstat_p == NULL) {
-	err(61, __func__, "called with NULL wstat_p");
+	err(63, __func__, "called with NULL wstat_p");
 	not_reached();
     }
 
@@ -2622,7 +2674,7 @@ fprintf_walk_stat(FILE *stream, struct walk_stat *wstat_p)
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(62, __func__, "wstat_p failed the chk_walk_stat function test suite");
+	err(64, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
     wset_p = wstat_p->set;
@@ -2761,23 +2813,23 @@ fprintf_walk_set(FILE *stream, struct walk_set *wset_p)
      * firewall - catch NULL ptrs
      */
     if (stream == NULL) {
-	err(63, __func__, "called with NULL stream");
+	err(65, __func__, "called with NULL stream");
 	not_reached();
     }
     if (wset_p == NULL) {
-	err(64, __func__, "called with NULL wset_p");
+	err(66, __func__, "called with NULL wset_p");
 	not_reached();
     }
     if (wset_p->name == NULL) {
-	err(65, __func__, "called with NULL wset_p->name");
+	err(67, __func__, "called with NULL wset_p->name");
 	not_reached();
     }
     if (wset_p->context == NULL) {
-	err(66, __func__, "called with NULL wset_p->context");
+	err(68, __func__, "called with NULL wset_p->context");
 	not_reached();
     }
     if (wset_p->rule == NULL) {
-	err(67, __func__, "called with NULL wset_p->rule");
+	err(69, __func__, "called with NULL wset_p->rule");
 	not_reached();
     }
 
@@ -3190,7 +3242,7 @@ sort_walk_stat(struct walk_stat *wstat_p)
      * firewall - catch NULL ptrs
      */
     if (wstat_p == NULL) {
-	err(68, __func__, "called with NULL wstat_p");
+	err(70, __func__, "called with NULL wstat_p");
 	not_reached();
     }
 
@@ -3201,7 +3253,7 @@ sort_walk_stat(struct walk_stat *wstat_p)
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(69, __func__, "wstat_p failed the chk_walk_stat function test suite");
+	err(71, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
 
@@ -3304,7 +3356,7 @@ sort_walk_istat(struct walk_stat *wstat_p)
      * firewall - catch NULL ptrs
      */
     if (wstat_p == NULL) {
-	err(70, __func__, "called with NULL wstat_p");
+	err(72, __func__, "called with NULL wstat_p");
 	not_reached();
     }
 
@@ -3315,7 +3367,7 @@ sort_walk_istat(struct walk_stat *wstat_p)
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(71, __func__, "wstat_p failed the chk_walk_stat function test suite");
+	err(73, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
 
@@ -3446,7 +3498,7 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
      * firewall - catch NULL ptrs
      */
     if (wstat_p == NULL) {
-	err(72, __func__, "called with NULL wstat_p");
+	err(74, __func__, "called with NULL wstat_p");
 	not_reached();
     }
 
@@ -3457,7 +3509,7 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(73, __func__, "wstat_p failed the chk_walk_stat function test suite");
+	err(75, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
     wset_p = wstat_p->set;
@@ -3510,7 +3562,7 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 		    fmsg(stream, "   prohibited %s%s: %s",
 				 (i_p->st_size ? "" : "empty "), file_type_name(i_p->st_mode), i_p->fts_path);
 		} else {
-		    err(74, __func__, "item[%d] fts_path #0 is NULL", i);
+		    err(76, __func__, "item[%d] fts_path #0 is NULL", i);
 		    not_reached();
 		}
 	    }
@@ -3540,7 +3592,7 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 		if (i_p != NULL) {
 		    fmsg(stream, "   %s is too deep: %s", file_type_name(i_p->st_mode), i_p->fts_path);
 		} else {
-		    err(75, __func__, "item[%d] fts_path #1 is NULL", i);
+		    err(77, __func__, "item[%d] fts_path #1 is NULL", i);
 		    not_reached();
 		}
 	    }
@@ -3570,7 +3622,7 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 		if (i_p != NULL) {
 		    fmsg(stream, "   %s has an unsafe path: %s", file_type_name(i_p->st_mode), i_p->fts_path);
 		} else {
-		    err(76, __func__, "item[%d] fts_path #2 is NULL", i);
+		    err(78, __func__, "item[%d] fts_path #2 is NULL", i);
 		    not_reached();
 		}
 	    }
@@ -3600,7 +3652,7 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 		if (i_p != NULL) {
 		    fmsg(stream, "   %s has an absolute path: %s", file_type_name(i_p->st_mode), i_p->fts_path);
 		} else {
-		    err(77, __func__, "item[%d] fts_path #3 is NULL", i);
+		    err(79, __func__, "item[%d] fts_path #3 is NULL", i);
 		    not_reached();
 		}
 	    }
@@ -3630,7 +3682,7 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 		if (i_p != NULL) {
 		    fmsg(stream, "   %s path is too long: %s", file_type_name(i_p->st_mode), i_p->fts_path);
 		} else {
-		    err(78, __func__, "item[%d] fts_path #4 is NULL", i);
+		    err(80, __func__, "item[%d] fts_path #4 is NULL", i);
 		    not_reached();
 		}
 	    }
@@ -3660,7 +3712,7 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 		if (i_p != NULL) {
 		    fmsg(stream, "   %s has path element that is too long: %s", file_type_name(i_p->st_mode), i_p->fts_path);
 		} else {
-		    err(79, __func__, "item[%d] fts_path #5 is NULL", i);
+		    err(81, __func__, "item[%d] fts_path #5 is NULL", i);
 		    not_reached();
 		}
 	    }
@@ -3690,7 +3742,7 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 		if (i_p != NULL) {
 		    fmsg(stream, "   %s causing a hierarchy traverse error: %s", file_type_name(i_p->st_mode), i_p->fts_path);
 		} else {
-		    err(80, __func__, "item[%d] fts_path #6 is NULL", i);
+		    err(82, __func__, "item[%d] fts_path #6 is NULL", i);
 		    not_reached();
 		}
 	    }
@@ -3790,19 +3842,19 @@ fts_cmp(const FTSENT **a, const FTSENT **b)
      */
     if (a == NULL) {
 	fprintf(stderr, "%s: a is NULL\n", __func__);
-	exit(81);
+	exit(83);
     }
     if (b == NULL) {
 	fprintf(stderr, "%s: b is NULL\n", __func__);
-	exit(82);
+	exit(84);
     }
     if (*a == NULL) {
 	fprintf(stderr, "%s: *a is NULL\n", __func__);
-	exit(83);
+	exit(85);
     }
     if (*b == NULL) {
 	fprintf(stderr, "%s: *b is NULL\n", __func__);
-	exit(84);
+	exit(86);
     }
 
     /*
@@ -3872,19 +3924,19 @@ fts_icmp(const FTSENT **a, const FTSENT **b)
      */
     if (a == NULL) {
 	fprintf(stderr, "%s: a is NULL\n", __func__);
-	exit(85);
+	exit(87);
     }
     if (b == NULL) {
 	fprintf(stderr, "%s: b is NULL\n", __func__);
-	exit(86);
+	exit(88);
     }
     if (*a == NULL) {
 	fprintf(stderr, "%s: *a is NULL\n", __func__);
-	exit(87);
+	exit(89);
     }
     if (*b == NULL) {
 	fprintf(stderr, "%s: *b is NULL\n", __func__);
-	exit(88);
+	exit(90);
     }
 
     /*
@@ -3952,30 +4004,30 @@ record_fts_err(struct walk_stat *wstat_p, char const *path, off_t st_size, mode_
      * firewall - catch NULL ptrs
      */
     if (wstat_p == NULL) {
-	err(89, __func__, "called with NULL wstat_p");
+	err(91, __func__, "called with NULL wstat_p");
 	not_reached();
     }
     if (wstat_p->fts_err == NULL) {
-        err(90, __func__, "called with NULL wstat_p->fts_err");
+        err(92, __func__, "called with NULL wstat_p->fts_err");
         not_reached();
     }
     if (wstat_p->prune == NULL) {
-        err(91, __func__, "called with NULL wstat_p->prune");
+        err(93, __func__, "called with NULL wstat_p->prune");
         not_reached();
     }
     if (wstat_p->all == NULL) {
-        err(92, __func__, "called with NULL wstat_p->all");
+        err(94, __func__, "called with NULL wstat_p->all");
         not_reached();
     }
     if (path == NULL) {
-	err(93, __func__, "called with path topdir");
+	err(95, __func__, "called with path topdir");
 	not_reached();
     }
 
     /*
      * form an allocated item
      */
-    i_p = alloc_item(path, st_size, st_mode, fts_level);
+    i_p = alloc_item(path, path, st_size, st_mode, fts_level);
 
     /*
      * add path to fts_err
@@ -4034,7 +4086,7 @@ fts_walk(struct walk_stat *wstat_p)
      * firewall
      */
     if (wstat_p == NULL) {
-	err(94, __func__, "wstat_p is NULL");
+	err(96, __func__, "wstat_p is NULL");
 	not_reached();
     }
 
@@ -4045,7 +4097,7 @@ fts_walk(struct walk_stat *wstat_p)
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(95, __func__, "wstat_p failed the chk_walk_stat function test suite");
+	err(97, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
 
@@ -4820,15 +4872,15 @@ path_in_item_array(struct dyn_array *item_array, char const *c_path)
      * firewall
      */
     if (item_array == NULL) {
-	err(96, __func__, "item_array is NULL");
+	err(98, __func__, "item_array is NULL");
 	not_reached();
     }
     if (c_path == NULL) {
-	err(97, __func__, "c_path is NULL");
+	err(99, __func__, "c_path is NULL");
 	not_reached();
     }
     if (item_array->elm_size != sizeof(struct item *)) {
-	err(98, __func__, "item_array->elm_size: %zu != sizeof(struct item *): %zu",
+	err(100, __func__, "item_array->elm_size: %zu != sizeof(struct item *): %zu",
 			  item_array->elm_size, sizeof(struct item *));
 	not_reached();
     }
@@ -4929,11 +4981,11 @@ path_in_walk_stat(struct walk_stat *wstat_p, char const *c_path)
      * firewall
      */
     if (wstat_p == NULL) {
-	err(99, __func__, "wstat_p is NULL");
+	err(101, __func__, "wstat_p is NULL");
 	not_reached();
     }
     if (c_path == NULL) {
-	err(100, __func__, "c_path is NULL");
+	err(102, __func__, "c_path is NULL");
 	not_reached();
     }
 
@@ -4944,7 +4996,7 @@ path_in_walk_stat(struct walk_stat *wstat_p, char const *c_path)
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(101, __func__, "wstat_p failed the chk_walk_stat function test suite");
+	err(103, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
 

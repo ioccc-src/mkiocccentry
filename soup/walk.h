@@ -186,6 +186,24 @@ struct item {
     int_least32_t fts_level;	/* fts_path depth, 0 ==> topdir, 1 ==> directly under topdir, 2 ==> in sub-dir under topdir */
     off_t st_size;              /* file size, in bytes in struct stat st_size form */
     mode_t st_mode;             /* inode protection mode in struct stat st_mode form */
+
+    /*
+     * pre-canonicalization information
+     */
+    char *orig_path;        /* malloced copy of the "root path" from topdir before canonicalization */
+    size_t orig_pathlen;    /* strlen(orig_path) */
+    char *orig_name;        /* malloced copy of the "original file name", i.e., basename of orig_path */
+    size_t orig_namelen;    /* strlen(orig_name) */
+
+    /*
+     * marks - values for calling functions that alloc_item() initializes, other otherwise is unused by walk code
+     */
+    bool mark_bool;		/* for use by calling function ONLY, initialized to false */
+    intmax_t mark_intmax;	/* for use by calling function ONLY, initialized to 0 */
+    size_t mark_size;		/* for use by calling function ONLY, initialized to 0 */
+    off_t mark_off;		/* for use by calling function ONLY, initialized to 0 */
+    mode_t mark_mode;		/* for use by calling function ONLY, initialized to 0 */
+    void *mark_ptr;		/* for use by calling function ONLY, initialized to NULL */
 };
 
 

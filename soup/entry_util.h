@@ -275,7 +275,6 @@ struct info
      */
     char const *info_file;	/* .info.json filename */
     char const *auth_file;	/* .auth.json filename */
-    size_t extra_count;		/* number of extra files */
 
     /*
      * .info.json information after the file name array
