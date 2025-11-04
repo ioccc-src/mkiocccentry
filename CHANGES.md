@@ -55,6 +55,9 @@ Typo fix in `soup/walk_util.c`.
 
 Updated `MKIOCCCENTRY_VERSION` to `"2.1.9 2025-11-03"`.
 
+Fix semantics errors from the `.info.json` file updates.
+
+
 ## Release 2.8.8 2025-11-03
 
 Further address #1324. The `-M manifest` and `-X ignore` options were added
