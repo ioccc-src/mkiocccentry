@@ -180,8 +180,9 @@ For instance:
 ```sh
 ./mkiocccentry -h
 ./iocccsize -h
-./chkentry -h
+./chksubmit -h
 ./txzchk -h
+./soup/location -h
 ./test_ioccc/fnamchk -h
 ```
 
@@ -197,21 +198,23 @@ For example:
 ```sh
 man man/man1/mkiocccentry.1
 man man/man1/iocccsize.1
-man man/man1/chkentry.1
+man man/man1/chksubmit.1
 man man/man1/txzchk.1
+man man/man1/location.1
 man man/man1/fnamchk.1
 ```
 
 There are many other man pages under the `man/` directory for the curious to
-read, using a similar technique.
+read, using a similar technique. Of course if you have installed the toolkit
+then you don't need to specify the path.
 
 If all that fails to satisfy your curiosity, we recommend you _"use the source,
 Luke!"_ as you may find the code in this repo reasonably unobfuscated and fairly
 well commented.
 
 **NOTE**: there are other tools not listed above that are not an important part
-of participating in the contest; look at the man pages, the Makefiles or
-compiled tools for more details.
+of participating in the contest, at least not directly; look at the man pages,
+the Makefiles or compiled tools (or source code) for more details.
 
 
 <div id="bugs"></div>
