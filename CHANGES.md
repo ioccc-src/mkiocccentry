@@ -32,6 +32,28 @@ Updated `INFO_VERSION` to "1.19 2025-11-03"
 Updated `CHKENTRY_VERSION` to "2.1.8 2025-11-03"
 Updated `MIN_TIMESTAMP` to **1762222634**.
 
+Fixes and modularisation for issue #1324. The scanning of the topdir must NOT
+check for forbidden files (of all kinds). Instead of calling `copy_topdir()`
+directly `scan_topdir()` now calls `show_copy_list()` (new function) which then
+calls `copy_topdir()` which then calls `check_submission_dir()`. When copying
+files in `copy_topdir()` we must skip the list of pruned files. When showing (in
+the new function `show_copy_list()`) the list of files and directories to be
+ignored and copied skip files that are in the prune list. When copying files and
+making directories in the submission directory skip files and directories in the
+prune list. When checking files and directories in `check_submission_dir()`
+don't check the length of the arrays; instead just check the submission
+directory arrays. This is because the topdir CAN (depending on the topdir in
+question) have a different number of files and directories. This happens because
+files and directories that are in submission directory can be (and are in the
+case pruned files and/or directories were in the topdir) a different number. The
+user will have to instead verify the submission directory but given that the
+user is given multiple chances this should be fine.
+
+Minor format fixes in txzchk.c.
+
+Typo fix in `soup/walk_util.c`.
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.1.9 2025-11-03"`.
 
 ## Release 2.8.8 2025-11-03
 

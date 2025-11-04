@@ -233,6 +233,8 @@ static void scan_topdir(struct walk_stat *wstat, char const *context, struct inf
         char const *submission_dir, RuleCount *size, struct walk_stat *wstat2);
 static void copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, char const *make,
         char const *submission_dir, char *submit_path, RuleCount *size, struct walk_stat *wstat2);
+static void show_copy_list(struct walk_stat *wstat, char const *context, struct info *infop, char const *make,
+        char const *submission_dir, char *submit_path, RuleCount *size, struct walk_stat *wstat2);
 static void check_submission_dir(struct walk_stat *wstat, char const *context, struct info *infop,
         char *submit_path, char const *make, RuleCount *size, struct walk_stat *wstat2);
 static void usage(int exitcode, char const *program, char const *str) __attribute__((noreturn));
@@ -1418,7 +1420,8 @@ main(int argc, char *argv[])
  *
  * If no errors are encountered during traversal, and if prog.c, Makefile and
  * remarks.md exist and if chk_walk() checks out okay then this function will
- * call copy_topdir().
+ * call show_copy_list() which will then, assuming everything is confirmed by the
+ * user, call copy_topdir().
  *
  * given:
  *      wstat           - pointer to walk_stat struct used in walking (climbing :-) ) topdir
@@ -1535,60 +1538,45 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
     sort_walk_istat(wstat);
 
     /*
-     * end walk and check if the walk was successful
+     * do NOT chk_walk() here as this will cause problems with illegal files;
+     * this check has to be done in check_submission_dir() on the submission
+     * directory, not the topdir!
      */
-    walk_ok = chk_walk(wstat, stderr, MAX_EXTRA_FILE_COUNT, MAX_EXTRA_DIR_COUNT, NO_COUNT, NO_COUNT, true);
-    if (walk_ok) {
-        dbg(DBG_LOW, "%s walk was successful for: %s", context, topdir);
-    } else {
-        err(4, MKIOCCCENTRY_BASENAME, "topdir is invalid: %s", topdir); /*ooo*/
-        not_reached();
-    }
 
     /*
      * copy everything over (presenting user with lists first)
      */
-    copy_topdir(wstat, context, infop, make, submission_dir, submit_path, size, wstat2);
+    show_copy_list(wstat, context, infop, make, submission_dir, submit_path, size, wstat2);
 
     return;
 }
 
-
 /*
- * copy_topdir
+ * show_copy_list
  *
- * Copy files/directories from topdir to submission directory if user says
- * everything is okay (the lists of files/directories are created in the
- * function scan_topdir()).
+ * After traversing the topdir in scan_topdir() we ask the user to verify the
+ * files and directories. If they say everything is okay we will call
+ * copy_topdir() to copy the files over.
  *
  * given:
- *      wstat           - pointer to struct walk_stat from scan_topdir()
- *      context         - context from scan_topdir()
- *      infop           - pointer to info struct from scan_topdir()
- *      make            - path to make(1) (for check_submission_dir())
- *      submission_dir  - submission directory path under workdir
- *      submit_path     - absolute path of submit directory under workdir (from
- *                        scan_topdir())
- *      wstat2          - pointer to submission directory walk_stat (for main())
+ *      wstat           - pointer to walk_stat struct used in walking (climbing :-) ) topdir
+ *      context		- string describing context (tool & options) for debugging purposes
+ *      infop           - pointer to struct info (passed down to check_submission_dir())
+ *      make            - path to make(1) for check_submission_dir() (called from
+ *                        copy_topdir())
+ *      submission_dir  - submission directory
+ *      size            - pointer to RuleCount for iocccsize(1) (via
+ *                        check_prog_c())
+ *      wstat2          - pointer to struct walk_stat for submission directory
  *
- * This function takes the lists from which scan_topdir() created (as it
- * traversed and checked the topdir) and lists them to the user (it also shows
- * the files that the user requested to ignore as well as files/directories we
- * ignore, and if any are not empty it shows the user those lists too).
- *
- * Assuming the user agrees that everything is okay this function will copy the
- * files to the submission directory. Assuming that goes well the
- * check_submission_dir() function will be called.
- *
- * NOTE: this function does not return on NULL pointers or errors, including the
- * user saying not everything is well and cwd and topdirfd < 0.
+ * NOTE: this function does not return on NULL pointers.
+ * NOTE: if an error is encountered it is an error.
  */
 static void
-copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, char const *make,
-	    char const *submission_dir, char *submit_path, RuleCount *size, struct walk_stat *wstat2)
+show_copy_list(struct walk_stat *wstat, char const *context, struct info *infop, char const *make,
+        char const *submission_dir, char *submit_path, RuleCount *size, struct walk_stat *wstat2)
 {
-    char *target_path = NULL;       /* target file path (absolute) */
-    char *fname = NULL;             /* filename can't be freed so we need another variable */
+    char *topdir = NULL;        /* will point to wstat->topdir */
     struct item *p = NULL;          /* temp value to print lists (arrays) */
     intmax_t len = 0;               /* length of arrays */
     bool yorn = false;              /* for prompts to ask user if everything is OK */
@@ -1599,10 +1587,11 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
      * firewall
      */
     if (wstat == NULL || context == NULL || infop == NULL || make == NULL || submission_dir == NULL ||
-            wstat->topdir == NULL || submit_path == NULL || size == NULL || wstat2 == NULL) {
-        err(4, __func__, "passed NULL pointer(s)"); /*ooo*/
+	submit_path == NULL || size == NULL || wstat2 == NULL) {
+        err(48, __func__, "passed NULL pointer(s)");
         not_reached();
     }
+
     if (topdirfd < 0) {
         err(4, __func__, "invalid topdir file descriptors"); /*ooo*/
         not_reached();
@@ -1611,6 +1600,23 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
         err(4, __func__, "invalid cwd file descriptors"); /*ooo*/
         not_reached();
     }
+
+
+    /*
+     * easier access of topdir
+     */
+    topdir = wstat->topdir;
+    /*
+     * paranoia
+     */
+    if (topdir == NULL) {
+        topdir = ".";
+    }
+
+    /*
+     * even though we already sorted the list, sort the list again.
+     */
+    sort_walk_istat(wstat);
 
     /*
      * If -Y is not used and -i answers is used we need to temporarily disable
@@ -1685,21 +1691,21 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
     }
 
     /*
-     * we need to show the user the list of ignored directories, if any
+     * we need to show the user the list of ignored paths, if any
      */
     if (wstat->prune != NULL) {
         len = dyn_array_tell(wstat->prune);
         if (len > 0) {
-            para("The following is a list of directories that will be ignored:",
+            para("The following is a list of paths that will be ignored:",
                  "",
                  NULL);
             for (i = 0; i < len; ++i) {
                 p = dyn_array_value(wstat->prune, struct item *, i);
                 if (p == NULL) {
-                    err(55, __func__, "found NULL pointer in ignored dirname list, element: %jd", i);
+                    err(55, __func__, "found NULL pointer in ignored paths list, element: %jd", i);
                     not_reached();
                 } else if (p->fts_path == NULL) {
-                    err(56, __func__, "found NULL path in ignored dirname list, element: %jd", i);
+                    err(56, __func__, "found NULL path in ignored paths list, element: %jd", i);
                     not_reached();
                 }
                 print("%s\n", p->fts_path);
@@ -1715,92 +1721,7 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
                 if (!yorn) {
                     print("we suggest you fix your %s directory,\ndelete %s and try again\n",
                             wstat->topdir, submit_path);
-                    err(5, __func__, "aborting because user said ignored directories list is not OK"); /*ooo*/
-                    not_reached();
-                }
-            }
-        }
-    }
-
-    /*
-     * we need to show the user the list of unsafe POSIX plus + char directory
-     * names, if any
-     */
-    if (wstat->unsafe != NULL) {
-        len = dyn_array_tell(wstat->unsafe);
-        if (len > 0) {
-            if (need_hints) {
-                para("",
-                    "We ignore files and directories that do not match the regexp:",
-                    "",
-                    "\t^[0-9A-Za-z._][0-9A-Za-z._+-]*$",
-                    "",
-                    "because they are not POSIX plus + chars only."
-                    "",
-                    NULL);
-            }
-            para("",
-                    "The following is a list of unsafe directory names that will be ignored:",
-                    "",
-                    NULL);
-
-            for (i = 0; i < len; ++i) {
-                p = dyn_array_value(wstat->unsafe, struct item *, i);
-                if (p == NULL) {
-                    err(57, __func__, "found NULL pointer in unsafe directory names list, element: %jd", i);
-                    not_reached();
-                } else if (p->fts_path == NULL) {
-                    err(58, __func__, "found NULL path in unsafe directory name list, element: %jd\n", i);
-                    not_reached();
-                }
-                print("%s\n", p->fts_path);
-            }
-            if (!answer_yes) {
-                para("",
-                     "If you do not agree to this you will have to fix your topdir",
-                     "and try again.",
-                     NULL);
-                yorn = yes_or_no("\nDo you wish to continue? [Yn]", true);
-                if (!yorn) {
-                    print("we suggest you fix your %s directory,\ndelete %s and try again\n",
-                            wstat->topdir, submit_path);
-                    err(5, __func__, "aborting because user said unsafe directory names list is not OK"); /*ooo*/
-                    not_reached();
-                }
-            }
-        }
-    }
-
-    /*
-     * we need to show any forbidden filenames to the user
-     */
-    if (wstat->prohibit != NULL) {
-        len = dyn_array_tell(wstat->prohibit);
-        if (len > 0) {
-            para("The following is a list of forbidden paths that will be ignored:",
-                 "",
-                 NULL);
-            for (i = 0; i < len; ++i) {
-                p = dyn_array_value(wstat->prohibit, struct item *, i);
-                if (p == NULL) {
-                    err(59, __func__, "found NULL pointer in forbidden paths list, element: %jd", i);
-                    not_reached();
-                } else if (p->fts_path == NULL) {
-                    err(60, __func__, "found NULL path in forbidden paths list, element: %jd", i);
-                    not_reached();
-                }
-                print("%s\n", p->fts_path);
-            }
-            if (!answer_yes) {
-                para("",
-                     "If you do not agree to this you will have to fix your topdir",
-                     "and try again.",
-                     NULL);
-                yorn = yes_or_no("\nDo you wish to continue? [Yn]", true);
-                if (!yorn) {
-                    print("we suggest you fix your %s directory,\ndelete %s and try again\n",
-                            wstat->topdir, submit_path);
-                    err(5, __func__, "aborting because user said forbidden files list is not OK"); /*ooo*/
+                    err(5, __func__, "aborting because user said ignored paths list is not OK"); /*ooo*/
                     not_reached();
                 }
             }
@@ -1873,6 +1794,8 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
                 } else if (p->fts_path == NULL) {
                     err(64, __func__, "found NULL path in directories list, element: %jd", i);
                     not_reached();
+                } else if (path_in_item_array(wstat->prune, p->fts_path) != NULL) {
+                    continue;
                 }
                 print("%s\n", p->fts_path);
             }
@@ -1923,6 +1846,8 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
                 } else if (p->fts_path == NULL) {
                     err(66, __func__, "found NULL path in files list, element: %jd", i);
                     not_reached();
+                } else if (path_in_item_array(wstat->prune, p->fts_path) != NULL) {
+                    continue;
                 }
                 total_file_size += p->st_size;
                 print("%s\n", p->fts_path);
@@ -1950,140 +1875,197 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
                     not_reached();
                 }
             }
+        }
+    }
 
+    /*
+     * copy everything over (presenting user with lists first)
+     */
+    copy_topdir(wstat, context, infop, make, submission_dir, submit_path, size, wstat2);
+
+    return;
+}
+
+/*
+ * copy_topdir
+ *
+ * Copy files/directories from topdir to submission directory.
+ *
+ * given:
+ *      wstat           - pointer to struct walk_stat from scan_topdir()
+ *      context         - context from scan_topdir()
+ *      infop           - pointer to info struct from scan_topdir()
+ *      make            - path to make(1) (for check_submission_dir())
+ *      submission_dir  - submission directory path under workdir
+ *      submit_path     - absolute path of submit directory under workdir (from
+ *                        scan_topdir())
+ *      wstat2          - pointer to submission directory walk_stat (for main())
+ *
+ * This function takes the lists from which scan_topdir() created (as it
+ * traversed and checked the topdir) and lists them to the user (it also shows
+ * the files that the user requested to ignore as well as files/directories we
+ * ignore, and if any are not empty it shows the user those lists too).
+ *
+ * Assuming the user agrees that everything is okay this function will copy the
+ * files to the submission directory. Assuming that goes well the
+ * check_submission_dir() function will be called.
+ *
+ * NOTE: this function does not return on NULL pointers or errors, including the
+ * user saying not everything is well and cwd and topdirfd < 0.
+ */
+static void
+copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, char const *make,
+	    char const *submission_dir, char *submit_path, RuleCount *size, struct walk_stat *wstat2)
+{
+    char *target_path = NULL;       /* target file path (absolute) */
+    char *fname = NULL;             /* filename can't be freed so we need another variable */
+    struct item *p = NULL;          /* temp value to print lists (arrays) */
+    intmax_t len = 0;               /* length of arrays */
+    int ret;			    /* libc function return */
+    intmax_t i = 0;                 /* index into arrays */
+
+    /*
+     * firewall
+     */
+    if (wstat == NULL || context == NULL || infop == NULL || make == NULL || submission_dir == NULL ||
+            wstat->topdir == NULL || submit_path == NULL || size == NULL || wstat2 == NULL) {
+        err(4, __func__, "passed NULL pointer(s)"); /*ooo*/
+        not_reached();
+    }
+    /*
+     * make the necessary subdirectories, if any
+     */
+    if (wstat->counted_dir != NULL) {
+        len = dyn_array_tell(wstat->counted_dir);
+        if (len > 0) {
             /*
-             * make the necessary subdirectories, if any
+             * we have to get to the submission dir before we can make
+             * directories
              */
-            if (wstat->counted_dir != NULL) {
-                len = dyn_array_tell(wstat->counted_dir);
-                if (len > 0) {
-
-                    /*
-                     * we have to get to the submission dir before we can make
-                     * directories
-                     */
-                    errno = 0;      /* pre-clear errno for errp() */
-                    if (chdir(submission_dir) != 0) {
-                        errp(4, __func__, "chdir(\"%s\") failed", submission_dir); /*ooo*/
-                        not_reached();
-                    }
-
-                    for (i = 0; i < len; ++i) {
-                        /*
-                         * make the directories under the submission directory
-                         */
-                        p = dyn_array_value(wstat->counted_dir, struct item *, i);
-                        if (p == NULL) {
-                            err(67, __func__, "found NULL pointer in directories list, element: %jd", i);
-                            not_reached();
-                        } else if (p->fts_path == NULL) {
-                            err(68, __func__, "found NULL path in directories list, element: %jd", i);
-                            not_reached();
-                        }
-
-                        /*
-                         * create path: -1 is from current (working) directory,
-                         * p->fts_path is the path and 0755 is the mode
-                         */
-                        mkdirs(-1, p->fts_path, ITEM_PERM_0755);
-                    }
-                }
-            }
-
-            /*
-             * now we have to get to the topdir (where the files to copy are)
-             */
-            errno = 0;
-            if (fchdir(topdirfd) != 0) {
-                errp(69, __func__, "cannot change to topdir");
+            errno = 0;      /* pre-clear errno for errp() */
+            if (chdir(submission_dir) != 0) {
+                errp(4, __func__, "chdir(\"%s\") failed", submission_dir); /*ooo*/
                 not_reached();
             }
 
-            /*
-             * copy every file to correct location
-             */
-            if (wstat->file == NULL) {
-                err(70, __func__, "file set is NULL");
-                not_reached();
-            }
-            len = dyn_array_tell(wstat->file);
-            if (len <= 0) {
-                err(71, __func__, "list of files is empty");
-                not_reached();
-            }
             for (i = 0; i < len; ++i) {
-                p = dyn_array_value(wstat->file, struct item *, i);
+                /*
+                 * make the directories under the submission directory
+                 */
+                p = dyn_array_value(wstat->counted_dir, struct item *, i);
                 if (p == NULL) {
-                    err(72, __func__, "found NULL pointer in files list, element: %jd", i);
+                    err(67, __func__, "found NULL pointer in directories list, element: %jd", i);
                     not_reached();
                 } else if (p->fts_path == NULL) {
-                    err(73, __func__, "found NULL path in files list, element: %jd", i);
+                    err(68, __func__, "found NULL path in directories list, element: %jd", i);
                     not_reached();
+                } else if (path_in_item_array(wstat->prune, p->fts_path) != NULL) {
+                    continue;
                 }
 
                 /*
-                 * we have to allocate the full path of the file under topdir.
-                 * This is why we use calloc_path() with the absolute path of
-                 * the topdir and the file. We need the absolute path because we
-                 * cannot guarantee where the user has things in their system.
+                 * create path: -1 is from current (working) directory,
+                 * p->fts_path is the path and 0755 is the mode
                  */
-                fname = calloc_path(wstat->topdir, p->fts_path);
-                if (fname == NULL) {
-                    err(74, __func__, "couldn't allocate path to copy");
-                    not_reached();
-                }
-                if (target_path != NULL) {
-                    free(target_path);
-                    target_path = NULL;
-                }
-
-                /*
-                 * We need the absolute target path because the topdir and work
-                 * directory path can be anywhere.
-                 *
-                 * The target path is the absolute path of the submission
-                 * directory + / + the filename
-                 */
-                errno = 0; /* pre-clear errno for errp() */
-                target_path = calloc(1, strlen(submit_path) + LITLEN("/") + strlen(p->fts_path) + 1);
-                if (target_path == NULL) {
-                    errp(75, __func__, "failed to allocate target path for %s", p->fts_path);
-                    not_reached();
-                }
-
-                /*
-                 * create target path
-                 */
-                errno = 0; /* pre-clear errno for errp() */
-                ret = snprintf(target_path, strlen(submit_path) + 1 + strlen(p->fts_path) + 1, "%s/%s", submit_path, p->fts_path);
-                if (ret <= 0) {
-                    errp(76, __func__, "snprintf to form target path for %s failed", fname);
-                    not_reached();
-                }
-
-                /*
-                 * copy file to target path
-                 *
-                 * NOTE: executable files must be 0555; all others must be 0444.
-                 */
-                if (is_executable_filename(fname)) {
-                    copyfile(fname, target_path, false, ITEM_PERM_0555);
-                } else {
-                    copyfile(fname, target_path, false, ITEM_PERM_0444);
-                }
-
-                /*
-                 * paranoia
-                 */
-                if (target_path != NULL) {
-                    free(target_path);
-                    target_path = NULL;
-                }
-                if (fname != NULL) {
-                    free(fname);
-                    fname = NULL;
-                }
+                mkdirs(-1, p->fts_path, ITEM_PERM_0755);
             }
+        }
+    }
+
+    /*
+     * now we have to get to the topdir (where the files to copy are)
+     */
+    errno = 0;
+    if (fchdir(topdirfd) != 0) {
+        errp(69, __func__, "cannot change to topdir");
+        not_reached();
+    }
+
+    /*
+     * copy every file to correct location
+     */
+    if (wstat->file == NULL) {
+        err(70, __func__, "file set is NULL");
+        not_reached();
+    }
+    len = dyn_array_tell(wstat->file);
+    if (len <= 0) {
+        err(71, __func__, "list of files is empty");
+        not_reached();
+    }
+    for (i = 0; i < len; ++i) {
+        p = dyn_array_value(wstat->file, struct item *, i);
+        if (p == NULL) {
+            err(72, __func__, "found NULL pointer in files list, element: %jd", i);
+            not_reached();
+        } else if (p->fts_path == NULL) {
+            err(73, __func__, "found NULL path in files list, element: %jd", i);
+            not_reached();
+        } else if (path_in_item_array(wstat->prune, p->fts_path) != NULL) {
+            continue;
+        }
+
+        /*
+         * we have to allocate the full path of the file under topdir.
+         * This is why we use calloc_path() with the absolute path of
+         * the topdir and the file. We need the absolute path because we
+         * cannot guarantee where the user has things in their system.
+         */
+        fname = calloc_path(wstat->topdir, p->fts_path);
+        if (fname == NULL) {
+            err(74, __func__, "couldn't allocate path to copy");
+            not_reached();
+        }
+        if (target_path != NULL) {
+            free(target_path);
+            target_path = NULL;
+        }
+
+        /*
+         * We need the absolute target path because the topdir and work
+         * directory path can be anywhere.
+         *
+         * The target path is the absolute path of the submission
+         * directory + / + the filename
+         */
+        errno = 0; /* pre-clear errno for errp() */
+        target_path = calloc(1, strlen(submit_path) + LITLEN("/") + strlen(p->fts_path) + 1);
+        if (target_path == NULL) {
+            errp(75, __func__, "failed to allocate target path for %s", p->fts_path);
+            not_reached();
+        }
+
+        /*
+         * create target path
+         */
+        errno = 0; /* pre-clear errno for errp() */
+        ret = snprintf(target_path, strlen(submit_path) + 1 + strlen(p->fts_path) + 1, "%s/%s", submit_path, p->fts_path);
+        if (ret <= 0) {
+            errp(76, __func__, "snprintf to form target path for %s failed", fname);
+            not_reached();
+        }
+
+        /*
+         * copy file to target path
+         *
+         * NOTE: executable files must be 0555; all others must be 0444.
+         */
+        if (is_executable_filename(fname)) {
+            copyfile(fname, target_path, false, ITEM_PERM_0555);
+        } else {
+            copyfile(fname, target_path, false, ITEM_PERM_0444);
+        }
+
+        /*
+         * paranoia
+         */
+        if (target_path != NULL) {
+            free(target_path);
+            target_path = NULL;
+        }
+        if (fname != NULL) {
+            free(fname);
+            fname = NULL;
         }
     }
 
@@ -2113,6 +2095,9 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
         not_reached();
     }
 
+    /*
+     * check submission directory now that everything has been created
+     */
     check_submission_dir(wstat, context, infop, submit_path, make, size, wstat2);
 }
 
@@ -2150,7 +2135,6 @@ check_submission_dir(struct walk_stat *wstat, char const *context, struct info *
 {
     intmax_t len = 0;                   /* length of arrays in info struct */
     int exit_code = 0;                  /* for make clobber */
-    intmax_t len2 = 0;                  /* length of this function's arrays */
     struct item *p = NULL;              /* temp value to check lists (arrays in topdir) */
     struct item *p2 = NULL;             /* temp value to check lists (arrays in submission directory) */
     struct walk_set *wset_p2 = NULL;	/* pointer to a walk set */
@@ -2247,40 +2231,6 @@ check_submission_dir(struct walk_stat *wstat, char const *context, struct info *
     }
 
     /*
-     * check that we have the same directories of directories
-     */
-    if (wstat2->counted_dir != NULL) {
-        if (wstat->counted_dir == NULL) {
-            err(4, __func__, "found directories in submission directory and none in topdir"); /*ooo*/
-            not_reached();
-        }
-
-        len = dyn_array_tell(wstat->counted_dir);
-        len2 = dyn_array_tell(wstat2->counted_dir);
-        if (len != len2) {
-            err(81, __func__, "number of directories in submission directory differs from topdir: %ju != %ju",
-                    len, len2);
-            not_reached();
-        } else {
-            for (i = 0; i < len; ++i) {
-                p = dyn_array_value(wstat->counted_dir, struct item *, i);
-                p2 = dyn_array_value(wstat2->counted_dir, struct item *, i);
-                if (p == NULL || p2 == NULL) {
-                    err(82, __func__, "found NULL pointer in directory list, element: %jd", i);
-                    not_reached();
-                } else if (p->fts_path == NULL || p2->fts_path == NULL) {
-                    err(83, __func__, "found NULL directory in list in submission directory, element: %jd", i);
-                    not_reached();
-                } else if (strcmp(p->fts_path, p2->fts_path) != 0) {
-                    err(84, __func__, "directory %s in topdir does not match %s in submission directory", p->fts_path,
-                            p2->fts_path);
-                    not_reached();
-                }
-            }
-        }
-    }
-
-    /*
      * check we have the same files
      */
     if (wstat2->file == NULL) {
@@ -2291,25 +2241,15 @@ check_submission_dir(struct walk_stat *wstat, char const *context, struct info *
             err(86, __func__, "topdir was empty but submission directory not");
             not_reached();
         }
-        len = dyn_array_tell(wstat->file);
-        len2 = dyn_array_tell(wstat2->file);
-        if (len != len2) {
-            err(87, __func__, "mismatch in file count in topdir and submission dir: %ju != %ju",
-                    len, len2);
-            not_reached();
-        }
+        len = dyn_array_tell(wstat2->file);
         for (i = 0; i < len; ++i) {
-            p = dyn_array_value(wstat->file, struct item *, i);
             p2 = dyn_array_value(wstat2->file, struct item *, i);
-            if (p == NULL || p2 == NULL) {
+            if (p2 == NULL) {
                 err(4, __func__, "found NULL element in file list, element: %jd", i);/*ooo*/
                 not_reached();
-            } else if (p->fts_path == NULL || p2->fts_path == NULL) {
+            } else if (p2->fts_path == NULL) {
                 err(88, __func__, "NULL filename in file list, element: %jd", i);
                 not_reached();
-            } else if (strcmp(p->fts_path, p2->fts_path) != 0) {
-                err(89, __func__, "mismatch in filename in topdir and submission dir, element: %jd: %s != %s", i,
-                        p->fts_path, p2->fts_path);
             }
 
             /*
