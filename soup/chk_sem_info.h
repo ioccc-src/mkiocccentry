@@ -46,6 +46,8 @@ extern bool chk_Makefile(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_auth_JSON(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
+extern bool chk_c_alt_src(struct json const *node,
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_c_src(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_extra_file(struct json const *node,
@@ -53,6 +55,12 @@ extern bool chk_extra_file(struct json const *node,
 extern bool chk_info_JSON(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_remarks(struct json const *node,
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
+extern bool chk_shell_script(struct json const *node,
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
+extern bool chk_try_alt_sh(struct json const *node,
+	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
+extern bool chk_try_sh(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_IOCCC_contest(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
@@ -81,8 +89,6 @@ extern bool chk_found_all_rule(struct json const *node,
 extern bool chk_found_clean_rule(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_found_clobber_rule(struct json const *node,
-	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
-extern bool chk_found_try_rule(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_iocccsize_version(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
@@ -119,8 +125,6 @@ extern bool chk_trigraph_warning(struct json const *node,
 extern bool chk_txzchk_version(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 extern bool chk_ungetc_warning(struct json const *node,
-	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
-extern bool chk_wordbuf_warning(struct json const *node,
 	unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err);
 
 #endif /* SEM_INFO_LEN */

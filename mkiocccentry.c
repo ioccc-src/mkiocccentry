@@ -226,7 +226,6 @@ static FILE *manifest = NULL;           /* manifest file */
 static void warn_empty_prog(void);
 static void warn_rule_2a_size(struct info *infop, int mode, RuleCount size);
 static void warn_trigraph(void);
-static void warn_wordbuf(void);
 static void warn_ungetc(void);
 static void warn_rule_2b_size(struct info *infop);
 static RuleCount check_prog_c(struct info *infop, char const *prog_c);
@@ -1266,7 +1265,6 @@ main(int argc, char *argv[])
 	    info.rule_2a_mismatch ||
 	    info.rule_2b_override ||
 	    info.trigraph_warning ||
-	    info.wordbuf_warning ||
 	    info.ungetc_warning ||
 	    info.Makefile_override) {
 
@@ -1288,9 +1286,6 @@ main(int argc, char *argv[])
 		    }
 		    if (info.trigraph_warning) {
 			warn_trigraph();
-		    }
-		    if (info.wordbuf_warning) {
-			warn_wordbuf();
 		    }
 		    if (info.ungetc_warning) {
 			warn_ungetc();
@@ -3824,24 +3819,6 @@ warn_trigraph(void)
 
 
 /*
- * warn_wordbuf - warn user that prog.c triggered a word buffer overflow
- *
- * given:
- *
- * This function does not return on error.
- */
-static void
-warn_wordbuf(void)
-{
-    para("",
-         "The iocccsize reported a buffer overflow. How curious!",
-         "You might mention this fun fact in your remarks.md file.",
-         "",
-         NULL);
-}
-
-
-/*
  * warn_ungetc - warn user that prog.c triggered an ungetc error
  *
  * given:
@@ -4063,16 +4040,6 @@ check_prog_c(struct info *infop, char const *prog_c)
 	infop->trigraph_warning = true;
     } else {
 	infop->trigraph_warning = false;
-    }
-
-    /*
-     * sanity check on word buffer overflow
-     */
-    if (size.wordbuf_warning) {
-	warn_wordbuf();
-	infop->wordbuf_warning = true;
-    } else {
-	infop->wordbuf_warning = false;
     }
 
     /*
@@ -6883,7 +6850,6 @@ write_json_files(struct walk_stat *wstat, struct auth *authp, struct info *infop
 	json_fprintf_value_bool(info_stream, "    ", "rule_2a_mismatch", " : ", infop->rule_2a_mismatch, ",\n") &&
 	json_fprintf_value_bool(info_stream, "    ", "rule_2b_override", " : ", infop->rule_2b_override, ",\n") &&
 	json_fprintf_value_bool(info_stream, "    ", "trigraph_warning", " : ", infop->trigraph_warning, ",\n") &&
-	json_fprintf_value_bool(info_stream, "    ", "wordbuf_warning", " : ", infop->wordbuf_warning, ",\n") &&
 	json_fprintf_value_bool(info_stream, "    ", "ungetc_warning", " : ", infop->ungetc_warning, ",\n") &&
 	json_fprintf_value_bool(info_stream, "    ", "Makefile_override", " : ", infop->Makefile_override, ",\n") &&
 	json_fprintf_value_bool(info_stream, "    ", "found_all_rule", " : ", infop->found_all_rule, ",\n") &&
@@ -6932,30 +6898,28 @@ write_json_files(struct walk_stat *wstat, struct auth *authp, struct info *infop
 	}
 
 	/*
-	 * set mark_ptr according to the manifest type
+	 * set mark_ptr according to the manifest type by matching
 	 */
-	if (strcasecmp(p->orig_name, INFO_JSON_FILENAME) == 0) {
+	if (strcmp(p->fts_name, INFO_JSON_FILENAME) == 0) {
 	    p->mark_ptr = "info_JSON";
-	} else if (strcmp(p->orig_name, AUTH_JSON_FILENAME) == 0) {
+	} else if (strcmp(p->fts_name, AUTH_JSON_FILENAME) == 0) {
 	    p->mark_ptr = "auth_JSON";
-	} else if (strcmp(p->orig_name, PROG_C_FILENAME) == 0) {
+	} else if (strcmp(p->fts_name, PROG_C_FILENAME) == 0) {
 	    p->mark_ptr = "c_src";
-	} else if (strcmp(p->orig_name, MAKEFILE_FILENAME) == 0) {
+	} else if (strcmp(p->fts_name, MAKEFILE_FILENAME) == 0) {
 	    p->mark_ptr = "Makefile";
-	} else if (strcmp(p->orig_name, REMARKS_FILENAME) == 0) {
+	} else if (strcmp(p->fts_name, REMARKS_FILENAME) == 0) {
 	    p->mark_ptr = "remarks";
-	/*
-	 * XXX - consider adding the following manifest types - XXX
-	 *
-	 *	prog.alt.c  as	"c_alt_src"
-	 *	try.sh	    as	"try_sh"
-	 *	try.alt.sh  as	"try_alt_sh"
-	 *	*.sh	    as	"shell_script"	    (i.e., files ending in ".sh")
-	 *
-	 * When this happens, INFO_VERSION for .info.json will need to be updated.
-	 * The tests and code related to .info.json filed will need to be updated.
-	 * Moreover, the MIN_TIMESTAMP will need to be updated.
-	 */
+	} else if (strcmp(p->fts_name, PROG_ALT_C) == 0) {
+	    p->mark_ptr = "c_alt_src";
+	} else if (strcmp(p->fts_name, TRY_SH) == 0) {
+	    p->mark_ptr = "try_sh";
+	} else if (strcmp(p->fts_name, TRY_ALT_SH) == 0) {
+	    p->mark_ptr = "try_alt_sh";
+	/* shell scripts end in .sh */
+	} else if (p->fts_namelen >= LITLEN(".sh") &&
+		   strcmp(p->fts_name + p->fts_namelen - LITLEN(".sh"), ".sh") == 0) {
+	    p->mark_ptr = "shell_script";
 
 	/*
 	 * case: file is extra

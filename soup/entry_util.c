@@ -130,54 +130,6 @@ char *mandatory_filenames[] =
 };
 
 /*
- * forbidden files that must NOT exist in the submission top level directory.
- *
- * NOTE: having these in the topdir is not an error as they will simply not be
- * copied to the submission directory. If you run chksubmit(1) or chkentry(1)
- * with the -S option (which chksubmit does) then it would be an error if the
- * files existed in the submission directory.
- */
-char *forbidden_filenames[] =
-{
-    GNUMAKEFILE_FILENAME,
-    INDEX_HTML_FILENAME,
-    PROG_FILENAME,
-    PROG_ALT_FILENAME,
-    PROG_ORIG_FILENAME,
-    PROG_ORIG_C_FILENAME,
-    README_MD_FILENAME,
-    LICENSE_FILENAME,
-    LICENSE_HTML_FILENAME,
-    LICENSE_MD_FILENAME,
-    LICENSE_TXT_FILENAME,
-    LICENCE_FILENAME,
-    LICENCE_HTML_FILENAME,
-    LICENCE_MD_FILENAME,
-    LICENCE_TXT_FILENAME,
-    COPYING_FILENAME,
-    COPYING_HTML_FILENAME,
-    COPYING_MD_FILENAME,
-    COPYING_TXT_FILENAME,
-    COPYRIGHT_FILENAME,
-    COPYRIGHT_HTML_FILENAME,
-    COPYRIGHT_MD_FILENAME,
-    COPYRIGHT_TXT_FILENAME,
-    NULL /* MUST BE LAST!! */
-};
-
-/*
- * optional files that MAY exist in top level directory and which are not
- * counted against extra files
- */
-char *optional_filenames[] =
-{
-    PROG_ALT_C,
-    TRY_ALT_SH,
-    TRY_SH,
-    NULL
-};
-
-/*
  * filenames (in top level submission directory only) that should be mode 0555
  */
 char *executable_filenames[] =
@@ -1733,6 +1685,111 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 		return false;
 	    }
 
+	/* case: c_alt_src */
+	} else if (strcmp(arr_name, "c_alt_src") == 0) {
+
+	    /* validate remarks filename */
+	    test = test_c_alt_src(value);
+	    if (test == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(137, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "c_alt_src filename is invalid", i);
+		}
+		dyn_array_free(man.extra);
+		return false;
+	    }
+
+	    /* count valid occurrence */
+	    ++man.count_c_alt_src;
+
+	    /* we are allowed only 1 of these optional manifest filenames */
+	    if (man.count_c_alt_src != 1) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(138, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "found more than one c_alt_src filename", i);
+		}
+		dyn_array_free(man.extra);
+		return false;
+	    }
+
+	/* case: try_sh */
+	} else if (strcmp(arr_name, "try_sh") == 0) {
+
+	    /* validate remarks filename */
+	    test = test_try_sh(value);
+	    if (test == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(139, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "try_sh filename is invalid", i);
+		}
+		dyn_array_free(man.extra);
+		return false;
+	    }
+
+	    /* count valid occurrence */
+	    ++man.count_try_sh;
+
+	    /* we are allowed only 1 of these optional manifest filenames */
+	    if (man.count_try_sh != 1) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(140, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "found more than one try_sh filename", i);
+		}
+		dyn_array_free(man.extra);
+		return false;
+	    }
+
+	/* case: try_alt_sh */
+	} else if (strcmp(arr_name, "try_alt_sh") == 0) {
+
+	    /* validate remarks filename */
+	    test = test_try_alt_sh(value);
+	    if (test == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(141, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "try_alt_sh filename is invalid", i);
+		}
+		dyn_array_free(man.extra);
+		return false;
+	    }
+
+	    /* count valid occurrence */
+	    ++man.count_try_alt_sh;
+
+	    /* we are allowed only 1 of these optional manifest filenames */
+	    if (man.count_try_alt_sh != 1) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(142, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "found more than one try_alt_sh filename", i);
+		}
+		dyn_array_free(man.extra);
+		return false;
+	    }
+
+	/* case: shell_script */
+	} else if (strcmp(arr_name, "shell_script") == 0) {
+
+	    /* validate remarks filename */
+	    test = test_shell_script(value);
+	    if (test == false) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(143, jo, depth+2, sem, __func__,
+					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
+					    "shell_script filename is invalid", i);
+		}
+		dyn_array_free(man.extra);
+		return false;
+	    }
+
+	    /* count valid occurrence */
+	    ++man.count_shell_script;
+
 	/*
 	 * case: optional extra_file
 	 */
@@ -1742,7 +1799,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_extra_filename(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(137, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(144, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "extra_file #%jd filename is invalid", i, man.count_extra_file);
 		}
@@ -1761,7 +1818,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	 */
 	} else {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(138, jo, depth+2, sem, __func__,
+		*val_err = werr_sem_val(145, jo, depth+2, sem, __func__,
 					"manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT "
 					"has invalid JTYPE_MEMBER name: <%s>", i, arr_name);
 	    }
@@ -1775,7 +1832,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
      */
     if (man.count_info_JSON != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(139, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(146, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid info_JSON, found: %jd",
 				    man.count_info_JSON);
 	}
@@ -1784,7 +1841,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
     if (man.count_auth_JSON != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(140, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(147, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid auth_JSON, found: %jd",
 				    man.count_auth_JSON);
 	}
@@ -1793,7 +1850,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
     if (man.count_c_src != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(141, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(148, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid c_src, found: %jd",
 				    man.count_c_src);
 	}
@@ -1802,7 +1859,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
     if (man.count_Makefile != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(142, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(149, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid Makefile, found: %jd",
 				    man.count_Makefile);
 	}
@@ -1811,7 +1868,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
     if (man.count_remarks != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(143, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(150, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid remarks, found: %jd",
 				    man.count_remarks);
 	}
@@ -1825,7 +1882,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
      */
     if (man.count_extra_file < 0 || man.count_extra_file > MAX_FILE_COUNT) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(144, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(151, node, depth+2, sem, __func__,
 				    "manifest: man.count_extra_file: %jd just be >=0 and < %d",
 				    man.count_extra_file, MAX_FILE_COUNT);
 	}
@@ -1844,7 +1901,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	extra_filename = dyn_array_value(man.extra, char *, i);
 	if (extra_filename == NULL) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(145, node, depth+2, sem, __func__,
+		*val_err = werr_sem_val(152, node, depth+2, sem, __func__,
 					"manifest extra[i = %jd] is NULL", i);
 	    }
 	    dyn_array_free(man.extra);
@@ -1860,7 +1917,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    extra_filename2 = dyn_array_value(man.extra, char *, j);
 	    if (extra_filename2 == NULL) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(146, node, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(153, node, depth+2, sem, __func__,
 					    "manifest extra[j = %jd] is NULL", j);
 		}
 		dyn_array_free(man.extra);
@@ -1872,7 +1929,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	     */
 	    if (strcmp(extra_filename, extra_filename2) == 0) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(147, node, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(154, node, depth+2, sem, __func__,
 					    "manifest extra[%jd] filename: matches manifest extra[%jd] filename",
 					    i, j);
 		}
@@ -2029,24 +2086,24 @@ test_version(char const *str, char const *min)
     char *ver2 = NULL;
 
     if (str == NULL || *str == '\0') {
-        err(148, __func__, "str is NULL or empty string");
+        err(155, __func__, "str is NULL or empty string");
         not_reached();
     }
     if (min == NULL || *min == '\0') {
-        err(149, __func__, "min is NULL or empty mining");
+        err(156, __func__, "min is NULL or empty mining");
         not_reached();
     }
 
     errno = 0; /* pre-clear errno for errp() */
     dup1 = strdup(str);
     if (dup1 == NULL) {
-        err(150, __func__, "strdup(str) returned NULL");
+        err(157, __func__, "strdup(str) returned NULL");
         not_reached();
     }
     errno = 0; /* pre-clear errno for errp() */
     dup2 = strdup(min);
     if (dup2 == NULL) {
-        err(151, __func__, "strdup(min) returned NULL");
+        err(158, __func__, "strdup(min) returned NULL");
         not_reached();
     }
 
@@ -2083,11 +2140,11 @@ test_poison(char const *str, char const **poisons)
     size_t i;
 
     if (str == NULL || *str == '\0') {
-        err(152, __func__, "str is NULL or empty string");
+        err(159, __func__, "str is NULL or empty string");
         not_reached();
     }
     if (poisons == NULL) {
-        err(153, __func__, "poisons list is NULL");
+        err(160, __func__, "poisons list is NULL");
         not_reached();
     }
 
@@ -4246,7 +4303,6 @@ test_past_winning_author(bool boolean)
  * returns:
  *	true ==> string is valid
  *	false ==> string is NOT valid, or NULL pointer, or some internal error
- *
  */
 bool
 test_remarks(char const *str)
@@ -4263,7 +4319,7 @@ test_remarks(char const *str)
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: empty remarks filename is invalid");
 	return false;
-    } else if (strcmp(str, REMARKS_FILENAME)) {
+    } else if (strcmp(str, REMARKS_FILENAME) != 0) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: remarks filename is not %s", REMARKS_FILENAME);
 	json_dbg(JSON_DBG_HIGH, __func__,
@@ -4272,6 +4328,178 @@ test_remarks(char const *str)
     }
 
     json_dbg(JSON_DBG_MED, __func__, "remarks filename is valid");
+    return true;
+}
+
+
+/*
+ * test_c_alt_src - test that prog.alt.c filename is valid
+ *
+ * Test that length is > 0 and that the string is equal to PROG_ALT_C.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ *
+ */
+bool
+test_c_alt_src(char const *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: empty c_alt_src filename is invalid");
+	return false;
+    } else if (strcmp(str, PROG_ALT_C)) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: c_alt_src filename is not %s", PROG_ALT_C);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: c_alt_src filename: <%s> is not %s", str, PROG_ALT_C);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "c_alt_src filename is valid");
+    return true;
+}
+
+
+/*
+ * test_try_sh - test that try.sh filename is valid
+ *
+ * Test that length is > 0 and that the string is equal to TRY_SH.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_try_sh(char const *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: empty try_sh filename is invalid");
+	return false;
+    } else if (strcmp(str, TRY_SH) != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: try_sh filename is not %s", TRY_SH);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: try_sh filename: <%s> is not %s", str, TRY_SH);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "try_sh filename is valid");
+    return true;
+}
+
+
+/*
+ * test_try_alt_sh - test that try.sh filename is valid
+ *
+ * Test that length is > 0 and that the string is equal to try_alt_sh.
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_try_alt_sh(char const *str)
+{
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+
+    if (*str == '\0') { /* strlen(str) == 0 */
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: empty try_alt_sh filename is invalid");
+	return false;
+    } else if (strcmp(str, TRY_ALT_SH) != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: try_alt_sh filename is not %s", TRY_ALT_SH);
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: try_alt_sh filename: <%s> is not %s", str, TRY_ALT_SH);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "try_alt_sh filename is valid");
+    return true;
+}
+
+
+/*
+ * test_shell_script - test that shell script filename is valid
+ *
+ * Test that length is > 0 and that the string suffix is ".sh".
+ *
+ * given:
+ *	str	string to test
+ *
+ * returns:
+ *	true ==> string is valid
+ *	false ==> string is NOT valid, or NULL pointer, or some internal error
+ */
+bool
+test_shell_script(char const *str)
+{
+    size_t len = 0;	    /* length of str */
+
+    /*
+     * firewall
+     */
+    if (str == NULL) {
+	warn(__func__, "str is NULL");
+	return false;
+    }
+    len = strlen(str);
+
+    if (len == 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: empty shell_script filename is invalid");
+	return false;
+    } else if (strcmp(str, TRY_SH) != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: shell_script filename: <%s> invalid member name: shell_script != try_sh", str);
+	return false;
+    } else if (strcmp(str, TRY_ALT_SH) != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: shell_script filename: <%s> invalid member name: shell_script != try_alt_sh", str);
+	return false;
+    } else if (len >= LITLEN(".sh") && strcmp(str + len - LITLEN(".sh"), ".sh") != 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: shell_script filename does not end in .sh");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: shell_script filename: <%s> does not end in .sh", str);
+	return false;
+    }
+
+    json_dbg(JSON_DBG_MED, __func__, "shell_script filename is valid");
     return true;
 }
 
@@ -5089,27 +5317,7 @@ test_url(char const *str)
 }
 
 
-/*
- * test_wordbuf_warning - test if wordbuf_warning is valid
- *
- * Determine if wordbuf_warning boolean is valid.  :-)
- * Well this isn't much of a test, but we have to keep
- * up with the general form of tests!  :-)
- *
- * given:
- *	boolean		boolean to test
- *
- * returns:
- *	true ==> bool is valid,
- *	false ==> bool is NOT valid, or some internal error
- */
-bool
-test_wordbuf_warning(bool boolean)
-{
-    json_dbg(JSON_DBG_MED, __func__, "wordbuf_warning is %s", booltostr(boolean));
-    return true;
-}
-
+/* XXX - fix this function or remove it - XXX */
 /*
  * is_mandatory_filename  - check if str is a mandatory filename
  *
@@ -5133,37 +5341,6 @@ is_mandatory_filename(char const *str)
 
     for (i = 0; mandatory_filenames[i] != NULL; ++i) {
         if (!strcasecmp(mandatory_filenames[i], str)) {
-            return true;
-        }
-    }
-
-    return false;
-}
-
-
-/*
- * is_optional_filename  - check if str is a optional filename
- *
- *  given:
- *          str      - name to check
- *
- * NOTE: if str is NULL we return false.
- */
-bool
-is_optional_filename(char const *str)
-{
-    size_t i = 0;
-
-    /*
-     * firewall
-     */
-    if (str == NULL) {
-        warn(__func__, "str is NULL");
-        return false;
-    }
-
-    for (i = 0; optional_filenames[i] != NULL; ++i) {
-        if (!strcasecmp(optional_filenames[i], str)) {
             return true;
         }
     }
@@ -5254,7 +5431,7 @@ count_char(char const *str, int ch)
      * firewall
      */
     if (str == NULL) {
-	err(154, __func__, "given NULL str");
+	err(161, __func__, "given NULL str");
 	not_reached();
     }
 

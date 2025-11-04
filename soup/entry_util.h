@@ -69,43 +69,24 @@
 /*
  * defines
  */
+
 /*
- * mandatory filenames in the top directory
+ * filenames in the top directory where write_json_files() sets the manifest member name
+ *
+ * NOTE: The write_json_files() matches fts_name (basename of canonicalized path) exactly.
  */
 #define AUTH_JSON_FILENAME ".auth.json"         /* filename of the .auth.json file */
 #define INFO_JSON_FILENAME ".info.json"         /* filename of the .info.json file */
 #define PROG_C_FILENAME "prog.c"                /* submission/winning entry source code filename */
 #define MAKEFILE_FILENAME "Makefile"            /* submission/winning entry Makefile filename */
 #define REMARKS_FILENAME "remarks.md"           /* remarks filename that form README.md for winning entries */
-/*
- * forbidden filenames in the top directory
- */
-#define GNUMAKEFILE_FILENAME "GNUmakefile"      /* GNUmakefile takes priority over Makefile which we don't want */
-#define INDEX_HTML_FILENAME "index.html"        /* winning entry index.html filename */
-#define PROG_FILENAME "prog"                    /* compiled submission/winning entry code filename */
 #define PROG_ALT_FILENAME "prog.alt"            /* compiled submission/winning entry alt code filename */
 #define PROG_ORIG_FILENAME "prog.orig"          /* compiled winning entry code filename */
 #define PROG_ORIG_C_FILENAME "prog.orig.c"      /* entry source code filename */
 #define README_MD_FILENAME "README.md"          /* README.md file that forms index.html for winning entries */
-/*
- * the following ones are licence related filenames
- */
-#define LICENSE_FILENAME        "LICENSE"
-#define LICENSE_HTML_FILENAME   "LICENSE.html"
-#define LICENSE_MD_FILENAME     "LICENSE.md"
-#define LICENSE_TXT_FILENAME    "LICENSE.txt"
-#define LICENCE_FILENAME        "LICENCE"
-#define LICENCE_HTML_FILENAME   "LICENCE.html"
-#define LICENCE_MD_FILENAME     "LICENCE.md"
-#define LICENCE_TXT_FILENAME    "LICENCE.txt"
-#define COPYING_FILENAME        "COPYING"
-#define COPYING_HTML_FILENAME   "COPYING.html"
-#define COPYING_MD_FILENAME     "COPYING.md"
-#define COPYING_TXT_FILENAME    "COPYING.txt"
-#define COPYRIGHT_FILENAME      "COPYRIGHT"
-#define COPYRIGHT_HTML_FILENAME "COPYRIGHT.html"
-#define COPYRIGHT_MD_FILENAME   "COPYRIGHT.md"
-#define COPYRIGHT_TXT_FILENAME  "COPYRIGHT.txt"
+#define PROG_ALT_C "prog.alt.c"                 /* alt code source file */
+#define TRY_SH "try.sh"                         /* try.sh for prog.c */
+#define TRY_ALT_SH "try.alt.sh"                 /* try.alt.sh for prog.alt.c */
 
 /*
  * submissions are not allowed to have any dot file other than the required
@@ -117,17 +98,7 @@
  */
 #define ENTRY_JSON_FILENAME ".entry.json"
 
-/*
- * optional (and for some executable) filenames in the top level directory
- */
-#define PROG_ALT_C "prog.alt.c"                 /* alt code source file */
-#define TRY_ALT_SH "try.alt.sh"                 /* try.alt.sh for prog.alt.c */
-#define TRY_SH "try.sh"                         /* try.sh for prog.c */
-
 extern char *mandatory_filenames[];             /* filenames that MUST exist in the top level directory */
-extern char *forbidden_filenames[];             /* filenames that must NOT exist in the top level directory */
-extern char *optional_filenames[];              /* filenames that are OPTIONAL in top level directory */
-extern char *ignored_filenames[];               /* ignored filenames like .gitignore, .DS_Store etc. */
 extern char *executable_filenames[];            /* filenames that should have mode 0555 */
 extern struct dyn_array *ignored_paths;         /* ignored paths from chkentry -i path */
 extern bool ignore_permissions;                 /* true ==> ignore permissions of files and directories */
@@ -277,6 +248,10 @@ struct manifest
     intmax_t count_c_src;	/* count of c_src JSON member found (will be "prog.c") */
     intmax_t count_Makefile;	/* count of Makefile JSON member found (will be "Makefile") */
     intmax_t count_remarks;	/* count of remarks JSON member found (will be "remarks") */
+    intmax_t count_c_alt_src;	/* count of c_alt_src JSON member found (will be "c_alt_src") */
+    intmax_t count_try_sh;	/* count of try_sh JSON member found (will be "try_sh") */
+    intmax_t count_try_alt_sh;	/* count of try_alt_sh JSON member found (will be "remarks") */
+    intmax_t count_shell_script;/* count of shell scripts (not try.sh nor try.alt.sh) JSON member found (will be "remarks") */
     intmax_t count_extra_file;	/* count of extra JSON members found */
     struct dyn_array *extra;	/* dynamic array of extra JSON member filenames (char *) */
 };
@@ -340,6 +315,10 @@ extern bool test_name(char const *str);
 extern bool test_no_comment(char const *str);
 extern bool test_past_winning_author(bool boolean);
 extern bool test_remarks(char const *str);
+extern bool test_c_alt_src(char const *str);
+extern bool test_try_sh(char const *str);
+extern bool test_shell_script(char const *str);
+extern bool test_try_alt_sh(char const *str);
 extern bool test_rule_2a_mismatch(bool boolean);
 extern bool test_rule_2a_override(bool boolean);
 extern bool test_rule_2a_size(size_t rule_2a_size);
@@ -356,9 +335,7 @@ extern bool test_txzchk_version(char const *str);
 extern bool test_ungetc_warning(bool boolean);
 extern bool test_url(char const *str);
 extern bool test_alt_url(char const *str);
-extern bool test_wordbuf_warning(bool boolean);
 extern bool is_mandatory_filename(char const *str);
-extern bool is_optional_filename(char const *str);
 extern bool is_executable_filename(char const *str);
 extern bool has_ignored_dirname(char const *path);
 extern size_t count_char(char const *str, int ch);

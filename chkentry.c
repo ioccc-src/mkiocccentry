@@ -444,10 +444,10 @@ main(int argc, char *argv[])
 	    }
 
 	    /*
-	     * case: file ends in .sh
+	     * case: file ends in .sh in any case
 	     */
 	    if (i_p->fts_namelen >= LITLEN(".sh") &&
-		strcmp(i_p->fts_name + i_p->fts_namelen - LITLEN(".sh"), ".sh") == 0) {
+		strcasecmp(i_p->fts_name + i_p->fts_namelen - LITLEN(".sh"), ".sh") == 0) {
 
 		/*
 		 * verify mode 0555

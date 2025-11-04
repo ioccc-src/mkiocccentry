@@ -138,7 +138,7 @@
 /*
  * Be careful not to change this value as it will invalidate all IOCCC timestamps < this value
  */
-#define MIN_TIMESTAMP ((time_t)1754850884)
+#define MIN_TIMESTAMP ((time_t)1762222634)
 
 
 /*

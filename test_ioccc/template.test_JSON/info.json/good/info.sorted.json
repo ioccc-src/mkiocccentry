@@ -24,6 +24,9 @@
             "auth_JSON" : ".auth.json"
         },
         {
+            "c_alt_src" : "prog.alt.c"
+        },
+        {
             "c_src" : "prog.c"
         },
         {
@@ -31,6 +34,15 @@
         },
         {
             "remarks" : "remarks.md"
+        },
+        {
+            "shell_script" : "curds.sh"
+        },
+        {
+            "try_alt_sh" : "try.alt.sh"
+        },
+        {
+            "try_sh" : "try.sh"
         },
         {
             "extra_file" : "extra1"
@@ -59,6 +71,5 @@
     "title" : "title-for-entry0",
     "trigraph_warning" : false,
     "txzchk_version" : "%%TXZCHK_VERSION%%",
-    "ungetc_warning" : false,
-    "wordbuf_warning" : false
+    "ungetc_warning" : false
 }

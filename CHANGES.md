@@ -1,6 +1,38 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.9.0 2025-11-03
+
+update .info.json format
+
+Removed the JSON member name of `wordbuf_warning` from `.info.json`.
+
+Added JSON member name of `c_alt_src` to the manifest of `.info.json`
+for the use of `prog.alt.c`.
+
+Added JSON member name of `try_sh` to the manifest of `.info.json`
+for the use of `try.sh`.
+
+Added JSON member name of `try_alt_sh` to the manifest of `.info.json`
+for the use of `try.alt.sh`.
+
+Added JSON member name of `shell_script` to the manifest of `.info.json`
+for the use of files that end in ".sh" that are **NEITHER** `try.sh`.
+**NOR** `try.alt.sh`.
+
+Changed the `.info.json` version number to "1.19 2025-11-03".
+Earlier versions of `.info.json` are **NOT** allowed.
+
+Changed the minimum timestamp to **1762222634**.
+
+Updated `MKIOCCCENTRY_REPO_VERSION` to "2.9.0 2025-11-03".
+Updated `MKIOCCCENTRY_VERSION` to "2.1.8 2025-11-03"
+Updated `SOUP_VERSION` to "2.2.9 2025-11-03"
+Updated `INFO_VERSION` to "1.19 2025-11-03"
+Updated `CHKENTRY_VERSION` to "2.1.8 2025-11-03"
+Updated `MIN_TIMESTAMP` to **1762222634**.
+
+
 ## Release 2.8.8 2025-11-03
 
 Further address #1324. The `-M manifest` and `-X ignore` options were added

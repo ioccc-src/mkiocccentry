@@ -52,6 +52,7 @@ CC= cc
 CHECKNR= checknr
 CMP= cmp
 CTAGS= ctags
+DIFF= diff
 GREP= grep
 INDEPEND= independ
 INSTALL= install
@@ -632,16 +633,18 @@ all_sem_ref: ../jparse/jsemtblgen ../jparse/jsemcgen.sh ../test_ioccc/test_JSON/
 #
 # Last, run "make all_sem_ref" before running "make all_sem_ref_ptch".
 #
-all_sem_ref_ptch: ref/info.reference.json.c ref/info.reference.json.h \
+all_sem_ref_ptch: chk_sem_info.c chk_sem_info.h chk_sem_auth.c chk_sem_auth.h \
+	      ref/info.reference.json.c ref/info.reference.json.h \
 	      ref/auth.reference.json.c ref/auth.reference.json.h
-	${E} rm -f chk.info.ptch.c
-	-${E} diff -u ref/info.reference.json.c chk_sem_info.c > chk.info.ptch.c
-	${E} rm -f chk.info.ptch.h
-	-${E} diff -u ref/info.reference.json.h chk_sem_info.h > chk.info.ptch.h
-	${E} rm -f chk.auth.ptch.c
-	-${E} diff -u ref/auth.reference.json.c chk_sem_auth.c > chk.auth.ptch.c
-	${E} rm -f chk.auth.ptch.h
-	-${E} diff -u ref/auth.reference.json.h chk_sem_auth.h > chk.auth.ptch.h
+	${E} ${MAKE} all_sem_ref
+	${E} ${RM} -f chk.info.ptch.c
+	-${E} ${DIFF} -u ref/info.reference.json.c chk_sem_info.c > chk.info.ptch.c
+	${E} ${RM} -f chk.info.ptch.h
+	-${E} ${DIFF} -u ref/info.reference.json.h chk_sem_info.h > chk.info.ptch.h
+	${E} ${RM} -f chk.auth.ptch.c
+	-${E} ${DIFF} -u ref/auth.reference.json.c chk_sem_auth.c > chk.auth.ptch.c
+	${E} ${RM} -f chk.auth.ptch.h
+	-${E} ${DIFF} -u ref/auth.reference.json.h chk_sem_auth.h > chk.auth.ptch.h
 
 # Form the chk_sem_????.{c,h} files
 #

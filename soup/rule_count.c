@@ -457,7 +457,6 @@ rule_count(FILE *fp_in)
 				 * so the buffer can overflow regularly as long words or
 				 * identifiers are ignored.
 				 */
-				counts.wordbuf_warning = true;
 				wordi = 0;
 			}
 			word[wordi] = '\0';
