@@ -6,7 +6,7 @@
 #
 #	@ilyakurdyukov		Ilya Kurdyukov
 #
-# with improvements by
+# with many updates and improvements by:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson
@@ -94,7 +94,7 @@ MAKE="$(type -P make 2>/dev/null)"
 export TXZCHK="./txzchk"
 export FNAMCHK="./test_ioccc/fnamchk"
 
-export MKIOCCCENTRY_TEST_VERSION="2.1.0 2025-08-28"
+export MKIOCCCENTRY_TEST_VERSION="2.1.1 2025-11-05"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l ls] [-F fnamchk] [-m make] [-Z topdir]
 
     -h              print help and exit
@@ -726,140 +726,6 @@ fi
 echo
 echo "--"
 
-# prep for a bad submission test
-#
-# Answers as of mkiocccentry version: 2.1.1 2025-08-28
-#
-TEST_NAME="test-4"
-TESTDIR="$WORKDIR_BAD/$TEST_NAME"
-answers()
-{
-cat <<"EOF"
-test
-4
-title-for-entry0
-abstract for entry #0
-5
-author0 middle0 thisisaveryverylonglastname0
-AU
-user0@example.com
-https://a.host0.example.com/index.html
-https://b.host0.example.com/index.html
-@mastodon0@example.com
-@github0
-an affiliation for #0 author
-
-author1 middle1a middle1b last1
-UK
-
-
-
-
-
-
-replaced_author1_handle
-EOF
-# Avoid triggering an out of date shellcheck bug by using encoded hex characters
-printf "Author2 \\xc3\\xa5\\xe2\\x88\\xab\\xc3\\xa7\\xe2\\x88\\x82\\xc2\\xb4\\xc6\\x92\\xc2\\xa9 LAST2\\n"
-cat <<"EOF"
-US
-user2@example.com
-http://c.host2.example.com/index.html
-http://d.host2.example.com/index.html
-@mastodon2@example.com
-@github2
-an affiliation for #2 author
-
-author3 middle3 last3
-AU
-user0@example.com
-https://e.host0.example.com/index.html
-https://f.host0.example.com/index.html
-@mastodon3@example.com
-@github3
-an affiliation for #3 author
-author3_last3
-@#$%^
-AU
-user0@example.com
-https://g.host0.example.com/index.html
-
-@mastodon4@example.com
-@github4
-an affiliation for #4 author
-
-ANSWERS_EOF
-EOF
-}
-rm -f answers.txt
-# Retrieve the answers version from mkiocccentry.c and write to answers file:
-grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' soup/version.h | cut -d' ' -f3 | sed 's/"//g' >answers.txt
-# Append answers + EOF marker
-#
-# We disable this shellcheck error because answers already is defined but we
-# redefine it as well. The error is ironically erroneous as if one is to move up
-# in the file they'll see that answers is actually defined above as well.
-#
-# SC2218 (error): This function is only defined later. Move the definition up.
-# https://www.shellcheck.net/wiki/SC2218
-# shellcheck disable=SC2218
-answers >>answers.txt
-
-# fake a filename that's too long
-#
-test -f "${topdir}/$LONG_FILENAME" || touch "${topdir}/$LONG_FILENAME"
-
-# test a bad submission
-#
-# run the test, looking for an exit
-#
-echo
-echo "# $TEST_NAME - this bad submission must FAIL"
-echo
-echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e  -l $LS -v $V_FLAG -J $J_FLAG -- ${WORKDIR_BAD} ${topdir}"
-./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e  -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${WORKDIR_BAD}" "${topdir}"
-status=$?
-if [[ ${status} -ne 4 ]]; then
-    echo "$0: ERROR: mkiocccentry exit code not 4: $status" 1>&2
-    exit 1
-else
-    echo "$0: NOTE: the above error is expected as we were testing that the filename" 1>&2
-    echo "$0: NOTE: length limit works." 1>&2
-fi
-
-# end of test check
-#
-if [[ ! -d $TESTDIR ]]; then
-    echo "$0: ERROR: missing result directory: $TESTDIR" 1>&2
-    exit 13
-fi
-echo
-echo "--"
-
-# form a bad submission for test_ioccc/chksubmit_test.sh to use
-#
-# The above test deliberately failed, so $TESTDIR is empty.
-# We will form form a good version of the code and then
-# put back the error for test_ioccc/chksubmit_test.sh to test.
-#
-#
-echo
-echo "# about to form a bad submission for test_ioccc/chksubmit_test.sh to use"
-echo
-rm -f "${topdir}/$LONG_FILENAME"
-rm -rf "${TESTDIR}"
-./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e  -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${WORKDIR_BAD}" "${topdir}" >/dev/null 2>&1
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    echo "$0: ERROR: unable to retry mkiocccentry with a good version of $TEST_NAME exit code not 0: $status" 1>&2
-    exit 23
-fi
-touch "${TESTDIR}/$LONG_FILENAME"
-echo
-echo "# formed a bad submission for test_ioccc/chksubmit_test.sh to use under: $TESTDIR"
-echo
-echo "--"
-
 # prep for a good submission test
 #
 # Answers as of mkiocccentry version: 2.1.1 2025-08-28
@@ -940,6 +806,7 @@ grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' soup/version.h | cut -d' ' -f3 |
 answers >>answers.txt
 
 # remove long filename
+#
 rm -f "${topdir}"/"${LONG_FILENAME}"
 # make a file in the subdirectory
 #
@@ -969,146 +836,17 @@ fi
 echo
 echo "--"
 
-# prep for a bad submission test
-#
-# Answers as of mkiocccentry version: 2.1.1 2025-08-28
-#
-TEST_NAME="test-6"
-TESTDIR="$WORKDIR_BAD/$TEST_NAME"
-answers()
-{
-cat <<"EOF"
-test
-6
-title-for-entry0
-abstract for entry #0
-5
-author0 middle0 thisisaveryverylonglastname0
-AU
-user0@example.com
-https://a.host0.example.com/index.html
-https://b.host0.example.com/index.html
-@mastodon0@example.com
-@github0
-an affiliation for #0 author
-
-author1 middle1a middle1b last1
-UK
-
-
-
-
-
-
-replaced_author1_handle
-EOF
-# Avoid triggering an out of date shellcheck bug by using encoded hex characters
-printf "Author2 \\xc3\\xa5\\xe2\\x88\\xab\\xc3\\xa7\\xe2\\x88\\x82\\xc2\\xb4\\xc6\\x92\\xc2\\xa9 LAST2\\n"
-cat <<"EOF"
-US
-user2@example.com
-http://c.host2.example.com/index.html
-http://d.host2.example.com/index.html
-@mastodon2@example.com
-@github2
-an affiliation for #2 author
-
-author3 middle3 last3
-AU
-user0@example.com
-https://e.host0.example.com/index.html
-https://f.host0.example.com/index.html
-@mastodon3@example.com
-@github3
-an affiliation for #3 author
-author3_last3
-@#$%^
-AU
-user0@example.com
-https://g.host0.example.com/index.html
-
-@mastodon4@example.com
-@github4
-an affiliation for #4 author
-
-ANSWERS_EOF
-EOF
-}
-rm -f answers.txt
-# Retrieve the answers version from mkiocccentry.c and write to answers file:
-grep -E '^#define MKIOCCCENTRY_ANSWERS_VERSION' soup/version.h | cut -d' ' -f3 | sed 's/"//g' >answers.txt
-# Append answers + EOF marker
-#
-# We disable this shellcheck error because answers already is defined but we
-# redefine it as well. The error is ironically erroneous as if one is to move up
-# in the file they'll see that answers is actually defined above as well.
-#
-# SC2218 (error): This function is only defined later. Move the definition up.
-# https://www.shellcheck.net/wiki/SC2218
-# shellcheck disable=SC2218
-answers >>answers.txt
-
-# be sure the working location exist
-#
-mkdir -p -- "${topdir_topdir_topdir_topdir_topdir}"
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    echo "$0: ERROR: error in creating working dirs: mkdir -p -- ${topdir_topdir_topdir_topdir_topdir}" 1>&2
-    exit 9
-fi
-find "test_ioccc/topdir/$topdir_topdir_topdir_topdir_topdir_head" -type d -print0 | xargs -0 chmod 0755
-touch -- "${topdir_topdir_topdir_topdir_topdir}/foo"
-chmod 0444 "${topdir_topdir_topdir_topdir_topdir}/foo"
-
-# test a bad submission
-#
-# run the test, looking for an exit
-#
-echo
-echo "# $TEST_NAME - this bad submission must FAIL"
-echo
-echo "./mkiocccentry -y -Y -q -i answers.txt -m $MAKE -F $FNAMCHK -t $TAR -T $TXZCHK -e -l $LS -v $V_FLAG -J $J_FLAG -- ${WORKDIR_BAD} ${topdir}"
-./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${WORKDIR_BAD}" "${topdir}"
-status=$?
-if [[ ${status} -ne 4 ]]; then
-    echo "$0: ERROR: mkiocccentry zero exit code not 4: $status" 1>&2
-    exit 1
-else
-    echo "$0: NOTE: the above error is expected as we were testing that the max depth" 1>&2
-    echo "$0: NOTE: limit works." 1>&2
-fi
-
-# end of test check
-#
-if [[ ! -d $TESTDIR ]]; then
-    echo "$0: ERROR: missing result directory: $TESTDIR" 1>&2
-    exit 15
-fi
-echo
-echo "--"
-
 # form a bad submission for test_ioccc/chksubmit_test.sh to use
 #
-# The above test deliberately failed, so $TESTDIR is empty.
-# We will form form a good version of the code and then
-# put back the error for test_ioccc/chksubmit_test.sh to test.
+# The above test should have passed but we need to make the directory bad for
+# test_chksubmit.sh, putting it in the bad tree.
 #
-#
-echo
 echo "# about to form a bad submission for test_ioccc/chksubmit_test.sh to use"
-echo
-rm -rf "${topdir}/a"
-rm -rf "${TESTDIR}"
-./mkiocccentry -y -Y -q -i answers.txt -m "$MAKE" -F "$FNAMCHK" -t "$TAR" -T "$TXZCHK" -e  -l "$LS" -v "$V_FLAG" -J "$J_FLAG" -- "${WORKDIR_BAD}" "${topdir}" >/dev/null 2>&1
-status=$?
-if [[ ${status} -ne 0 ]]; then
-    echo "$0: ERROR: unable to retry mkiocccentry with a good version of $TEST_NAME exit code not 0: $status" 1>&2
-    exit 25
-fi
-mkdir -p -- "${TESTDIR}/${topdir_topdir_topdir_topdir_topdir_tail}"
-find "${TESTDIR}/${topdir_topdir_topdir_topdir_topdir_head}" -type d -print0 | xargs -0 chmod 0755
-touch -- "${TESTDIR}/${topdir_topdir_topdir_topdir_topdir_tail}/foo"
-chmod 0444 "${TESTDIR}/${topdir_topdir_topdir_topdir_topdir_tail}/foo"
+mkdir -p -- "${WORKDIR_BAD}/test-5"
+mkdir -p -- "${WORKDIR_BAD}/test-5/${topdir_topdir_topdir_topdir_topdir_tail}"
+find "${WORKDIR_BAD}/test-5/${topdir_topdir_topdir_topdir_topdir_head}" -type d -print0 | xargs -0 chmod 0755
+touch -- "${WORKDIR_BAD}/test-5/${topdir_topdir_topdir_topdir_topdir_tail}/foo"
+chmod 0444 "${WORKDIR_BAD}/test-5/${topdir_topdir_topdir_topdir_topdir_tail}/foo"
 echo
 echo "# formed a bad submission for test_ioccc/chksubmit_test.sh to use under: $TESTDIR"
 echo
