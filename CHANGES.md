@@ -1,6 +1,29 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.9.1 2025-11-05
+
+Fixed workflow issues after resolving issue #1324. After the `mkiocccentry(1)`
+tool was changed to prevent certain things it meant the bad test cases were not
+actually bad (as the source was simply skipped over). Some test case have been
+removed.
+
+
+In the case of `chksubmit_test.sh` only one bad directory is now formed (the
+`test_ioccc/workdir/{good,bad}`, incidentally, are formed in
+`test_ioccc/mkiocccentry_test.sh`) but that bad directory has several things
+wrong with it, to test, and the script now shows output to stdout and the log
+file (`tee -a`), so it can be examined more easily.
+
+In the case of `mkiocccentry_test.sh` a test case (at least one) was removed or
+else changed (and maybe some removed and others changed).
+
+Tested the above with `make prep`.
+
+Updated `MKIOCCCENTRY_TEST_VERSION` to `"2.1.1 2025-11-05"`.
+Updated `CHKSUBMIT_TEST_VERSION` to `"2.1.2 2025-11-05`.
+
+
 ## Release 2.9.0 2025-11-03
 
 update .info.json format

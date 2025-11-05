@@ -5,7 +5,7 @@
 # "Because grammar and syntax alone do not make a complete language." :-)
 #
 # Use chksubmit to test all the submission directories under
-# test_ioccc/slot/{good,bad}.
+# test_ioccc/workdir/{good,bad}.
 #
 # Copyright (c) 2022-2025 by Landon Curt Noll and Cody Boone Ferguson.
 # All Rights Reserved.
@@ -54,7 +54,7 @@ export EXIT_CODE=0
 export INVALID_DIRECTORY_FOUND=""
 export WORKDIR="./test_ioccc/workdir"
 
-export CHKSUBMIT_TEST_VERSION="2.1.1 2025-08-31"
+export CHKSUBMIT_TEST_VERSION="2.1.2 2025-11-05"
 
 export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-q] [-c chksubmit] [-C chkentry] [-d workdir]
 
@@ -64,7 +64,7 @@ export USAGE="usage: $0 [-h] [-V] [-v level] [-D dbg_level] [-q] [-c chksubmit] 
     -D dbg_level	set verbosity level for tests (def: level: 0)
     -q			quiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )
     -c chksubmit	path to chksubmit tool (def: $CHKSUBMIT)
-    -C chkentry		path to cchkentry tool (def: $CHKENTRY)
+    -C chkentry		path to chkentry tool (def: $CHKENTRY)
     -d workdir		good and bad submission workdir trees (def: $WORKDIR)
 
 			NOTE: These subdirectories are required under workdir:
@@ -303,32 +303,32 @@ run_good_test()
     #
     if [[ -z $quiet_mode ]]; then
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run test that must pass: $chksubmit -C $chkentry -v $dbg_level -- $workdir >> ${LOGFILE} 2>&1" 1>&2
+	    echo "$0: debug[3]: about to run test that must pass: $chksubmit -C $chkentry -v $dbg_level -- $workdir | tee -a -- ${LOGFILE}" 1>&2
 	fi
-	echo "$0: about to run test that must pass: $chksubmit -v $dbg_level -- $workdir >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
-	"$chksubmit" -C "$chkentry" -v "$dbg_level" -- "$workdir" >> "${LOGFILE}" 2>&1
-	status="$?"
+	echo "$0: about to run test that must pass: $chksubmit -v $dbg_level -- $workdir | tee -a -- ${LOGFILE}" 1>&2
+	"$chksubmit" -C "$chkentry" -v "$dbg_level" -- "$workdir" | tee -a -- "${LOGFILE}"
+        status="${PIPESTATUS[0]}"
     else
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run test that must pass: $chksubmit -C $chkentry -v $dbg_level -q -- $workdir >> ${LOGFILE} 2>&1" 1>&2
+	    echo "$0: debug[3]: about to run test that must pass: $chksubmit -C $chkentry -v $dbg_level $quiet_mode -- $workdir | tee -a -- ${LOGFILE}" 1>&2
 	fi
-	echo "$0: about to run test that must pass: $chksubmit -C $chkentry -v $dbg_level -q -- $workdir >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
-	"$chksubmit" -C "$chkentry" -v "$dbg_level" -q -- "$workdir" >> "${LOGFILE}" 2>&1
-	status="$?"
+	echo "$0: about to run test that must pass: $chksubmit -C $chkentry -v $dbg_level $quiet_mode -- $workdir | tee -a -- ${LOGFILE}" 1>&2
+	"$chksubmit" -C "$chkentry" -v "$dbg_level" "$quiet_mode" -- "$workdir" | tee -a -- "${LOGFILE}"
+        status="${PIPESTATUS[0]}"
     fi
 
     # examine test result
     #
     if [[ $status -eq 0 ]]; then
-        echo "$0: test $workdir should PASS: chksubmit PASS with exit code 0" 1>&2 >> "${LOGFILE}"
+        echo "$0: test $workdir should PASS: chksubmit PASS with exit code 0" | tee -a "${LOGFILE}"
         if [[ $V_FLAG -ge 3 ]]; then
-            echo "$0: debug[3]: test $workdir should PASS: chksubmit passed with exit code 0" 1>&2
+            echo "$0: debug[3]: test $workdir should PASS: chksubmit passed with exit code 0" | tee -a -- "${LOGFILE}"
         fi
     else
-        echo "$0: test $workdir should PASS: chksubmit FAILED with exit code: $status" 1>&2 >> "${LOGFILE}"
+        echo "$0: test $workdir should PASS: chksubmit FAILED with exit code: $status" | tee -a -- "${LOGFILE}"
         if [[ $V_FLAG -ge 1 ]]; then
             if [[ $V_FLAG -ge 3 ]]; then
-                echo "$0: debug[3]: debug[3]: test $workdir should PASS: chksubmit FAILED with exit code: $status" 1>&2
+                echo "$0: debug[3]: debug[3]: test $workdir should PASS: chksubmit FAILED with exit code: $status" | tee -a -- "${LOGFILE}"
             fi
         fi
         EXIT_CODE=1
@@ -389,33 +389,33 @@ run_bad_test()
     #
     if [[ -z $quiet_mode ]]; then
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run test that MUST FAIL: $chksubmit -C $chkentry -v $dbg_level -- $workdir >> ${LOGFILE} 2>&1" 1>&2
+	    echo "$0: debug[3]: about to run test that MUST FAIL: $chksubmit -C $chkentry -v $dbg_level -- $workdir | tee -a -- ${LOGFILE}" 1>&2
 	fi
-	echo "$0: about to run test that MUST FAIL: $chksubmit -C $chkentry -v $dbg_level -- $workdir >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
-	"$chksubmit" -C "$chkentry" -v "$dbg_level" -- "$workdir" >> "${LOGFILE}" 2>&1
-	status="$?"
+	echo "$0: about to run test that MUST FAIL: $chksubmit -C $chkentry -v $dbg_level -- $workdir | tee -a -- ${LOGFILE}"
+        "$chksubmit" -C "$chkentry" -v "$dbg_level" -- "$workdir" | tee -a -- "${LOGFILE}"
+        status="${PIPESTATUS[0]}"
     else
 	if [[ $V_FLAG -ge 3 ]]; then
-	    echo "$0: debug[3]: about to run test that MUST FAIL: $chksubmit -C $chkentry -v $dbg_level -q -- $workdir >> ${LOGFILE} 2>&1" 1>&2
+	    echo "$0: debug[3]: about to run test that MUST FAIL: $chksubmit -C $chkentry -v $dbg_level $quiet_mode -- $workdir | tee -a -- ${LOGFILE}" 1>&2
 	fi
-	echo "$0: about to run test that MUST FAIL: $chksubmit -C $chkentry -v $dbg_level -q -- $workdir >> ${LOGFILE} 2>&1" >> "${LOGFILE}"
-	"$chksubmit" -C "$chkentry" -v "$dbg_level" -q -- "$workdir" >> "${LOGFILE}" 2>&1
-	status="$?"
+	echo "$0: about to run test that MUST FAIL: $chksubmit -C $chkentry -v $dbg_level -q -- $workdir | tee -a -- ${LOGFILE}"
+	"$chksubmit" -C "$chkentry" -v "$dbg_level" -q -- "$workdir" | tee -a -- "${LOGFILE}"
+        status="${PIPESTATUS[0]}"
     fi
 
     # examine test result
     #
     if [[ $status -eq 0 ]]; then
-        echo "$0: test $workdir should FAIL: chksubmit incorrectly passed with exit code 0" 1>&2 >> "${LOGFILE}"
+        echo "$0: test $workdir should FAIL: chksubmit incorrectly passed with exit code 0" | tee -a -- "${LOGFILE}"
         if [[ $V_FLAG -ge 3 ]]; then
-            echo "$0: debug[3]: test $workdir: chksubmit should FAIL: chksubmit incorrectly passed with exit code 0" 1>&2
+            echo "$0: debug[3]: test $workdir: chksubmit should FAIL: chksubmit incorrectly passed with exit code 0" | tee -a -- "${LOGFILE}"
         fi
         EXIT_CODE=1
     else
-        echo "$0: test $workdir should PASS: chksubmit correctly passed with exit code: $status" 1>&2 >> "${LOGFILE}"
+        echo "$0: test $workdir should PASS: chksubmit correctly passed with exit code: $status" | tee -a -- "${LOGFILE}"
         if [[ $V_FLAG -ge 1 ]]; then
             if [[ $V_FLAG -ge 3 ]]; then
-                echo "$0: debug[3]: debug[3]: test $workdir should FAIL: chksubmit correctly passed with exit code: $status" 1>&2
+                echo "$0: debug[3]: debug[3]: test $workdir should FAIL: chksubmit correctly passed with exit code: $status" | tee -a -- "${LOGFILE}"
             fi
         fi
     fi
@@ -429,7 +429,7 @@ run_bad_test()
 # run tests that must pass: good
 #
 if [[ $V_FLAG -ge 3 ]]; then
-    echo "$0: debug[3]: about to run chksubmit tests that must pass: good/ files" 1>&2
+    echo "$0: debug[3]: about to run chksubmit tests that must pass: good/ files" | tee -a -- "${LOGFILE}"
 fi
 while read -r dir; do
     run_good_test "$CHKSUBMIT" "$CHKENTRY" "$DBG_LEVEL" "$Q_FLAG" "$dir"
@@ -439,7 +439,7 @@ done < <(find "$GOOD_TREE" -mindepth 1 -maxdepth 1 -type d -print)
 # run tests that must fail: bad
 #
 if [[ $V_FLAG -ge 3 ]]; then
-    echo "$0: debug[3]: about to run chksubmit tests that must fail: bad/ files" 1>&2
+    echo "$0: debug[3]: about to run chksubmit tests that must fail: bad/ files" | tee -a -- "${LOGFILE}"
 fi
 while read -r dir; do
     run_bad_test "$CHKSUBMIT" "$CHKENTRY" "$DBG_LEVEL" "$Q_FLAG" "$dir"
@@ -448,20 +448,20 @@ done < <(find "$BAD_TREE" -mindepth 1 -maxdepth 1 -type d -print)
 # determine exit code
 #
 if [[ $EXIT_CODE -ne 0 ]]; then
-    echo "$0: one or more tests FAILED" >> "${LOGFILE}"
+    echo "$0: one or more tests FAILED" | tee -a -- "${LOGFILE}"
     if [[ $V_FLAG -ge 1 ]]; then
         echo "$0: debug[1]: one or more tests FAILED" 1>&2
         echo "$0: Notice: one or more directories failed chksubmit tests, see $LOGFILE for details" 1>&2
         echo "$0: ERROR: about to exit: $EXIT_CODE" 1>&2
     fi
-    echo "$0: about to exit: $EXIT_CODE" >> "${LOGFILE}"
+    echo "$0: about to exit: $EXIT_CODE" | tee -a -- "${LOGFILE}"
 else
-    echo "$0: all tests PASSED" >> "${LOGFILE}"
+    echo "$0: all tests PASSED" | tee -a -- "${LOGFILE}"
     if [[ $V_FLAG -ge 1 ]]; then
         echo "$0: debug[1]: all tests PASSED" 1>&2
         echo 1>&2
     fi
-    echo "$0: about to exit: $EXIT_CODE" >> "${LOGFILE}"
+    echo "$0: about to exit: $EXIT_CODE" | tee -a -- "${LOGFILE}"
 fi
 
 # All Done!!! All Done!!! -- Jessica Noll, Age 2
