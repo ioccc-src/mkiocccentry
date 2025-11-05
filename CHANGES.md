@@ -23,6 +23,9 @@ Tested the above with `make prep`.
 Updated `MKIOCCCENTRY_TEST_VERSION` to `"2.1.1 2025-11-05"`.
 Updated `CHKSUBMIT_TEST_VERSION` to `"2.1.2 2025-11-05`.
 
+Add missing links to mkiocccentry repo in `txzchk_sanity_chks()` and
+`chksubmit_sanity_chks()`.
+
 
 ## Release 2.9.0 2025-11-03
 

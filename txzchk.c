@@ -529,9 +529,14 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "We cannot find fnamchk.",
 	      "",
 	      "This tool is required to test the tarball.",
-	      "Perhaps you need to use:",
+	      "Perhaps you need to use another path:",
 	      "",
 	      "    txzchk -F /path/to/fnamchk [...]",
+              "",
+              "or install the mkiocccentry toolkit? You can find the mkiocccentry toolkit at:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+              "",
 	      NULL);
 	err(16, __func__, "fnamchk does not exist: %s", fnamchk);
 	not_reached();
@@ -545,6 +550,11 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "Perhaps you need to use another path:",
 	      "",
 	      "    txzchk -F /path/to/fnamchk [...]",
+              "",
+              "or install the mkiocccentry toolkit? You can find the mkiocccentry toolkit at:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+              "",
 	      NULL);
 	err(17, __func__, "fnamchk is not a regular file: %s", fnamchk);
 	not_reached();
@@ -558,6 +568,11 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	      "We suggest you check the permissions on the fnamchk program, or use another path:",
 	      "",
 	      "    txzchk -F /path/to/fnamchk [...]",
+              "",
+              "or install the mkiocccentry toolkit? You can find the mkiocccentry toolkit at:",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
+              "",
 	      NULL);
 	err(18, __func__, "fnamchk is not an executable program: %s", fnamchk);
 	not_reached();

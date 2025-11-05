@@ -183,7 +183,8 @@ chksubmit_sanity_chks(char const *chkentry)
               "    chksubmit -C /path/to/chkentry [...]",
               "",
               "or install the mkiocccentry toolkit? You can find the mkiocccentry toolkit at:",
-              "",
+	      "",
+	      "    https://github.com/ioccc-src/mkiocccentry",
               "",
               NULL);
         err(13, __func__, "chkentry does not exist: %s", chkentry);
