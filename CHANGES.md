@@ -57,6 +57,10 @@ Updated `MKIOCCCENTRY_VERSION` to `"2.1.9 2025-11-03"`.
 
 Fix semantics errors from the `.info.json` file updates.
 
+Updated FAQ.md - remove references to chkentry (use chksubmit instead) and add
+references to location (as that can be useful for those who don't know their
+country code, even though we provide a URL of a list as well).
+
 
 ## Release 2.8.8 2025-11-03
 
