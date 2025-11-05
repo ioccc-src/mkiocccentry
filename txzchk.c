@@ -868,9 +868,8 @@ count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t
  * loosely here.
  */
 static void
-parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
-	char const *tarball_path, char **saveptr, bool isfile, intmax_t *sum, intmax_t *count,
-        bool isdir, char *perms, bool isexec)
+parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname, char const *tarball_path,
+        char **saveptr, bool isfile, intmax_t *sum, intmax_t *count, bool isdir, char *perms, bool isexec)
 {
     intmax_t length = 0; /* file size */
     struct txz_file *file = NULL;   /* allocated struct of file info */
@@ -1003,10 +1002,8 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
  * loosely here.
  */
 static void
-parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname,
-	char const *tarball_path, char **saveptr,
-		    bool isfile, intmax_t *sum, intmax_t *count, bool isdir,
-                    char *perms, bool isexec)
+parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname, char const *tarball_path,
+        char **saveptr, bool isfile, intmax_t *sum, intmax_t *count, bool isdir, char *perms, bool isexec)
 {
     intmax_t length = 0; /* file size */
     struct txz_file *file = NULL;   /* allocated struct of file info */

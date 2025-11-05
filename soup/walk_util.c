@@ -4320,7 +4320,7 @@ fts_walk(struct walk_stat *wstat_p)
 	case FTS_DC:
 
 	    /* debugging */
-	    warn(__func__, "cycle causing directory fot: %s", ftsent->fts_path);
+	    warn(__func__, "cycle causing directory for: %s", ftsent->fts_path);
 	    dbg(DBG_V1_HIGH, "%s: cycle causing directory found: %s", __func__, ftsent->fts_path);
 	    dbg(DBG_V1_HIGH, "  %s: subpath: %s", __func__, subpath);
 	    dbg(DBG_V1_HIGH, "  %s: name: %s", __func__, ftsent->fts_name);

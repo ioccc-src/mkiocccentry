@@ -1,5 +1,5 @@
---- ref/info.reference.json.h	2025-11-03 20:25:40
-+++ chk_sem_info.h	2025-11-03 20:44:47
+--- ref/info.reference.json.h	2025-11-04 05:14:31
++++ chk_sem_info.h	2025-11-04 05:13:37
 @@ -33,12 +33,12 @@
  /*
   * json_sem - JSON semantics support
