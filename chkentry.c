@@ -236,9 +236,10 @@ main(int argc, char *argv[])
             errp(44, __func__, "failed to chdir() into submission dir: %s", argv[optind]);
             not_reached();
         }
+        errno = 0; /* pre-clear errno for errp() */
         submission_dir = getcwd(NULL, 0);
         if (submission_dir == NULL) {
-            err(44, __func__, "failed to get absolute path for: %s", argv[optind]);
+            errp(45, __func__, "failed to get absolute path for: %s", argv[optind]);
             not_reached();
         }
 	break;
