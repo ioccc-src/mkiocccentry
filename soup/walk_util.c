@@ -4242,11 +4242,9 @@ fts_walk(struct walk_stat *wstat_p)
 	 *
 	 * NOTE: This should never happen, but in case there is an fts_read(3) bug, we check.
 	 */
-	} else if (ftsent->fts_path[wstat_p->topdir_len] != '/' ||
-		   strncmp(wstat_p->topdir, ftsent->fts_path, wstat_p->topdir_len) != 0) {
-
+	} else if (ftsent->fts_pathlen <= wstat_p->topdir_len) {
 	    /* warn about fts_path not starting with canonicalized wstat_p->topdir + / (slash) */
-	    warn(__func__, "fts_read() produced fts_pathlen: %d == %zu for non-wstat_p->topdir: %s",
+	    warn(__func__, "fts_read() produced fts_pathlen: %d <= %zu for non-wstat_p->topdir: %s",
 		 ftsent->fts_pathlen, wstat_p->topdir_len, ftsent->fts_path);
 
 	    /* close file hierarchy traversal */
@@ -4264,8 +4262,7 @@ fts_walk(struct walk_stat *wstat_p)
 		path_set = NULL;
 	    }
 	    return false;
-	}
-
+        }
 	/* assertion: ftsent->fts_path starts with wstat_p->topdir */
 
 	/*
