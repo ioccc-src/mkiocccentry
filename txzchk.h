@@ -203,7 +203,7 @@ static void parse_linux_txz_line(char *p, char *line, char *line_dup, char const
         char *perms, bool isexec);
 static void show_tarball_info(char const *tarball_path);
 static void check_all_txz_files(void);
-static mode_t get_mode(char const *filename, char const *perms);
+static mode_t get_mode(struct txz_file *file);
 static void add_txz_line(char const *str, uintmax_t line_num);
 static void parse_all_txz_lines(char const *dirname, char const *tarball_path);
 static void free_txz_lines(void);

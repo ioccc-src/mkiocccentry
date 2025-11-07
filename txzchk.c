@@ -402,7 +402,7 @@ show_tarball_info(char const *tarball_path)
  *	prog		our program name
  *	str		top level usage message
  *
- * NOTE: We warn with extra newlines to help internal fault messages stand out.
+ * NOTE: we warn with extra newlines to help internal fault messages stand out.
  *       Normally one should NOT include newlines in warn messages.
  *
  * This function does not return.
@@ -636,8 +636,8 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
  * Returns void. Ignores empty files (though these should not be in the list at
  * all).
  *
- * Does not return on NULL filenames or basenames (neither of which should ever
- * happen).
+ * This function does not return on NULL filenames or basenames (neither of
+ * which should ever happen).
  */
 static void
 check_all_txz_files(void)
@@ -671,6 +671,20 @@ check_all_txz_files(void)
 	} else if (file->filename == NULL) {
 	    err(23, __func__, "found NULL file->filename in txz_files list");
 	    not_reached();
+        }
+
+        /*
+         * now check empty basenames and filenames, in case any slipped through.
+         */
+        if (*(file->basename) == '\0') {
+            warn(TXZCHK_BASENAME, "found empty basename in txz_files list");
+            ++tarball.total_feathers;
+            continue;
+        }
+        if (*(file->filename) == '\0') {
+            warn(TXZCHK_BASENAME, "found empty filename in txz_files list");
+            ++tarball.total_feathers;
+            continue;
         }
         check_directory(file, file->dirname, tarball_path);
 
@@ -1253,7 +1267,7 @@ has_special_bits(struct txz_file *file)
  *
  *  Function updates tarball.total_feathers, tarball.files_size and dir_count. Returns void.
  *
- *  Function does not return on error.
+ *  This function does not return on error.
  */
 static void
 parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tarball_path, intmax_t *sum, intmax_t *count)
@@ -1357,7 +1371,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tar
  *
  *	total number of feathers/issues found (tarball.total_feathers).
  *
- * NOTE: Does not return on error.
+ * This function does not return on error.
  */
 static uintmax_t
 check_tarball(char const *tar, char const *fnamchk)
@@ -1870,7 +1884,7 @@ free_txz_lines(void)
  * given:
  *
  *	path	    - file path
- *	dirname    - directory name from fnamchk or NULL if fnamchk failed
+ *	dirname     - directory name from fnamchk or NULL if fnamchk failed
  *	perms       - permissions string
  *	isdir       - true ==> is a directory
  *	isfile      - true ==> is a regular file
@@ -1924,7 +1938,7 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, bool isdir, b
     }
 
     /*
-     * if fnamchk did not fail make copy of dirname
+     * if fnamchk did not fail make copy of dirname in the file struct
      */
     if (dirname != NULL) {
         errno = 0; /* pre-clear errno for errp() */
@@ -1934,6 +1948,9 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, bool isdir, b
             not_reached();
         }
     } else {
+        /*
+         * case: fnamchk failed so set dirname to NULL
+         */
         file->dirname = NULL;
     }
 
@@ -1953,7 +1970,7 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, bool isdir, b
     /*
      * convert perms into a mode_t
      */
-    file->mode = get_mode(path, file->perms);
+    file->mode = get_mode(file);
 
     /* record the length */
     file->length = length;
@@ -1982,31 +1999,44 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, bool isdir, b
  *
  * given:
  *
- *      filename    - filename
- *      perms       - permissions string
+ *      file        - pointer to struct txz_file (from caller)
  *
- * This function does not return on a NULL string.
+ * This function does not return on a NULL txz_file or NULL filename or NULL
+ * perms string.
  *
  * Returns a mode_t corresponding to the file's permission string.
+ *
+ * NOTE: yes it is true that below we could use a loop and check the index (or
+ * maybe 'index') but we're more explicit and careful there.
  */
-mode_t get_mode(char const *filename, char const *perms)
+mode_t get_mode(struct txz_file *file)
 {
     mode_t mode = 0;       /* mode_t to return */
     char const *s = NULL;     /* perms string in file */
+    char const *perms = NULL; /* temporary value used to simplify code */
+    char const *filename = NULL; /* temporary value used to simplify code */
 
-    if (filename == NULL) {
-        warn(TXZCHK_BASENAME, "in %s: filename is NULL", __func__);
+    if (file == NULL) {
+        warn(TXZCHK_BASENAME, "in %s: file is NULL", __func__);
         ++tarball.total_feathers;
         return 0;
     }
-    if (perms == NULL) {
-	warn(TXZCHK_BASENAME, "in %s: perms for file '%s' is NULL", __func__, filename);
+    if (file->filename == NULL) {
+        warn(TXZCHK_BASENAME, "in %s: file->filename is NULL", __func__);
+        ++tarball.total_feathers;
+        return 0;
+    }
+    if (file->perms == NULL) {
+	warn(TXZCHK_BASENAME, "in %s: perms for file '%s' is NULL", __func__, file->filename);
         ++tarball.total_feathers;
         return 0;
     }
 
+    filename = file->filename;
+    perms = file->perms;
     if (strlen(perms) < 10) {
-        warn(TXZCHK_BASENAME, "in %s: file %s has NULL or too short perms string", __func__, filename);
+        warn(TXZCHK_BASENAME, "in %s: file %s too few characters in perm string: %zu != 10", __func__, filename,
+             strlen(perms));
         ++tarball.total_feathers;
         return 0;
     }
@@ -2044,10 +2074,6 @@ mode_t get_mode(char const *filename, char const *perms)
     }
 
     /*
-     * Yes we could use a loop and check by index but we're more explicit here.
-     */
-
-    /*
      * user perms
      */
     if (s[1] == 'r') {
@@ -2072,7 +2098,6 @@ mode_t get_mode(char const *filename, char const *perms)
         warn(TXZCHK_BASENAME, "user exec permission '%c' in file %s invalid", s[3], filename);
         ++tarball.total_feathers;
     }
-
 
     /*
      * group
@@ -2168,6 +2193,7 @@ add_txz_file_to_list(struct txz_file *txzfile)
  *      file        - pointer to pointer to a txz_file to free
  *
  * This function does not return on a NULL pointer.
+ *
  * This function should set the pointer in the _calling_ function to NULL but
  * the caller might still be wise to set it to NULL just in case something funny
  * goes on.
