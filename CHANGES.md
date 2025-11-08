@@ -1,13 +1,21 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.9.2 2025-11-07
+
+Improve `get_mode()` in txzchk: it now takes the `struct txz_file *` rather than
+the `char *`s that were passed to the calling function. Also change literal
+string `"txzchk"` to `TXZCHK_BASENAME`.
+
+Updated `TXZCHK_VERSION` to `"2.0.12 2025-11-07"`.
+
+
 ## Release 2.9.1 2025-11-05
 
 Fixed workflow issues after resolving issue #1324. After the `mkiocccentry(1)`
 tool was changed to prevent certain things it meant the bad test cases were not
 actually bad (as the source was simply skipped over). Some test case have been
 removed.
-
 
 In the case of `chksubmit_test.sh` only one bad directory is now formed (the
 `test_ioccc/workdir/{good,bad}`, incidentally, are formed in
