@@ -1,6 +1,26 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.9.3 2025-11-08
+
+Fixed NULL pointer dereference in `chkentry` when there is a walk error (i.e.
+when the program fails to validate the submission directory and exits 1). This
+occurred because in order to solve another issue we had to get the absolute
+path but before we could exit we freed it and set it to NULL - and without
+thinking about the err() call now being dynamically allocated it was not
+corrected (now it refers to `argv[optind]` via new `char *submit_dir` which is
+always set after `getopt()` code is done).
+
+Improved `mkiocccentry_test.sh` to create additional (more than one) bad
+submission directory for `chksubmit_test.sh`.
+
+Fixed typos (inconsistent) messages in `chksubmit_test.sh`.
+
+Updated `CHKENTRY_VERSION` to `"2.1.10 2025-11-08"`.
+Updated `MKIOCCCENTRY_TEST_VERSION` to `"2.1.2 2025-11-08"`.
+Updated `CHKSUBMIT_TEST_VERSION` to `"2.1.3 2025-11-08"`.
+
+
 ## Release 2.9.2 2025-11-07
 
 Improve `get_mode()` in txzchk: it now takes the `struct txz_file *` rather than

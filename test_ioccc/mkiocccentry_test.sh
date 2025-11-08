@@ -2,17 +2,42 @@
 #
 # mkiocccentry_test.sh - a test suite for the mkiocccentry tool (not repo)
 #
-# This script was written in 2022 by:
+# Copyright (c) 2022-2025 by Landon Curt Noll and Cody Boone Ferguson.
+# All Rights Reserved.
+#
+# Permission to use, copy, modify, and distribute this software and
+# its documentation for any purpose and without fee is hereby granted,
+# provided that the above copyright, this permission notice and text
+# this comment, and the disclaimer below appear in all of the following:
+#
+#       supporting documentation
+#       source copies
+#       source works derived from this source
+#       binaries derived from this source or from derived source
+#
+# THE AUTHORS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+# ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+# AUTHORS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
+# DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+#
+# This script and the JSON parser were co-developed in 2022-2025 by Cody Boone
+# Ferguson and Landon Curt Noll:
+#
+#  @xexyl
+#	https://xexyl.net		Cody Boone Ferguson
+#	https://ioccc.xexyl.net
+# and:
+#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#
+# "Because sometimes even the IOCCC Judges need some help." :-)
+#
+# We wish to ESPECIALLY thank:
 #
 #	@ilyakurdyukov		Ilya Kurdyukov
 #
-# with many updates and improvements by:
-#
-#	@xexyl
-#	https://xexyl.net		Cody Boone Ferguson
-#	https://ioccc.xexyl.net
-# and
-#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+# who wrote the original script in 2022. THANK YOU Ilya!
 #
 # Share and enjoy! :-)
 
@@ -94,7 +119,7 @@ MAKE="$(type -P make 2>/dev/null)"
 export TXZCHK="./txzchk"
 export FNAMCHK="./test_ioccc/fnamchk"
 
-export MKIOCCCENTRY_TEST_VERSION="2.1.1 2025-11-05"
+export MKIOCCCENTRY_TEST_VERSION="2.1.2 2025-11-08"
 export USAGE="usage: $0 [-h] [-V] [-v level] [-J level] [-t tar] [-T txzchk] [-l ls] [-F fnamchk] [-m make] [-Z topdir]
 
     -h              print help and exit
@@ -836,21 +861,51 @@ fi
 echo
 echo "--"
 
-# form a bad submission for test_ioccc/chksubmit_test.sh to use
+# form bad submissions for test_ioccc/chksubmit_test.sh to use
 #
-# The above test should have passed but we need to make the directory bad for
-# test_chksubmit.sh, putting it in the bad tree.
+echo "# about to form bad submissions for test_ioccc/chksubmit_test.sh to use"
+# make another one with no .info.json, based on our last good submission
+# directory.
 #
-echo "# about to form a bad submission for test_ioccc/chksubmit_test.sh to use"
+echo cp -a "${WORKDIR_GOOD}/test-5" "${WORKDIR_BAD}/test-1"
+rm -f "${WORKDIR_BAD}/test-1/.info.json"
+
+# create another but this one has an invalid .auth.json file in that it has
+# invalid JSON
+#
+cp -a "${WORKDIR_GOOD}/test-5" "${WORKDIR_BAD}/test-2"
+chmod u=rw "${WORKDIR_BAD}/test-2/.auth.json"
+echo '>' >> "${WORKDIR_BAD}/test-2/.auth.json"
+echo
+
+# this next one has no prog.c
+cp -a "${WORKDIR_GOOD}/test-5" "${WORKDIR_BAD}/test-3"
+chmod u=rw "${WORKDIR_BAD}/test-3/prog.c"
+rm -f "${WORKDIR_BAD}/test-3/prog.c"
+echo
+
+# this one has an empty remarks.md file and no Makefile
+cp -a "${WORKDIR_GOOD}/test-5" "${WORKDIR_BAD}/test-4"
+chmod u=rw "${WORKDIR_BAD}/test-4/Makefile" "${WORKDIR_BAD}/test-4/remarks.md"
+rm -f "${WORKDIR_BAD}/test-4/Makefile"
+:> "${WORKDIR_BAD}/test-4/remarks.md"
+echo
+
+# lastly make a more complicated bad submission to test a number of errors
+#
 mkdir -p -- "${WORKDIR_BAD}/test-5"
 mkdir -p -- "${WORKDIR_BAD}/test-5/${topdir_topdir_topdir_topdir_topdir_tail}"
 find "${WORKDIR_BAD}/test-5/${topdir_topdir_topdir_topdir_topdir_head}" -type d -print0 | xargs -0 chmod 0755
 touch -- "${WORKDIR_BAD}/test-5/${topdir_topdir_topdir_topdir_topdir_tail}/foo"
 chmod 0444 "${WORKDIR_BAD}/test-5/${topdir_topdir_topdir_topdir_topdir_tail}/foo"
 echo
+
+
 echo "# formed a bad submission for test_ioccc/chksubmit_test.sh to use under: $TESTDIR"
 echo
 echo "--"
+
+
 
 # All Done!!! All Done!!! -- Jessica Noll, Age 2
 #
