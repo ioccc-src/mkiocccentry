@@ -121,6 +121,7 @@ main(int argc, char *argv[])
 {
     char const *program = NULL;		/* our name */
     char *submission_dir = NULL;        /* directory from which files are to be checked */
+    char *submit_dir = NULL;            /* this becomes argv[optind] for exiting 1 */
     extern char *optarg;		/* option argument */
     extern int optind;			/* argv index of the next arg */
     bool opt_error = false;		/* fchk_inval_opt() return */
@@ -223,6 +224,7 @@ main(int argc, char *argv[])
 	    break;
 	}
     }
+    submit_dir = argv[optind]; /* IMPORTANT! */
     switch (argc-optind) {
     case 1:
         /*
@@ -232,14 +234,14 @@ main(int argc, char *argv[])
         /*
          * chdir
          */
-        if (chdir(argv[optind]) != 0) {
-            errp(44, __func__, "failed to chdir() into submission dir: %s", argv[optind]);
+        if (chdir(submit_dir) != 0) {
+            errp(44, __func__, "failed to chdir() into submission dir: %s", submit_dir);
             not_reached();
         }
         errno = 0; /* pre-clear errno for errp() */
         submission_dir = getcwd(NULL, 0);
         if (submission_dir == NULL) {
-            errp(45, __func__, "failed to get absolute path for: %s", argv[optind]);
+            errp(45, __func__, "failed to get absolute path for: %s", submit_dir);
             not_reached();
         }
 	break;
@@ -593,7 +595,8 @@ main(int argc, char *argv[])
      * All Done!!! All Done!!! -- Jessica Noll, Age 2
      */
     if (!walk_ok) {
-	err(1, CHKENTRY_BASENAME, "check failed for: %s", submission_dir); /*ooo*/
+	err(1, CHKENTRY_BASENAME, "check failed for: %s", submit_dir); /*ooo*/
+        not_reached();
     }
     exit(0); /*ooo*/
 }
