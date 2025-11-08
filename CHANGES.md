@@ -9,6 +9,12 @@ string `"txzchk"` to `TXZCHK_BASENAME`.
 
 Updated `TXZCHK_VERSION` to `"2.0.12 2025-11-07"`.
 
+Fixed `fts_walk()` and `chkentry(1)` to work with a directory ending with `/`
+AND a directory NOT ending with a `/`.
+
+Updated `CHKENTRY_VERSION` to `"2.1.9 2025-11-07"`
+Updated `SOUP_VERSION` to `"2.2.10 2025-11-07"`.
+
 
 ## Release 2.9.1 2025-11-05
 

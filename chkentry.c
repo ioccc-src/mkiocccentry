@@ -225,7 +225,23 @@ main(int argc, char *argv[])
     }
     switch (argc-optind) {
     case 1:
-        submission_dir = argv[optind];
+        /*
+         * get absolute path of submission dir
+         */
+        errno = 0; /* pre-clear errno for errp() */
+        /*
+         * chdir
+         */
+        if (chdir(argv[optind]) != 0) {
+            errp(44, __func__, "failed to chdir() into submission dir: %s", argv[optind]);
+            not_reached();
+        }
+        errno = 0; /* pre-clear errno for errp() */
+        submission_dir = getcwd(NULL, 0);
+        if (submission_dir == NULL) {
+            errp(45, __func__, "failed to get absolute path for: %s", argv[optind]);
+            not_reached();
+        }
 	break;
     case 2:
 	/* how dotty! */
@@ -558,6 +574,14 @@ main(int argc, char *argv[])
 	    dbg(DBG_LOW, "invalid JSON file: %s/%s", submission_dir, json_filename);
 	    walk_ok = false;
 	}
+    }
+
+    /*
+     * free submission directory
+     */
+    if (submission_dir != NULL) {
+        free(submission_dir);
+        submission_dir = NULL;
     }
 
     /*
