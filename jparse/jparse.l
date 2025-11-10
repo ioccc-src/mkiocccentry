@@ -226,7 +226,7 @@ JSON_COMMA		","
                              * (depending on if the JSON debug level was high
                              * enough).
 			     */
-			    (void) json_dbg(JSON_DBG_VVHIGH, __func__, "\nignoring %d whitespace%s\n",
+			    (void) json_dbg(JSON_DBG_VVHIGH, __func__, "\nignoring %zu whitespace%s\n",
 							     yyleng, yyleng==1?"":"s");
 			}
 
