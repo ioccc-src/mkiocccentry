@@ -79,7 +79,7 @@ if [[ -z "$MAKE" ]]; then
 fi
 export MAKE
 export MAKE_FLAGS="V=@ S=@ Q= E=@ I= Q_V_OPTION=1 INSTALL_V= MAKE_CD_Q="
-export JPARSE_BUG_REPORT_VERSION="2.1.3 2025-11-11"
+export JPARSE_BUG_REPORT_VERSION="2.1.3 2025-11-10"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
