@@ -1,7 +1,7 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 2.9.4 2025-11-11
+## Release 2.9.4 2025-11-10
 
 Sync jparse/ from [jparse repo](https://github.com/xexyl/jparse). This should
 hopefully fix the problem with NetBSD warning about `yyleng` being unsigned
@@ -14,7 +14,7 @@ it's better make sure of it before trying to dereference it).
 
 Fixed `bug_report.sh` to not rely on `cpp` for getting the predefined macros.
 
-Updated `BUG_REPORT_VERSION` to `"1.0.13 2025-11-11"`.
+Updated `BUG_REPORT_VERSION` to `"1.0.13 2025-11-10"`.
 
 
 
