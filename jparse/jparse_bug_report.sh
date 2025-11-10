@@ -79,7 +79,7 @@ if [[ -z "$MAKE" ]]; then
 fi
 export MAKE
 export MAKE_FLAGS="V=@ S=@ Q= E=@ I= Q_V_OPTION=1 INSTALL_V= MAKE_CD_Q="
-export BUG_REPORT_VERSION="2.1.2 2025-07-23"
+export JPARSE_BUG_REPORT_VERSION="2.1.3 2025-11-11"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -111,7 +111,7 @@ Exit codes:
      5      required file doesn't exist, wrong type or wrong permissions
  >= 10	    at least one check failed
 
-jparse_bug_report.sh version: $BUG_REPORT_VERSION"
+jparse_bug_report.sh version: $JPARSE_BUG_REPORT_VERSION"
 
 # Determine the name of the log file
 #
@@ -128,7 +128,7 @@ while getopts :hVv:D:txlL:m:M:c: flag; do
     h)	echo "$USAGE" 1>&2
         exit 2
         ;;
-    V)	echo "$BUG_REPORT_VERSION" 1>&2
+    V)	echo "$JPARSE_BUG_REPORT_VERSION" 1>&2
 	exit 2
 	;;
     v)	V_FLAG="$OPTARG";
@@ -1161,7 +1161,7 @@ if [[ $V_FLAG -gt 1 ]]; then
     write_echo "Will write report to \"$LOGFILE\""
 fi
 write_echo "# TIME OF REPORT: \"$(date)\""
-write_echo "# BUG_REPORT_VERSION: \"$BUG_REPORT_VERSION\""
+write_echo "# JPARSE_BUG_REPORT_VERSION: \"$JPARSE_BUG_REPORT_VERSION\""
 
 #################################################
 # Section 0: environment and system information #
@@ -1439,8 +1439,8 @@ if [[ $(basename "$MAKE") == gmake ]]; then
     get_version "gmake"
 fi
 
-# cpp -dM /dev/null: get predefined macros
-run_check 40 "cpp -dM /dev/null"
+# cc -dM -E -xc /dev/null: get predefined macros
+run_check 40 "cc -dM -E -xc /dev/null"
 
 write_echo "#--------------------------------#"
 write_echo "# SECTION 2 ABOVE: C ENVIRONMENT #"

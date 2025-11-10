@@ -114,7 +114,7 @@ if [[ -z "$MAKE" ]]; then
 	MAKE="$(type -P make)"
 fi
 export MAKE
-export BUG_REPORT_VERSION="1.0.12 2025-08-28"
+export BUG_REPORT_VERSION="1.0.13 2025-11-11"
 export FAILURE_SUMMARY=
 export NOTICE_SUMMARY=
 export DBG_LEVEL="0"
@@ -1446,8 +1446,8 @@ if [[ $(basename "$MAKE") == gmake ]]; then
     get_version "gmake"
 fi
 
-# cpp -dM /dev/null: get predefined macros
-run_check 40 "cpp -dM /dev/null"
+# cc -dM -E -x c /dev/null: get predefined macros
+run_check 40 "cc -dM -E -x c /dev/null"
 
 write_echo "#--------------------------------#"
 write_echo "# SECTION 2 ABOVE: C ENVIRONMENT #"

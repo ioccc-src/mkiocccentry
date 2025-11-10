@@ -1,5 +1,19 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.5.3 2025-11-11
+
+Cast `yyleng` (and `jparse_get_leng()`) to an int for systems like NetBSD that
+try making it an unsigned int despite the fact the struct has it as an `int`.
+Rebuilt parser code.
+
+Updated `jparse_bug_report.sh` to not rely on `cpp` for getting predefined
+macros.
+
+Updated `JPARSE_LIBRARY_VERSION` to `"2.4.3 2025-11-11"`.
+Updated `JPARSE_BUG_REPORT_VERSION` to `"2.1.3 2025-11-11"` (previously was
+`BUG_REPORT_VERSION`).
+
+
 ## Release 2.5.2 2025-11-03
 
 Removed `#include <fnmatch.h>` from util.h. This is no longer needed once the

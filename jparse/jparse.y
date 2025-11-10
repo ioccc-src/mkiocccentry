@@ -427,7 +427,12 @@ json_value:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_TRUE");
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", jparse_get_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", jparse_get_leng(scanner));
+
+            /*
+             * NOTE: we cast jparse_get_leng() to an int for systems like NetBSD
+             * that think it's supposed to be unsigned.
+             */
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", (int)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
 					       "$json_value = json_parse_bool(jparse_get_text(scanner));");
 	}
@@ -457,7 +462,11 @@ json_value:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_FALSE");
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", jparse_get_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", jparse_get_leng(scanner));
+            /*
+             * NOTE: we cast jparse_get_leng() to an int for systems like NetBSD
+             * that think it's supposed to be unsigned.
+             */
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", (int)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
 					       "$json_value = json_parse_bool(jparse_get_text(scanner))");
 	}
@@ -487,7 +496,11 @@ json_value:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_NULL");
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", jparse_get_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", jparse_get_leng(scanner));
+            /*
+             * NOTE: we cast jparse_get_leng() to an int for systems like NetBSD
+             * that think it's supposed to be unsigned.
+             */
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", (int)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
 					       "$json_value = json_parse_null(jparse_get_text(scanner));");
 	}
@@ -855,11 +868,21 @@ json_string:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: starting: "
 					       "json_string: JSON_STRING");
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yytext: <%s>", jparse_get_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yyleng: <%d>", jparse_get_leng(scanner));
+            /*
+             * NOTE: we cast jparse_get_leng() to an int for systems like NetBSD
+             * that think it's supposed to be unsigned.
+             */
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yyleng: <%d>", (int)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: about to perform: "
 					       "$json_string = json_parse_string(jparse_get_text(scanner), (size_t)jparse_get_leng(scanner);");
 	}
 
+
+        /*
+         * NOTE: we cast jparse_get_leng() to a size_t because the function we
+         * call needs it to be size_t, yes even though above we print it as an
+         * int.
+         */
 	/* action */
 	$json_string = json_parse_string(jparse_get_text(scanner), (size_t)jparse_get_leng(scanner));
 
@@ -887,7 +910,11 @@ json_number:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: starting: "
 					       "json_number: JSON_NUMBER");
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yytext: <%s>", jparse_get_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yyleng: <%d>", jparse_get_leng(scanner));
+            /*
+             * NOTE: we cast jparse_get_leng() to an int for systems like NetBSD
+             * that think it's supposed to be unsigned.
+             */
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yyleng: <%d>", (int)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: about to perform: "
 					       "$json_number = json_parse_number(jparse_get_text(scanner));");
 	}
