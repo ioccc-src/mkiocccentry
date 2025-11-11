@@ -225,9 +225,12 @@ JSON_COMMA		","
                              * used it to see how many whitespaces were ignored
                              * (depending on if the JSON debug level was high
                              * enough).
+                             *
+                             * NOTE: we cast yyleng to an int for systems like
+                             * NetBSD that try making yyleng unsigned.
 			     */
 			    (void) json_dbg(JSON_DBG_VVHIGH, __func__, "\nignoring %d whitespace%s\n",
-							     yyleng, yyleng==1?"":"s");
+							     (int)yyleng, yyleng==1?"":"s");
 			}
 
 {JSON_NL}		{
@@ -374,7 +377,10 @@ static bool is_read(char const *path);
  *
  * Whenever a scanner matches a token, the text of the token is stored in
  * the NUL byte terminated string yytext.  The length in yyleng is the same
- * as the value that would be returned by the strlen(3) function.
+ * as the value that would be returned by the strlen(3) function, except that
+ * flex has it as an int not a size_t (this is why we sometimes cast it as an
+ * int as systems like NetBSD think it's a size_t).
+ *
  * Even though regular expressions can detect the presence of a NUL (\x00) bytes
  * in a block of data, error reporting and internal pointer advancement
  * appears to assume NUL (\x00) terminated strings AND thus the state machine

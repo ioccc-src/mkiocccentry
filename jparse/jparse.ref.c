@@ -1314,15 +1314,18 @@ YY_RULE_SETUP
                              * used it to see how many whitespaces were ignored
                              * (depending on if the JSON debug level was high
                              * enough).
+                             *
+                             * NOTE: we cast yyleng to an int for systems like
+                             * NetBSD that try making yyleng unsigned.
 			     */
 			    (void) json_dbg(JSON_DBG_VVHIGH, __func__, "\nignoring %d whitespace%s\n",
-							     yyleng, yyleng==1?"":"s");
+							     (int)yyleng, yyleng==1?"":"s");
 			}
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 233 "./jparse.l"
+#line 236 "./jparse.l"
 {
                             /*
                              * on newline (JSON_NL) we need to reset the column
@@ -1333,7 +1336,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 241 "./jparse.l"
+#line 244 "./jparse.l"
 {
 			    /*
                              * string (JSON_STRING)
@@ -1343,7 +1346,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 248 "./jparse.l"
+#line 251 "./jparse.l"
 {
 			    /*
                              * number (JSON_NUMBER)
@@ -1353,7 +1356,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 255 "./jparse.l"
+#line 258 "./jparse.l"
 {
 			    /*
                              * null object (JSON_NULL)
@@ -1363,7 +1366,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 262 "./jparse.l"
+#line 265 "./jparse.l"
 {
 			    /*
                              * true (JSON_TRUE)
@@ -1373,7 +1376,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 268 "./jparse.l"
+#line 271 "./jparse.l"
 {
 			    /*
                              * false (JSON_FALSE)
@@ -1386,7 +1389,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 278 "./jparse.l"
+#line 281 "./jparse.l"
 {
 			    /*
                              * start of object - open brace i.e. "{" (JSON_OPEN_BRACE)
@@ -1396,7 +1399,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 284 "./jparse.l"
+#line 287 "./jparse.l"
 {
 			    /*
                              * end of object - close brace i.e. "}" (JSON_CLOSE_BRACE)
@@ -1406,7 +1409,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 291 "./jparse.l"
+#line 294 "./jparse.l"
 {
 			    /*
                              * start of array - open bracket i.e. "[" (JSON_OPEN_BRACKET)
@@ -1416,7 +1419,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 297 "./jparse.l"
+#line 300 "./jparse.l"
 {
 			    /*
                              * end of array - close bracket i.e. "]" (JSON_CLOSE_BRACKET)
@@ -1426,7 +1429,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 304 "./jparse.l"
+#line 307 "./jparse.l"
 {
 			    /*
                              * colon or 'equals' (JSON_COLON)
@@ -1436,7 +1439,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 311 "./jparse.l"
+#line 314 "./jparse.l"
 {
 			    /*
                              * comma: name/value pair separator (JSON_COMMA)
@@ -1446,7 +1449,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 318 "./jparse.l"
+#line 321 "./jparse.l"
 {
 			    /*
                              * invalid token: any other character (regexp ".")
@@ -1485,10 +1488,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 354 "./jparse.l"
+#line 357 "./jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1437 "jparse.c"
+#line 1440 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2650,7 +2653,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 354 "./jparse.l"
+#line 357 "./jparse.l"
 
 
 /*
@@ -2674,7 +2677,10 @@ static bool is_read(char const *path);
  *
  * Whenever a scanner matches a token, the text of the token is stored in
  * the NUL byte terminated string yytext.  The length in yyleng is the same
- * as the value that would be returned by the strlen(3) function.
+ * as the value that would be returned by the strlen(3) function, except that
+ * flex has it as an int not a size_t (this is why we sometimes cast it as an
+ * int as systems like NetBSD think it's a size_t).
+ *
  * Even though regular expressions can detect the presence of a NUL (\x00) bytes
  * in a block of data, error reporting and internal pointer advancement
  * appears to assume NUL (\x00) terminated strings AND thus the state machine

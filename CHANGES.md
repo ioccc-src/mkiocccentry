@@ -1,6 +1,23 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.9.4 2025-11-10
+
+Sync jparse/ from [jparse repo](https://github.com/xexyl/jparse). This should
+hopefully fix the problem with NetBSD warning about `yyleng` being unsigned
+(even though it seems to be an `int` there). The `jparse_bug_report.sh` to not
+rely on `cpp` to get predefined macros.
+
+Added also to the Makefile `-Wno-address` to prevent some compilers from whining
+about our checks for NULL on `stderr` (it can become NULL in some conditions and
+it's better make sure of it before trying to dereference it).
+
+Fixed `bug_report.sh` to not rely on `cpp` for getting the predefined macros.
+
+Updated `BUG_REPORT_VERSION` to `"1.0.13 2025-11-10"`.
+
+
+
 ## Release 2.9.3 2025-11-08
 
 Fixed NULL pointer dereference in `chkentry` when there is a walk error (i.e.

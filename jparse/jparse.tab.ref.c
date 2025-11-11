@@ -584,9 +584,9 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   237,   237,   295,   326,   357,   388,   419,   449,   479,
-     511,   542,   572,   606,   645,   681,   712,   742,   776,   814,
-     847,   879
+       0,   237,   237,   295,   326,   357,   388,   419,   454,   488,
+     524,   555,   585,   619,   658,   694,   725,   755,   789,   827,
+     860,   902
 };
 #endif
 
@@ -1750,7 +1750,12 @@ yyreduce:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_TRUE");
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", jparse_get_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", jparse_get_leng(scanner));
+
+            /*
+             * NOTE: we cast jparse_get_leng() to an int for systems like NetBSD
+             * that think it's supposed to be unsigned.
+             */
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", (int)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
 					       "$json_value = json_parse_bool(jparse_get_text(scanner));");
 	}
@@ -1767,11 +1772,11 @@ yyreduce:
 					       "json_value: JSON_TRUE");
 	}
     }
-#line 1717 "jparse.tab.c"
+#line 1722 "jparse.tab.c"
     break;
 
   case 8: /* json_value: "false"  */
-#line 450 "./jparse.y"
+#line 455 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1782,7 +1787,11 @@ yyreduce:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_FALSE");
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", jparse_get_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", jparse_get_leng(scanner));
+            /*
+             * NOTE: we cast jparse_get_leng() to an int for systems like NetBSD
+             * that think it's supposed to be unsigned.
+             */
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", (int)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
 					       "$json_value = json_parse_bool(jparse_get_text(scanner))");
 	}
@@ -1799,11 +1808,11 @@ yyreduce:
 					     "json_value: JSON_FALSE");
 	}
     }
-#line 1749 "jparse.tab.c"
+#line 1758 "jparse.tab.c"
     break;
 
   case 9: /* json_value: "null"  */
-#line 480 "./jparse.y"
+#line 489 "./jparse.y"
     {
 	/*
 	 * $$ = $json_value
@@ -1814,7 +1823,11 @@ yyreduce:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: starting: "
 					       "json_value: JSON_NULL");
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yytext: <%s>", jparse_get_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", jparse_get_leng(scanner));
+            /*
+             * NOTE: we cast jparse_get_leng() to an int for systems like NetBSD
+             * that think it's supposed to be unsigned.
+             */
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_value: yyleng: <%d>", (int)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_value: about to perform: "
 					       "$json_value = json_parse_null(jparse_get_text(scanner));");
 	}
@@ -1831,11 +1844,11 @@ yyreduce:
 					       "json_value: JSON_NULL");
 	}
     }
-#line 1781 "jparse.tab.c"
+#line 1794 "jparse.tab.c"
     break;
 
   case 10: /* json_object: "{" json_members "}"  */
-#line 512 "./jparse.y"
+#line 525 "./jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1864,11 +1877,11 @@ yyreduce:
 					       "json_object: JSON_OPEN_BRACE json_members JSON_CLOSE_BRACE");
 	}
     }
-#line 1814 "jparse.tab.c"
+#line 1827 "jparse.tab.c"
     break;
 
   case 11: /* json_object: "{" "}"  */
-#line 543 "./jparse.y"
+#line 556 "./jparse.y"
     {
 	/*
 	 * $$ = $json_object
@@ -1894,11 +1907,11 @@ yyreduce:
 					       "json_object: JSON_OPEN_BRACE JSON_CLOSE_BRACE");
 	}
     }
-#line 1844 "jparse.tab.c"
+#line 1857 "jparse.tab.c"
     break;
 
   case 12: /* json_members: json_member  */
-#line 573 "./jparse.y"
+#line 586 "./jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1930,11 +1943,11 @@ yyreduce:
 					      "json_members: json_member");
 	}
     }
-#line 1880 "jparse.tab.c"
+#line 1893 "jparse.tab.c"
     break;
 
   case 13: /* json_members: json_members "," json_member  */
-#line 607 "./jparse.y"
+#line 620 "./jparse.y"
     {
 	/*
 	 * $$ = $json_members
@@ -1969,11 +1982,11 @@ yyreduce:
 					       "json_members: json_members JSON_COMMA json_member");
 	}
     }
-#line 1919 "jparse.tab.c"
+#line 1932 "jparse.tab.c"
     break;
 
   case 14: /* json_member: json_string ":" json_element  */
-#line 646 "./jparse.y"
+#line 659 "./jparse.y"
     {
 	/*
 	 * $$ = $json_member
@@ -2005,11 +2018,11 @@ yyreduce:
 					       "json_member: json_string JSON_COLON json_element");
 	}
     }
-#line 1955 "jparse.tab.c"
+#line 1968 "jparse.tab.c"
     break;
 
   case 15: /* json_array: "[" json_elements "]"  */
-#line 682 "./jparse.y"
+#line 695 "./jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2038,11 +2051,11 @@ yyreduce:
 					       "json_array: JSON_OPEN_BRACKET json_elements JSON_CLOSE_BRACKET");
 	}
     }
-#line 1988 "jparse.tab.c"
+#line 2001 "jparse.tab.c"
     break;
 
   case 16: /* json_array: "[" "]"  */
-#line 713 "./jparse.y"
+#line 726 "./jparse.y"
     {
 	/*
 	 * $$ = $json_array
@@ -2068,11 +2081,11 @@ yyreduce:
 					       "json_array: JSON_OPEN_BRACKET JSON_CLOSE_BRACKET");
 	}
     }
-#line 2018 "jparse.tab.c"
+#line 2031 "jparse.tab.c"
     break;
 
   case 17: /* json_elements: json_element  */
-#line 743 "./jparse.y"
+#line 756 "./jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2104,11 +2117,11 @@ yyreduce:
 					       "json_elements: json_element");
 	}
     }
-#line 2054 "jparse.tab.c"
+#line 2067 "jparse.tab.c"
     break;
 
   case 18: /* json_elements: json_elements "," json_element  */
-#line 777 "./jparse.y"
+#line 790 "./jparse.y"
     {
 	/*
 	 * $$ = $json_elements
@@ -2142,11 +2155,11 @@ yyreduce:
 					       "json_elements: json_elements JSON_COMMA json_element");
 	}
     }
-#line 2092 "jparse.tab.c"
+#line 2105 "jparse.tab.c"
     break;
 
   case 19: /* json_element: json_value  */
-#line 815 "./jparse.y"
+#line 828 "./jparse.y"
     {
 	/*
 	 * $$ = $json_element
@@ -2175,11 +2188,11 @@ yyreduce:
 					       "json_element: json_value");
 	}
     }
-#line 2125 "jparse.tab.c"
+#line 2138 "jparse.tab.c"
     break;
 
   case 20: /* json_string: JSON_STRING  */
-#line 848 "./jparse.y"
+#line 861 "./jparse.y"
     {
 	/*
 	 * $$ = $json_string
@@ -2190,11 +2203,21 @@ yyreduce:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: starting: "
 					       "json_string: JSON_STRING");
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yytext: <%s>", jparse_get_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yyleng: <%d>", jparse_get_leng(scanner));
+            /*
+             * NOTE: we cast jparse_get_leng() to an int for systems like NetBSD
+             * that think it's supposed to be unsigned.
+             */
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_string: yyleng: <%d>", (int)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_string: about to perform: "
 					       "$json_string = json_parse_string(jparse_get_text(scanner), (size_t)jparse_get_leng(scanner);");
 	}
 
+
+        /*
+         * NOTE: we cast jparse_get_leng() to a size_t because the function we
+         * call needs it to be size_t, yes even though above we print it as an
+         * int.
+         */
 	/* action */
 	yyval = json_parse_string(jparse_get_text(scanner), (size_t)jparse_get_leng(scanner));
 
@@ -2207,11 +2230,11 @@ yyreduce:
 					       "json_string: JSON_STRING");
 	}
     }
-#line 2157 "jparse.tab.c"
+#line 2180 "jparse.tab.c"
     break;
 
   case 21: /* json_number: JSON_NUMBER  */
-#line 880 "./jparse.y"
+#line 903 "./jparse.y"
     {
 	/*
 	 * $$ = $json_number
@@ -2222,7 +2245,11 @@ yyreduce:
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: starting: "
 					       "json_number: JSON_NUMBER");
 	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yytext: <%s>", jparse_get_text(scanner));
-	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yyleng: <%d>", jparse_get_leng(scanner));
+            /*
+             * NOTE: we cast jparse_get_leng() to an int for systems like NetBSD
+             * that think it's supposed to be unsigned.
+             */
+	    json_dbg(JSON_DBG_VVHIGH, __func__, "under json_number: yyleng: <%d>", (int)jparse_get_leng(scanner));
 	    json_dbg(JSON_DBG_VHIGH, __func__, "under json_number: about to perform: "
 					       "$json_number = json_parse_number(jparse_get_text(scanner));");
 	}
@@ -2239,11 +2266,11 @@ yyreduce:
 					       "json_number: JSON_NUMBER");
 	}
     }
-#line 2189 "jparse.tab.c"
+#line 2216 "jparse.tab.c"
     break;
 
 
-#line 2193 "jparse.tab.c"
+#line 2220 "jparse.tab.c"
 
         default: break;
       }
@@ -2450,7 +2477,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 910 "./jparse.y"
+#line 937 "./jparse.y"
 
 
 
