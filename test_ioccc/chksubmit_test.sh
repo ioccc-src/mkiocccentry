@@ -80,7 +80,7 @@ Exit codes:
      1   one or more tests failed
      3   invalid command line
      4	 missing or non-executable chksubmit
-     5	 missing or non-readable workdir directory or subdirectory
+     5	 missing or unreadable workdir directory or subdirectory
  >= 10   internal error
 
 chksubmit_test.sh version: $CHKSUBMIT_TEST_VERSION"
