@@ -161,7 +161,7 @@ static char const * const usage_msg =
     "\n"
     "Exit codes:\n"
     "     0   all is OK\n"
-    "     1   some walk erorrs detected\n"
+    "     1   some walk errors detected\n"
     "     2   -h and help string printed or -V and version string printed\n"
     "     3   invalid command line, invalid option or option missing an argument\n"
     "     4   invalid set number\n"
@@ -692,7 +692,7 @@ free_parsed_data(struct parsed_data *data_p)
  * parse_stream - parse type size path from a stream
  *
  * A line from a stream is parsed for 3 words, where ASCII spaces and ASCII tabs
- * are used as a deliminator.  Multiple ASCII spaces and/or multiple ASCII tabs
+ * are used as a delimiter.  Multiple ASCII spaces and/or multiple ASCII tabs
  * are treated as a single separator.  Leading ASCII spaces and ASCII tabs on
  * the stream read line is ignored.
  *
