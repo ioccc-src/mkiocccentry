@@ -100,7 +100,6 @@
 
 extern char *mandatory_filenames[];             /* filenames that MUST exist in the top level directory */
 extern char *executable_filenames[];            /* filenames that should have mode 0555 */
-extern struct dyn_array *ignored_paths;         /* ignored paths from chkentry -i path */
 extern bool ignore_permissions;                 /* true ==> ignore permissions of files and directories */
 
 

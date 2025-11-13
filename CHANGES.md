@@ -11,6 +11,11 @@ this problem.
 
 A cosmetic fix was made in the top level Makefile as well (in a comment).
 
+Removed some unused data and code in soup/ (some of code removed used data that
+was no longer referenced, namely that `ignored_paths` is no longer used).
+
+Updated `SOUP_VERSION` to `"2.2.11 2025-11-13"`.
+
 
 ## Release 2.9.4 2025-11-10
 

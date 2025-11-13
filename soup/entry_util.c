@@ -113,7 +113,6 @@
 /*
  * globals
  */
-struct dyn_array *ignored_paths = NULL;     /* ignored paths when searching manifest */
 bool ignore_permissions = false;            /* true ==> ignore permissions checks on paths */
 
 /*
@@ -3982,12 +3981,6 @@ test_manifest(struct manifest *manp, char *submission_dir)
 	    json_dbg(JSON_DBG_MED, __func__, "invalid: manifest extra[%jd] is NULL", i);
 	}
 
-        /*
-         * don't do any checks if this file is being ignored
-         */
-        if (array_has_path(ignored_paths, extra_filename, false, false, NULL)) {
-            continue;
-        }
 
 	/*
 	 * validate filename for this extra file
@@ -4052,12 +4045,6 @@ test_manifest(struct manifest *manp, char *submission_dir)
 	    free_walk_stat(&wstat);
 	    return false;
 	}
-        /*
-         * don't do any checks if the file is being ignored
-         */
-        if (array_has_path(ignored_paths, extra_filename, false, false, NULL)) {
-            continue;
-        }
 
 	/*
 	 * compare first extra filename with the remaining extra filenames

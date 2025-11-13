@@ -150,7 +150,6 @@ extern bool is_read(char const *path);
 extern bool is_write(char const *path);
 extern mode_t filemode(char const *path);
 extern bool is_open_file_stream(FILE *stream);
-extern bool array_has_path(struct dyn_array *array, char *path, bool match_case, bool fn, intmax_t *idx);
 extern off_t file_size(char const *path);
 extern off_t size_if_file(char const *path);
 extern bool is_empty(char const *path);
