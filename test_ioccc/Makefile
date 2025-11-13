@@ -340,9 +340,10 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 
 # man pages
 #
-MAN1_TARGETS= ${MAN1_PAGES} ${MAN1_BUILT}
-MAN3_TARGETS= ${MAN3_PAGES} ${MAN3_BUILT}
-MAN8_TARGETS= ${MAN8_PAGES} ${MAN8_BUILT}
+MAN1_TARGETS= man/man1/fnamchk.1
+MAN3_TARGETS=
+MAN8_TARGETS= man/man8/utf8_test.8
+
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
 # shell targets to make by all and removed by clobber
@@ -355,7 +356,7 @@ PROG_TARGETS= utf8_test fnamchk test_file_util try_walk_set try_fts_walk
 
 # what to make by all but NOT to removed by clobber
 #
-ALL_OTHER_TARGETS= ${SH_TARGETS} extern_everything ${ALL_MAN_PAGES}
+ALL_OTHER_TARGETS= ${SH_TARGETS} extern_everything ${ALL_MAN_TARGETS}
 
 # what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
@@ -615,7 +616,7 @@ shellcheck: ${SH_FILES} .shellcheckrc
 
 # inspect and verify man pages
 #
-check_man: ${ALL_MAN_TARGETS}
+check_man: ${ALL_MAN_PAGES}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
@@ -627,8 +628,8 @@ check_man: ${ALL_MAN_TARGETS}
 	    echo ''; 1>&2; \
 	    echo '    https://github.com/lcn2/checknr' 1>&2; \
 	else \
-	    echo "${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_TARGETS}"; \
-	    ${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_TARGETS}; \
+	    echo "${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_PAGES}"; \
+	    ${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_PAGES}; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \

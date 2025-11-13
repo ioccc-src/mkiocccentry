@@ -403,9 +403,12 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 
 # man pages
 #
-MAN1_TARGETS= ${MAN1_PAGES} ${MAN1_BUILT}
-MAN3_TARGETS= ${MAN3_PAGES} ${MAN3_BUILT}
-MAN8_TARGETS= ${MAN8_PAGES} ${MAN8_BUILT}
+MAN1_TARGETS= man/man1/jparse.1 man/man1/jstrdecode.1 man/man1/jstrencode.1
+MAN3_TARGETS= man/man3/jparse.3 man/man3/json_dbg.3 man/man3/json_dbg_allowed.3 \
+	    man/man3/json_err_allowed.3 man/man3/json_warn_allowed.3 man/man3/parse_json.3 \
+	    man/man3/parse_json_file.3 man/man3/parse_json_stream.3 man/man3/json_tree_free.3 \
+	    man/man3/parse_json_str.3 man/man3/json_tree_walk.3 man/man3/vjson_tree_walk.3
+MAN8_TARGETS= man/man8/jsemtblgen.8 man/man8/verge.8
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
 # libraries to make by all, what to install, and remove by clobber
@@ -1017,7 +1020,7 @@ shellcheck: ${SH_FILES} .shellcheckrc test_jparse/Makefile
 #
 # NOTE: do NOT use -v ${VERBOSITY} here!
 #
-check_man: ${ALL_MAN_TARGETS}
+check_man: ${ALL_MAN_PAGES}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
@@ -1031,8 +1034,8 @@ check_man: ${ALL_MAN_TARGETS}
 	    echo ''; 1>&2; \
 	    echo 'Or use the package manager in your OS to install it.' 1>&2; \
 	else \
-	    echo "${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_TARGETS}"; \
-	    ${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_TARGETS}; \
+	    echo "${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_PAGES}"; \
+	    ${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_PAGES}; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
@@ -1250,11 +1253,15 @@ uninstall: legacy_uninstall
 	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/jparse.1
 	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/jstrdecode.1
 	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/jstrencode.1
+	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/run_bison.1
+	${Q} ${RM} ${RM_V} -f ${MAN1_DIR}/run_flex.1
 	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/jparse.3
 	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/json_dbg.3
 	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/json_dbg_allowed.3
 	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/json_err_allowed.3
 	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/json_warn_allowed.3
+	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/json_tree_free.3
+	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/json_tree_walk.3
 	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/parse_json.3
 	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/parse_json_file.3
 	${Q} ${RM} ${RM_V} -f ${MAN3_DIR}/parse_json_stream.3

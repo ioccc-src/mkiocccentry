@@ -1,5 +1,13 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.5.4 2025-11-13
+
+Fix Makefile to not install repo specific man pages and to uninstall two missing
+man pages (that should be installed but were not removed by uninstall). Note
+that the uninstall rule still removes those (no longer installed) man pages as
+some of us have used make install (many times) so they would be there otherwise.
+
+
 ## Release 2.5.3 2025-11-10
 
 Cast `yyleng` (and `jparse_get_leng()`) to an int for systems like NetBSD that

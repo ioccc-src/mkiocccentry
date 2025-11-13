@@ -1,6 +1,17 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.9.5 2025-11-13
+
+Fix issue #1355 - fix `make install` to NOT install repo specific man pages and
+`make uninstall` to remove some man pages (and possibly scripts) that were
+erroneously installed (and also some that were not removed). This was done with
+the jparse/ repo too (synced here). It would appear the other repos did not have
+this problem.
+
+A cosmetic fix was made in the top level Makefile as well (in a comment).
+
+
 ## Release 2.9.4 2025-11-10
 
 Sync jparse/ from [jparse repo](https://github.com/xexyl/jparse). This should
