@@ -24,7 +24,9 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 # CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
-# This tool was co-developed in 2021-2025 by Cody Boone Ferguson and Landon
+# This toolkit (except the iocccsize(1) which was originally developed by
+# @SirWumpus [Anthony C Howe] in 1992 and further updated throughout the year
+# since then) was co-developed in 2021-2025 by Cody Boone Ferguson and Landon
 # Curt Noll:
 #
 #  @xexyl

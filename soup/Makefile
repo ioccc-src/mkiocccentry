@@ -343,9 +343,10 @@ EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
 
 # man pages
 #
-MAN1_TARGETS= ${MAN1_PAGES} ${MAN1_BUILT}
-MAN3_TARGETS= ${MAN3_PAGES} ${MAN3_BUILT}
-MAN8_TARGETS= ${MAN8_PAGES} ${MAN8_BUILT}
+MAN1_TARGETS= man/man1/chkentry.1 man/man1/iocccsize.1 \
+	man/man1/mkiocccentry.1 man/man1/txzchk.1 man/man1/location.1 man/man1/chksubmit.1
+MAN3_TARGETS=
+MAN8_TARGETS=
 ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 
 # libraries
@@ -366,11 +367,11 @@ PROG_TARGETS= location
 
 # what to make by all but NOT to removed by clobber
 #
-ALL_OTHER_TARGETS= ${SH_TARGETS} extern_everything ${ALL_MAN_PAGES}
+ALL_OTHER_TARGETS= ${SH_TARGETS} extern_everything ${ALL_MAN_TARGETS}
 
 # what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
-TARGETS= ${LIBA_TARGETS} ${PROG_TARGETS} ${ALL_MAN_BUILT} limit_ioccc.sh
+TARGETS= ${LIBA_TARGETS} ${PROG_TARGETS} limit_ioccc.sh
 
 
 ############################################################
@@ -805,7 +806,7 @@ shellcheck: ${SH_FILES} .shellcheckrc
 
 # inspect and verify man pages
 #
-check_man: ${ALL_MAN_TARGETS}
+check_man: ${ALL_MAN_PAGES}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
@@ -818,8 +819,8 @@ check_man: ${ALL_MAN_TARGETS}
 	    echo '    https://github.com/lcn2/checknr' 1>&2; \
 	    echo ''; 1>&2; \
 	else \
-	    echo "${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_TARGETS}"; \
-	    ${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_TARGETS}; \
+	    echo "${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_PAGES}"; \
+	    ${CHECKNR} -c.BR.SS.BI.IR.RB.RI ${ALL_MAN_PAGES}; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo "make $@: ERROR: CODE[1]: $$EXIT_CODE" 1>&2; \
@@ -832,11 +833,12 @@ check_man: ${ALL_MAN_TARGETS}
 
 # install man pages
 #
+# NOTE: we do NOT have man 3 and man 8 targets here because none of them are to
+# be installed and if we did have them here it would be an error as there would
+# be nothing to install.
 install_man: ${ALL_MAN_TARGETS}
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${MAN1_DIR}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${MAN1_TARGETS} ${MAN1_DIR}
-	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${MAN8_DIR}
-	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${MAN8_TARGETS} ${MAN8_DIR}
 
 # vi/vim tags
 #
@@ -992,8 +994,10 @@ uninstall:
 	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/mkiocccentry.1
 	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/txzchk.1
 	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/location.1
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/all_ref.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/all_sem_ref.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/reset_tstamp.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/chkentry_test.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/run_usage.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/vermod.8
 	${S} echo
