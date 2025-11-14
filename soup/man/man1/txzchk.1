@@ -26,7 +26,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH txzchk 1 "04 April 2025" "txzchk" "IOCCC tools"
+.TH txzchk 1 "13 November 2025" "txzchk" "IOCCC tools"
 .SH NAME
 .B txzchk
 \- sanity checker tool used on IOCCC compressed tarballs
@@ -93,10 +93,28 @@ Silence msg(), warn(), warnp() if verbosity level is 0.
 .TP
 .B \-e
 Entertainment (or if you prefer, Easter egg) mode.
+.sp
+This option is for
+.B TESTING
+purposes only!
+Do
+.B NOT
+use this command line option to test an
+.B IOCCC
+submission!
 .TP
 .BI \-f\  feathers
 Define how many feathers is feathery :\-) (used by
 .BR \-e ).
+.sp
+This option is for
+.B TESTING
+purposes only!
+Do
+.B NOT
+use this command line option to test an
+.B IOCCC
+submission!
 .TP
 .B \-w
 Always show warnings.
@@ -112,7 +130,8 @@ Set path to
 .BR tar (1)
 to
 .IR tar .
-It must accept the
+.sp
+The tar command must accept the
 .B \-J
 option.
 .B txzchk
@@ -127,33 +146,51 @@ Set path to the IOCCC
 .BR fnamchk (1)
 tool to
 .IR fnamchk .
+.sp
 If this option is not specified the program looks under the current working directory and
 .IR /usr/local/bin .
 .TP
 .B \-T
-Assume
+The
 .I tarball_path
-is a text file: use
-.BR fopen (3)
-and
-.BR fclose (3)
-instead of
-.BR popen (3)
-and
-.BR pclose (3)
-and don't require
-.B tar
-program.
+is the output of a tar file listing, not a tar file.
+Instead analyzing the output of:
+.sp
+.in +0.25i
+.ft B
+tar \-tJvf tarball_path
+.ft R
+.in -0.25i
+.sp
+use the contents of the
+.I tarball_path
+file.
+.sp
+This option is for
+.B TESTING
+purposes only!
+Do
+.B NOT
+use this command line option to test an
+.B IOCCC
+submission!
 .TP
 .BI \-E\  ext
 Change extension for
 .BR fnamchk (1)
 to validate (don't include the dot).
-This is used in conjunction with
+This option is often used in conjunction with the
 .B \-T
-above for
+option.
+.sp
+This option is for
 .B TESTING
 purposes only!
+Do
+.B NOT
+use this command line option to test an
+.B IOCCC
+submission!
 .TP
 .B \-x
 Used when one needs to
@@ -167,6 +204,15 @@ This is done for testing, both by
 and when the submit ID of
 .BR mkiocccentry (1)
 is "test".
+.sp
+This option is for
+.B TESTING
+purposes only!
+Do
+.B NOT
+use this command line option to test an
+.B IOCCC
+submission!
 .SH EXIT STATUS
 .TP
 0
