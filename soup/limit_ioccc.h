@@ -58,49 +58,11 @@
  *
  * The MAX_TARBALL_LEN value MUST match the MAX_TARBALL_LEN variable as defined
  * in the IOCCC submit server code.
- *
- * Possible mandatory files for a submission:
- *
- *	prog.c
- *	Makefile
- *	remarks.md	    (NOTE: turns into README.md for a winning entry)
- *	.info.json	    (NOTE: ignored by mkiocccentry, error for txzchk, becomes .entry.json for a winning entry)
- *	.auth.json	    (NOTE: ignored by mkiocccentry, error for txzchk, becomes .entry.json for a winning entry)
- *
- * FYI: Optional files (and sometimes encouraged) for a submission that are not considered extra:
- *
- *	try.sh		    (NOTE: encouraged optional file that does NOT count as an extra file if it exists)
- *	prog.alt.c	    (NOTE: a file, if it exists, that does NOT count as an extra file if it exists)
- *
- * FYI: Possible mandatory files for a winning entry, not a submission, include:
- *
- *	prog.c
- *	Makefile
- *	README.md	    (NOTE: built in part from the submission remarks.md file)
- *	.entry.json	    (NOTE: built in part from the submission .info.json and .auth.json files)
- *	index.html	    (NOTE: built in part from the README.md file)
- *	YYYY_name.tar.bz2   (NOTE: built from the set of winning entry directories and files)
- *	.path		    (NOTE: error for both mkiocccentry and txzchk, while winning entries will have this file)
- *	prog.orig.c	    (NOTE: error for both mkiocccentry and txzchk)
- *
- * FYI: Possible files that may be added to a winning entry:
- *
- *	.gitignore	    (NOTE: error for both mkiocccentry and txzchk, while winning entries may have this file)
- *	prog.alt.c	    (NOTE: winning entries may have this file)
- *	try.sh		    (NOTE: winning entries likely have this file)
- *	*		    (NOTE: The IOCCC judges may add more files to a winning entry as needed)
- *
- * NOTE: The MANDATORY_SUBMISSION_FILES file is a limit on extra files for a submission, NOT a winning entry
- *	 and does NOT include any mandatory files.
  */
 #define MAX_TARBALL_LEN (3999971)		/* compressed tarball size limit in bytes */
 #define MAX_SUM_FILELEN (27651*1024)		/* maximum sum of the byte lengths of all files in the entry */
-#define MANDATORY_SUBMISSION_FILES (5)		/* number of required files in submission */
-#define OPTIONAL_SUBMISSION_FILES (3)		/* submission files, if they exist, that do NOT count towards the extra total */
 #define MAX_EXTRA_FILE_COUNT (31)		/* maximum number of files not including mandatory submission files */
 #define MAX_EXTRA_DIR_COUNT (13)                /* maximum number of EXTRA directories */
-/* maximum total file count, including mandatory files, for a submission */
-#define MAX_FILE_COUNT (MANDATORY_SUBMISSION_FILES+OPTIONAL_SUBMISSION_FILES+MAX_EXTRA_FILE_COUNT)
 
 /*
  * IMPORTANT:
@@ -132,7 +94,22 @@
 #define UUID_VARIANT_3 (0xb)		/* variant 3 - encoded as 0xb */
 #define TIMESTAMP_EPOCH "Thu Jan 01 00:00:00 1970 UTC"	/* gettimeofday epoch */
 #define MAX_TIMESTAMP_LEN (48)		/* 28 + 20 more padding for locate */
-#define MAX_CLOCK_ERROR (48*60*60)	/* maximum seconds allowed for a clock to be in error */
+
+/*
+ * Fun world timezone fact (as of 2025):
+ *
+ * For 50 hours, there exists a timezone where a given calendar date is the current day.
+ * It starts when the UTC+14 (Line Islands (LINT)) timezone starts the given calendar day.
+ * Then you have a full 24 hours for the given calendar day.
+ * It ends when the UTC-12 (Baker Island (BIT)) timezone ends the given calendar day.
+ *
+ * So how does the this relate to MAX_CLOCK_ERROR?  We need an excuse for clock error,
+ * and this 50 hour concept is good enough.
+ *
+ * The MAX_CLOCK_ERROR value is used by test_formed_timestamp() to test if a formed
+ * timestamp is up to MAX_CLOCK_ERROR seconds in the future.
+ */
+#define MAX_CLOCK_ERROR (50*60*60)	/* maximum seconds allowed for a clock to be in error */
 
 /*
  * submission tarballs may have subdirectories as long as they fit certain

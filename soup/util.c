@@ -705,7 +705,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
  *	if (count <= 0) {
  *	    ... object no or negative file count ...
  *	}
- *	if (count > MAX_FILE_COUNT) {
+ *	if (count > MAX_EXTRA_FILE_COUNT) {
  *	    ... object to too many files ...
  *	}
  *
