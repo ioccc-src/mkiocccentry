@@ -118,6 +118,8 @@ test_file_util.copy.o
 /test_ioccc/fnamchk-*.tmp
 /test_ioccc/.hostchk.*.work/
 /test_ioccc/.local.dir.tags
+/test_ioccc/slot/bad/build.out/
+/test_ioccc/slot/bad/workdir/
 /test_ioccc/slot/good/build.out/
 /test_ioccc/slot/good/workdir/
 /test_ioccc/tags

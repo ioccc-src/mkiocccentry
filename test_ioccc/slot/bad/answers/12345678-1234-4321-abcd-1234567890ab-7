@@ -1,0 +1,16 @@
+MKIOCCCENTRY_ANSWERS_IOCCC29-1.0
+12345678-1234-4321-abcd-1234567890ab
+7
+title.7
+abstract for slot 7
+1
+first4 last4
+RW
+user4@example.rw
+
+https://alt4.example.rw/index.html
+
+@user4
+affiliation for user 4
+first4_last4
+ANSWERS_EOF

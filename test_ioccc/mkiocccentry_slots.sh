@@ -49,22 +49,25 @@ export LC_ALL="C"
 
 # setup
 #
-export MKIOCCCENTRY_SLOTS_VERSION="1.0.0 2025-08-28"
+export MKIOCCCENTRY_SLOTS_VERSION="1.1.0 2025-11-13"
 export MKIOCCCENTRY="./mkiocccentry"
 export GOOD_TREE="test_ioccc/slot/good"
+export BAD_TREE="test_ioccc/slot/bad"
 #
 export EXIT_CODE=0
 export REPO_TOPDIR=
 
 # usage message
 #
-export USAGE="usage: $0 [-h] [-V] [-v level] [-g good_tree] [-M mkiocccentry] [-Z repo_topdir] [-k] [-B]
+export USAGE="usage: $0 [-h] [-V] [-v level] [-M mkiocccentry] [-g good_tree] [-b bad_tree] [-Z repo_topdir] [-k] [-B]
 
     -h			print help and exit
     -V			print version and exit
     -v level		set verbosity level for this script: (def level: 0)
+
     -M mkiocccentry	path to mkiocccentry executable (def: $MKIOCCCENTRY)
     -g good_tree	path to the good slot tree (def: $GOOD_TREE)
+    -b bad_tree		path to the good slot tree (def: $BAD_TREE)
     -Z repo_topdir	top level repo directory for the mkiocccentry toolkit (def: try . or ..)
 
 Exit codes:
@@ -81,7 +84,7 @@ mkiocccentry_slots.sh version: $MKIOCCCENTRY_SLOTS_VERSION"
 # parse args
 #
 export V_FLAG="0"
-while getopts :hVv:M:g:Z: flag; do
+while getopts :hVv:M:g:b:Z: flag; do
     case "$flag" in
     h)	echo "$USAGE" 1>&2
 	exit 2
@@ -94,6 +97,8 @@ while getopts :hVv:M:g:Z: flag; do
     M)	MKIOCCCENTRY="$OPTARG";
 	;;
     g)	GOOD_TREE="$OPTARG";
+	;;
+    b)	BAD_TREE="$OPTARG";
 	;;
     Z)  REPO_TOPDIR="$OPTARG";
         ;;
@@ -229,6 +234,55 @@ fi
 export GOOD_BUILD_OUT="$GOOD_TREE/build.out"
 export GOOD_WORKDIR="$GOOD_TREE/workdir"
 
+# check that the bad slot tree is a writable directory
+#
+if [[ ! -e $BAD_TREE ]]; then
+    echo "$0: ERROR: bad slot tree not found: $BAD_TREE" 1>&2
+    exit 22
+fi
+if [[ ! -d $BAD_TREE ]]; then
+    echo "$0: ERROR: bad slot tree not a directory: $BAD_TREE" 1>&2
+    exit 23
+fi
+if [[ ! -w $BAD_TREE ]]; then
+    echo "$0: ERROR: bad slot tree not writable directory: $BAD_TREE" 1>&2
+    exit 24
+fi
+
+# verify bad slot tree topdir sub-directory is writable
+#
+export BAD_TOPDIR="$BAD_TREE/topdir"
+if [[ ! -e $BAD_TOPDIR ]]; then
+    echo "$0: ERROR: bad slot tree topdir sub-directory directory not found: $BAD_TOPDIR" 1>&2
+    exit 25
+fi
+if [[ ! -d $BAD_TOPDIR ]]; then
+    echo "$0: ERROR: bad slot tree topdir sub-directory not a directory: $BAD_TOPDIR" 1>&2
+    exit 26
+fi
+if [[ ! -w $BAD_TOPDIR ]]; then
+    echo "$0: ERROR: bad slot tree topdir sub-directory not writable directory: $BAD_TOPDIR" 1>&2
+    exit 27
+fi
+
+# verify bad slot tree answers sub-directory is writable
+#
+export BAD_ANSWERS="$BAD_TREE/answers"
+if [[ ! -e $BAD_ANSWERS ]]; then
+    echo "$0: ERROR: bad slot tree answers sub-directory directory not found: $BAD_ANSWERS" 1>&2
+    exit 28
+fi
+if [[ ! -d $BAD_ANSWERS ]]; then
+    echo "$0: ERROR: bad slot tree answers sub-directory not a directory: $BAD_ANSWERS" 1>&2
+    exit 29
+fi
+if [[ ! -w $BAD_ANSWERS ]]; then
+    echo "$0: ERROR: bad slot tree answers sub-directory not writable directory: $BAD_ANSWERS" 1>&2
+    exit 30
+fi
+export BAD_BUILD_OUT="$BAD_TREE/build.out"
+export BAD_WORKDIR="$BAD_TREE/workdir"
+
 # UUID regex
 #
 # A UUID has the 36 character format:
@@ -266,11 +320,11 @@ rm -f "$TMP_EXIT_CODE"
 echo "0" > "$TMP_EXIT_CODE"
 if [[ ! -s "$TMP_EXIT_CODE" ]]; then
     echo "$0: ERROR: could not create exit code file: $TMP_EXIT_CODE" 1>&2
-    exit 22
+    exit 31
 fi
 if [[ ! -w "$TMP_EXIT_CODE" ]]; then
     echo "$0: ERROR: exit code file not writable: $TMP_EXIT_CODE" 1>&2
-    exit 23
+    exit 32
 fi
 
 # debugging
@@ -279,12 +333,17 @@ if [[ $V_FLAG -ge 3 ]]; then
     echo "$0: debug[3]: MKIOCCCENTRY_SLOTS_VERSION=$MKIOCCCENTRY_SLOTS_VERSION" 1>&2
     echo "$0: debug[3]: MKIOCCCENTRY=$MKIOCCCENTRY" 1>&2
     echo "$0: debug[3]: GOOD_TREE=$GOOD_TREE" 1>&2
+    echo "$0: debug[3]: BAD_TREE=$BAD_TREE" 1>&2
     echo "$0: debug[3]: EXIT_CODE=$EXIT_CODE" 1>&2
     echo "$0: debug[3]: REPO_TOPDIR=$REPO_TOPDIR" 1>&2
     echo "$0: debug[3]: GOOD_TOPDIR=$GOOD_TOPDIR" 1>&2
     echo "$0: debug[3]: GOOD_ANSWERS=$GOOD_ANSWERS" 1>&2
     echo "$0: debug[3]: GOOD_BUILD_OUT=$GOOD_BUILD_OUT" 1>&2
     echo "$0: debug[3]: GOOD_WORKDIR=$GOOD_WORKDIR" 1>&2
+    echo "$0: debug[3]: BAD_TOPDIR=$BAD_TOPDIR" 1>&2
+    echo "$0: debug[3]: BAD_ANSWERS=$BAD_ANSWERS" 1>&2
+    echo "$0: debug[3]: BAD_BUILD_OUT=$BAD_BUILD_OUT" 1>&2
+    echo "$0: debug[3]: BAD_WORKDIR=$BAD_WORKDIR" 1>&2
     echo "$0: debug[3]: RE_UUID=$RE_UUID" 1>&2
     echo "$0: debug[3]: RE_SLOT_NUM=$RE_SLOT_NUM" 1>&2
     echo "$0: debug[3]: RE_UUID_SLOT_NUM=$RE_UUID_SLOT_NUM" 1>&2
@@ -300,13 +359,13 @@ rm -rf "$GOOD_BUILD_OUT"
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: rm -rf $GOOD_BUILD_OUT failed, exit code: $status" 1>&2
-    exit 24
+    exit 33
 fi
 mkdir -p -- "$GOOD_BUILD_OUT"
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: mkdir -p -- $GOOD_BUILD_OUT failed, exit code: $status" 1>&2
-    exit 25
+    exit 34
 fi
 
 # form an empty workdir sub-directory of good slot tree
@@ -318,16 +377,52 @@ rm -rf "$GOOD_WORKDIR"
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: rm -rf $GOOD_WORKDIR failed, exit code: $status" 1>&2
-    exit 26
+    exit 35
 fi
 mkdir -p -- "$GOOD_WORKDIR"
 status="$?"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: mkdir -p -- $GOOD_WORKDIR failed, exit code: $status" 1>&2
-    exit 27
+    exit 36
 fi
 
-# process all slots
+# form an empty build.out sub-directory of bad slot tree
+#
+if [[ $V_FLAG -ge 3 ]]; then
+    echo "$0: debug[3]: about to form an empty build.out sub-directory of good slot tree: $BAD_BUILD_OUT" 1>&2
+fi
+rm -rf "$BAD_BUILD_OUT"
+status="$?"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: rm -rf $BAD_BUILD_OUT failed, exit code: $status" 1>&2
+    exit 37
+fi
+mkdir -p -- "$BAD_BUILD_OUT"
+status="$?"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: mkdir -p -- $BAD_BUILD_OUT failed, exit code: $status" 1>&2
+    exit 38
+fi
+
+# form an empty workdir sub-directory of bad slot tree
+#
+if [[ $V_FLAG -ge 3 ]]; then
+    echo "$0: debug[3]: about to form an empty workdir sub-directory of good slot tree: $BAD_WORKDIR" 1>&2
+fi
+rm -rf "$BAD_WORKDIR"
+status="$?"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: rm -rf $BAD_WORKDIR failed, exit code: $status" 1>&2
+    exit 39
+fi
+mkdir -p -- "$BAD_WORKDIR"
+status="$?"
+if [[ $status -ne 0 ]]; then
+    echo "$0: ERROR: mkdir -p -- $BAD_WORKDIR failed, exit code: $status" 1>&2
+    exit 40
+fi
+
+# process all good slots
 #
 # We look for UUID-SLOT_NUM's that have both:
 #
@@ -461,6 +556,146 @@ find "$GOOD_ANSWERS" -type f -name '[0-9a-f]*-[0-9a-f]' -print |
 	#
 	else
 	    echo "$0: ERROR: missing good slot tree topdir sub-directory: $GOOD_TOPDIR/$UUID_SLOT_NUM" 1>&2
+	    TMP_EXIT=1
+	    echo "$TMP_EXIT" > "$TMP_EXIT_CODE"
+	    echo "$0: Warning: set exit code: $TMP_EXIT" 1>&2
+	fi
+    done
+
+# process all bad slots
+#
+# We look for UUID-SLOT_NUM's that have both:
+#
+#   answers file:   $BAD_ANSWERS/UUID-SLOT_NUM
+#   code directory: $BAD_TOPDIR/UUID-SLOT_NUM/
+#
+# Then we use mkiocccentry to generate a:
+#
+#   submission: $BAD_WORKDIR/UUID-SLOT_NUM/12345678-1234-4321-abcd-1234567890ab-0/
+#
+# The submission is a directory that contains both:
+#
+#   submission tarball:	UUID-SLOT_NUM.txz
+#   submission tree:	UUID-SLOT_NUM/
+#
+# The submission tree, if mkiocccentry is successful, will have:
+#
+#   non-empty auth JSON:	UUID-SLOT_NUM/.auth.json
+#   non-empty info JSON:	UUID-SLOT_NUM/.info.json
+#   prog.c:			UUID-SLOT_NUM/prog.c
+#   non-empty Makefile:		UUID-SLOT_NUM/Makefile
+#   non-empty remarks.md:	UUID-SLOT_NUM/remarks.md
+#
+# This code will attempt to process ALL UUID-SLOT_NUM's.
+# All UUID-SLOT_NUM's are successful, the EXIT_CODE will be set to 0.
+# If any UUID-SLOT_NUM fails, the EXIT_CODE will be set to non-zero.
+#
+find "$BAD_ANSWERS" -type f -name '[0-9a-f]*-[0-9a-f]' -print |
+    sed -e 's;^.*/;;' |
+    grep -E "^$RE_UUID_SLOT_NUM$" |
+    LANG=C sort |
+    while read -r UUID_SLOT_NUM; do
+
+	# verify that the answers file for UUID-SLOT_NUM is a readable non-empty file
+	#
+	if [[ ! -s $BAD_ANSWERS/$UUID_SLOT_NUM || ! -r $BAD_ANSWERS/$UUID_SLOT_NUM ]]; then
+	    echo "$0: ERROR: not a readable non-empty answers file: $BAD_ANSWERS/$UUID_SLOT_NUM" 1>&2
+	    TMP_EXIT=1
+	    echo "$TMP_EXIT" > "$TMP_EXIT_CODE"
+	    echo "$0: Warning: set exit code: $TMP_EXIT" 1>&2
+	    continue
+	fi
+
+	# verify we have a topdir for this UUID-SLOT_NUM
+	#
+	if [[ -d $BAD_TOPDIR/$UUID_SLOT_NUM ]]; then
+
+	    # remove any existing workdir
+	    #
+	    if [[ -d $BAD_WORKDIR/$UUID_SLOT_NUM ]]; then
+		if [[ $V_FLAG -ge 3 ]]; then
+		    echo "$0: debug[3]:" rm -rf "${BAD_WORKDIR/$UUID_SLOT_NUM:?}" 1>&2
+		fi
+		rm -rf "${BAD_WORKDIR/$UUID_SLOT_NUM:?}"
+		status="$?"
+		if [[ $status -ne 0 ]]; then
+		    echo "$0: ERROR: rm -rf $BAD_WORKDIR/$UUID_SLOT_NUM failed, error code: $status" 1>&2
+		    TMP_EXIT=1
+		    echo "$TMP_EXIT" > "$TMP_EXIT_CODE"
+		    echo "$0: Warning: set exit code: $TMP_EXIT" 1>&2
+		    continue
+		fi
+		if [[ -d $BAD_WORKDIR/$UUID_SLOT_NUM ]]; then
+		    echo "$0: ERROR: failed to remove existing workdir: $BAD_WORKDIR/$UUID_SLOT_NUM" 1>&2
+		    TMP_EXIT=1
+		    echo "$TMP_EXIT" > "$TMP_EXIT_CODE"
+		    echo "$0: Warning: set exit code: $TMP_EXIT" 1>&2
+		    continue
+		fi
+	    fi
+
+	    # create a new empty workdir
+	    #
+	    if [[ $V_FLAG -ge 3 ]]; then
+		echo "$0: debug[3]:" mkdir -p -- "$BAD_WORKDIR/$UUID_SLOT_NUM" 1>&2
+	    fi
+	    mkdir -p -- "$BAD_WORKDIR/$UUID_SLOT_NUM"
+	    status="$?"
+	    if [[ $status -ne 0 ]]; then
+		TMP_EXIT=1
+		echo "$TMP_EXIT" > "$TMP_EXIT_CODE"
+		echo "$0: Warning: set exit code: $TMP_EXIT" 1>&2
+		continue
+	    fi
+
+	    # remove any build.out file
+	    #
+	    if [[ -e $BAD_BUILD_OUT/$UUID_SLOT_NUM.out ]]; then
+		if [[ $V_FLAG -ge 3 ]]; then
+		    echo "$0: debug[3]:" rm -f "$BAD_BUILD_OUT/$UUID_SLOT_NUM.out" 1>&2
+		fi
+		rm -f "$BAD_BUILD_OUT/$UUID_SLOT_NUM.out"
+		status="$?"
+		if [[ $status -ne 0 ]]; then
+		    echo "$0: ERROR: rm -f $BAD_BUILD_OUT/$UUID_SLOT_NUM.out failed, error code: $status" 1>&2
+		    TMP_EXIT=1
+		    echo "$TMP_EXIT" > "$TMP_EXIT_CODE"
+		    echo "$0: Warning: set exit code: $TMP_EXIT" 1>&2
+		continue
+		    continue
+		fi
+		if [[ -e $BAD_BUILD_OUT/$UUID_SLOT_NUM.out ]]; then
+		    echo "$0: ERROR: failed to remove existing build.out: $BAD_BUILD_OUT/$UUID_SLOT_NUM.out" 1>&2
+		    TMP_EXIT=1
+		    echo "$TMP_EXIT" > "$TMP_EXIT_CODE"
+		    echo "$0: Warning: set exit code: $TMP_EXIT" 1>&2
+		    continue
+		fi
+	    fi
+
+	    # run mkiocccentry
+	    #
+	    if [[ $V_FLAG -ge 1 ]]; then
+		echo "$0: debug[1]:" "$MKIOCCCENTRY" -Y -i "$BAD_ANSWERS/$UUID_SLOT_NUM" \
+			"$BAD_WORKDIR/$UUID_SLOT_NUM" "$BAD_TOPDIR/$UUID_SLOT_NUM" \
+			"> $BAD_BUILD_OUT/$UUID_SLOT_NUM.out 2>&1" 1>&2
+	    fi
+	    "$MKIOCCCENTRY" -Y -i "$BAD_ANSWERS/$UUID_SLOT_NUM" \
+		    "$BAD_WORKDIR/$UUID_SLOT_NUM" "$BAD_TOPDIR/$UUID_SLOT_NUM" \
+		    > "$BAD_BUILD_OUT/$UUID_SLOT_NUM.out" 2>&1
+	    status="$?"
+	    if [[ $status -eq 0 ]]; then
+		echo "$0: ERROR: mkiocccentry on $UUID_SLOT_NUM passed when it should have failed" 1>&2
+		TMP_EXIT=1
+		echo "$TMP_EXIT" > "$TMP_EXIT_CODE"
+		echo "$0: Warning: set exit code: $TMP_EXIT" 1>&2
+		continue
+	    fi
+
+	# case: topdir for this UUID-SLOT_NUM is missing
+	#
+	else
+	    echo "$0: ERROR: missing bad slot tree topdir sub-directory: $BAD_TOPDIR/$UUID_SLOT_NUM" 1>&2
 	    TMP_EXIT=1
 	    echo "$TMP_EXIT" > "$TMP_EXIT_CODE"
 	    echo "$0: Warning: set exit code: $TMP_EXIT" 1>&2
