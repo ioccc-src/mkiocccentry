@@ -89,6 +89,24 @@
 #define TRY_ALT_SH "try.alt.sh"                 /* try.alt.sh for prog.alt.c */
 
 /*
+ * FUTURE_CLOCK_SKEW_LIMIT - how far in the future is "too far" for a current timestamp
+ *
+ * Fun world timezone fact (as of 2025):
+ *
+ * For 50 hours, there exists a timezone where a given calendar date is the current day.
+ * It starts when the UTC+14 (Line Islands (LINT)) timezone starts the given calendar day.
+ * Then you have a full 24 hours for the given calendar day.
+ * It ends when the UTC-12 (Baker Island (BIT)) timezone ends the given calendar day.
+ *
+ * So how does the this relate to FUTURE_CLOCK_SKEW_LIMIT?  We need an excuse for clock error,
+ * and this 50 hour concept is good enough.
+ *
+ * The FUTURE_CLOCK_SKEW_LIMIT value is used by test_formed_timestamp() to test if a formed
+ * timestamp is up to FUTURE_CLOCK_SKEW_LIMIT seconds in the future.
+ */
+#define FUTURE_CLOCK_SKEW_LIMIT (50*60*60)	/* maximum seconds allowed for a clock to be in error */
+
+/*
  * submissions are not allowed to have any dot file other than the required
  * .auth.json and .info.json. However we do need this for chkentry(1) as it does
  * care about .entry.json too. Given that mkiocccentry(1) and txzchk(1) will

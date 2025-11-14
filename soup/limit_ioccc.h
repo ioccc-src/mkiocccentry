@@ -96,22 +96,6 @@
 #define MAX_TIMESTAMP_LEN (48)		/* 28 + 20 more padding for locate */
 
 /*
- * Fun world timezone fact (as of 2025):
- *
- * For 50 hours, there exists a timezone where a given calendar date is the current day.
- * It starts when the UTC+14 (Line Islands (LINT)) timezone starts the given calendar day.
- * Then you have a full 24 hours for the given calendar day.
- * It ends when the UTC-12 (Baker Island (BIT)) timezone ends the given calendar day.
- *
- * So how does the this relate to MAX_CLOCK_ERROR?  We need an excuse for clock error,
- * and this 50 hour concept is good enough.
- *
- * The MAX_CLOCK_ERROR value is used by test_formed_timestamp() to test if a formed
- * timestamp is up to MAX_CLOCK_ERROR seconds in the future.
- */
-#define MAX_CLOCK_ERROR (50*60*60)	/* maximum seconds allowed for a clock to be in error */
-
-/*
  * submission tarballs may have subdirectories as long as they fit certain
  * constraints
  */
