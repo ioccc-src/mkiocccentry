@@ -16,7 +16,7 @@ Warning: txzchk: no directory found in filename: .
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-6.1922598667.txt: found incorrect top level directory in filename .test
 Warning: txzchk: no directory found in filename: .test
 Warning: txzchk: file prog.c is a duplicate file
-txzchk required: .info.json not found
+txzchk: missing file that matches: .info.json
 txzchk found 3 prohibited items
    prohibited file: /.info.json
    prohibited file: /.test.json

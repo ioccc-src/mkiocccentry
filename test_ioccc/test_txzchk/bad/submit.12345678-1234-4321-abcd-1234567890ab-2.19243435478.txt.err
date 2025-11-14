@@ -18,11 +18,11 @@ Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-12345
 Warning: txzchk: found non-executable non-directory file 12345678-1234-4321-abcd-1234567890ab-2/extra2 with wrong permissions: brw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2.19243435478.txt: found a non-directory non-regular non-hard-linked item: crw-r--r--  0 501    20       1854 Jun  4 04:52 12345678-1234-4321-abcd-1234567890ab-2/Makefile
 Warning: txzchk: found non-executable non-directory file 12345678-1234-4321-abcd-1234567890ab-2/Makefile with wrong permissions: crw-r--r-- != -r--r--r-- (0444)
-txzchk required: Makefile not found
-txzchk required: prog.c not found
-txzchk required: remarks.md not found
-txzchk required: .auth.json not found
-txzchk required: .info.json not found
+txzchk: missing file that matches: Makefile
+txzchk: missing empty file that matches: prog.c
+txzchk: missing file that matches: remarks.md
+txzchk: missing file that matches: .auth.json
+txzchk: missing file that matches: .info.json
 txzchk found 8 prohibited items
    prohibited cdev: Makefile
    prohibited bdev: extra2

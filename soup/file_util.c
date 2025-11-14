@@ -92,11 +92,6 @@
 #define PATH_INITIAL_SIZE (16)	/* initially allocate this many pointers */
 #define PATH_CHUNK_SIZE (8)	/* grow dynamic array by this many pointers at a time */
 
-/*
- * static functions
- */
-static intmax_t array_path_count(struct dyn_array *array);
-
 
 /*
  * base_name - determine the final portion of a path

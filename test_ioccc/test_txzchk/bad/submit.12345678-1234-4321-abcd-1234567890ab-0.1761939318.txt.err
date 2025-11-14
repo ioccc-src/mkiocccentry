@@ -13,10 +13,10 @@ Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-12345
 Warning: txzchk: no directory found in filename: D:\remarks.md
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761939318.txt: found incorrect top level directory in filename D:\.info.json
 Warning: txzchk: no directory found in filename: D:\.info.json
-txzchk required: Makefile not found
-txzchk required: prog.c not found
-txzchk required: remarks.md not found
-txzchk required: .auth.json not found
-txzchk required: .info.json not found
+txzchk: missing file that matches: Makefile
+txzchk: missing empty file that matches: prog.c
+txzchk: missing file that matches: remarks.md
+txzchk: missing file that matches: .auth.json
+txzchk: missing file that matches: .info.json
 Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761939318.txt
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761939318.txt: found 16 feathers stuck in the tarball

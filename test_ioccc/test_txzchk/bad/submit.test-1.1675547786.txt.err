@@ -1,7 +1,7 @@
-txzchk required: Makefile not found
-txzchk required: prog.c not found
-txzchk required: remarks.md not found
-txzchk required: .auth.json not found
-txzchk required: .info.json not found
+txzchk: missing file that matches: Makefile
+txzchk: missing empty file that matches: prog.c
+txzchk: missing file that matches: remarks.md
+txzchk: missing file that matches: .auth.json
+txzchk: missing file that matches: .info.json
 Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.test-1.1675547786.txt
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-1.1675547786.txt: found 1 feather stuck in the tarball

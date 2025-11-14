@@ -21,11 +21,11 @@ Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-5.9876543210.txt: found 
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-5.9876543210.txt: found incorrect top level directory in filename var/tmp/test-5/remarks.md
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-5.9876543210.txt: found incorrect top level directory in filename var/tmp/test-5/.info.json
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-5.9876543210.txt: found incorrect top level directory in filename var/tmp/test-5/extra1
-txzchk required: Makefile not found
-txzchk required: prog.c not found
-txzchk required: remarks.md not found
-txzchk required: .auth.json not found
-txzchk required: .info.json not found
+txzchk: missing file that matches: Makefile
+txzchk: missing empty file that matches: prog.c
+txzchk: missing file that matches: remarks.md
+txzchk: missing file that matches: .auth.json
+txzchk: missing file that matches: .info.json
 txzchk found 2 prohibited items
    prohibited file: tmp/test-5/.auth.json
    prohibited file: tmp/test-5/.info.json

@@ -1,5 +1,5 @@
 Warning: string_to_intmax: error converting string "99999999999999999999999991856" to intmax_t
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-7.1761934326.txt: trying to parse file size in on line: <-r--r--r--  0 501    20 99999999999999999999999991856 Oct 31 10:52 12345678-1234-4321-abcd-1234567890ab-7/Makefile>: token: <99999999999999999999999991856>
-txzchk required: Makefile not found
+txzchk: missing file that matches: Makefile
 Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-7.1761934326.txt
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-7.1761934326.txt: found 2 feathers stuck in the tarball

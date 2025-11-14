@@ -15,9 +15,9 @@ Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543214.txt: found 
 Warning: txzchk: found non-executable non-directory file test-9/extra2 with wrong permissions: srw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: found non-executable non-directory file test-9/Makefile with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: file extra2 is a duplicate file
-txzchk required: remarks.md not found
-txzchk required: .auth.json not found
-txzchk required: .info.json not found
+txzchk: missing file that matches: remarks.md
+txzchk: missing file that matches: .auth.json
+txzchk: missing file that matches: .info.json
 txzchk found 8 prohibited items
    prohibited socket: extra2
    prohibited file: prog

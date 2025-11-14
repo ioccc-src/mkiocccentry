@@ -104,6 +104,12 @@
 #define ANY_COUNT (0)		/* any number of counted items */
 #define NO_COUNT (-1)		/* no counted items */
 
+/*
+ * empty_or_not - static string or empty string
+ */
+#define empty_or_not(size) ((size == 0) ? "empty " : "")
+#define if_empty(empty) ((empty == true) ? "empty " : "")
+
 
 /*
  * pattern_type - how to match a path item with a pattern
@@ -543,7 +549,7 @@ extern char const *canonicalize_path(struct walk_stat *wstat_p, char const *fts_
 extern bool skip_add(struct walk_stat *wstat_p, char const *fts_path);
 extern struct item *path_in_item_array(struct dyn_array *item_array, char const *c_path);
 extern struct item *path_in_walk_stat(struct walk_stat *wstat_p, char const *c_path);
-
+extern char const *allowed_type_str(enum allowed_type type);
 
 
 #endif /* INCLUDE_WALK_H */

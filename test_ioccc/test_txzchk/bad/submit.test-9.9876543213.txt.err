@@ -13,10 +13,10 @@ Warning: txzchk: found non-executable non-directory file test-9/prog.c with wron
 Warning: txzchk: found non-executable non-directory file test-9/extra2 with wrong permissions: -rw-r--r-- != -r--r--r-- (0444)
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-9.9876543213.txt: found a non-directory non-regular non-hard-linked item: srw-r--r--  0 501    20          0 Feb  6 02:28 test-9/Makefile
 Warning: txzchk: found non-executable non-directory file test-9/Makefile with wrong permissions: srw-r--r-- != -r--r--r-- (0444)
-txzchk required: Makefile not found
-txzchk required: remarks.md not found
-txzchk required: .auth.json not found
-txzchk required: .info.json not found
+txzchk: missing file that matches: Makefile
+txzchk: missing file that matches: remarks.md
+txzchk: missing file that matches: .auth.json
+txzchk: missing file that matches: .info.json
 txzchk found 8 prohibited items
    prohibited empty socket: Makefile
    prohibited file: prog

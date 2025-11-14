@@ -3518,7 +3518,7 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
     wset_p = wstat_p->set;
 
     /*
-     * scan for missing required items
+     * scan for missing required patterns
      */
     for (rule_p = wset_p->rule, i=0; rule_p->pattern != NULL; ++rule_p, ++i) {
 
@@ -3534,7 +3534,10 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 
 		/* NOTE: required item not found */
 		if (stream != NULL) {
-		    fmsg(stream, "%s required: %s not found", wset_p->context, rule_p->pattern);
+		    fmsg(stream, "%s: missing %s%s that matches: %s",
+				 wset_p->context,
+				 if_empty(!rule_p->non_empty), allowed_type_str(rule_p->allowed_type),
+				 rule_p->pattern);
 		    dbg(DBG_LOW, "%s required item[%d]: %s not found", wset_p->context, i, rule_p->pattern);
 		}
 		ret = false;
@@ -3563,7 +3566,7 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 		i_p = dyn_array_value(wstat_p->prohibit, struct item *, i);
 		if (i_p != NULL) {
 		    fmsg(stream, "   prohibited %s%s: %s",
-				 (i_p->st_size ? "" : "empty "), file_type_name(i_p->st_mode), i_p->fts_path);
+				 empty_or_not(i_p->st_size), file_type_name(i_p->st_mode), i_p->fts_path);
 		} else {
 		    err(76, __func__, "item[%d] fts_path #0 is NULL", i);
 		    not_reached();
@@ -5033,4 +5036,55 @@ path_in_walk_stat(struct walk_stat *wstat_p, char const *c_path)
      */
     dbg(DBG_V1_HIGH, "%s: c_path not found: %s", __func__, c_path);
     return NULL;
+}
+
+
+/*
+ * allowed_type_str - static string describing allowed type
+ *
+ * given:
+ *	type	    - enum allowed_type
+ *
+ * returns:
+ *	static string describing the enum allowed_type
+ */
+char const *
+allowed_type_str(enum allowed_type type)
+{
+    switch (type) {
+    case TYPE_UNSET:
+	return "unassigned allowed_type";
+    case TYPE_FILE:
+	return "file";
+    case TYPE_DIR:
+	return "directory";
+    case TYPE_SYMLINK:
+	return "symlink";
+    case TYPE_NOT_FILE:
+	return "non-file";
+    case TYPE_NOT_DIR:
+	return "non-directory";
+    case TYPE_NOT_SYMLINK:
+	return "non-symlink";
+    case TYPE_FILEDIR:
+	return "file or directory";
+    case TYPE_FILESYM:
+	return "file or symlink";
+    case TYPE_DIRSYM:
+	return "directory or symlink";
+    case TYPE_FILEDIRSYM:
+	return "file or directory or symlink";
+    case TYPE_NOT_FILEDIR:
+	return "non-file non-directory";
+    case TYPE_NOT_FILESYM:
+	return "not-file non-symlink";
+    case TYPE_NOT_DIRSYM:
+	return "non-directory non-symlink";
+    case TYPE_NOT_FILEDIRSYM:
+	return "non-file non-directory non-symlink";
+    case TYPE_ANY:
+	return "any";
+    default:
+	return "unknown allowed_type";
+    }
 }

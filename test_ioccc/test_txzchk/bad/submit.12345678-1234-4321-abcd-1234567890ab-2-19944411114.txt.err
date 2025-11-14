@@ -27,7 +27,7 @@ Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-12345
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: found incorrect top level directory in filename 12345678-1234-4321-abcd-1234567890ab-2/.auth.json
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: found incorrect top level directory in filename 12345678-1234-4321-abcd-1234567890ab-2/remarks.md
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt: found incorrect top level directory in filename 12345678-1234-4321-abcd-1234567890ab-2/bar
-txzchk required: .info.json not found
+txzchk: missing file that matches: .info.json
 txzchk found 1 unsafe paths
    file has an unsafe path: -foo
 Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-2-19944411114.txt
