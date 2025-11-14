@@ -1,0 +1,3 @@
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-9.1763094906.txt: total file size too big: 28314625 > 28314624
+Warning: txzchk: total length of tarball contents is too long: 28314625 > limit: 28314624
+Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-9.1763094906.txt: found 2 feathers stuck in the tarball
