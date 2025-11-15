@@ -1,6 +1,22 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.9.6 2025-11-14
+
+Due to the v7 tar maximum path limit of 99, and that submission tarballs
+must start with a "UUID-slot_num/" (39 characters), the `MAX_PATH_LEN`
+**CANNOT** exceed 60 bytes.  The `MAX_PATH_LEN` is been reduced to 60.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` to "2.9.5 2025-11-14".
+
+NOTE: Changed the following due to `MAX_PATH_LEN` change as noted above.
+Changed `MKIOCCCENTRY_VERSION` to "2.1.10 2025-11-14".
+Changed `FNAMCHK_VERSION` to "2.1.6 2025-11-14".
+Changed `TXZCHK_VERSION` to "2.0.13 2025-11-14".
+Changed `CHKENTRY_VERSION` to "2.1.11 2025-11-14".
+Changed `CHKSUBMIT_VERSION` to "1.0.2 2025-11-14".
+
+
 ## Release 2.9.5 2025-11-13
 
 Fix issue #1355 - fix `make install` to NOT install repo specific man pages and

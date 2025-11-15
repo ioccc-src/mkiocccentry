@@ -85,7 +85,6 @@
 #define MAX_TITLE_LEN (32)		/* maximum length of a title */
 #define MAX_ABSTRACT_LEN (64)		/* maximum length of an abstract */
 #define MAX_HANDLE (32)			/* maximum length of IOCCC winner handle */
-#define MAX_BASENAME_LEN ((size_t)(99))	/* tar --format=v7 limits filenames to 99 characters */
 #define UUID_LEN (36)			/* characters in a UUID string - as per RFC4122 */
 #define UUID_VERSION (4)		/* version 4 - random UUID */
 #define UUID_VARIANT_0 (0x8)		/* variant 0 - encoded as 0x8 */
@@ -101,8 +100,21 @@
  */
 #define MAX_FILENAME_LEN (38)    /* max path component length */
 #define MAX_PATH_DEPTH (4)       /* max depth of a subdirectory tree */
-#define MAX_PATH_LEN (99)        /* max length of a path */
 
+/*
+ * The maximum path length is limited by the v7 tar format
+ *
+ * A submission tarball paths start with: UUID string + "-" (dash) + slot_num + "/" (slash).
+ * This the MAX_PATH_LEN under a submission topdir MUST be reduced by TAR_TOPDIR_SLASH_LEN
+ * from the v7 tar format limit.
+ */
+#define V7_TAR_LIMIT (99)					    /* V7 tar format limits to 99 chars */
+#define TAR_TOPDIR_SLASH_LEN (UUID_LEN+1+MAX_SUBMIT_SLOT_CHARS+1)   /* UUID "-" slot_num "/" */
+#define MAX_PATH_LEN (V7_TAR_LIMIT - TAR_TOPDIR_SLASH_LEN)	    /* as of 2025: MAX_PATH_LEN == 60 */
+
+/*
+ * timestamp constraints
+ */
 #define MIN_FORMED_TIMESTAMP_USEC (1)       /* minimum formed_timestamp_usec value */
 #define MAX_FORMED_TIMESTAMP_USEC (999999)  /* maximum formed_timestamp_usec value */
 
