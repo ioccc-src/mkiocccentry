@@ -230,13 +230,13 @@ static void warn_ungetc(void);
 static void warn_rule_2b_size(struct info *infop);
 static RuleCount check_prog_c(struct info *infop, char const *prog_c);
 static void scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, char const *make,
-        char const *submission_dir, RuleCount *size, struct walk_stat *wstat2);
+			char const *submission_dir, RuleCount *size, struct walk_stat *wstat2);
 static void copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, char const *make,
-        char const *submission_dir, char *submit_path, RuleCount *size, struct walk_stat *wstat2);
+			char const *submission_dir, char *submit_path, RuleCount *size, struct walk_stat *wstat2);
 static void show_copy_list(struct walk_stat *wstat, char const *context, struct info *infop, char const *make,
-        char const *submission_dir, char *submit_path, RuleCount *size, struct walk_stat *wstat2);
+			   char const *submission_dir, char *submit_path, RuleCount *size, struct walk_stat *wstat2);
 static void check_submission_dir(struct walk_stat *wstat, char const *context, struct info *infop,
-        char *submit_path, char const *make, RuleCount *size, struct walk_stat *wstat2);
+				 char *submit_path, char const *make, RuleCount *size, struct walk_stat *wstat2);
 static void usage(int exitcode, char const *program, char const *str) __attribute__((noreturn));
 static void mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar,
 				     char *ls, char *txzchk, char *fnamchk, char *chksubmit,
@@ -245,8 +245,8 @@ static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(bool *testp, char const *uuidf, char *uuidstr);
 static int get_submit_slot(struct info *infop);
 static char *mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
-			  char **tarball_path, time_t tstamp, bool test_mode, bool force_remove,
-                          char const *rm);
+			       char **tarball_path, time_t tstamp, bool test_mode, bool force_remove,
+			       char const *rm);
 static bool inspect_Makefile(char const *Makefile, struct info *infop);
 static void warn_Makefile(struct info *infop);
 static void check_Makefile(struct info *infop, char const *Makefile);
@@ -258,7 +258,7 @@ static bool noprompt_yes_or_no(void);
 static int get_author_info(struct author **author_set_p);
 static void verify_submission_dir(char const *submission_dir, char const *ls);
 static void write_json_files(struct walk_stat *wstat, struct auth *authp, struct info *infop,
-        char const *submission_dir, char const *chksubmit);
+			     char const *submission_dir, char const *chksubmit);
 static void form_auth(struct auth *authp, struct info *infop, int author_count, struct author *authorp);
 static void form_info(struct info *infop);
 static void form_tarball(char const *workdir, char const *submission_dir, char const *tarball_path, char const *tar,
@@ -269,6 +269,7 @@ static void show_registration_url(void);
 static void show_submit_url(char const *workdir, char const *tarball_path, int slot_number);
 static void read_manifest(struct walk_stat *wstat);
 static void read_ignore(char const *ignore, struct walk_stat *wstat);
+
 
 int
 main(int argc, char *argv[])
@@ -842,7 +843,6 @@ main(int argc, char *argv[])
 	/* turn on -i random_answers.seed */
 	read_answers_flag_used = true;
     }
-
 
     /*
      * print debug debug information if -v level is high enough
@@ -1439,7 +1439,7 @@ main(int argc, char *argv[])
  */
 static void
 scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, char const *make, char const *submission_dir,
-        RuleCount *size, struct walk_stat *wstat2)
+	    RuleCount *size, struct walk_stat *wstat2)
 {
     bool walk_ok = true;	/* true ==> no climbing errors found, false ==> some climbing errors found (fell :-) )*/
     char *topdir = NULL;        /* will point to wstat->topdir */
@@ -1547,9 +1547,9 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
      * copy everything over (presenting user with lists first)
      */
     show_copy_list(wstat, context, infop, make, submission_dir, submit_path, size, wstat2);
-
     return;
 }
+
 
 /*
  * show_copy_list
@@ -1574,7 +1574,7 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
  */
 static void
 show_copy_list(struct walk_stat *wstat, char const *context, struct info *infop, char const *make,
-        char const *submission_dir, char *submit_path, RuleCount *size, struct walk_stat *wstat2)
+	       char const *submission_dir, char *submit_path, RuleCount *size, struct walk_stat *wstat2)
 {
     char *topdir = NULL;        /* will point to wstat->topdir */
     struct item *p = NULL;          /* temp value to print lists (arrays) */
@@ -1600,7 +1600,6 @@ show_copy_list(struct walk_stat *wstat, char const *context, struct info *infop,
         err(4, __func__, "invalid cwd file descriptors"); /*ooo*/
         not_reached();
     }
-
 
     /*
      * easier access of topdir
@@ -1852,7 +1851,6 @@ show_copy_list(struct walk_stat *wstat, char const *context, struct info *infop,
                 total_file_size += p->st_size;
                 print("%s\n", p->fts_path);
             }
-
             print("\nEstimated total file size: %lld.\n", (long long)total_file_size);
             if (!answer_yes) {
                 if (total_file_size > MAX_SUM_FILELEN) {
@@ -1882,9 +1880,9 @@ show_copy_list(struct walk_stat *wstat, char const *context, struct info *infop,
      * copy everything over (presenting user with lists first)
      */
     copy_topdir(wstat, context, infop, make, submission_dir, submit_path, size, wstat2);
-
     return;
 }
+
 
 /*
  * copy_topdir
@@ -1932,6 +1930,7 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
         err(4, __func__, "passed NULL pointer(s)"); /*ooo*/
         not_reached();
     }
+
     /*
      * make the necessary subdirectories, if any
      */
@@ -2099,6 +2098,7 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
      * check submission directory now that everything has been created
      */
     check_submission_dir(wstat, context, infop, submit_path, make, size, wstat2);
+    return;
 }
 
 
@@ -2131,7 +2131,7 @@ copy_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
  */
 static void
 check_submission_dir(struct walk_stat *wstat, char const *context, struct info *infop, char *submit_path,
-        char const *make, RuleCount *size, struct walk_stat *wstat2)
+		     char const *make, RuleCount *size, struct walk_stat *wstat2)
 {
     intmax_t len = 0;                   /* length of arrays in info struct */
     int exit_code = 0;                  /* for make clobber */
@@ -2199,6 +2199,7 @@ check_submission_dir(struct walk_stat *wstat, char const *context, struct info *
 		   submit_path, wset_p2, context2,
 		   MAX_PATH_LEN, MAX_FILENAME_LEN, MAX_PATH_DEPTH,
 		   false);
+
     /*
      * climb a file system tree, recording steps
      *
@@ -2414,6 +2415,7 @@ check_submission_dir(struct walk_stat *wstat, char const *context, struct info *
     copying_topdir = false;
     silence_prompt = saved_silence_prompt;
     answer_yes = saved_answer_yes;
+    return;
 }
 
 
@@ -2493,7 +2495,7 @@ usage(int exitcode, char const *prog, char const *str)
  */
 static void
 mkiocccentry_sanity_chks(struct info *infop, char const *workdir, char *tar, char *ls, char *txzchk, char *fnamchk,
-        char *chksubmit, char *make, char *rm)
+			 char *chksubmit, char *make, char *rm)
 {
     /*
      * firewall
@@ -3371,8 +3373,8 @@ get_submit_slot(struct info *infop)
      * verify it is correct)
      */
     do {
-
         yorn = true;    /* in case we don't reach the question part so that the loop doesn't repeat */
+
 	/*
 	 * ask for the submit slot number
 	 */
@@ -3460,8 +3462,8 @@ get_submit_slot(struct info *infop)
  */
 static char *
 mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
-	     char **tarball_path, time_t tstamp, bool test_mode, bool force_remove,
-             char const *rm)
+		  char **tarball_path, time_t tstamp, bool test_mode, bool force_remove,
+		  char const *rm)
 {
     size_t submission_dir_len;	/* length of submission directory */
     char *submission_dir = NULL;	/* allocated submission directory path */
@@ -3622,6 +3624,7 @@ warn_empty_prog(void)
 	}
 	dbg(DBG_MED, "user says that their empty prog.c is OK");
     }
+    return;
 }
 
 
@@ -3755,6 +3758,7 @@ warn_trigraph(void)
 	}
 	dbg(DBG_MED, "user says that prog.c having unknown or invalid trigraph(s) is OK");
     }
+    return;
 }
 
 
@@ -3794,6 +3798,7 @@ warn_ungetc(void)
 	}
 	dbg(DBG_MED, "user says that prog.c triggering an ungetc warning OK");
     }
+    return;
 }
 
 
@@ -3847,6 +3852,7 @@ warn_rule_2b_size(struct info *infop)
 	}
 	dbg(DBG_MED, "user says that their prog.c size: %zu > Rule 2B max size: %d is OK", infop->rule_2b_size, RULE_2B_SIZE);
     }
+    return;
 }
 
 
@@ -4001,7 +4007,6 @@ check_prog_c(struct info *infop, char const *prog_c)
     } else {
 	infop->rule_2b_override = false;
     }
-
     return size;
 }
 
@@ -4103,6 +4108,7 @@ inspect_Makefile(char const *Makefile, struct info *infop)
          * skip lines starting with a '.' as those are special make rules
          */
         if (*line == '.') {
+
             /*
              * NOTE: due to a bug or mis-feature in GitHub's advanced security
              * bot we cannot explicitly check for NULL line before freeing which
@@ -4256,7 +4262,6 @@ inspect_Makefile(char const *Makefile, struct info *infop)
 	dbg(DBG_MED, "Makefile appears to pass");
 	return true;
     }
-
     return false;
 }
 
@@ -4350,6 +4355,7 @@ warn_Makefile(struct info *infop)
 	    }
 	}
     }
+    return;
 }
 
 
@@ -4426,7 +4432,6 @@ check_Makefile(struct info *infop, char const *Makefile)
     } else {
 	infop->Makefile_override = false;
     }
-
     return;
 }
 
@@ -5798,9 +5803,7 @@ get_author_info(struct author **author_set_p)
 		    ((strncmp(author_set[i].alt_url, "https://", LITLEN("https://")) == 0) &&
 		     (author_set[i].alt_url[LITLEN("https://")] != '\0'))) {
 
-		    /*
-		     * URL appears to in valid form
-		     */
+		    /* URL appears to in valid form */
 		    break;
 
 		/*
@@ -6541,6 +6544,7 @@ form_info(struct info *infop)
 	not_reached();
     }
     dbg(DBG_VHIGH, "infop->utctime: %s", infop->utctime);
+    return;
 }
 
 
@@ -6562,7 +6566,7 @@ form_info(struct info *infop)
  */
 static void
 write_json_files(struct walk_stat *wstat, struct auth *authp, struct info *infop, char const *submission_dir,
-        char const *chksubmit)
+		 char const *chksubmit)
 {
     char *info_path;		/* path to .info.json file */
     size_t info_path_len;	/* length of path to .info.json */
@@ -6972,6 +6976,7 @@ write_json_files(struct walk_stat *wstat, struct auth *authp, struct info *infop
 	free(info_path);
 	info_path = NULL;
     }
+    return;
 }
 
 
@@ -7276,7 +7281,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
  */
 static void
 remind_user(char const *workdir, char const *submission_dir, char const *tar, char const *tarball_path,
-        bool test_mode, int slot_number)
+	    bool test_mode, int slot_number)
 {
     int ret;			/* libc function return */
     char *submission_dir_esc;
@@ -7430,7 +7435,7 @@ show_registration_url(void)
 	errp(54, __func__, "printf error printing IOCCC status URL");
 	not_reached();
     }
-
+    return;
 }
 
 
@@ -7601,6 +7606,7 @@ read_manifest(struct walk_stat *wstat)
     /*
      * do NOT close manifest!
      */
+    return;
 }
 
 
