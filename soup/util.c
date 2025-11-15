@@ -54,11 +54,11 @@
 #include <errno.h>
 #include <stdarg.h>
 #include <fcntl.h>		/* for open() */
+
 /*
  * util - our functions
  */
 #include "util.h"
-
 
 /*
  * dbg - info, debug, warning, error, and usage message facility
@@ -496,7 +496,6 @@ shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *f
      */
     free(cmd);
     cmd = NULL;
-
     return exit_code;
 }
 
@@ -658,6 +657,7 @@ pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *fo
      */
     return stream;
 }
+
 
 /*
  * sum_and_count - add to a sum, count the number of additions
@@ -978,7 +978,6 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
      */
     return true;
 }
-
 
 
 /*

@@ -181,9 +181,12 @@ static const char * const usage_msg5 =
     "     3   invalid command line, invalid option or option missing an argument\n"
     "     4   something went wrong in scanning, copying or verifying topdir and workdir\n"
     "     5   user says something about the topdir or workdir is not okay\n"
+    "     6   critical errors found in topdir that MUST be corrected\n"
     " >= 10   internal error\n"
     "\n"
     "%s version: %s\n"
+    "mkiocccentry repo release: %s\n"
+    "soup library version: %s\n"
     "jparse utils version: %s\n"
     "jparse UTF-8 version: %s\n"
     "jparse library version: %s";
@@ -396,6 +399,8 @@ main(int argc, char *argv[])
 	    break;
 	case 'V':		/* -V - print version and exit 2 */
 	    print("%s version: %s\n", MKIOCCCENTRY_BASENAME, MKIOCCCENTRY_VERSION);
+	    print("mkiocccentry repo release: %s\n", MKIOCCCENTRY_REPO_VERSION);
+	    print("soup library version: %s\n", SOUP_VERSION);
 	    print("jparse utils version: %s\n", JPARSE_UTILS_VERSION);
 	    print("jparse UTF-8 version: %s\n", JPARSE_UTF8_VERSION);
 	    print("jparse library version: %s\n", JPARSE_LIBRARY_VERSION);
@@ -1444,6 +1449,7 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
     bool walk_ok = true;	/* true ==> no climbing errors found, false ==> some climbing errors found (fell :-) )*/
     char *topdir = NULL;        /* will point to wstat->topdir */
     char *submit_path = NULL;   /* absolute path of submission directory */
+    bool yorn = false;              /* for prompts to ask user if everything is OK */
     int exit_code = -1;         /* return value for shell_cmd() */
 
     /*
@@ -1509,15 +1515,40 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
     exit_code = shell_cmd(__func__, false, true, "% -f Makefile clobber", make);
     if (exit_code != 0) {
 	warn(__func__, "make -f Makefile clobber failed");
+	para("",
+	     "Warning \U0000203c\U0000FE0F",
+	     "",
+	     "The fact that:",
+	     "",
+	     "\tmake -f Makefile clobber",
+	     "",
+	     "failed is NOT a good sign \U0000203c\U0000FE0F",
+	     NULL);
+	if (!answer_yes) {
+	    yorn = yes_or_no("\nAre you sure that you want to continue? [yN]", false);
+	    if (!yorn) {
+		prstr("\nWe suggest you fix your Makefile, and in particular fix the clobber rule.\n\n");
+		err(5, __func__, "aborting because user said that clobber rule failure is not OK"); /*ooo*/
+		not_reached();
+	    }
+	}
     }
 
     /*
-     * if -M manifest was specified we do not do an fts_walk() but we still need
-     * wstat.
+     * if -M manifest was specified we do not do an fts_walk() but we still need wstat.
      */
     if (manifest != NULL) {
+
+	/*
+	 * case: -M manifest
+	 *
+	 * Instead of walking a submission tree, we read the manifest
+	 * and process that list as if it were the directory tree.
+	 */
         read_manifest(wstat);
+
     } else {
+
         /*
          * case: -M manifest NOT used
          */
@@ -1538,10 +1569,29 @@ scan_topdir(struct walk_stat *wstat, char const *context, struct info *infop, ch
     sort_walk_istat(wstat);
 
     /*
-     * do NOT chk_walk() here as this will cause problems with illegal files;
-     * this check has to be done in check_submission_dir() on the submission
-     * directory, not the topdir!
+     * verify that the topdir is in proper order before we proceed
      */
+    walk_ok = chk_walk(wstat, NULL, MAX_EXTRA_FILE_COUNT, MAX_EXTRA_DIR_COUNT, ANY_COUNT, ANY_COUNT, true);
+    if (walk_ok == false) {
+
+	/*
+	 * politely report that topdir is not in proper order
+	 */
+	dbg(DBG_LOW, "topdir is not in proper order: %s", submission_dir);
+	para("",
+	     "Sorry (tm Canada \U0001F1E8\U0001F1E6 :-)): unfortunately your topdir directory tree contains fatal errors",
+	     "that MUST be corrected before you can submit your topdir directory to the IOCCC.",
+	     "",
+	     "A summary of the critical errors follow:",
+	     "",
+	     NULL);
+	(void) chk_walk(wstat, stderr, MAX_EXTRA_FILE_COUNT, MAX_EXTRA_DIR_COUNT, ANY_COUNT, ANY_COUNT, true);
+	para("",
+	     "Please correct the above mentioned errors, and then rerun this command."
+	     "\n",  /* yes, print an extra newline to help the above message stand out */
+	     NULL);
+	exit(6); /*ooo*/
+    }
 
     /*
      * copy everything over (presenting user with lists first)
@@ -2463,7 +2513,7 @@ usage(int exitcode, char const *prog, char const *str)
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg3, (unsigned)SEED_MASK, (unsigned)(DEFAULT_SEED & SEED_MASK));
     fprintf_usage(DO_NOT_EXIT, stderr, usage_msg4);
     fprintf_usage(exitcode, stderr, usage_msg5, MKIOCCCENTRY_BASENAME, MKIOCCCENTRY_VERSION,
-	    JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
+	    MKIOCCCENTRY_REPO_VERSION, SOUP_VERSION, JPARSE_UTILS_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

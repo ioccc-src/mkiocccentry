@@ -64,6 +64,7 @@
 #if !defined(INCLUDE_TXZCHK_H)
 #    define  INCLUDE_TXZCHK_H
 
+
 /*
  * jparse/version - JSON parser API and tool version
  */
@@ -115,14 +116,6 @@
  */
 #define TXZCHK_BASENAME "txzchk"
 
-/*
- * utility macros
- *
- * These will work for our purposes but the singular or plural one is in truth
- * much more complicated than what we're making it seem like.
- */
-#define SINGULAR_OR_PLURAL(x) ((x)==1?"":"s")
-
 
 /*
  * information about the tarball
@@ -169,10 +162,6 @@ struct txz_file
     mode_t mode;                            /* perms -> mode_t */
     struct txz_file *next;		    /* the next file in the txz_files list */
 };
-
-
-
-
 
 /*
  * struct txz_line - a line of output from tar -tJvf or the text file

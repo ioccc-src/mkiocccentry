@@ -44,6 +44,7 @@
 #if !defined(INCLUDE_FILE_UTIL_H)
 #    define  INCLUDE_FILE_UTIL_H
 
+
 #include <float.h>      /* for long doubles */
 #include <inttypes.h>   /* uintmax_t and intmax_t and perhaps SIZE_MAX */
 #include <string.h>     /* for strcmp */
@@ -163,5 +164,6 @@ extern char const *file_type_name(mode_t st_mode);
 extern int chdir_save_cwd(char const *newdir);
 extern void restore_cwd(int prev_cwd);
 extern bool file_mode_size(char const *path, mode_t *st_mode, off_t *st_size);
+
 
 #endif				/* INCLUDE_FILE_UTIL_H */

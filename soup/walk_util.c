@@ -3557,7 +3557,8 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 	    /*
 	     * report the prohibited count and item paths
 	     */
-	    fmsg(stream, "%s found %jd prohibited items", wset_p->context, prohibit_count);
+	    fmsg(stream, "%s found %jd prohibited item%s",
+			 wset_p->context, prohibit_count, SINGULAR_OR_PLURAL(prohibit_count));
 	    for (i=0; i < prohibit_count; ++i) {
 
 		/*
@@ -3588,7 +3589,8 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 	    /*
 	     * report the too deep count and item paths
 	     */
-	    fmsg(stream, "%s found %jd items whose directory level is too deep", wset_p->context, too_deep_count);
+	    fmsg(stream, "%s found %jd director%s that %s too deep",
+			 wset_p->context, too_deep_count, Y_OR_IES(too_deep_count), IS_OR_ARE(too_deep_count));
 	    for (i=0; i < too_deep_count; ++i) {
 
 		/*
@@ -3618,7 +3620,8 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 	    /*
 	     * report the path too long
 	     */
-	    fmsg(stream, "%s found %jd unsafe paths", wset_p->context, unsafe_count);
+	    fmsg(stream, "%s found %jd unsafe path%s",
+			 wset_p->context, unsafe_count, SINGULAR_OR_PLURAL(unsafe_count));
 	    for (i=0; i < unsafe_count; ++i) {
 
 		/*
@@ -3648,7 +3651,8 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 	    /*
 	     * report the path too long
 	     */
-	    fmsg(stream, "%s found %jd non-relative paths", wset_p->context, abs_count);
+	    fmsg(stream, "%s found %jd non-relative path%s",
+			 wset_p->context, abs_count, SINGULAR_OR_PLURAL(abs_count));
 	    for (i=0; i < abs_count; ++i) {
 
 		/*
@@ -3678,7 +3682,9 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 	    /*
 	     * report the path too long
 	     */
-	    fmsg(stream, "%s found %jd too long path", wset_p->context, too_long_path_count);
+	    fmsg(stream, "%s found %jd path%s that %s too long",
+			 wset_p->context, too_long_path_count,
+			 SINGULAR_OR_PLURAL(too_long_path_count), IS_OR_ARE(too_long_path_count));
 	    for (i=0; i < too_long_path_count; ++i) {
 
 		/*
@@ -3708,7 +3714,8 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 	    /*
 	     * report the paths with a path element too long
 	     */
-	    fmsg(stream, "%s found %jd items with path elements too long", wset_p->context, too_long_name_count);
+	    fmsg(stream, "%s found %jd item%s with path elements too long",
+			 wset_p->context, too_long_name_count, SINGULAR_OR_PLURAL(too_long_name_count));
 	    for (i=0; i < too_long_name_count; ++i) {
 
 		/*
@@ -3738,7 +3745,8 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
 	    /*
 	     * report the paths with a path element too long
 	     */
-	    fmsg(stream, "%s found %jd items that caused hierarchy traverse errors", wset_p->context, fts_err_count);
+	    fmsg(stream, "%s found %jd item%s that caused hierarchy traverse errors",
+			 wset_p->context, fts_err_count, SINGULAR_OR_PLURAL(fts_err_count));
 	    for (i=0; i < fts_err_count; ++i) {
 
 		/*
@@ -5085,6 +5093,7 @@ allowed_type_str(enum allowed_type type)
     case TYPE_ANY:
 	return "any";
     default:
-	return "unknown allowed_type";
+	break;
     }
+    return "unknown allowed_type";
 }

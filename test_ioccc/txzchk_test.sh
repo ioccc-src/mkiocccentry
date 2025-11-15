@@ -93,7 +93,7 @@ TAR="$(type -P tar 2>/dev/null)"
 # but due to the reasons cited above we must rely on the more complicated form:
 [[ -z "$TAR" ]] && TAR="/usr/bin/tar"
 
-export TXZCHK_TEST_VERSION="2.0.1 2025-03-14"
+export TXZCHK_TEST_VERSION="2.0.2 2025-11-15"
 export FNAMCHK="./test_ioccc/fnamchk"
 export TXZCHK="./txzchk"
 export TXZCHK_TREE="./test_ioccc/test_txzchk"
@@ -590,10 +590,19 @@ run_test()
 		echo "$0: Warning: diff -u $txzchk_err_file $TMP_STDERR_FILE ends above" 1>&2
 	    fi
 	    if [[ $V_FLAG -lt 3 ]]; then
-		echo "$0: Warning: for more details try: $TXZCHK $test_mode -w -v 3 -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
+		echo | tee -a -- "${LOGFILE}" 1>&2
+		echo "$0: Warning: for more details try: $TXZCHK $test_mode -w -v 3 -F $FNAMCHK -t $TAR -T -E txt -- $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
 	    else
-		echo "$0: Warning: for more details try: $TXZCHK $test_mode -w -v $V_FLAG -t $TAR -F $FNAMCHK -T -E txt -- $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
+		echo | tee -a -- "${LOGFILE}" 1>&2
+		echo "$0: Warning: for more details try: $TXZCHK $test_mode -w -v $V_FLAG -F $FNAMCHK -t $TAR -T -E txt -- $txzchk_test_file" | tee -a -- "$LOGFILE" 1>&2
 	    fi
+	    echo | tee -a -- "${LOGFILE}" 1>&2
+	    if [[ -n "$test_mode" ]]; then
+		echo "$0: Warning: to see what is different try: $TXZCHK -x -w -v 0 -F $FNAMCHK -t $TAR -T -E txt -- $txzchk_test_file 2>&1 >/dev/null | diff -u $txzchk_err_file -" | tee -a -- "$LOGFILE" 1>&2
+	    else
+		echo "$0: Warning: to see what is different try: $TXZCHK -w -v 0 -F $FNAMCHK -t $TAR -T -E txt -- $txzchk_test_file 2>&1 >/dev/null | diff -u $txzchk_err_file -" | tee -a -- "$LOGFILE" 1>&2
+	    fi
+	    echo | tee -a -- "${LOGFILE}" 1>&2
 	    echo | tee -a -- "${LOGFILE}" 1>&2
 	    EXIT_CODE=1
 	fi

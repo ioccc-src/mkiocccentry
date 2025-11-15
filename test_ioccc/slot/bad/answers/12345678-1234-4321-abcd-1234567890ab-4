@@ -1,0 +1,25 @@
+MKIOCCCENTRY_ANSWERS_IOCCC29-1.0
+12345678-1234-4321-abcd-1234567890ab
+4
+title.4
+abstract for slot 4
+2
+first0 middle0 last0
+AU
+user0@example.au
+http://host0.example.au/index.html
+https://alt0.example.au/index.html
+@user0@example.au
+@user0
+affiliation for user 0
+first0_middle0_last0
+anon3
+SB
+user3@example.sb
+
+
+@user3@example.sb
+
+
+anon3
+ANSWERS_EOF

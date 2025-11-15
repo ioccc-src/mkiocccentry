@@ -622,7 +622,6 @@ txzchk_sanity_chks(char const *tar, char const *fnamchk)
 	err(21, __func__, "tarball_path is not readable: %s", tarball_path);
 	not_reached();
     }
-
     return;
 }
 
@@ -755,6 +754,7 @@ check_all_txz_files(void)
 	warn(TXZCHK_BASENAME, "%s: found %ju feather%s stuck in the tarball",
 	    tarball_path, tarball.total_feathers, tarball.total_feathers==1?"":"s");
     }
+    return;
 }
 
 /*
@@ -796,6 +796,7 @@ check_directory(struct txz_file *file, char const *dirname, char const *tarball_
         warn(TXZCHK_BASENAME, "%s: found incorrect top level directory in filename %s", tarball_path, file->filename);
         ++tarball.total_feathers;
     }
+    return;
 }
 
 
@@ -868,6 +869,7 @@ count_and_sum(char const *tarball_path, intmax_t *sum, intmax_t *count, intmax_t
 	++tarball.invalid_files_count;
 	warn(TXZCHK_BASENAME, "%s: files count <= 0: %jd", tarball_path, *count);
     }
+    return;
 }
 
 
@@ -1002,6 +1004,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname, 
     check_txz_file(tarball_path, dirname, file);
 
     add_txz_file_to_list(file);
+    return;
 }
 
 
@@ -1149,6 +1152,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname, ch
     check_txz_file(tarball_path, dirname, file);
 
     add_txz_file_to_list(file);
+    return;
 }
 
 
@@ -1184,6 +1188,7 @@ check_txz_file(char const *tarball_path, char const *dirname, struct txz_file *f
 
     /* check the dirs in the path */
     check_directory(file, dirname, tarball_path);
+    return;
 }
 
 
@@ -1354,6 +1359,7 @@ parse_txz_line(char *linep, char *line_dup, char const *dirname, char const *tar
 	/* assume macOS/BSD output */
 	parse_bsd_txz_line(p, linep, line_dup, dirname, tarball_path, &saveptr, isfile, sum, count, isdir, perms, isexec);
     }
+    return;
 }
 
 
@@ -1738,7 +1744,6 @@ check_tarball(char const *tar, char const *fnamchk)
 	free(linep);
 	linep = NULL;
     }
-
     return tarball.total_feathers;
 }
 
@@ -1788,6 +1793,7 @@ add_txz_line(char const *str, uintmax_t line_num)
     dbg(DBG_VHIGH, "adding line %s to lines list", line->line);
     line->next = txz_lines;
     txz_lines = line;
+    return;
 }
 
 
@@ -1840,6 +1846,7 @@ parse_all_txz_lines(char const *dirname, char const *tarball_path)
 	free(line_dup);
 	line_dup = NULL;
     }
+    return;
 }
 
 
@@ -1875,6 +1882,7 @@ free_txz_lines(void)
     }
 
     txz_lines = NULL;
+    return;
 }
 
 
@@ -1989,7 +1997,6 @@ alloc_txz_file(char const *path, char const *dirname, char *perms, bool isdir, b
      * record if +x
      */
     file->isexec = isexec;
-
     return file;
 }
 
@@ -2150,7 +2157,6 @@ mode_t get_mode(struct txz_file *file)
         warn(TXZCHK_BASENAME, "other exec permission '%c' in file %s invalid", s[9], filename);
         ++tarball.total_feathers;
     }
-
     return mode;
 }
 
@@ -2228,6 +2234,7 @@ free_txz_file(struct txz_file **file)
      */
     free(*file);
     *file = NULL;
+    return;
 }
 
 
@@ -2247,4 +2254,5 @@ free_txz_files_list(void)
     }
 
     txz_files = NULL;
+    return;
 }

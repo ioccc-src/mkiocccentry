@@ -492,6 +492,5 @@ check_location_table(void)
 	err(10, __func__, "no final NULL element found in location table; fix table in %s and recompile", __FILE__);
 	not_reached();
     }
+    return;
 }
-
-

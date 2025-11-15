@@ -465,7 +465,6 @@ is_mode(char const *path, mode_t mode)
         return false;
     }
     dbg(DBG_V1_HIGH, "path %s mode is %o", path, ITEM_PERM(mode));
-
     return true;
 }
 
@@ -519,7 +518,6 @@ has_mode(char const *path, mode_t mode)
 
     dbg(DBG_V1_HIGH, "path %s mode %o does not have %o set: %o & %o == %o", path, buf.st_mode,
             mode, buf.st_mode, mode, buf.st_mode & mode);
-
     return false;
 }
 
@@ -1135,6 +1133,7 @@ is_open_file_stream(FILE *stream)
      */
     return true;
 }
+
 
 /*
  * file_size - determine the file size
@@ -1754,7 +1753,6 @@ copyfile(char const *src, char const *dest, bool copy_mode, mode_t mode)
         errp(60, __func__, "close(outfd) failed: %s", strerror(errno));
         not_reached();
     }
-
     return outbytes;
 }
 
@@ -1817,6 +1815,7 @@ touch(char const *path, mode_t mode)
         errp(62, __func__, "failed to close newly created file: %s", path);
         not_reached();
     }
+    return;
 }
 
 
@@ -1914,6 +1913,7 @@ touchat(char const *path, mode_t mode, char const *dir, int dirfd)
         errp(68, __func__, "failed to close(cwd)");
         not_reached();
     }
+    return;
 }
 
 
@@ -2144,7 +2144,6 @@ mkdirs(int dirfd, const char *str, mode_t mode)
         errp(86, __func__, "failed to close(cwd): %s", strerror(errno));
         not_reached();
     }
-
     return 0;
 }
 
@@ -2276,7 +2275,6 @@ file_type_name(mode_t st_mode)
     } else {
 	str = "other";
     }
-
     return str;
 }
 

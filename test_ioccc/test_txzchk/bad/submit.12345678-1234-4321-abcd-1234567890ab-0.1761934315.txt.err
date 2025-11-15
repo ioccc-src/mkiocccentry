@@ -1,4 +1,4 @@
-txzchk found 1 items whose directory level is too deep
+txzchk found 1 directory that is too deep
    file is too deep: deep/deeper/very-deep/super-deep/file
 Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761934315.txt
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-0.1761934315.txt: found 1 feather stuck in the tarball

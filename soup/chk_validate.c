@@ -1676,6 +1676,7 @@ chk_found_clobber_rule(struct json const *node,
     return true;
 }
 
+
 /*
  * chk_github - JSON semantic check for github
  *
@@ -2307,6 +2308,7 @@ chk_no_comment(struct json const *node,
     }
     return true;
 }
+
 
 /*
  * chk_past_winning_author - JSON semantic check for past_winning_author

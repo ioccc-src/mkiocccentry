@@ -2,7 +2,7 @@ Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-12345
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-5.1761934322.txt: bogus field found after filename: ->
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-5.1761934322.txt: bogus field found after filename: path
 Warning: txzchk: found non-executable non-directory file 12345678-1234-4321-abcd-1234567890ab-5/symlink with wrong permissions: lrwxrwxr-x != -r--r--r-- (0444)
-txzchk found 1 prohibited items
+txzchk found 1 prohibited item
    prohibited empty symlink: symlink
 symlinks: no counted (non-free) allowed, found: 1
 Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.12345678-1234-4321-abcd-1234567890ab-5.1761934322.txt

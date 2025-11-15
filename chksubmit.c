@@ -221,7 +221,6 @@ chksubmit_sanity_chks(char const *chkentry)
         err(15, __func__, "chkentry is not an executable program: %s", chkentry);
         not_reached();
     }
-
     return;
 }
 

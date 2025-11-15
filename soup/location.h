@@ -42,6 +42,7 @@
 #if !defined(INCLUDE_LOCATION_H)
 #    define  INCLUDE_LOCATION_H
 
+
 #include <ctype.h>
 #include <locale.h>
 
@@ -50,7 +51,6 @@
  * jparse - the JSON parser
  */
 #include "../jparse/jparse.h"
-
 
 /*
  * jparse/version - the JSON parser version
@@ -66,7 +66,6 @@
  * version - official IOCCC toolkit versions
  */
 #include "version.h"
-
 
 
 /*
@@ -106,5 +105,6 @@ extern char const *lookup_location_code_r(char const *location_name, size_t *idx
 					  bool substrings, bool use_common);
 extern bool location_code_name_match(char const *code, char const *location_name, bool use_common);
 extern void set_ioccc_locale(void);
+
 
 #endif				/* INCLUDE_LOCATION_H */

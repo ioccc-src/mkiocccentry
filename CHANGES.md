@@ -1,6 +1,46 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.9.6 2025-11-15
+
+Moved `SINGULAR_OR_PLURAL(x)` macro from `txzchk.h` to `soup/util.h`.
+Added `Y_OR_IES(x)` macro to `soup/util.h`.
+Added `IS_OR_ARE(x)` macro to `soup/util.h`.
+
+Improved output `chk_walk()` to use singular and plural counts forms.
+
+The `mkiocccentry(1)` tool politely decline to process a submission
+(`topdir`) directory tree that contains critical errors.  The
+ `mkiocccentry(1)` tool will exit 6.
+
+Updated `mkiocccentry(1)` man page about exit code 6.
+
+Fixed cases where the `mkiocccentry(1)` tool ignored fatal errors
+under `topdir`: potentially causing the submitter to submit an
+incomplete tree.
+
+Restored answer files under `test_ioccc/slot/bad/answers/` that were
+previously removed because they were failing.
+
+Added new `test_ioccc/slot/` test cases.
+
+The `mkiocccentry(1)` tool will politely warn the user if
+`make -f Makefile clobber`fails and ask them if they want to continue.
+
+Added printing of the "_mkiocccentry repo release_", and
+the "_soup library version_" to `mkiocccentry -V` and `mkiocccentry -h`.
+
+Improved debug output of `test_ioccc/txzchk_test.sh`.
+
+Ran `make rebuild_txzchk_test_errors` to rebuild the txzchk test set
+to account for the ``chk_walk()` use singular and plural counts forms.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` to "2.9.6 2025-11-15".
+Changed `SOUP_VERSION` to "2.2.13 2025-11-15".
+Changed `MKIOCCCENTRY_VERSION` to "2.1.12 2025-11-15".
+Changed `TXZCHK_TEST_VERSION to "2.0.2 2025-11-15".
+
+
 ## Release 2.9.6 2025-11-14
 
 Due to the v7 tar maximum path limit of 99, and that submission tarballs

@@ -5393,7 +5393,6 @@ is_executable_filename(char const *str)
         !strcmp(str + strlen(str) - LITLEN(".sh"), ".sh")) {
         return true;
     }
-
     return false;
 }
 
@@ -5427,6 +5426,5 @@ count_char(char const *str, int ch)
 	    ++count;
 	}
     }
-
     return count;
 }

@@ -43,6 +43,7 @@
 #if !defined(INCLUDE_SANITY_H)
 #    define  INCLUDE_SANITY_H
 
+
 /*
  * soup - a big pot of soup for consumption :-)
  */
@@ -86,5 +87,6 @@ extern void find_utils(bool *tar_found, char **tar,
                 bool *found_chksubmit, char **chksubmit,
                 bool *found_make, char **make,
                 bool *found_rm, char **rm);
+
 
 #endif /* INCLUDE_SANITY_H */

@@ -54,7 +54,6 @@
 #include "location.h"
 
 
-
 /*
  * lookup_location_name - convert a ISO 3166-1 Alpha-2 into a location name
  *
@@ -121,9 +120,8 @@ lookup_location_name(char const *code, bool use_common)
     }
     if (use_common) {
 	return p->common_name;
-    } else {
-	return p->name;
     }
+    return p->name;
 }
 
 
@@ -289,9 +287,8 @@ lookup_location_name_r(char const *code, size_t *idx, struct location **location
 
     if (use_common) {
 	return p->common_name;
-    } else {
-	return p->name;
     }
+    return p->name;
 }
 
 

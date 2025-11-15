@@ -31,7 +31,7 @@ Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-3.9876543210.txt: found 
 Warning: txzchk: file . is a duplicate file
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-3.9876543210.txt: found incorrect top level directory in filename test-0/../f
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-3.9876543210.txt: found incorrect top level directory in filename test-0/..
-txzchk found 1 prohibited items
+txzchk found 1 prohibited item
    prohibited file: ..
 txzchk found 2 unsafe paths
    file has an unsafe path: ../f

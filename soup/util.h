@@ -42,6 +42,7 @@
 #if !defined(INCLUDE_UTIL_H)
 #    define  INCLUDE_UTIL_H
 
+
 #include <float.h>      /* for long doubles */
 #include <inttypes.h>   /* uintmax_t and intmax_t and perhaps SIZE_MAX */
 #include <string.h>     /* for strcmp */
@@ -60,6 +61,17 @@
 
 
 /*
+ * utility macros
+ *
+ * These will work for our purposes but the singular or plural one is in truth
+ * much more complicated than what we're making it seem like.
+ */
+#define SINGULAR_OR_PLURAL(x) ((x)==1?"":"s")
+#define Y_OR_IES(x) ((x)==1?"y":"ies")
+#define IS_OR_ARE(x) ((x)==1?"is":"are")
+
+
+/*
  * external function declarations
  */
 extern bool sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_checkp, intmax_t *count_checkp);
@@ -69,5 +81,6 @@ extern char *cmdprintf(char const *format, ...);
 extern char *vcmdprintf(char const *format, va_list ap);
 extern int shell_cmd(char const *name, bool flush_stdin, bool abort_on_error, char const *format, ...);
 extern FILE *pipe_open(char const *name, bool write_mode, bool abort_on_error, char const *format, ...);
+
 
 #endif				/* INCLUDE_UTIL_H */

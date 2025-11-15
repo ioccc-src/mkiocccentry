@@ -15,7 +15,7 @@ txzchk: missing file that matches: Makefile
 txzchk found 2 prohibited items
    prohibited file: ..
    prohibited file: ..test
-txzchk found 1 unsafe paths
+txzchk found 1 unsafe path
    file has an unsafe path: ..
 Warning: txzchk: encountered an error walking directory in tarball: test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt
 Warning: txzchk: test_ioccc/test_txzchk/bad/submit.test-2.1922598666.txt: found 14 feathers stuck in the tarball

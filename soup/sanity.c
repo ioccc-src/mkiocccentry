@@ -112,6 +112,7 @@ char *rm_paths[] =
     NULL /* MUST BE LAST!! */
 };
 
+
 /*
  * ioccc_sanity_chks - perform IOCCC sanity checks
  *
@@ -138,6 +139,7 @@ ioccc_sanity_chks(void)
     dbg(DBG_VVHIGH, "Running sanity checks on location table ...");
     check_location_table();
     dbg(DBG_VVHIGH, "... all OK.");
+    return;
 }
 
 
