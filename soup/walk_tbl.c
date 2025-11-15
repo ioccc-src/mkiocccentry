@@ -150,7 +150,7 @@ static struct walk_rule walk_rule_set_mkiocccentry[] = {
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
      */
     { "README.md",
-	false, false, false, false, true,		/* prohibited */
+	false, false, true, true, false,		/* optional, free, ignore */
 	MATCH_STR_ANYCASE, TYPE_ANY, LEVEL_TOP,		/* match whole string any case, any type, at top level only */
 	0, NULL },
 
@@ -162,7 +162,7 @@ static struct walk_rule walk_rule_set_mkiocccentry[] = {
      * Regarding types: We match any type, not just files, to avoid "funny business" (as the expression goes).
      */
     { "index.html",
-	false, false, false, false, true,		/* prohibited */
+	false, false, true, true, false,		/* optional, free, ignore */
 	MATCH_STR_ANYCASE, TYPE_ANY, LEVEL_TOP,		/* match whole string any case, any type, at top level only */
 	0, NULL },
 
