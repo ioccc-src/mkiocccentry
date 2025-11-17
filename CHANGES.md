@@ -1,6 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.9.7 2025-11-16
+
+Allow use of `-S -I path` for `chkentry(1)`.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` to "2.9.7 2025-11-16".
+Changed `CHKENTRY_VERSION` to "2.1.12 2025-11-16".
+
+
 ## Release 2.9.6 2025-11-15
 
 Moved `SINGULAR_OR_PLURAL(x)` macro from `txzchk.h` to `soup/util.h`.

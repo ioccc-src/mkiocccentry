@@ -283,9 +283,6 @@ main(int argc, char *argv[])
 	} else if (ignore_permissions) {
 	    usage(3, program, "cannot use -S with the -P option"); /*ooo*/
 	    not_reached();
-	} else if (cap_I_seen) {
-	    usage(3, program, "cannot use -S with the -I path option"); /*ooo*/
-	    not_reached();
 	}
 
     /*
@@ -339,9 +336,6 @@ main(int argc, char *argv[])
 	/* check for conflicting options */
 	if (ignore_permissions) {
 	    usage(3, program, "cannot use -P option when neither -S, nor -s, nor -w are used"); /*ooo*/
-	    not_reached();
-	} else if (cap_I_seen) {
-	    usage(3, program, "cannot use -I path option when neither -S, nor -s, nor -w are used"); /*ooo*/
 	    not_reached();
 	}
     }
