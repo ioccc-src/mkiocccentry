@@ -17,6 +17,20 @@ level, meant for `chkentry(1)` and `chksubmit(1)`, though the former is meant
 only for the judges and the developers (i.e. Landon and me, meaning that Landon
 should be using it twice :-) ).
 
+Fix other critical validation errors:
+
+- if a filename ends in `.sh` then it MUST be a `shell_script`.
+- an `extra_file` many not match a `shell_script` filename.
+- a `shell_script` file must not match another `shell_script` filename.
+- an `extra_file` filename must NOT end in `.sh`.
+- add check for too many files with just `shell_script` list.
+- add check for too many files with `shell_script` and `extra_file` combined.
+
+The above fixes required a new array in the `struct manifest` - one for shell
+script files.
+
+Fix typos.
+
 Updated `SOUP_VERSION` to `"2.3.1 2025-11-19"`.
 Updated `CHKENTRY_VERSION` to `"2.2.1 2025-11-19"`.
 Updated `CHKSUBMIT_VERSION` to `"2.0.1 2025-11-19"`.

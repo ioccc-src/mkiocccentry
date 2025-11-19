@@ -271,6 +271,7 @@ struct manifest
     intmax_t count_shell_script;/* count of shell scripts (not try.sh nor try.alt.sh) JSON member found (will be "remarks") */
     intmax_t count_extra_file;	/* count of extra JSON members found */
     struct dyn_array *extra;	/* dynamic array of extra JSON member filenames (char *) */
+    struct dyn_array *shell;    /* dynamic array of shell script filenames (char *) */
 };
 
 
