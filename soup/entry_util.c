@@ -429,6 +429,13 @@ free_manifest(struct manifest *manp)
 	dyn_array_free(manp->extra);
 	manp->extra = NULL;
     }
+    /*
+     * shell script filenames dynamic array
+     */
+    if (manp->shell != NULL) {
+        dyn_array_free(manp->shell);
+        manp->shell = NULL;
+    }
 
     /*
      * zeroize the manifest structure
@@ -1360,15 +1367,28 @@ object2author(struct json *node, unsigned int depth, struct json_sem *sem,
  *
  *	extra_file
  *
- * provided that those extra filenames do NOT match one of the above
- * mentioned mandatory files (case-insensitive) AND that the extra filename is
- * POSIX portable safe and + chars.
+ * and 0 or more shell files:
  *
- * This function records the number of mandatory files found in the
- * IOCCC manifest. It will flag as an error, it a mandatory file is
- * missing or if more than one mandatory file is found.  It will flag
- * as an error, if an extra_file has an invalid filename or duplicates
- * a mandatory file or is a duplicate of another extra_file.
+ *      shell_script
+ *
+ * provided that those filenames do NOT match one of the above
+ * mentioned mandatory files (case-insensitive) AND that the filename is
+ * POSIX portable safe and + chars AND does not match another file (e.g. a
+ * shell_script filename must NOT match an extra_file).
+ *
+ * It optionally may also have:
+ *
+ *      try_sh
+ *      try_alt_sh
+ *      c_alt_src
+ *
+ * provided that the values are correct ("try.sh", "try.alt.sh", "prog.alt.c").
+ *
+ * This function records the number of mandatory files found in the IOCCC
+ * manifest. It will flag as an error, it a mandatory file is missing or if more
+ * than one mandatory file is found.  It will flag as an error, if an extra_file
+ * or shell_script has an invalid filename or duplicates a mandatory file or is
+ * a duplicate of another extra_file or a shell_script.
  *
  * given:
  *	node		JSON parse node being checked
@@ -1394,6 +1414,8 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     struct manifest man;		/* IOCCC manifest to fill out and test */
     char *extra_filename = NULL;	/* filename of an extra file */
     char *extra_filename2 = NULL;	/* second filename of an extra file */
+    char *shell_filename = NULL;	/* filename of an shell_file */
+    char *shell_filename2 = NULL;	/* second filename of a shell_file */
     intmax_t i;
     intmax_t j;
 
@@ -1455,6 +1477,21 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
     }
 
     /*
+     * now shell script list
+     */
+    man.shell = dyn_array_create(sizeof(char *), JSON_CHUNK, JSON_CHUNK, false);
+    if (man.shell == NULL) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(123, node, depth, sem, __func__,
+				    "dyn_array_create failed to create man.shell");
+
+	}
+	dyn_array_free(man.extra);
+	return false;
+    }
+
+
+    /*
      * examine each JTYPE_OBJECT for the manifest JTYPE_ARRAY
      */
     for (i=0; i < array_len; ++i) {
@@ -1471,15 +1508,17 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	if (test == false) {
 	    /* sem_node_valid() will have set *val_err */
 	    dyn_array_free(man.extra);
+	    dyn_array_free(man.shell);
 	    return false;
 	}
 	if (e->type != JTYPE_OBJECT) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(123, e, depth+1, sem, __func__,
+		*val_err = werr_sem_val(124, e, depth+1, sem, __func__,
 					"manifest JTYPE_ARRAY[%jd] type %s != JTYPE_OBJECT",
 					i, json_type_name(e->type));
 	    }
 	    dyn_array_free(man.extra);
+	    dyn_array_free(man.shell);
 	    return false;
 	}
 	o = &(e->item.object);
@@ -1492,11 +1531,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	 */
 	if (o->len != 1) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(124, e, depth+1, sem, __func__,
+		*val_err = werr_sem_val(125, e, depth+1, sem, __func__,
 					"manifest JTYPE_ARRAY[%jd] JTYPE_OBJECT len: %ju != 1",
 					i, o->len);
 	    }
 	    dyn_array_free(man.extra);
+	    dyn_array_free(man.shell);
 	    return false;
 	}
 
@@ -1508,15 +1548,17 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	if (test == false) {
 	    /* sem_node_valid() will have set *val_err */
 	    dyn_array_free(man.extra);
+	    dyn_array_free(man.shell);
 	    return false;
 	}
 	if (jo->type != JTYPE_MEMBER) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(125, jo, depth+1, sem, __func__,
+		*val_err = werr_sem_val(126, jo, depth+1, sem, __func__,
 					"manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT type %s != JTYPE_MEMBER",
 					i, json_type_name(jo->type));
 	    }
 	    dyn_array_free(man.extra);
+	    dyn_array_free(man.shell);
 	    return false;
 	}
 
@@ -1527,12 +1569,14 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	if (arr_name == NULL) {
 	    /* sem_member_name_decoded_str() will have set *val_err */
 	    dyn_array_free(man.extra);
+	    dyn_array_free(man.shell);
 	    return false;
 	}
 	value = sem_member_value_decoded_str(jo, depth+2, sem, __func__, val_err);
 	if (value == NULL) {
 	    /* sem_member_value_decoded_str() will have set *val_err */
 	    dyn_array_free(man.extra);
+	    dyn_array_free(man.shell);
 	    return false;
 	}
 
@@ -1546,11 +1590,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_info_JSON(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(126, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(128, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "info_JSON filename is invalid", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1560,11 +1605,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we are allowed only 1 of these mandatory manifest filenames */
 	    if (man.count_info_JSON != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(128, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(129, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "found more than one info_JSON filename", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1575,11 +1621,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_auth_JSON(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(129, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(130, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "auth_JSON filename is invalid", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1589,11 +1636,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we are allowed only 1 of these mandatory manifest filenames */
 	    if (man.count_auth_JSON != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(130, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(131, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "found more than one auth_JSON filename", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1604,11 +1652,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_c_src(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(131, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(132, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "c_src filename is invalid", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1618,11 +1667,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we are allowed only 1 of these mandatory manifest filenames */
 	    if (man.count_c_src != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(132, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(133, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "found more than one c_src filename", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1633,11 +1683,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_Makefile(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(133, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(134, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "Makefile filename is invalid", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1647,11 +1698,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we are allowed only 1 of these mandatory manifest filenames */
 	    if (man.count_Makefile != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(134, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(135, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "found more than one Makefile filename", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1662,11 +1714,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_remarks(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(135, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(136, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "remarks filename is invalid", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1676,11 +1729,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we are allowed only 1 of these mandatory manifest filenames */
 	    if (man.count_remarks != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(136, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(137, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "found more than one remarks filename", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1691,11 +1745,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_c_alt_src(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(137, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(138, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "c_alt_src filename is invalid", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1705,11 +1760,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we are allowed only 1 of these optional manifest filenames */
 	    if (man.count_c_alt_src != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(138, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(139, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "found more than one c_alt_src filename", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1720,11 +1776,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_try_sh(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(139, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(140, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "try_sh filename is invalid", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1734,11 +1791,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we are allowed only 1 of these optional manifest filenames */
 	    if (man.count_try_sh != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(140, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(141, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "found more than one try_sh filename", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1749,11 +1807,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_try_alt_sh(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(141, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(142, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "try_alt_sh filename is invalid", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1763,11 +1822,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    /* we are allowed only 1 of these optional manifest filenames */
 	    if (man.count_try_alt_sh != 1) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(142, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(143, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "found more than one try_alt_sh filename", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1778,14 +1838,17 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_shell_script(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(143, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(144, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "shell_script filename is invalid", i);
 		}
 		dyn_array_free(man.extra);
+	        dyn_array_free(man.shell);
 		return false;
 	    }
 
+	    /* append pointer to extra_file filename to dynamic array */
+	    (void) dyn_array_append_value(man.shell, &value);
 	    /* count valid occurrence */
 	    ++man.count_shell_script;
 
@@ -1798,15 +1861,16 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    test = test_extra_filename(value);
 	    if (test == false) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(144, jo, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(145, jo, depth+2, sem, __func__,
 					    "manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT JTYPE_MEMBER "
 					    "extra_file #%jd filename is invalid", i, man.count_extra_file);
 		}
 		dyn_array_free(man.extra);
+		dyn_array_free(man.shell);
 		return false;
 	    }
 
-	    /* append pointer to extra_file filename to dynamic array */
+	    /* append pointer to shell_file filename to dynamic array */
 	    (void) dyn_array_append_value(man.extra, &value);
 
 	    /* count valid occurrence */
@@ -1817,11 +1881,12 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	 */
 	} else {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(145, jo, depth+2, sem, __func__,
+		*val_err = werr_sem_val(146, jo, depth+2, sem, __func__,
 					"manifest JTYPE_ARRAY[%jd] 0th JTYPE_OBJECT "
 					"has invalid JTYPE_MEMBER name: <%s>", i, arr_name);
 	    }
 	    dyn_array_free(man.extra);
+	    dyn_array_free(man.shell);
 	    return false;
 	}
     }
@@ -1831,47 +1896,52 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
      */
     if (man.count_info_JSON != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(146, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(147, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid info_JSON, found: %jd",
 				    man.count_info_JSON);
 	}
 	dyn_array_free(man.extra);
+	dyn_array_free(man.shell);
         return false;
     }
     if (man.count_auth_JSON != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(147, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(148, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid auth_JSON, found: %jd",
 				    man.count_auth_JSON);
 	}
 	dyn_array_free(man.extra);
+	dyn_array_free(man.shell);
         return false;
     }
     if (man.count_c_src != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(148, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(149, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid c_src, found: %jd",
 				    man.count_c_src);
 	}
 	dyn_array_free(man.extra);
+	dyn_array_free(man.shell);
         return false;
     }
     if (man.count_Makefile != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(149, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(150, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid Makefile, found: %jd",
 				    man.count_Makefile);
 	}
 	dyn_array_free(man.extra);
+	dyn_array_free(man.shell);
         return false;
     }
     if (man.count_remarks != 1) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(150, node, depth+2, sem, __func__,
+	    *val_err = werr_sem_val(151, node, depth+2, sem, __func__,
 				    "manifest: expected 1 valid remarks, found: %jd",
 				    man.count_remarks);
 	}
 	dyn_array_free(man.extra);
+	dyn_array_free(man.shell);
         return false;
     }
 
@@ -1881,18 +1951,51 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
      */
     if (man.count_extra_file < 0 || man.count_extra_file > MAX_EXTRA_FILE_COUNT) {
 	if (val_err != NULL) {
-	    *val_err = werr_sem_val(151, node, depth+2, sem, __func__,
-				    "manifest: man.count_extra_file: %jd just be >=0 and < %d",
+	    *val_err = werr_sem_val(152, node, depth+2, sem, __func__,
+				    "manifest: man.count_extra_file: %jd must be >=0 and < %d",
 				    man.count_extra_file, MAX_EXTRA_FILE_COUNT);
 	}
 	dyn_array_free(man.extra);
+	dyn_array_free(man.shell);
+        return false;
+    }
+
+    /*
+     * verify that we do not have too many shell filenames or a bogus < 0 shell
+     * filenames
+     */
+    if (man.count_shell_script < 0 || man.count_shell_script > MAX_EXTRA_FILE_COUNT) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(153, node, depth+2, sem, __func__,
+				    "manifest: man.count_shell_script: %jd must be >=0 and < %d",
+				    man.count_shell_script, MAX_EXTRA_FILE_COUNT);
+	}
+	dyn_array_free(man.extra);
+	dyn_array_free(man.shell);
+        return false;
+    }
+
+    /*
+     * verify that the total number of shell scripts and extra files is not >
+     * the MAX_EXTRA_FILE_COUNT
+     */
+    if (man.count_shell_script + man.count_shell_script > MAX_EXTRA_FILE_COUNT) {
+	if (val_err != NULL) {
+	    *val_err = werr_sem_val(154, node, depth+2, sem, __func__,
+                "manifest: man.count_extra_file %jd + man.count_shell_script %jd: %jd must be >=0 and < %d",
+                man.count_extra_file, man.count_shell_script, man.count_extra_file+man.count_shell_script,
+                MAX_EXTRA_FILE_COUNT);
+	}
+	dyn_array_free(man.extra);
+	dyn_array_free(man.shell);
         return false;
     }
 
     /*
      * check for duplicates among valid extra filenames
      *
-     * The author_count will be a small number, so we can get away with a lazy O(n^2) match.
+     * The count_extra_file will be a small number, so we can get away with a
+     * lazy O(n^2) match.
      */
     for (i=1; i < man.count_extra_file; ++i) {
 
@@ -1900,10 +2003,11 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	extra_filename = dyn_array_value(man.extra, char *, i);
 	if (extra_filename == NULL) {
 	    if (val_err != NULL) {
-		*val_err = werr_sem_val(152, node, depth+2, sem, __func__,
+		*val_err = werr_sem_val(155, node, depth+2, sem, __func__,
 					"manifest extra[i = %jd] is NULL", i);
 	    }
 	    dyn_array_free(man.extra);
+	    dyn_array_free(man.shell);
 	    return false;
 	}
 
@@ -1916,10 +2020,11 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	    extra_filename2 = dyn_array_value(man.extra, char *, j);
 	    if (extra_filename2 == NULL) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(153, node, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(156, node, depth+2, sem, __func__,
 					    "manifest extra[j = %jd] is NULL", j);
 		}
 		dyn_array_free(man.extra);
+		dyn_array_free(man.shell);
 		return false;
 	    }
 
@@ -1928,15 +2033,124 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
 	     */
 	    if (strcmp(extra_filename, extra_filename2) == 0) {
 		if (val_err != NULL) {
-		    *val_err = werr_sem_val(154, node, depth+2, sem, __func__,
+		    *val_err = werr_sem_val(157, node, depth+2, sem, __func__,
 					    "manifest extra[%jd] filename: matches manifest extra[%jd] filename",
 					    i, j);
 		}
 		dyn_array_free(man.extra);
+		dyn_array_free(man.shell);
 		return false;
 	    }
 	}
     }
+
+    /*
+     * check for duplicates among valid shell filenames
+     *
+     * The count_shell_script will be a small number, so we can get away with a
+     * lazy O(n^2) match.
+     */
+    for (i=1; i < man.count_shell_script; ++i) {
+
+	/* obtain first shell_script filename to compare against */
+	shell_filename = dyn_array_value(man.shell, char *, i);
+	if (shell_filename == NULL) {
+	    if (val_err != NULL) {
+		*val_err = werr_sem_val(158, node, depth+2, sem, __func__,
+					"manifest shell[i = %jd] is NULL", i);
+	    }
+	    dyn_array_free(man.extra);
+	    dyn_array_free(man.shell);
+	    return false;
+	}
+
+	/*
+	 * compare first shell_script filename with the remaining shell_script filenames
+	 */
+	for (j=0; j < i; ++j) {
+
+	    /* obtain second shell_script filename */
+	    shell_filename2 = dyn_array_value(man.shell, char *, j);
+	    if (shell_filename2 == NULL) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(159, node, depth+2, sem, __func__,
+					    "manifest shell[j = %jd] is NULL", j);
+		}
+		dyn_array_free(man.extra);
+		dyn_array_free(man.shell);
+		return false;
+	    }
+
+	    /*
+	     * compare first and second shell_script filenames
+	     */
+	    if (strcmp(shell_filename, shell_filename2) == 0) {
+		if (val_err != NULL) {
+		    *val_err = werr_sem_val(160, node, depth+2, sem, __func__,
+					    "manifest shell[%jd] filename: matches manifest shell[%jd] filename",
+					    i, j);
+		}
+		dyn_array_free(man.extra);
+		dyn_array_free(man.shell);
+		return false;
+	    }
+	}
+    }
+
+    /*
+     * check for any shell_script that is the same path as an extra_file if
+     * both are > 0 in size.
+     */
+    if (man.count_extra_file > 0 && man.count_shell_script > 0) {
+        for (i=1; i < man.count_extra_file; ++i) {
+            /* obtain extra filename to compare against */
+            extra_filename = dyn_array_value(man.extra, char *, i);
+            if (extra_filename == NULL) {
+                if (val_err != NULL) {
+                    *val_err = werr_sem_val(161, node, depth+2, sem, __func__,
+                                            "manifest extra[i = %jd] is NULL", i);
+                }
+                dyn_array_free(man.extra);
+                dyn_array_free(man.shell);
+                return false;
+            }
+
+            /*
+             * compare extra filename with the shell_script filenames
+             */
+            for (j=0; j < man.count_shell_script; ++j) {
+
+                /* obtain second extra filename */
+                shell_filename = dyn_array_value(man.shell, char *, j);
+                if (shell_filename == NULL) {
+                    if (val_err != NULL) {
+                        *val_err = werr_sem_val(162, node, depth+2, sem, __func__,
+                                                "manifest shell[j = %jd] is NULL", j);
+                    }
+                    dyn_array_free(man.extra);
+                    dyn_array_free(man.shell);
+                    return false;
+                }
+
+                /*
+                 * compare first and second extra filenames
+                 */
+                if (strcmp(extra_filename, shell_filename) == 0) {
+                    if (val_err != NULL) {
+                        *val_err = werr_sem_val(163, node, depth+2, sem, __func__,
+                                                "manifest extra[%jd] filename: matches manifest shell[%jd] filename",
+                                                i, j);
+                    }
+                    dyn_array_free(man.extra);
+                    dyn_array_free(man.shell);
+                    return false;
+                }
+            }
+        }
+    }
+
+
+
 
     /*
      * load manifest array
@@ -2085,24 +2299,24 @@ test_version(char const *str, char const *min)
     char *ver2 = NULL;
 
     if (str == NULL || *str == '\0') {
-        err(155, __func__, "str is NULL or empty string");
+        err(164, __func__, "str is NULL or empty string");
         not_reached();
     }
     if (min == NULL || *min == '\0') {
-        err(156, __func__, "min is NULL or empty mining");
+        err(165, __func__, "min is NULL or empty string");
         not_reached();
     }
 
     errno = 0; /* pre-clear errno for errp() */
     dup1 = strdup(str);
     if (dup1 == NULL) {
-        err(157, __func__, "strdup(str) returned NULL");
+        err(166, __func__, "strdup(str) returned NULL");
         not_reached();
     }
     errno = 0; /* pre-clear errno for errp() */
     dup2 = strdup(min);
     if (dup2 == NULL) {
-        err(158, __func__, "strdup(min) returned NULL");
+        err(167, __func__, "strdup(min) returned NULL");
         not_reached();
     }
 
@@ -2139,11 +2353,11 @@ test_poison(char const *str, char const **poisons)
     size_t i;
 
     if (str == NULL || *str == '\0') {
-        err(159, __func__, "str is NULL or empty string");
+        err(168, __func__, "str is NULL or empty string");
         not_reached();
     }
     if (poisons == NULL) {
-        err(160, __func__, "poisons list is NULL");
+        err(169, __func__, "poisons list is NULL");
         not_reached();
     }
 
@@ -3109,6 +3323,7 @@ bool
 test_extra_filename(char const *str)
 {
     enum path_sanity sanity = PATH_OK;  /* canon_path path_sanity error, or PATH_OK */
+    size_t len = 0;                     /* length of str */
 
     /*
      * firewall
@@ -3118,6 +3333,10 @@ test_extra_filename(char const *str)
 	return false;
     }
 
+    /*
+     * get length
+     */
+    len = strlen(str);
     /*
      * validate str
      */
@@ -3143,6 +3362,12 @@ test_extra_filename(char const *str)
         json_dbg(JSON_DBG_HIGH, __func__,
                  "invalid: extra_file matches a mandatory file: <%s>", str);
         return false;
+    } else if (len > LITLEN(".sh") && strcmp(str + len - LITLEN(".sh"), ".sh") == 0) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: extra_file filename ends in .sh");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: extra_file filename: <%s> ends in .sh", str);
+	return false;
     }
 
     json_dbg(JSON_DBG_MED, __func__, "extra_file is valid");
@@ -3823,14 +4048,14 @@ test_manifest(struct manifest *manp, char *submission_dir)
     if (i_p == NULL) {
 
 	/* report failure to find the pathname */
-	json_dbg(JSON_DBG_MED, __func__, "path_in_walk_stat did not found: %s", pathname);
+	json_dbg(JSON_DBG_MED, __func__, "path_in_walk_stat did not find: %s", pathname);
 	free_walk_stat(&wstat);
 	return false;
 
     } else {
 
 	/*
-	 * must me a file with mode 0444
+	 * must be a file with mode 0444
 	 */
 	if (ITEM_IS_NOT_FILE(i_p->st_mode)) {
 	    json_dbg(JSON_DBG_MED, __func__, "not a file: %s", pathname);
@@ -3859,7 +4084,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
     } else {
 
 	/*
-	 * must me a file with mode 0444
+	 * must be a file with mode 0444
 	 */
 	if (ITEM_IS_NOT_FILE(i_p->st_mode)) {
 	    json_dbg(JSON_DBG_MED, __func__, "not a file: %s", pathname);
@@ -3888,7 +4113,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
     } else {
 
 	/*
-	 * must me a file with mode 0444
+	 * must be a file with mode 0444
 	 */
 	if (ITEM_IS_NOT_FILE(i_p->st_mode)) {
 	    json_dbg(JSON_DBG_MED, __func__, "not a file: %s", pathname);
@@ -3910,14 +4135,14 @@ test_manifest(struct manifest *manp, char *submission_dir)
     if (i_p == NULL) {
 
 	/* report failure to find the pathname */
-	json_dbg(JSON_DBG_MED, __func__, "path_in_walk_stat did not found: %s", pathname);
+	json_dbg(JSON_DBG_MED, __func__, "path_in_walk_stat not found: %s", pathname);
 	free_walk_stat(&wstat);
 	return false;
 
     } else {
 
 	/*
-	 * must me a file with mode 0444
+	 * must be a file with mode 0444
 	 */
 	if (ITEM_IS_NOT_FILE(i_p->st_mode)) {
 	    json_dbg(JSON_DBG_MED, __func__, "not a file: %s", pathname);
@@ -3946,7 +4171,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
     } else {
 
 	/*
-	 * must me a file with mode 0444
+	 * must be a file with mode 0444
 	 */
 	if (ITEM_IS_NOT_FILE(i_p->st_mode)) {
 	    json_dbg(JSON_DBG_MED, __func__, "not a file: %s", pathname);
@@ -3996,7 +4221,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
 	} else {
 
 	    /*
-	     * must me a file with mode 0444
+	     * must be a file with mode 0444
 	     */
 	    if (ITEM_IS_NOT_FILE(i_p->st_mode)) {
 		json_dbg(JSON_DBG_MED, __func__, "not a file: %s", pathname);
@@ -4475,6 +4700,18 @@ test_shell_script(char const *str)
 		 "invalid: shell_script filename does not end in .sh");
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: shell_script filename: <%s> does not end in .sh", str);
+	return false;
+    } else if (!strcmp(str, TRY_SH)) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: shell_script filename is try.sh");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: shell_script filename: <%s> is try.sh", str);
+	return false;
+    } else if (!strcmp(str, TRY_ALT_SH)) {
+	json_dbg(JSON_DBG_MED, __func__,
+		 "invalid: shell_script filename is try.alt.sh");
+	json_dbg(JSON_DBG_HIGH, __func__,
+		 "invalid: shell_script filename: <%s> is try.alt.sh", str);
 	return false;
     }
 
@@ -5409,7 +5646,7 @@ count_char(char const *str, int ch)
      * firewall
      */
     if (str == NULL) {
-	err(161, __func__, "given NULL str");
+	err(170, __func__, "given NULL str");
 	not_reached();
     }
 
