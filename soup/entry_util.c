@@ -4470,15 +4470,7 @@ test_shell_script(char const *str)
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: empty shell_script filename is invalid");
 	return false;
-    } else if (strcmp(str, TRY_SH) != 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: shell_script filename: <%s> invalid member name: shell_script != try_sh", str);
-	return false;
-    } else if (strcmp(str, TRY_ALT_SH) != 0) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: shell_script filename: <%s> invalid member name: shell_script != try_alt_sh", str);
-	return false;
-    } else if (len >= LITLEN(".sh") && strcmp(str + len - LITLEN(".sh"), ".sh") != 0) {
+    } else if (len < LITLEN(".sh") || strcmp(str + len - LITLEN(".sh"), ".sh") != 0) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: shell_script filename does not end in .sh");
 	json_dbg(JSON_DBG_HIGH, __func__,

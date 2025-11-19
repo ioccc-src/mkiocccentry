@@ -1,6 +1,27 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.10.1 2025-11-19
+
+Fix critical bug in `test_shell_script()` where a filename that ends with `.sh`
+was declared an invalid shellscript file name. The mkiocccentry did not have the
+same problem because of how it's constructed (in particular chkentry(1) uses the
+function described above as it is processing the manifest but the logic was
+broken). There has to be only two `if`: one to check for 0 length (this could
+actually be done in the second if, making it only one, but the error message is
+different - and I have tested an empty shellscript filename too when doing this
+fix) and one to verify that it ends in `.sh`. This function
+`test_shell_script()` could actually just call `is_executable_filename()` but
+the `test_shell_script()` has specific error messages depending on JSON debug
+level, meant for `chkentry(1)` and `chksubmit(1)`, though the former is meant
+only for the judges and the developers (i.e. Landon and me, meaning that Landon
+should be using it twice :-) ).
+
+Updated `SOUP_VERSION` to `"2.3.1 2025-11-19"`.
+Updated `CHKENTRY_VERSION` to `"2.2.1 2025-11-19"`.
+Updated `CHKSUBMIT_VERSION` to `"2.0.1 2025-11-19"`.
+
+
 ## Release 2.10.0 2025-11-18
 
 Release IOCCC29-beta of the mkiocccentry tooolkit.
