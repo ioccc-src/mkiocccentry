@@ -1154,7 +1154,7 @@ elif [[ $V_FLAG -ge 3 ]]; then
 fi
 
 
-# test alphanumeric safely check
+# test alphanumeric safety check
 #
 export P_STR
 export P_OUT
@@ -1212,7 +1212,7 @@ elif [[ $V_FLAG -ge 3 ]]; then
 fi
 
 
-# test alphanumeric safely check and lower case
+# test alphanumeric safety check and lower case
 #
 export P_STR
 export P_OUT
@@ -1270,7 +1270,7 @@ elif [[ $V_FLAG -ge 3 ]]; then
 fi
 
 
-# test alphanumeric safely check failure
+# test alphanumeric safety check failure
 #
 export P_STR
 export P_OUT

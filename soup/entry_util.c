@@ -3349,9 +3349,9 @@ test_extra_filename(char const *str)
 		      &sanity, NULL, NULL, true, false, true, true, NULL);
     if (sanity != PATH_OK) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: canon_path safely check on extra_file failed");
+		 "invalid: canon_path safety check on extra_file failed");
 	json_dbg(JSON_DBG_HIGH, __func__,
-		 "invalid: canon_path safely check on extra_file failed: <%s>", str);
+		 "invalid: canon_path safety check on extra_file failed: <%s>", str);
 	return false;
     }
 
