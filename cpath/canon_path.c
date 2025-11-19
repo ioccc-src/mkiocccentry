@@ -167,7 +167,6 @@ private_strlcat(char *dst, const char *src, size_t dsize)
 	src++;
     }
     *dst = '\0';
-
     return(dlen + (src - osrc));	/* count does not include NUL */
 }
 
@@ -229,7 +228,6 @@ path_sanity_name(enum path_sanity sanity)
             str = "unknown_sanity_valud";
             break;
     }
-
     return str;
 }
 
@@ -291,7 +289,6 @@ path_sanity_error(enum path_sanity sanity)
             str = "invalid path_sanity value";
             break;
     }
-
     return str;
 }
 
