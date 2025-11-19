@@ -8,6 +8,17 @@ Release IOCCC29-beta of the mkiocccentry tooolkit.
 Elevate all versions, except for JSON format versions,
 and the `iocccsize(1)` version to at least "_2.x.0_".
 
+Do not install under the `pr/`, **NOR** the `cpath/` subdirs.
+
+Establish make variable `${SH_INSTALL}` and `${PROG_INSTALL}`
+for values that are installed.
+
+Improve `make uninstall` to just uninstall items once.
+
+No longer install `test_file_util`, **NOR** `try_walk_set`, **NOR**
+`try_fts_walk`, **NOR** `reset_tstamp.sh`, **NOR** `all_sem_ref.sh`.
+However `make uninstall` will uninstall them.
+
 Changed `MKIOCCCENTRY_REPO_VERSION` to "2.10.0 2025-11-18".
 Changed `SOUP_VERSION` to "2.3.0 2025-11-18".
 Changed `IOCCCSIZE_VERSION` to "29.1.0 2025-11-18".

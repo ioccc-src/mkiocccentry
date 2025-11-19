@@ -368,9 +368,17 @@ ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 #
 SH_TARGETS=
 
+# shell targets installed by make install
+#
+SH_INSTALL=
+
 # program targets to make by all, installed by install, and removed by clobber
 #
 PROG_TARGETS= mkiocccentry iocccsize txzchk chkentry chksubmit
+
+# program targets installed by make install
+#
+PROG_INSTALL= mkiocccentry iocccsize txzchk chkentry chksubmit
 
 # directories sometimes built under macOS and removed by clobber
 #
@@ -1987,23 +1995,18 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
-# NOTE: We do NOT install dbg nor do we install dyn_array, nor jparse.
+# NOTE: We do NOT install dbg nor, dyn_array, nor pr, nor cpath, nor jparse.
 #       This repo do not use installed dbg, nor dyn_array, nor jparse code.
 #
-install: all dbg/Makefile dyn_array/Makefile jparse/Makefile \
-        soup/Makefile test_ioccc/Makefile pr/Makefile cpath/Makefile
+install: all soup/Makefile test_ioccc/Makefile
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
-	${E} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" \
-					LD_DIR="${LD_DIR}"
-	${E} ${MAKE} ${MAKE_CD_Q} -C cpath $@ C_SPECIAL="${C_SPECIAL}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" \
-					LD_DIR="${LD_DIR}"
 	${V} echo
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
-	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
+	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_INSTALL} ${PROG_INSTALL} ${DEST_DIR}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -2012,55 +2015,27 @@ install: all dbg/Makefile dyn_array/Makefile jparse/Makefile \
 # This is a quick way to uninstall all files installed by this repo.
 # No directories are removed by this rule, however.
 #
+# NOTE: We do NOT install dbg nor, dyn_array, nor pr, nor cpath, nor jparse.
+#       This repo do not use installed dbg, nor dyn_array, nor pr, nor cpath, nor jparse code.
+#
 uninstall:
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C test_ioccc $@ C_SPECIAL="${C_SPECIAL}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
-	${RM} -f ${RM_V} ${DEST_DIR}/all_sem_ref.sh
-	${RM} -f ${RM_V} ${DEST_DIR}/chkentry
-	${RM} -f ${RM_V} ${DEST_DIR}/cpath
-	${RM} -f ${RM_V} ${DEST_DIR}/fnamchk
-	${RM} -f ${RM_V} ${DEST_DIR}/hostchk.sh
-	${RM} -f ${RM_V} ${DEST_DIR}/iocccsize
-	${RM} -f ${RM_V} ${DEST_DIR}/location
-	${RM} -f ${RM_V} ${DEST_DIR}/mkiocccentry
-	${RM} -f ${RM_V} ${DEST_DIR}/try_walk_set
-	${RM} -f ${RM_V} ${DEST_DIR}/prep.sh
-	${RM} -f ${RM_V} ${DEST_DIR}/reset_tstamp.sh
-	${RM} -f ${RM_V} ${DEST_DIR}/run_usage.sh
-	${RM} -f ${RM_V} ${DEST_DIR}/txzchk
-	${RM} -f ${RM_V} ${DEST_DIR}/utf8_test
-	${RM} -f ${RM_V} ${DEST_DIR}/vermod.sh
-	${RM} -f ${RM_V} ${DEST_LIB}/soup.a
-	${RM} -f ${RM_V} ${DEST_LIB}/pr.a
-	${RM} -f ${RM_V} ${DEST_LIB}/cpath.a
-	${RM} -f ${RM_V} ${MAN1_DIR}/bug_report.sh.1
-	${RM} -f ${RM_V} ${MAN1_DIR}/chkentry.1
-	${RM} -f ${RM_V} ${MAN1_DIR}/cpath.1
-	${RM} -f ${RM_V} ${MAN1_DIR}/fnamchk.1
-	${RM} -f ${RM_V} ${MAN1_DIR}/iocccsize.1
-	${RM} -f ${RM_V} ${MAN1_DIR}/location.1
-	${RM} -f ${RM_V} ${MAN1_DIR}/mkiocccentry.1
-	${RM} -f ${RM_V} ${MAN1_DIR}/txzchk.1
-	${RM} -f ${RM_V} ${MAN8_DIR}/all_sem_ref.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/chksubmit_test.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/hostchk.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/ioccc_test.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/ioccc_test.sh.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/iocccsize_test.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/mkiocccentry_test.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/prep.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/prep.sh.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/reset_tstamp.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/run_usage.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/try_walk_set.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/txzchk_test.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/utf8_test.8
-	${RM} -f ${RM_V} ${MAN8_DIR}/vermod.8
+	${V} echo
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/chkentry
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/iocccsize
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/mkiocccentry
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/txzchk
 	@if [[ -f /usr/local/lib/jparse.a ]]; then \
 	    echo "Legacy uninstall follows:"; \
 	    echo ${RM} -f ${RM_V} ${DEST_LIB}/jparse.a; \
 	    ${RM} -f ${RM_V} ${DEST_LIB}/jparse.a; \
 	fi
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
 
 ###############
 # make depend #
@@ -2069,6 +2044,7 @@ uninstall:
 depend: ${ALL_CSRC}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" \

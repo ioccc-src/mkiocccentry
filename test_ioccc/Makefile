@@ -350,9 +350,17 @@ ALL_MAN_TARGETS= ${MAN1_TARGETS} ${MAN3_TARGETS} ${MAN8_TARGETS}
 #
 SH_TARGETS=
 
-# program targets to make by all, installed by install, and removed by clobber
+# shell targets installed by make install
+#
+SH_INSTALL=
+
+# program targets to make by make all, and removed by make clobber
 #
 PROG_TARGETS= utf8_test fnamchk test_file_util try_walk_set try_fts_walk
+
+# program targets installed by make install
+#
+PROG_INSTALL= utf8_test fnamchk
 
 # what to make by all but NOT to removed by clobber
 #
@@ -772,7 +780,7 @@ install: all install_man
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
-	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
+	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_INSTALL} ${PROG_INSTALL} ${DEST_DIR}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -780,21 +788,24 @@ uninstall:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${RM} ${RM_V} -f ${DEST_DIR}/utf8_test
 	${E} ${RM} ${RM_V} -f ${DEST_DIR}/fnamchk
-	${E} ${RM} ${RM_V} -f ${DEST_DIR}/prep.sh
 	${E} ${RM} ${RM_V} -f ${DEST_DIR}/hostchk.sh
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/prep.sh
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/test_file_util
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/try_fts_walk
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/try_walk_set
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/utf8_test
 	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/fnamchk.1
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/chkentry_test.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/chksubmit_test.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/hostchk.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/iocccsize_test.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/ioccc_test.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/ioccc_test.sh.8
-	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/iocccsize_test.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/mkiocccentry_test.8
-	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/txzchk_test.8
-	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/hostchk.8
-	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/ioccc_test.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/prep.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/prep.sh.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/txzchk_test.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/utf8_test.8
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"

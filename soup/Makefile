@@ -357,13 +357,21 @@ LIBA_TARGETS= soup.a
 #
 H_SRC_TARGETS=
 
-# shell targets to make by all and removed by clobber
+# shell targets to make by all
 #
 SH_TARGETS= reset_tstamp.sh all_sem_ref.sh
 
-# program targets to make by all, installed by install, and removed by clobber
+# shell targets installed by make install
+#
+SH_INSTALL=
+
+# program targets to make by make all, and removed by make clobber
 #
 PROG_TARGETS= location
+
+# program targets installed by make install
+#
+PROG_INSTALL= location
 
 # what to make by all but NOT to removed by clobber
 #
@@ -973,7 +981,7 @@ install: all install_man
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_LIB}
 	${I} ${INSTALL} ${INSTALL_V} -m 0444 ${LIBA_TARGETS} ${DEST_LIB}
 	${I} ${INSTALL} ${INSTALL_V} -d -m 0775 ${DEST_DIR}
-	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_TARGETS} ${PROG_TARGETS} ${DEST_DIR}
+	${I} ${INSTALL} ${INSTALL_V} -m 0555 ${SH_INSTALL} ${PROG_TARGETS} ${DEST_DIR}
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 
@@ -981,23 +989,23 @@ uninstall:
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
-	${E} ${RM} ${RM_V} -f ${DEST_LIB}/soup.a
-	${E} ${RM} ${RM_V} -f ${DEST_DIR}/vermod.sh
-	${E} ${RM} ${RM_V} -f ${DEST_DIR}/reset_tstamp.sh
 	${E} ${RM} ${RM_V} -f ${DEST_DIR}/all_sem_ref.sh
 	${E} ${RM} ${RM_V} -f ${DEST_DIR}/location
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/reset_tstamp.sh
 	${E} ${RM} ${RM_V} -f ${DEST_DIR}/run_usage.sh
+	${E} ${RM} ${RM_V} -f ${DEST_DIR}/vermod.sh
+	${E} ${RM} ${RM_V} -f ${DEST_LIB}/soup.a
 	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/bug_report.1
 	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/bug_report.sh.1
 	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/chkentry.1
 	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/iocccsize.1
+	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/location.1
 	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/mkiocccentry.1
 	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/txzchk.1
-	${E} ${RM} ${RM_V} -f ${MAN1_DIR}/location.1
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/all_ref.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/all_sem_ref.8
-	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/reset_tstamp.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/chkentry_test.8
+	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/reset_tstamp.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/run_usage.8
 	${E} ${RM} ${RM_V} -f ${MAN8_DIR}/vermod.8
 	${S} echo
