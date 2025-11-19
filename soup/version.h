@@ -84,23 +84,23 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.9.7 2025-11-16"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.10.0 2025-11-18"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "2.2.13 2025-11-15"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define SOUP_VERSION "2.3.0 2025-11-18"		/* format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official iocccsize version
  */
-#define IOCCCSIZE_VERSION "29.0.1 2025-09-29"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define IOCCCSIZE_VERSION "29.1.0 2025-11-18"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_IOCCCSIZE_VERSION IOCCCSIZE_VERSION
 
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "2.1.12 2025-11-15"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "2.2.0 2025-11-18"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_MKIOCCCENTRY_VERSION MKIOCCCENTRY_VERSION
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC29-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
@@ -108,7 +108,7 @@
 /*
  * official location version
  */
-#define LOCATION_VERSION "1.0.6 2025-09-23"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define LOCATION_VERSION "2.0.0 2025-11-18"	/* format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * Version of info for JSON the .info.json file.
@@ -125,25 +125,25 @@
 /*
  * official fnamchk version
  */
-#define FNAMCHK_VERSION "2.1.6 2025-11-14"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define FNAMCHK_VERSION "2.2.0 2025-11-18"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_FNAMCHK_VERSION FNAMCHK_VERSION
 
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "2.0.13 2025-11-14"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define TXZCHK_VERSION "2.1.0 2025-11-18"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_TXZCHK_VERSION TXZCHK_VERSION
 
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "2.1.12 2025-11-16"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define CHKENTRY_VERSION "2.2.0 2025-11-18"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_CHKENTRY_VERSION CHKENTRY_VERSION
 
 /*
  * official chksubmit version
  */
-#define CHKSUBMIT_VERSION "1.0.2 2025-11-14"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define CHKSUBMIT_VERSION "2.0.0 2025-11-18"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_CHKSUBMIT_VERSION CHKSUBMIT_VERSION
 
 /*
@@ -161,17 +161,17 @@
 /*
  * test_file_util - test common utility functions for file operations
  */
-#define FILE_UTIL_TEST_VERSION "2.1.2 2025-10-20" /* version format: major.minor[.patch] YYYY-MM-DD */
+#define FILE_UTIL_TEST_VERSION "2.2.0 2025-11-18" /* version format: major.minor[.patch] YYYY-MM-DD */
 
  /*
   * try_fts_walk - walk a directory tree using one of the static walk_rule sets
   */
-#define TRY_FTS_WALK_VERSION "1.0.4 2025-11-02"	/* version format: major.minor[.patch] YYYY-MM-DD */
+#define TRY_FTS_WALK_VERSION "2.0.0 2025-11-18"	/* version format: major.minor[.patch] YYYY-MM-DD */
 
  /*
   * try_walk_set - try using one of the static walk_rule sets
   */
-#define TRY_WALK_SET_VERSION "1.0.3 2025-11-02"	/* version format: major.minor[.patch] YYYY-MM-DD */
+#define TRY_WALK_SET_VERSION "2.0.0 2025-11-18"	/* version format: major.minor[.patch] YYYY-MM-DD */
 
 
 /*
