@@ -84,12 +84,12 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.10.1 2025-11-19"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.10.2 2025-11-20"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "2.3.1 2025-11-19"		/* format: major.minor[.patch] YYYY-MM-DD */
+#define SOUP_VERSION "2.3.2 2025-11-20"		/* format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official iocccsize version
@@ -137,13 +137,13 @@
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "2.2.1 2025-11-19"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define CHKENTRY_VERSION "2.2.2 2025-11-20"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_CHKENTRY_VERSION CHKENTRY_VERSION
 
 /*
  * official chksubmit version
  */
-#define CHKSUBMIT_VERSION "2.0.1 2025-11-19"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define CHKSUBMIT_VERSION "2.0.2 2025-11-20"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_CHKSUBMIT_VERSION CHKSUBMIT_VERSION
 
 /*
@@ -211,24 +211,11 @@
 
 
 /*
- * JSON parser versions
+ * jparse versions
  *
- * Because the JSON parser is a self contained system, we cannot define
- * JSON_PARSER_VERSION here. See jparse/jparse.h for the JSON_PARSER_VERSION
- * value.
- *
- * Because the JSON parser is a self contained system, we cannot define
- * JPARSE_VERSION here. See jparse/jparse_main.h for the JPARSE_VERSION value.
+ * Because the JSON parser jparse is a self contained system, we cannot define
+ * its versions here. See jparse/version.h and the respective header files for
+ * each tool under jparse/ as well.
  */
-
-
-/*
- * Generate JSON semantics table version
- *
- * Because the JSON parser is a self contained system, we cannot define
- * JSEMTBLGEN_VERSION here. See jparse/jsemtblgen.h for the JSEMTBLGEN_VERSION
- * value.
- */
-
 
 #endif /* INCLUDE_VERSION_H */

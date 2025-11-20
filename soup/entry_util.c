@@ -2149,9 +2149,6 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
         }
     }
 
-
-
-
     /*
      * load manifest array
      */
@@ -3980,8 +3977,11 @@ bool
 test_manifest(struct manifest *manp, char *submission_dir)
 {
     intmax_t count_extra_file = -1;	/* number of extra files */
+    intmax_t count_shell_script = -1;	/* number of shell scripts */
     char *extra_filename = NULL;	/* filename of an extra file */
     char *extra_filename2 = NULL;	/* second filename of an extra file */
+    char *shell_filename = NULL;	/* filename of a shell scrip */
+    char *shell_filename2 = NULL;	/* second filename of a second shell script */
     char *pathname = NULL;              /* path name we're currently testing */
     struct walk_stat wstat;		/* walk_stat being processed */
     struct walk_set *wset_p = NULL;	/* pointer to a walk set */
@@ -4011,6 +4011,15 @@ test_manifest(struct manifest *manp, char *submission_dir)
 		       manp->count_extra_file, dyn_array_tell(manp->extra));
 	return false;
     }
+    if (manp->count_shell_script < 0) {
+	warn(__func__, "manp->count_shell_script: %jd < 0", manp->count_shell_script);
+	return false;
+    }
+    if (manp->count_shell_script != dyn_array_tell(manp->shell)) {
+	warn(__func__, "manp->count_shell_script: %jd != dyn_array_tell(manp->shell): %jd",
+		       manp->count_shell_script, dyn_array_tell(manp->shell));
+	return false;
+    }
     if (submission_dir == NULL) {
         warn(__func__, "submission_dir is NULL");
         return false;
@@ -4037,8 +4046,14 @@ test_manifest(struct manifest *manp, char *submission_dir)
 
     /*
      * all the other options are okay at their default value for the first tests
+     *
+     * get extra file count
      */
     count_extra_file = manp->count_extra_file;
+    /*
+     * also get shell script count
+     */
+    count_shell_script = manp->count_shell_script;
 
     /*
      * verify .info.json
@@ -4048,7 +4063,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
     if (i_p == NULL) {
 
 	/* report failure to find the pathname */
-	json_dbg(JSON_DBG_MED, __func__, "path_in_walk_stat did not find: %s", pathname);
+	warn(__func__, "path_in_walk_stat did not find: %s", pathname);
 	free_walk_stat(&wstat);
 	return false;
 
@@ -4058,11 +4073,11 @@ test_manifest(struct manifest *manp, char *submission_dir)
 	 * must be a file with mode 0444
 	 */
 	if (ITEM_IS_NOT_FILE(i_p->st_mode)) {
-	    json_dbg(JSON_DBG_MED, __func__, "not a file: %s", pathname);
+	    warn(__func__, "not a file: %s", pathname);
 	    free_walk_stat(&wstat);
 	    return false;
 	} else if (ITEM_PERM(i_p->st_mode) != ITEM_PERM_0444) {
-	    json_dbg(JSON_DBG_MED, __func__, "permission: %04o != %04o file: %s",
+	    warn(__func__, "permission: %04o != %04o file: %s",
 				   i_p->st_mode, ITEM_PERM_0444, pathname);
 	    free_walk_stat(&wstat);
 	    return false;
@@ -4077,7 +4092,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
     if (i_p == NULL) {
 
 	/* report failure to find the pathname */
-	json_dbg(JSON_DBG_MED, __func__, "path_in_walk_stat did not found: %s", pathname);
+	warn(__func__, "path_in_walk_stat did not find: %s", pathname);
 	free_walk_stat(&wstat);
 	return false;
 
@@ -4087,11 +4102,11 @@ test_manifest(struct manifest *manp, char *submission_dir)
 	 * must be a file with mode 0444
 	 */
 	if (ITEM_IS_NOT_FILE(i_p->st_mode)) {
-	    json_dbg(JSON_DBG_MED, __func__, "not a file: %s", pathname);
+	    warn(__func__, "not a file: %s", pathname);
 	    free_walk_stat(&wstat);
 	    return false;
 	} else if (ITEM_PERM(i_p->st_mode) != ITEM_PERM_0444) {
-	    json_dbg(JSON_DBG_MED, __func__, "permission: %04o != %04o file: %s",
+	    warn(__func__, "permission: %04o != %04o file: %s",
 				   i_p->st_mode, ITEM_PERM_0444, pathname);
 	    free_walk_stat(&wstat);
 	    return false;
@@ -4106,7 +4121,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
     if (i_p == NULL) {
 
 	/* report failure to find the pathname */
-	json_dbg(JSON_DBG_MED, __func__, "path_in_walk_stat did not found: %s", pathname);
+	warn(__func__, "path_in_walk_stat did not find: %s", pathname);
 	free_walk_stat(&wstat);
 	return false;
 
@@ -4116,11 +4131,11 @@ test_manifest(struct manifest *manp, char *submission_dir)
 	 * must be a file with mode 0444
 	 */
 	if (ITEM_IS_NOT_FILE(i_p->st_mode)) {
-	    json_dbg(JSON_DBG_MED, __func__, "not a file: %s", pathname);
+	    warn(__func__, "not a file: %s", pathname);
 	    free_walk_stat(&wstat);
 	    return false;
 	} else if (ITEM_PERM(i_p->st_mode) != ITEM_PERM_0444) {
-	    json_dbg(JSON_DBG_MED, __func__, "permission: %04o != %04o file: %s",
+	    warn(__func__, "permission: %04o != %04o file: %s",
 				   i_p->st_mode, ITEM_PERM_0444, pathname);
 	    free_walk_stat(&wstat);
 	    return false;
@@ -4135,7 +4150,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
     if (i_p == NULL) {
 
 	/* report failure to find the pathname */
-	json_dbg(JSON_DBG_MED, __func__, "path_in_walk_stat not found: %s", pathname);
+	warn(__func__, "path_in_walk_stat not found: %s", pathname);
 	free_walk_stat(&wstat);
 	return false;
 
@@ -4145,11 +4160,11 @@ test_manifest(struct manifest *manp, char *submission_dir)
 	 * must be a file with mode 0444
 	 */
 	if (ITEM_IS_NOT_FILE(i_p->st_mode)) {
-	    json_dbg(JSON_DBG_MED, __func__, "not a file: %s", pathname);
+	    warn(__func__, "not a file: %s", pathname);
 	    free_walk_stat(&wstat);
 	    return false;
 	} else if (ITEM_PERM(i_p->st_mode) != ITEM_PERM_0444) {
-	    json_dbg(JSON_DBG_MED, __func__, "permission: %04o != %04o file: %s",
+	    warn(__func__, "permission: %04o != %04o file: %s",
 				   i_p->st_mode, ITEM_PERM_0444, pathname);
 	    free_walk_stat(&wstat);
 	    return false;
@@ -4164,7 +4179,7 @@ test_manifest(struct manifest *manp, char *submission_dir)
     if (i_p == NULL) {
 
 	/* report failure to find the pathname */
-	json_dbg(JSON_DBG_MED, __func__, "path_in_walk_stat did not found: %s", pathname);
+	warn(__func__, "path_in_walk_stat did not find: %s", pathname);
 	free_walk_stat(&wstat);
 	return false;
 
@@ -4174,11 +4189,11 @@ test_manifest(struct manifest *manp, char *submission_dir)
 	 * must be a file with mode 0444
 	 */
 	if (ITEM_IS_NOT_FILE(i_p->st_mode)) {
-	    json_dbg(JSON_DBG_MED, __func__, "not a file: %s", pathname);
+	    warn(__func__, "not a file: %s", pathname);
 	    free_walk_stat(&wstat);
 	    return false;
 	} else if (ITEM_PERM(i_p->st_mode) != ITEM_PERM_0444) {
-	    json_dbg(JSON_DBG_MED, __func__, "permission: %04o != %04o file: %s",
+	    warn(__func__, "permission: %04o != %04o file: %s",
 				   i_p->st_mode, ITEM_PERM_0444, pathname);
 	    free_walk_stat(&wstat);
 	    return false;
@@ -4186,10 +4201,10 @@ test_manifest(struct manifest *manp, char *submission_dir)
     }
 
     /*
-     * case: no extra files
+     * case: no extra files and no shell scripts
      */
-    if (count_extra_file == 0) {
-	json_dbg(JSON_DBG_MED, __func__, "manifest is complete with no extra files");
+    if (count_extra_file == 0 && count_shell_script == 0) {
+	warn(__func__, "manifest is complete with no extra files and no shell scripts");
 	free_walk_stat(&wstat);
 	return true;
     }
@@ -4203,9 +4218,9 @@ test_manifest(struct manifest *manp, char *submission_dir)
 	/* obtain this valid extra filename */
 	extra_filename = dyn_array_value(manp->extra, char *, i);
 	if (extra_filename == NULL) {
-	    json_dbg(JSON_DBG_MED, __func__, "invalid: manifest extra[%jd] is NULL", i);
+	    err(4, __func__, "invalid: manifest extra[%jd] is NULL", i);/*ooo*/
+            not_reached();
 	}
-
 
 	/*
 	 * validate filename for this extra file
@@ -4214,62 +4229,130 @@ test_manifest(struct manifest *manp, char *submission_dir)
 	if (i_p == NULL) {
 
 	    /* report failure to find the pathname */
-	    json_dbg(JSON_DBG_MED, __func__, "path_in_walk_stat did not found extra file: %s", extra_filename);
+	    warn(__func__, "path_in_walk_stat did not find extra file: %s", extra_filename);
 	    free_walk_stat(&wstat);
 	    return false;
 
 	} else {
 
 	    /*
-	     * must be a file with mode 0444
+	     * must be a regular file that is NOT an executable filename AND
+             * MUST HAVE mode 0444
 	     */
 	    if (ITEM_IS_NOT_FILE(i_p->st_mode)) {
-		json_dbg(JSON_DBG_MED, __func__, "not a file: %s", pathname);
+		warn(__func__, "not a file: %s", pathname);
 		free_walk_stat(&wstat);
 		return false;
 	    } else if (is_executable_filename(extra_filename)) {
+                warn(__func__, "extra_file is an executable filename: %s", pathname);
+                free_walk_stat(&wstat);
+                return false;
+	    } else if (ITEM_PERM(i_p->st_mode) != ITEM_PERM_0444) {
+                warn(__func__, "permission: %04o != %04o file: %s",
+                                       i_p->st_mode, ITEM_PERM_0444, pathname);
+                free_walk_stat(&wstat);
+                return false;
+            }
+        }
+    }
+
+    /*
+     * verify that shell scripts are valid filenames and do not match a
+     * mandatory file and verify they have the right permissions.
+     */
+    for (i=0; i < count_shell_script; ++i) {
+
+	/* obtain this valid shell script filename */
+	shell_filename = dyn_array_value(manp->shell, char *, i);
+	if (shell_filename == NULL) {
+	    err(4, __func__, "invalid: manifest shell[%jd] is NULL", i);/*ooo*/
+            not_reached();
+	}
+
+	/*
+	 * validate filename for this shell script file
+	 */
+	i_p = path_in_walk_stat(&wstat, shell_filename);
+	if (i_p == NULL) {
+
+	    /* report failure to find the pathname */
+	    warn(__func__, "path_in_walk_stat did not find shell_script file: %s", shell_filename);
+	    free_walk_stat(&wstat);
+	    return false;
+
+	} else {
+
+	    /*
+	     * must be a file with mode 0555
+	     */
+	    if (ITEM_IS_NOT_FILE(i_p->st_mode)) {
+		warn(__func__, "not a file: %s", pathname);
+		free_walk_stat(&wstat);
+		return false;
+	    } else if (!is_executable_filename(shell_filename)) {
 		if (ITEM_PERM(i_p->st_mode) != ITEM_PERM_0555) {
-		    json_dbg(JSON_DBG_MED, __func__, "permission: %04o != %04o file: %s",
+		    warn(__func__, "permission: %04o != %04o file: %s",
 					   i_p->st_mode, ITEM_PERM_0555, pathname);
 		    free_walk_stat(&wstat);
 		    return false;
 		}
-	    } else {
-		if (ITEM_PERM(i_p->st_mode) != ITEM_PERM_0444) {
-		    json_dbg(JSON_DBG_MED, __func__, "permission: %04o != %04o file: %s",
-					   i_p->st_mode, ITEM_PERM_0444, pathname);
-		    free_walk_stat(&wstat);
-		    return false;
-		}
-	    }
-	}
+	    } else if (ITEM_PERM(i_p->st_mode) != ITEM_PERM_0555) {
+                warn(__func__, "permission: %04o != %04o file: %s",
+                                       i_p->st_mode, ITEM_PERM_0555, pathname);
+                free_walk_stat(&wstat);
+                return false;
+            }
+        }
     }
 
     /*
      * case: only 1 extra file
      */
-    if (count_extra_file == 1) {
-	json_dbg(JSON_DBG_MED, __func__, "manifest is complete with only 1 valid extra filename");
+    if ((count_extra_file == 1 && count_shell_script == 0) || (count_shell_script == 1 && count_extra_file == 0)) {
+	json_dbg(JSON_DBG_MED, __func__, "manifest is complete with only 1 valid extra filename or 1 shell script filename");
 
 	free_walk_stat(&wstat);
 	return true;
     }
 
     /*
-     * check for duplicates among valid extra filenames
-     *
-     * The author_count will be a small number, so we can get away with a lazy O(n^2) match.
+     * check for duplicates among valid extra filenames. Also check against all
+     * shell script filenames (i.e. does it end in .sh?) and check if is a
+     * mandatory filename. The executable filename check is redundant from above
+     * but we do it as an extra sanity check.
      */
     for (i=1; i < count_extra_file; ++i) {
 
 	/* obtain first extra filename to compare against */
 	extra_filename = dyn_array_value(manp->extra, char *, i);
 	if (extra_filename == NULL) {
-	    json_dbg(JSON_DBG_MED, __func__,
-		     "invalid: manifest extra[i = %jd] is NULL", i);
+	    err(4, __func__, "invalid: manifest extra[i = %jd] is NULL", i);/*ooo*/
 	    free_walk_stat(&wstat);
 	    return false;
 	}
+
+        /*
+         * if this is a mandatory filename it is an error
+         */
+        if (is_mandatory_filename(extra_filename)) {
+            warn(__func__, "invalid: manifest extra[i = %jd] is a mandatory filename", i);
+            json_dbg(JSON_DBG_HIGH, __func__,
+                     "invalid: manifest extra[%jd] filename: <%s> matches a mandatory filename",
+                     i, extra_filename);
+            free_walk_stat(&wstat);
+            return false;
+        }
+        /*
+         * if this is an executable filename it is an error
+         */
+        if (is_executable_filename(extra_filename)) {
+            warn(__func__, "invalid: manifest extra[i = %jd] is an executable filename", i);
+            json_dbg(JSON_DBG_HIGH, __func__,
+                     "invalid: manifest extra[%jd] filename: <%s> matches an executable filename",
+                     i, extra_filename);
+            free_walk_stat(&wstat);
+            return false;
+        }
 
 	/*
 	 * compare first extra filename with the remaining extra filenames
@@ -4279,18 +4362,14 @@ test_manifest(struct manifest *manp, char *submission_dir)
 	    /* obtain second extra filename */
 	    extra_filename2 = dyn_array_value(manp->extra, char *, j);
 	    if (extra_filename2 == NULL) {
-		json_dbg(JSON_DBG_MED, __func__,
-			 "invalid: manifest extra[j = %jd] is NULL", j);
-		free_walk_stat(&wstat);
-		return false;
+		err(4, __func__, "invalid: manifest extra[j = %jd] is NULL", j);/*ooo*/
+                not_reached();
 	    }
 	    /*
 	     * compare first and second extra filenames
 	     */
 	    if (strcasecmp(extra_filename, extra_filename2) == 0) {
-		json_dbg(JSON_DBG_MED, __func__,
-			 "invalid: manifest extra[%jd] filename matches manifest extra[%jd] filename",
-			 i, j);
+		warn(__func__, "invalid: manifest extra[%jd] filename matches manifest extra[%jd] filename", i, j);
 		json_dbg(JSON_DBG_HIGH, __func__,
 			 "invalid: manifest extra[%jd] filename: <%s> matches manifest extra[%jd] filename: <%s>",
 			 i, extra_filename, j, extra_filename2);
@@ -4298,8 +4377,119 @@ test_manifest(struct manifest *manp, char *submission_dir)
 		return false;
 	    }
 	}
+
+	/*
+	 * compare first extra filename with all the shell script filenames
+	 */
+	for (j=0; j < count_shell_script; ++j) {
+
+	    /* obtain shell filename */
+	    shell_filename = dyn_array_value(manp->shell, char *, j);
+	    if (shell_filename == NULL) {
+		err(4, __func__, "invalid: manifest shell[j = %jd] is NULL", j);/*ooo*/
+                not_reached();
+	    }
+	    /*
+	     * compare extra filename with shell_script filename
+	     */
+	    if (strcasecmp(extra_filename, shell_filename) == 0) {
+		warn(__func__, "invalid: manifest extra[%jd] filename matches manifest shell[%jd] filename", i, j);
+		json_dbg(JSON_DBG_HIGH, __func__,
+			 "invalid: manifest extra[%jd] filename: <%s> matches manifest shell[%jd] filename: <%s>",
+			 i, extra_filename, j, shell_filename);
+		free_walk_stat(&wstat);
+		return false;
+	    }
+	}
     }
-    json_dbg(JSON_DBG_MED, __func__, "manifest is complete with valid unique extra filenames");
+
+    /*
+     * check for duplicates among valid shell filenames. Also check against all
+     * extra file filenames and check if is a mandatory filename.
+     */
+    for (i=1; i < count_shell_script; ++i) {
+
+	/* obtain first extra filename to compare against */
+	shell_filename = dyn_array_value(manp->shell, char *, i);
+	if (shell_filename == NULL) {
+	    err(4, __func__, "invalid: manifest shell[i = %jd] is NULL", i);/*ooo*/
+            not_reached();
+	}
+
+        /*
+         * if this is a mandatory filename it is an error
+         */
+        if (is_mandatory_filename(shell_filename)) {
+            warn(__func__, "invalid: manifest shell[i = %jd] is a mandatory filename", i);
+            json_dbg(JSON_DBG_HIGH, __func__,
+                     "invalid: manifest shell[%jd] filename: <%s> matches a mandatory filename",
+                     i, shell_filename);
+            free_walk_stat(&wstat);
+            return false;
+        }
+        /*
+         * if this is NOT an executable filename it is an error. Yes this check
+         * is redundant. We do this in case someone is doing any funny business.
+         */
+        if (!is_executable_filename(shell_filename)) {
+            warn(__func__, "invalid: manifest shell[i = %jd] is NOT an executable filename", i);
+            json_dbg(JSON_DBG_HIGH, __func__,
+                     "invalid: manifest shell[%jd] filename: <%s> is NOT an executable filename",
+                     i, shell_filename);
+            free_walk_stat(&wstat);
+            return false;
+        }
+
+	/*
+	 * compare first shell_script filename with the remaining shell_script filenames
+	 */
+	for (j=0; j < i; ++j) {
+
+	    /* obtain second shell_script filename */
+	    shell_filename2 = dyn_array_value(manp->shell, char *, j);
+	    if (shell_filename2 == NULL) {
+		err(4, __func__, "invalid: manifest shell[j = %jd] is NULL", j);/*ooo*/
+		not_reached();
+		return false;
+	    }
+	    /*
+	     * compare first and second shell_script filenames
+	     */
+	    if (strcasecmp(shell_filename, shell_filename2) == 0) {
+		warn(__func__, "invalid: manifest shell[%jd] filename matches manifest shell[%jd] filename", i, j);
+		json_dbg(JSON_DBG_HIGH, __func__,
+			 "invalid: manifest shell[%jd] filename: <%s> matches manifest shell[%jd] filename: <%s>",
+			 i, shell_filename, j, shell_filename2);
+		free_walk_stat(&wstat);
+		return false;
+	    }
+	}
+	/*
+	 * compare shell script filename with all the extra script filenames
+	 */
+	for (j=0; j < count_extra_file; ++j) {
+
+	    /* obtain extra_file filename */
+	    extra_filename = dyn_array_value(manp->extra, char *, j);
+	    if (extra_filename == NULL) {
+		err(4, __func__, "invalid: manifest extra[j = %jd] is NULL", j);/*ooo*/
+                not_reached();
+	    }
+	    /*
+	     * compare extra filename with shell_script filename
+	     */
+	    if (strcasecmp(extra_filename, shell_filename) == 0) {
+		warn(__func__, "invalid: manifest shell[%jd] filename matches manifest extra[%jd] filename", i, j);
+		json_dbg(JSON_DBG_HIGH, __func__,
+			 "invalid: manifest extra[%jd] filename: <%s> matches manifest shell[%jd] filename: <%s>",
+			 i, shell_filename, j, extra_filename);
+		free_walk_stat(&wstat);
+		return false;
+	    }
+	}
+
+    }
+    json_dbg(JSON_DBG_MED, __func__, "manifest is complete with valid unique extra filenames and shell script filenames");
 
     free_walk_stat(&wstat);
     return true;
@@ -4713,6 +4903,16 @@ test_shell_script(char const *str)
 	json_dbg(JSON_DBG_HIGH, __func__,
 		 "invalid: shell_script filename: <%s> is try.alt.sh", str);
 	return false;
+    } else if (is_mandatory_filename(str)) {
+        /*
+         * this check is redundant but we do it anyway in case someone is trying
+         * some kind of funny business
+         */
+        json_dbg(JSON_DBG_MED, __func__,
+                 "invalid: shell_script filename matches a mandatory file");
+        json_dbg(JSON_DBG_HIGH, __func__,
+                 "invalid: shell_script filename matches a mandatory file: <%s>", str);
+        return false;
     }
 
     json_dbg(JSON_DBG_MED, __func__, "shell_script filename is valid");
