@@ -1,6 +1,39 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.10.2 2025-11-20
+
+Fix more critical errors in `test_manifest()` as follows:
+
+- NULL pointer checks were missing and/or did not exit when encountered (see
+next item).
+- when a NULL pointer is encountered in an array it is an error.
+- check shell script filenames too, making sure they are the right permission.
+- when scanning extra filenames, make sure they do NOT match a shell script file
+AND do not match a mandatory file AND are NOT an executable filename (this check
+is redundant but done in case anyone is doing any funny business).
+- when scanning shell script filenames, make sure they do NOT match an extra
+file AND do NOT match a mandatory filename AND are executable (this check is
+redundant but done in case someone is trying to do any funny business).
+
+Also improve error messages (that is, don't make them just debug output) - this
+is because (although this should only happen if someone is manipulating the
+directory or else testing a directory that was not created by mkiocccentry) for
+some errors it would show just that the checks passed but not why. It should be
+noted that this only applies to regular files that are specifically checked. For
+instance if you were to do `chmod 1777` on a directory and then run `chkentry`
+(or `chksubmit`) on it it will just give you an error saying validation failed.
+If you wish to do any manipulation like this this is on you - it is not worth
+delaying a new release simply to help people who are abusing the rules.
+
+Added some debug messages where they were missing (in places where the new
+`warn()` calls were, which used to be a JSON debug call with medium level).
+
+Updated `CHKENTRY_VERSION` to `"2.2.2 2025-11-20"`.
+Updated `CHKSUBMIT_VERSION` to `"2.0.2 2025-11-20"`.
+Updated `SOUP_VERSION` to `"2.3.2 2025-11-20"`.
+
+
 ## Release 2.10.1 2025-11-19
 
 Fix critical bug in `test_shell_script()` where a filename that ends with `.sh`
