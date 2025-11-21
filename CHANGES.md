@@ -3,6 +3,10 @@
 
 ## Release 2.10.3 2025-11-21
 
+Define `__GNU_VISIBLE` in `soup/walk.h` before it includes `<fnmatch.h>`
+in an effort to help Cygwin compile the code.  Reports were that
+`FNM_CASEFOLD` was undefined for some Cygwin users.
+
 Fix error preventing `..` in workdir - issue #1367. This required changing a
 boolean in the call of `canon_path()` in both `txzchk` and `fnamchk`.
 
