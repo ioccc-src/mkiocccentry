@@ -7,6 +7,14 @@ Define `__GNU_VISIBLE` in `soup/walk.h` before it includes `<fnmatch.h>`
 in an effort to help Cygwin compile the code.  Reports were that
 `FNM_CASEFOLD` was undefined for some Cygwin users.
 
+The `mkiocccentry(1)` command converts the `workdir` and `topdir`
+command line args into absolute paths.  This will allow both args,
+for example, to start with `../` (dot-dot slash).
+
+Changed `MKIOCCCENTRY_REPO_VERSION` to "2.10.3 2025-11-21".
+Changed `MKIOCCCENTRY_VERSION` to "2.2.1 2025-11-21".
+Changed `SOUP_VERSION` to "2.3.3 2025-11-21",
+
 
 ## Release 2.10.2 2025-11-20
 

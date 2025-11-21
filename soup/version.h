@@ -100,7 +100,7 @@
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "2.2.0 2025-11-18"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_VERSION "2.2.1 2025-11-21"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_MKIOCCCENTRY_VERSION MKIOCCCENTRY_VERSION
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC29-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
