@@ -61,6 +61,9 @@
 #if !defined(_GNU_SOURCE)
   #define _GNU_SOURCE
 #endif
+#if !defined(__GNU_VISIBLE)
+  #define __GNU_VISIBLE	    /* for Cygwin */
+#endif
 #include <fnmatch.h>
 
 /*

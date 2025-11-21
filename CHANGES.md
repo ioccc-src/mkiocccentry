@@ -1,6 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.10.3 2025-11-21
+
+Define `__GNU_VISIBLE` in `soup/walk.h` before it includes `<fnmatch.h>`
+in an effort to help Cygwin compile the code.  Reports were that
+`FNM_CASEFOLD` was undefined for some Cygwin users.
+
+
 ## Release 2.10.2 2025-11-20
 
 Fix more critical errors in `test_manifest()` as follows:
