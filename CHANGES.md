@@ -1,6 +1,18 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.10.3 2025-11-21
+
+Fix error preventing `..` in workdir - issue #1367. This required changing a
+boolean in the call of `canon_path()` in both `txzchk` and `fnamchk`.
+
+NOTE: this will NOT create a tarball with `..` in the path. It just allows one
+to have their workdir to have in its path `..`.
+
+Updated `TXZCHK_VERSION` to `"2.1.1 2025-11-21"`.
+Updated `FNAMCHK_VERSION` to `"2.2.1 2025-11-21"`.
+
+
 ## Release 2.10.2 2025-11-20
 
 Fix more critical errors in `test_manifest()` as follows:

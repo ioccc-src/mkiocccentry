@@ -84,7 +84,7 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.10.2 2025-11-20"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.10.3 2025-11-21"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official soup version (aka recipe :-) )
@@ -125,13 +125,13 @@
 /*
  * official fnamchk version
  */
-#define FNAMCHK_VERSION "2.2.0 2025-11-18"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define FNAMCHK_VERSION "2.2.1 2025-11-21"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_FNAMCHK_VERSION FNAMCHK_VERSION
 
 /*
  * official txzchk version
  */
-#define TXZCHK_VERSION "2.1.0 2025-11-18"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define TXZCHK_VERSION "2.1.1 2025-11-21"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_TXZCHK_VERSION TXZCHK_VERSION
 
 /*
