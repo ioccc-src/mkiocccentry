@@ -1,6 +1,6 @@
 BSD 3-Clause License
 
-Copyright (c) 2025, Landon Curt Noll
+Copyright (c) 2025, Landon Curt Noll and Cody Boone Ferguson.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:

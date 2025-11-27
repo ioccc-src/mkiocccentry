@@ -1,6 +1,11 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.10.4 2025-11-26
+
+Sync with recent non-C code changes to `cpath/` and `pr/`.
+
+
 ## Release 2.10.3 2025-11-21
 
 Define `__GNU_VISIBLE` in `soup/walk.h` before it includes `<fnmatch.h>`

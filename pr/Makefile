@@ -14,14 +14,14 @@
 #       source works derived from this source
 #       binaries derived from this source or from derived source
 #
-# LANDON CURT NOLL DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
-# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO
-# EVENT SHALL LANDON CURT NOLL BE LIABLE FOR ANY SPECIAL, INDIRECT OR
-# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
-# USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-# PERFORMANCE OF THIS SOFTWARE.
+# THE AUTHORS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING
+# ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+# AUTHORS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
+# DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+# ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
+# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE OR JSON.
 #
+
 # The code in this from repo was copied out of the mkiocccentry toolkit repo:
 #
 #	https://github.com/ioccc-src/mkiocccentry
@@ -33,13 +33,20 @@
 # The origin of libpr dates back to code written by Landon Curt Noll around 2008.
 #
 # That 2008 code was copied into the jparse repo, and the mkiocccentry toolkit repo
-# by Landon Curt Noll.  While in the jparse repo, both Landon Curt Noll and
-# Cody Boone Ferguson added to and improved this code base.
+# by Landon Curt Noll. While in the jparse repo, both Landon Curt Noll and
+# Cody Boone Ferguson added to and improved this code base:
 #
-# chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#   @xexyl
+#	https://xexyl.net		Cody Boone Ferguson
+#	https://ioccc.xexyl.net
+# and:
+#	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+#
+# "Because sometimes even the IOCCC Judges need some help." :-)
 #
 # Share and enjoy! :-)
-
+#    --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
+#
 
 #############
 # utilities #

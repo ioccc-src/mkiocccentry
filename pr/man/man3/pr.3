@@ -27,6 +27,16 @@
 .sp
 \fB#define PR_VERSION "..." /* format: major.minor YYYY-MM-DD */\fP
 .sp
+\fB#define fprint(stream, fmt, ...) fpr((stream), __func__, (fmt), __VA_ARGS__)\fP
+.sp
+\fB#define fprstr(stream, fmt) fpr((stream), __func__, (fmt))\fP
+.sp
+\fB#define print(fmt, ...) pr(__func__, (fmt), __VA_ARGS__)\fP
+.sp
+\fB#define prstr(fmt) pr(__func__, (fmt))\fP
+.sp
+\fB#define LITLEN(x) (sizeof(x)-1)\fP
+.sp
 \fBextern const char *const pr_version;	/* library version format: major.minor YYYY-MM-DD */\fP
 .sp
 .B "bool chk_stdio_printf_err(FILE *stream, int ret);"
@@ -64,8 +74,29 @@
 .B "FILE *open_dir_file(char const *dir, char const *file);"
 .sp
 .B "bool fcheck_invalid_option(FILE *stream, char const *prog, int ch, int opt);"
+.sp
+.B "bool fd_is_ready(char const *name, bool open_test_only, int fd);"
+.sp
+.B "void flush_tty(char const *name, bool flush_stdin, bool abort_on_error);"
 .SH DESCRIPTION
-XXX - add DESCRIPTION here - XXX
+The
+.BR pr (3)
+library is a stdio helper library, mostly related to printing but also some output, written in C.
+.SS chk_stdio_printf_err ()
+This function takes a
+.B FILE *
+and a return value that is supposed to come from a stdio function, and determines if the stdio print function failed or not.
+On some systems such as macOS, the first stdio print function call that prints to a given stream first checks if the stream is associated with a TTY. But if the stream is
+.B NOT
+a tty the call to
+.BR isatty (3)
+will fail.
+But in systems such as macOS the first stdio print function call that performs such a call to
+.BR isatty (3)
+will leave errno with the value
+.B ENOTTY
+even though the actual print function did not fail.
+Depending on the circumstances this can be an issue so this function allows one to check this in order to do the right thing.
 .SH RETURN VALUE
 XXX - add RETURN VALUE here - XXX
 .SH NOTES
@@ -76,4 +107,4 @@ XXX - add EXAMPLE here - XXX
 XXX - add SEE ALSO here - XXX
 .SH HISTORY
 The pr facility was first written by Landon Curt Noll some about 2008.
-Version 1.0 was developed and tested within the IOCCC mkiocccentry and jparse GitHub repos.
+Version 1.0 was developed and tested within the IOCCC mkiocccentry and jparse GitHub repos by Cody Boone Ferguson and Landon Curt Noll.

@@ -5,7 +5,8 @@
  *
  *	-- J.R.R. Tolkien
  *
- * Copyright (c) 2008-2025 by Landon Curt Noll and Cody Boone Ferguson.  All rights reserved.
+ * Copyright (c) 2008-2025 by Landon Curt Noll and Cody Boone Ferguson.
+ * All rights reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -36,7 +37,15 @@
  *
  * That 2008 code was copied into the jparse repo, and the mkiocccentry toolkit repo
  * by Landon Curt Noll.  While in the jparse repo, both Landon Curt Noll and
- * Cody Boone Ferguson added to and improved this code base.
+ * Cody Boone Ferguson added to and improved this code base:
+ *
+ *  @xexyl
+ *	https://xexyl.net		Cody Boone Ferguson
+ *	https://ioccc.xexyl.net
+ * and:
+ *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
+ *
+ * "Because sometimes even the IOCCC Judges need some help." :-)
  *
  * "Share and Enjoy!"
  *     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
