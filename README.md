@@ -12,7 +12,7 @@ If you do not know what that is then you are in the wrong place; otherwise read 
 
 First, a set of requirements for using the toolkit:
 
-* Unix-like environment (see IOCCC [Rule 20](https://www.ioccc.org/next/rules.html#rule20)).
+* Unix-like environment (see IOCCC [Rule 5 - Integrity](https://www.ioccc.org/next/rules.html#rule-5---integrity)).
 * GNU Make version 4.3 or later
 (see IOCCC FAQ on "[make compatibility](https://www.ioccc.org/faq.html#make_compatibility)").
 * A C compiler that understands "-std=gnu17".

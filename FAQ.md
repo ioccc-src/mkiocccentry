@@ -349,7 +349,7 @@ the [Rules](https://www.ioccc.org/next/rules.html) and the
 [Guidelines](https://www.ioccc.org/next/guidelines.html).
 
 Pay especial care to
-[Rule 17 Packaging](rules.html#rule-17-packaging)!
+[Rule 17 Packaging]((https://www.ioccc.org/next/rules.html#rule-17---packaging)!
 
 
 <div id="uninstalling"></div>
