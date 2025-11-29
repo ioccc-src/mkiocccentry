@@ -1,6 +1,16 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.10.5 2025-11-28
+
+The `mkiocccentry(1)` tool ignores `prog.o` and `prog.orig.c`
+if they are found directly under `topdir`.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` to "2.10.5 2025-11-28".
+Changed `SOUP_VERSION` to "2.3.4 2025-11-28".
+Changed `MKIOCCCENTRY_VERSION` to "2.2.2 2025-11-28.
+
+
 ## Release 2.10.4 2025-11-26
 
 Sync with recent non-C code changes to `cpath/` and `pr/`.
@@ -18,7 +28,7 @@ for example, to start with `../` (dot-dot slash).
 
 Changed `MKIOCCCENTRY_REPO_VERSION` to "2.10.3 2025-11-21".
 Changed `MKIOCCCENTRY_VERSION` to "2.2.1 2025-11-21".
-Changed `SOUP_VERSION` to "2.3.3 2025-11-21",
+Changed `SOUP_VERSION` to "2.3.3 2025-11-21".
 
 
 ## Release 2.10.2 2025-11-20
