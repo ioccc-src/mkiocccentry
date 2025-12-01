@@ -9,24 +9,30 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH verge 8 "18 January 2025" "verge" "jparse tools"
+.TH verge 8 "26 Novenber 2025" "verge" "jparse tools"
 .SH NAME
 .B verge
-\- determine if first version (major.minor.patch) arg is \(>= or less than the second version (major.minor.patch) arg
+\- test if first version arg is greater than or equal to the second version arg
 .SH SYNOPSIS
 .B verge
 .RB [\| \-h \|]
 .RB [\| \-v
 .IR level \|]
 .RB [\| \-V \|]
-.I major.minor.patch\-1
-.I major.minor.patch\-2
+.I 1st.version.number
+.I 2nd.version.number
 .SH DESCRIPTION
 .B verge
 (short for
-"version greater than or equal") compares the two versions specified, determining if they're the first is greater than or equal to the second or if the first is < the second.
+"version greater than or equal") compares the two versions specified,
+determining if the first is greater than or equal to the second.
 .PP
-This program requires two arguments but accepts several options.
+Version numbers must be non-negative base 10 (decimal) integers that
+.BR strtoimax (3)
+is able to parse.
+Version levels are separated by periods.
+Version args must have 1 or more levels.
+Version args may end with a trailing period.
 .SH OPTIONS
 .TP
 .B \-h
@@ -80,38 +86,87 @@ and
 files.
 .SH BUGS
 .PP
-If you have an issue with the tool you can report it at
-.br
-.IR \<https://github.com/xexyl/jparse/issues\> .
+If you have an issue with the tool you can report it at:
+.sp
+.RS
+.I https://github.com/xexyl/jparse/issues
+.RE
 .SH EXAMPLES
 .PP
-Determine if first version,
+Test if first version,
 .IR 1.1.3 ,
-is \(>= the second version,
+is greater than or equal to the second version,
 .IR 1.1.4 :
 .sp
 .RS
 .ft B
- verge 1.1.3 1.1.4 && echo \(aqfirst version, 1.1.3, is >= second version, 1.1.4\(aq
+.nf
+if verge 1.1.4 1.1.2; then
+    echo "first version >= second version"
+fi
+.fi
 .ft R
 .RE
+.sp
+Because in the above example
+.BR verge (8)
+will exit 0, the echo statement will be printed.
 .PP
-The above will not show any output as the exit status of the command will not be 0.
-.PP
-Determine if the first version,
-.IR 1.1.3 ,
-is < the second version,
-.IR 1.1.4 :
+Test if first version,
+.IR 2.3.4.5 ,
+is greater than or equal to the second version,
+.IR 1.2 :
 .sp
 .RS
 .ft B
- verge 1.1.3 1.1.4 || echo \(aqfirst version, 1.1.3, is < second version, 1.1.4\(aq
+.nf
+if verge 2.3.4.5 1.2; then
+    echo "first version >= second version"
+fi
+.fi
 .ft R
 .RE
+.sp
+Because in the above example
+.BR verge (8)
+will exit 0, the echo statement will be printed.
 .PP
-The above will show the string
-.B first version, 1.1.3, is < second version, 1.1.4
-as the version
-.I 1.1.3
-is in fact <
-.IR 1.1.4 .
+Test if first version,
+.IR 5.1 ,
+is greater than or equal to the second version,
+.IR 5.1 :
+.sp
+.RS
+.ft B
+.nf
+if verge 5.1 5.1; then
+    echo "first version >= second version"
+fi
+.fi
+.ft R
+.RE
+.sp
+Because in the above example
+.BR verge (8)
+will exit 0, the echo statement will be printed.
+.PP
+Test if first version,
+.IR 2 ,
+is greater than or equal to the second version,
+.IR 3.1.4.1.5 :
+.sp
+.RS
+.ft B
+.nf
+if verge 2 3.1.4.1.5; then
+    echo "first version >= second version"
+else
+    echo "first version < second version"
+fi
+.fi
+.ft R
+.RE
+.sp
+In the above example
+.BR verge (8)
+will exit 1, and the second statement will be printed.
