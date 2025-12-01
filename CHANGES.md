@@ -1,6 +1,21 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.11.0 2025-11-30
+
+Update `IOCCC_REGISTER_URL` to "https://www.freelists.org/list/ioccc29-reg".
+
+Elevate all versions that were modified since the
+release of IOCCC29-beta (since Release 2.10.0 2025-11-18)
+to the next 2nd-level version number.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` to "2.11.0 2025-11-30".
+Changed `SOUP_VERSION` to "2.4.0 2025-11-30".
+Changed `MKIOCCCENTRY_VERSION` to "2.3.0 2025-11-30".
+Changed `CHKENTRY_VERSION` to "2.3.0 2025-11-30".
+Changed `CHKSUBMIT_VERSION` to "2.1.0 2025-11-30".
+
+
 ## Release 2.10.5 2025-11-28
 
 The `mkiocccentry(1)` tool ignores `prog.o` and `prog.orig.c`
