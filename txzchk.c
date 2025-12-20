@@ -1601,7 +1601,7 @@ check_tarball(char const *tar, char const *fnamchk)
 	errno = 0;		/* pre-clear errno for warnp() */
 	ret = setvbuf(input_stream, (char *)NULL, _IOLBF, 0);
 	if (ret != 0)
-	    warnp(TXZCHK_BASENAME, "is %s: setvbuf failed for %s", __func__, tarball_path);
+	    warnp(TXZCHK_BASENAME, "in %s: setvbuf failed for %s", __func__, tarball_path);
 
     } else {
 	/*
