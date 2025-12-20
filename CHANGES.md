@@ -1,6 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.11.1 2025-12-20
+
+Typo fix in `txzchk`.
+
+Changed `MIN_TXZCHK_VERSION` to `"2.1.0 2025-11-18"`.
+Updated `TXZCHK_VERSION` to `"2.1.1 2025-12-20"`.
+
+
 ## Release 2.11.0 2025-11-30
 
 Update `IOCCC_REGISTER_URL` to "https://www.freelists.org/list/ioccc29-reg".
