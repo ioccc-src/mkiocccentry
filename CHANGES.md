@@ -13,6 +13,9 @@ answers file controls the yes or no.
 To fix the test script the good slots answers files had to be updated and
 `mkiocccentry_test.sh` had to be updated too (answers function).
 
+Updated `MKIOCCCENTRY_VERSION` to `"2.3.0 2026-03-14"`.
+Updated `MKIOCCCENTRY_TEST_VERSION` to `"2.1.3 2026-03-14"`.
+
 
 ## Release 2.11.0 2025-11-30
 
