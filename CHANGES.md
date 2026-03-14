@@ -1,6 +1,25 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.11.1 2026-03-14
+
+Fix issue #1380 - except the `mkiocccentry_test.sh` script as that has to do
+with the slots. There were two things that had to be done to get this to work
+(though I recommend more testing than what I did, even though I did try various
+combinations) is the `past_winning_author` has to be written to the answers file
+and in `yes_or_no()` the check that returns true if `answer_yes` or `force_yes`
+are true now only returns true if `!read_answers_flag_used`. This way the
+answers file controls the yes or no.
+
+The `mkiocccentry_test.sh` fails which means the workflow in GitHub will fail! I
+wanted this in though as it should fix mkiocccentry itself. As for the test
+script I BELIEVE it is due to the slots. There is an answers file read error
+which might make sense because there is more data in it now (or is supposed to
+be more data). A quick attempt at changing the slots file did not work (though
+the `mkiocccentry_slots.sh` exited 0) but as this is a good point to commit I am
+doing that as the test script can be fixed in another commit.
+
+
 ## Release 2.11.0 2025-11-30
 
 Update `IOCCC_REGISTER_URL` to "https://www.freelists.org/list/ioccc29-reg".

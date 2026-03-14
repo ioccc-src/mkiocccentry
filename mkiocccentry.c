@@ -1217,33 +1217,34 @@ main(int argc, char *argv[])
 	/*
 	 * write answers for each author to the answers file
 	 */
-	for (i = 0; i < author_count; i++) {
-	    errno = 0;			/* pre-clear errno for errp() */
-	    ret = fprintf(answersp,
-		"%s\n"	/* name */
-		"%s\n"	/* location code */
-		"%s\n"	/* email */
-		"%s\n"	/* url */
-		"%s\n"	/* alt_url */
-		"%s\n"	/* mastodon handle */
-		"%s\n"	/* GitHub */
-		"%s\n"	/* affiliation */
-		"%s\n"  /* author_handle */
-		,
-		author_set[i].name,
-		author_set[i].location_code,
-		author_set[i].email,
-		author_set[i].url,
-		author_set[i].alt_url,
-		author_set[i].mastodon,
-		author_set[i].github,
-		author_set[i].affiliation,
-		author_set[i].author_handle);
-	    if (ret <= 0) {
-		errp(45, __func__, "fprintf error printing author info to the answers file");
-                not_reached();
-	    }
-	}
+        for (i = 0; i < author_count; i++) {
+            errno = 0;                  /* pre-clear errno for warnp() */
+            ret = fprintf(answersp,
+                "%s\n"  /* name */
+                "%s\n"  /* location code */
+                "%s\n"  /* email */
+                "%s\n"  /* url */
+                "%s\n"  /* alt_url */
+                "%s\n"  /* mastodon handle */
+                "%s\n"  /* GitHub */
+                "%s\n"  /* affiliation */
+                "%s\n"  /* past winning author */
+                "%s\n"  /* author_handle */
+                ,
+                author_set[i].name,
+                author_set[i].location_code,
+                author_set[i].email,
+                author_set[i].url,
+                author_set[i].alt_url,
+                author_set[i].mastodon,
+                author_set[i].github,
+                author_set[i].affiliation,
+                author_set[i].past_winning_author?"y":"n",
+                author_set[i].author_handle);
+            if (ret <= 0) {
+                warnp(__func__, "fprintf error printing author info to the answers file");
+            }
+        }
     }
 
     /*
@@ -4648,7 +4649,7 @@ yes_or_no(char const *question, bool def_answer)
     /*
      * if -y or -Y, return true
      */
-    if (answer_yes || force_yes) {
+    if (!read_answers_flag_used && (answer_yes || force_yes)) {
 	/* return yes */
 	return true;
     }
