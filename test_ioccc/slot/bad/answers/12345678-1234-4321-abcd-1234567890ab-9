@@ -12,6 +12,7 @@ https://alt0.example.au/index.html
 @user0@example.au
 @user0
 affiliation for user 0
+x
 first0_middle0_last0
 anonymous person
 XX
@@ -21,6 +22,8 @@ XX
 
 
 
+
+y
 anonymous_person
 first2 last2
 US
@@ -30,6 +33,7 @@ http://host2.example.us/index.html
 @user2@example.us
 @user2
 affiliation for user 2
+y
 first2_last2
 anon3
 SB
@@ -39,6 +43,7 @@ user3@example.sb
 @user3@example.sb
 
 
+n
 anon3
 first4 last4
 RW
@@ -48,5 +53,6 @@ https://alt4.example.rw/index.html
 
 @user4
 affiliation for user 4
+n
 first4_last4
 ANSWERS_EOF
