@@ -4,7 +4,7 @@
  * "Because sometimes we're all a little insane, some of us are a lot insane and
  * code is very often very insane." :-)
  *
- * Copyright (c) 2022-2025 by Landon Curt Noll and Cody Boone Ferguson.
+ * Copyright (c) 2022-2026 by Landon Curt Noll and Cody Boone Ferguson.
  * All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
@@ -24,7 +24,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * This support file was co-developed in 2022-2025 by Cody Boone Ferguson and
+ * This support file was co-developed in 2022-2026 by Cody Boone Ferguson and
  * Landon Curt Noll:
  *
  *  @xexyl

@@ -2,7 +2,7 @@
 #
 # jparse - JSON parser, library and tools written in C
 #
-# Copyright (c) 2022-2025 by Landon Curt Noll and Cody Boone Ferguson.
+# Copyright (c) 2022-2026 by Landon Curt Noll and Cody Boone Ferguson.
 # All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and

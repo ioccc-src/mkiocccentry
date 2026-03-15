@@ -2,13 +2,13 @@
  * c_compat - backward compatibility for __attribute__, __func__, and not_reached()
  *
  * "The symbol compatible appears to have become undefined in the minds of
- "  some of the members of the ANSI C committee."
+ *  some of the members of the ANSI C committee."
  *
  * "The wise speak only of what they know."
  *
  *      -- The Two Towers
  *
- * Copyright (c) 2025 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2025-2026 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,

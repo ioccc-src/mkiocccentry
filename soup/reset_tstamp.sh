@@ -12,7 +12,7 @@
 # Yes, we make it very hard to run this script for good reason.  Only IOCCC
 # judges can perform ALL the steps needed to complete this action.
 #
-# Copyright (c) 2022,2025 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2022,2025,2026 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and its
 # documentation for any purpose and without fee is hereby granted, provided that

@@ -245,7 +245,7 @@ man ./soup/man/man1/location.1
 ### `jparse`: JSON parser
 
 The mkiocccentry toolkit creates and validates JSON files. The JSON parser
-`jparse`, which is cloned into this repo, was co-developed in 2022-2025 by:
+`jparse`, which is cloned into this repo, was co-developed in 2022-2026 by:
 
 *@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
 [https://ioccc.xexyl.net](https://ioccc.xexyl.net))

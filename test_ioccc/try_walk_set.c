@@ -5,7 +5,7 @@
  *
  *	-- Gandalf to Pippin, the Fellowship of the Ring.
  *
- * Copyright (c) 2025 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2025-2026 by Landon Curt Noll.  All Rights Reserved.
  * Minor portability improvements were made by Cody Boone Ferguson.
  *
  * "Because sometimes even the IOCCC Judges need some help." :-)

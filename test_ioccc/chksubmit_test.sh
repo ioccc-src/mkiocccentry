@@ -7,7 +7,7 @@
 # Use chksubmit to test all the submission directories under
 # test_ioccc/workdir/{good,bad}.
 #
-# Copyright (c) 2022-2025 by Landon Curt Noll and Cody Boone Ferguson.
+# Copyright (c) 2022-2026 by Landon Curt Noll and Cody Boone Ferguson.
 # All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
@@ -27,7 +27,7 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 # CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
-# This script and the JSON parser were co-developed in 2022-2025 by Cody Boone
+# This script and the JSON parser were co-developed in 2022-2026 by Cody Boone
 # Ferguson and Landon Curt Noll:
 #
 #  @xexyl

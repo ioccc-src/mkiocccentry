@@ -2,7 +2,7 @@
 #
 # txzchk_test.sh - test txzchk with good and bad tarballs (as text files)
 #
-# Copyright (c) 2022-2025 by Cody Boone Ferguson.  All Rights Reserved.
+# Copyright (c) 2022-2026 by Cody Boone Ferguson.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -22,7 +22,7 @@
 # TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
 # OF THIS SOFTWARE.
 #
-# This tool and script were written in 2022-2025 by Cody Boone Ferguson:
+# This tool and script were written in 2022-2026 by Cody Boone Ferguson:
 #
 #	@xexyl
 #	https://xexyl.net		Cody Boone Ferguson

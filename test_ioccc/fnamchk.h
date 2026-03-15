@@ -3,7 +3,7 @@
  *
  * "Because most people become disappointed when someone gets their name wrong." :-)
  *
- * Copyright (c) 2022-2025 by Landon Curt Noll and Cody Boone Ferguson.  All Rights Reserved.
+ * Copyright (c) 2022-2026 by Landon Curt Noll and Cody Boone Ferguson.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,

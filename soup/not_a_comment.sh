@@ -13,7 +13,7 @@
 # just Makefile comments would not impact the execution of, say, make release.
 # This tool, given such a file, would return true,
 #
-# Copyright (c) 2025 by Landon Curt Noll.  All Rights Reserved.
+# Copyright (c) 2025-2026 by Landon Curt Noll.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,

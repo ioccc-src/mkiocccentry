@@ -5,7 +5,7 @@
  *
  *	-- J.R.R. Tolkien
  *
- * Copyright (c) 2008-2025 by Landon Curt Noll and Cody Boone Ferguson.
+ * Copyright (c) 2008-2026 by Landon Curt Noll and Cody Boone Ferguson.
  * All rights reserved.
  *
  * Permission to use, copy, modify, and distribute this software and

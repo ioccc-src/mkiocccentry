@@ -4,7 +4,7 @@
 #
 # For mkiocccentry:
 #
-# Copyright (c) 2021-2025 by Landon Curt Noll and Cody Boone Ferguson.
+# Copyright (c) 2021-2026 by Landon Curt Noll and Cody Boone Ferguson.
 # All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
@@ -26,7 +26,7 @@
 #
 # This toolkit (except the iocccsize(1) which was originally developed by
 # @SirWumpus [Anthony C Howe] in 1992 and further updated throughout the year
-# since then) was co-developed in 2021-2025 by Cody Boone Ferguson and Landon
+# since then) was co-developed in 2021-2026 by Cody Boone Ferguson and Landon
 # Curt Noll:
 #
 #  @xexyl

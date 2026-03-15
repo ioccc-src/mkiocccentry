@@ -2,7 +2,7 @@
 #
 # ioccc_test.sh - perform the complete suite of tests for the mkiocccentry repo
 #
-# Copyright (c) 2021-2025 by Landon Curt Noll and Cody Boone Ferguson.
+# Copyright (c) 2021-2026 by Landon Curt Noll and Cody Boone Ferguson.
 # All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
@@ -22,7 +22,7 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 # CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
-# This script was co-developed in 2021-2025 by Landon Curt Noll and Cody Boone
+# This script was co-developed in 2021-2026 by Landon Curt Noll and Cody Boone
 # Ferguson:
 #
 #  @xexyl

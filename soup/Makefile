@@ -2,7 +2,7 @@
 #
 # soup - some delicious IOCCC soup recipes :-)
 #
-# Copyright (c) 2021-2025 by Landon Curt Noll and Cody Boone Ferguson.
+# Copyright (c) 2021-2026 by Landon Curt Noll and Cody Boone Ferguson.
 # All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
@@ -23,7 +23,7 @@
 # CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 # The recipes in this Makefile :-) and the tools in this directory were
-# co-developed in 2021-2025 by Cody Boone Ferguson and Landon Curt Noll:
+# co-developed in 2021-2026 by Cody Boone Ferguson and Landon Curt Noll:
 #
 #  @xexyl
 #	https://xexyl.net		Cody Boone Ferguson

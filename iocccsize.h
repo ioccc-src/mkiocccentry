@@ -2,7 +2,7 @@
  * iocccsize - IOCCC Source Size Tool
  *
  * Public Domain 1992, 2015, 2018, 2019, 2021 by Anthony Howe.  All rights released.
- * With IOCCC mods in 2019-2025 by chongo (Landon Curt Noll) ^oo^
+ * With IOCCC mods in 2019-2026 by chongo (Landon Curt Noll) ^oo^
  */
 
 

@@ -4,7 +4,7 @@
  * "Because sometimes code is foo and sometimes foo is fubar." :-)
  * "Because sometimes we need more O in C." :-)
  *
- * Copyright (c) 2022-2025 by Cody Boone Ferguson and Landon Curt Noll.
+ * Copyright (c) 2022-2026 by Cody Boone Ferguson and Landon Curt Noll.
  * All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
@@ -24,7 +24,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * This tool and the JSON parser were co-developed in 2022-2025 by Cody Boone
+ * This tool and the JSON parser were co-developed in 2022-2026 by Cody Boone
  * Ferguson and Landon Curt Noll:
  *
  *  @xexyl
