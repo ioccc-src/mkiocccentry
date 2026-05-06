@@ -1,9 +1,9 @@
 /*
- * jparse_main - main function for the JSON parser stand-alone tool
+ * jval - use XPath for JSON to analyse, transform and selectively extract data from JSON
  *
  * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * Copyright (c) 2022-2026 by Cody Boone Ferguson and Landon Curt Noll. All
+ * Copyright (c) 2026 by Cody Boone Ferguson and Landon Curt Noll. All
  * rights reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
@@ -48,32 +48,39 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <locale.h>
+#include <string.h>
 
 /*
- * jparse_main - tool that parses a block of JSON input
+ * jval - XXX - fill out - XXX
  */
 #include "jparse_main.h"
 
 
 /*
  * definitions
+ *
  */
-#define REQUIRED_ARGS (1)	/* number of required arguments on the command line */
+#define REQUIRED_ARGS (2)	/* number of required arguments on the command line */
 
 /*
  * usage message
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-J level] [-q] [-V] [-s] arg...\n"
+    "usage: %s [-h] [-v level] [-J level] [-q] [-V] [-use-jparse] file.json pattern\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
     "\t-J level\tset JSON verbosity level (def level: %d)\n"
     "\t-q\t\tquiet mode: silence msg(), warn(), warnp() if -v 0 (def: loud :-) )\n"
     "\t-V\t\tprint version strings and exit\n"
-    "\t-s\t\targ is a string (def: arg is a filename)\n"
     "\n"
-    "\targ\t\tparse JSON for string (if -s), file (w/o -s), or stdin (if arg is -)\n"
+    "\t-use-jparse\tDo nothing: verify this tool came from the jparse toolset.\n"
+    "\n"
+    "\tfile.json\tJSON input file\n"
+    "\t\t\tNOTE: if file.json is - (dash) read from standard input.\n"
+    "\t\t\tNOTE: if file.json is . (dot) do not read any file, perform an internal test\n"
+    "\t\t\tand exit accordingly.\n"
+    "\tpattern\t\tXPath Expression\n"
     "\n"
     "Exit codes:\n"
     "    0\tJSON is valid\n"
@@ -98,10 +105,10 @@ int
 main(int argc, char **argv)
 {
     char const *program = NULL;	    /* our name */
+    char const *json_path = NULL;   /* file.json */
+    char const *pattern = NULL;     /* XPath pattern */
     extern char *optarg;	    /* option argument */
     extern int optind;		    /* argv index of the next arg */
-    char *input = NULL;		    /* argument to process */
-    bool string_flag_used = false;  /* true ==> -S string was used */
     bool valid_json = false;	    /* true ==> JSON parse was valid */
     int exit_code = 0;              /* exit code depends on if any JSON is invalid */
     struct json *tree = NULL;	    /* JSON parse tree or NULL */
@@ -117,7 +124,7 @@ main(int argc, char **argv)
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:qVsJ:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:qVJ:u:")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, ""); /*ooo*/
@@ -133,6 +140,12 @@ main(int argc, char **argv)
 		not_reached();
 	    }
 	    break;
+        case 'u':
+            if (strcmp(optarg, "se-jparse")) {
+                usage(3, program, "invalid command line"); /*ooo*/
+                not_reached();
+            }
+            break;
 	case 'J': /* -J json_verbosity_level */
 	    /*
 	     * parse json verbosity level
@@ -154,12 +167,10 @@ main(int argc, char **argv)
 	    exit(2); /*ooo*/
 	    not_reached();
 	    break;
-	case 's':
-	    string_flag_used = true;
-	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
 	default:    /* anything else but should not actually happen */
+            if (optarg) abort();
 	    opt_error = fchk_inval_opt(stderr, program, i, optopt);
 	    if (opt_error) {
 		usage(3, program, ""); /*ooo*/
@@ -175,66 +186,37 @@ main(int argc, char **argv)
 	not_reached();
     }
 
-    /*
-     * case: process arguments on command line
-     */
-    if (argc - optind > 0) {
-	/*
-	 * process each argument in order
-	 */
-	for (i=optind; i < argc; ++i) {
-	    /*
-	     * obtain argument string
-	     */
-	    input = argv[i];
-            /*
-             * case: process -s arg
-             */
-            if (string_flag_used == true) {
+    json_path = argv[optind];
+    pattern = argv[optind + 1];
 
-                /* parse arg as a block of json input */
-                dbg(DBG_HIGH, "Calling parse_json_str(%s, %zu, &valid_json):",
-                              input, strlen(input));
-
-                tree = parse_json_str(input, strlen(input), &valid_json);
-                if (tree == NULL || !valid_json) {
-                    warn(program, "JSON parse tree is NULL for string: \"%s\"", input);
-                    exit_code = 1;
-                }
-                /*
-                 * free the JSON parse tree
-                 */
-                else {
-                    json_tree_free(tree, JSON_INFINITE_DEPTH);
-                    free(tree);
-                    tree = NULL;
-                }
-
-            /*
-             * case: process file arg
-             */
-            } else {
-
-                /* parse arg as a json filename */
-                dbg(DBG_HIGH, "Calling parse_json_file(\"%s\", &valid_json):", input);
-
-                tree = parse_json_file(input, &valid_json);
-                if (tree == NULL || !valid_json) {
-                    warn(program, "JSON parse tree is NULL for file: %s", input);
-                    exit_code = 1;
-                }
-                /*
-                 * free the JSON parse tree
-                 */
-                else {
-                    json_tree_free(tree, JSON_INFINITE_DEPTH);
-                    free(tree);
-                    tree = NULL;
-                }
-            }
-
-        }
+    if (json_path == NULL || *json_path == '\0') {
+	usage(3, program, "json_path NULL or empty"); /*ooo*/
+	not_reached();
     }
+    if (pattern == NULL || *pattern == '\0') {
+	usage(3, program, "pattern NULL or empty"); /*ooo*/
+	not_reached();
+    }
+    dbg(DBG_HIGH, "Calling parse_json_file(\"%s\", &valid_json):", json_path);
+    tree = parse_json_file(json_path, &valid_json);
+    if (tree == NULL || !valid_json) {
+        warn(program, "JSON parse tree is NULL for file: %s", json_path);
+        exit_code = 1;
+    }
+    /*
+     * free the JSON parse tree
+     */
+    else {
+        dbg(DBG_HIGH, "%s is valid JSON", strcmp(json_path,"-")?json_path:"stdin");
+        /*
+         * XXX - write the XPath code here (or call a function to do so), before
+         * freeing the tree - XXX
+         */
+        json_tree_free(tree, JSON_INFINITE_DEPTH);
+        free(tree);
+        tree = NULL;
+    }
+
     /*
      * firewall - JSON parser must have returned a valid JSON parse tree
      */

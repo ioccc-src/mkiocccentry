@@ -1,5 +1,67 @@
 # Significant changes in the JSON parser repo
 
+
+## Release 2.5.8 2026-05-06
+
+Updated `jval` to validate the required number of args (i.e. that they're
+specified and not NULL, which is a paranoia check as they should never be NULL
+if `argc - optind` is the right value, which is checked, and also make sure it
+is not an empty string) and then parse the JSON file, validating it (if invalid
+it's an error otherwise it just, depending on debug level, specifically
+`DBG_HIGH`, it reports it is valid JSON and then frees it). What this means is
+that the only code left to do is the actual XPath parsing.
+
+All options per issue #10 are implemented except that because of how `getopt(3)`
+works the `--use-jparse` has been changed to `-use-jparse`. I have tested
+several invocations but I must stop for now. It is kind of a hack (kind of) and
+it can be further examined and considered later but as of this time the
+following invocations have been tested:
+
+- if one does `jval -use-jparse` it'll report wrong number of arguments;
+- if one does `jval -use-jparse foo.json foo` it'll be okay assuming that
+`foo.json` is a valid JSON file;
+- if one does `jval --use foo.json foo` it'll show `illegal option -- -`
+followed by the usage string;
+- if one does `jval -- foo.json foo` it will as expected (the `--` terminates
+option parsing);
+- if one does `jval -- - foo` it'll work as expected (read from stdin, pattern
+`foo`).
+- if one does `jval -- -- foo` it'll try reading from `--` as a JSON file as the
+first `--` will have terminated the option parsing;
+- if one does `jval -u jparse.json foo` it'll report an invalid command line
+(followed by usage string).
+
+If this works out well it might be good to have all the tools have this option.
+Again this is kind of a hack, in how it's done, so it might be better to do
+something else. This will be determined at a later date.
+
+Updated `JVAL_VERSION` to `"0.1.0 2026-05-06"`.
+
+Fixed Makefile so that running `make` actually compiles `jval` and fix
+dependency for `jval.c` (needed `jval.h` there).
+
+
+## Release 2.5.7 2026-05-01
+
+Added stub `jval.c` and `jval.h`. As there is no code yet (other than parsing
+the usual options like `-h`, `-V`, `-v`, `-J` ...) the version is just "0.0.0
+2026-05-01".
+
+Also there is no stub man page either as that is to be dealt with later,
+much later in fact, at least by me, given other issues in real life.
+
+
+## Release 2.5.6 2026-03-15
+
+Updated copyright dates to 2022-2026.
+
+
+## Release 2.5.5 2026-02-09
+
+Add `-lm` to Makefile for `floor()` etc for `json_parse.o`. As macOS does not
+use this I have added to that rule `-Wno-unused-command-line-argument`.
+
+
 ## Release 2.5.4 2025-11-13
 
 Fix Makefile to not install repo specific man pages and to uninstall two missing

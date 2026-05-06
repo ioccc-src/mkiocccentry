@@ -4,7 +4,7 @@
 #
 # "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
 #
-# Copyright (c) 2022-2025 by Landon Curt Noll and Cody Boone Ferguson.
+# Copyright (c) 2022-2026 by Landon Curt Noll and Cody Boone Ferguson.
 # All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and

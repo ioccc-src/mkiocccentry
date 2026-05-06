@@ -57,7 +57,7 @@
 # not invalid it is an error. Whether or not -f is used, as long as the default
 # error file is a regular readable file.
 #
-# Copyright (c) 2022-2025 by Cody Boone Ferguson and Landon Curt Noll. All
+# Copyright (c) 2022-2026 by Cody Boone Ferguson and Landon Curt Noll. All
 # rights reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
@@ -77,7 +77,7 @@
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 # CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE OR JSON.
 #
-# This JSON parser, library and tools were co-developed in 2022-2025 by Cody Boone
+# This JSON parser, library and tools were co-developed in 2022-2026 by Cody Boone
 # Ferguson and Landon Curt Noll:
 #
 #  @xexyl

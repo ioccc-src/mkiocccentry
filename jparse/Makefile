@@ -2,7 +2,7 @@
 #
 # jparse - JSON parser, library and tools written in C
 #
-# Copyright (c) 2022-2025 by Landon Curt Noll and Cody Boone Ferguson.
+# Copyright (c) 2022-2026 by Landon Curt Noll and Cody Boone Ferguson.
 # All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
@@ -220,8 +220,8 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= jparse_main.c json_sem.c json_util.c \
-       jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c jstr_util.c
-H_SRC= jparse.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h \
+       jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c jstr_util.c jval.c
+H_SRC= jparse.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h jval.h \
        jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h jparse.tab.ref.h \
        jstr_util.h version.h
 #
@@ -281,7 +281,7 @@ LIB_OBJS= jparse.o jparse.tab.o json_parse.o json_sem.o json_util.o util.o jstr_
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and ARE removed by make clean
 #
-OTHER_OBJS= verge_main.o jsemtblgen.o jstrdecode.o jstrencode.o jparse_main.o
+OTHER_OBJS= verge_main.o jsemtblgen.o jstrdecode.o jstrencode.o jparse_main.o jval.o
 
 # all intermediate files which are also removed by make clean
 #
@@ -421,12 +421,12 @@ SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode
+PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode jval
 
 # include files NOT to removed by clobber
 #
 H_SRC_TARGETS= jparse.h jparse.lex.h jparse.lex.ref.h jparse.tab.h jparse.tab.ref.h \
-	       jparse_main.h json_parse.h json_sem.h json_util.h sorry.tm.ca.h util.h \
+	       jparse_main.h jval.h json_parse.h json_sem.h json_util.h sorry.tm.ca.h util.h \
 	       version.h json_utf8.h verge.h
 
 # what to make by all but NOT to removed by clobber
@@ -518,6 +518,11 @@ jparse.o: jparse.c jparse.h version.h
 jparse: jparse_main.o libjparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -lpr -ldbg -ldyn_array
 
+jval.o: jval.c jval.h version.h jparse.h
+	${CC} ${CFLAGS} jval.c -c
+
+jval: jval.o libjparse.a
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -lpr -ldbg -ldyn_array
 
 jstr_util.o: jstr_util.c jstr_util.h
 	${CC} ${CFLAGS} jstr_util.c -c
@@ -538,7 +543,7 @@ jstrdecode: jstrdecode.o libjparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -lpr -ldbg -ldyn_array
 
 json_parse.o: json_parse.c
-	${CC} ${CFLAGS} json_parse.c -c
+	${CC} ${CFLAGS} -Wno-unused-command-line-argument json_parse.c -c -lm
 
 jsemtblgen.o: jsemtblgen.c jparse.tab.h json_utf8.h version.h
 	${CC} ${CFLAGS} jsemtblgen.c -c
@@ -1379,6 +1384,9 @@ jstrencode.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.tab.h json_parse.h \
     json_sem.h json_utf8.h json_util.h jstr_util.h jstrencode.c \
     jstrencode.h util.h version.h
+jval.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
+    ../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.tab.h jparse_main.h \
+    json_parse.h json_sem.h json_utf8.h json_util.h jval.c util.h version.h
 util.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../pr/pr.h util.c util.h
 verge.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
