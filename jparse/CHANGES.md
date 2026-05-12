@@ -1,5 +1,17 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.5.9 2026-05-11
+
+Added `-funsigned-char` to Makefiles. It is possible that this will be useful in
+finally resolving issue #31 although it's not as simple as scanning for high
+bytes: for example `0x80` is a continuation byte so we can't outright declare it
+is an error as it depends on context. This issue is very low priority and some
+ideas are in my mind (though quite possibly not worked on for quite some time)
+on what might have to be done but adding this option to the Makefiles does not
+cause any problems here or in the [mkiocccentry
+repo](https://github.com/ioccc-src/mkiocccentry) which is where `jparse` and its
+tools were originally developed.
+
 
 ## Release 2.5.8 2026-05-06
 
