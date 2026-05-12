@@ -186,7 +186,7 @@ WARN_FLAGS= -Wall -Wextra -Wformat -Wno-char-subscripts
 
 # special compiler flags
 #
-C_SPECIAL=
+C_SPECIAL= -funsigned-char
 
 
 # special linker flags
