@@ -1,12 +1,17 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 2.11.1 2025-12-20
+## Release 2.11.1 2026-05-06
 
-Typo fix in `txzchk`.
+Update as per [jparse repo](https://github.com/xexyl/jparse) 2.5.8 2026-05-06.
 
-Changed `MIN_TXZCHK_VERSION` to `"2.1.0 2025-11-18"`.
-Updated `TXZCHK_VERSION` to `"2.1.1 2025-12-20"`.
+This is an internal process update to simply sync with that repo.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` to "2.11.1 2026-05-06".
+Changed `MKIOCCCENTRY_VERSION` to "2.3.1 2026-05-06".
+
+Kept `MIN_MKIOCCCENTRY_VERSION` at "2.3.0 2015-11-30" because while
+`make release` passed, this release while nice, isn't critical.
 
 
 ## Release 2.11.0 2025-11-30

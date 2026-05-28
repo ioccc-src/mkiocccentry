@@ -1,9 +1,9 @@
 /*
- * jstrencode - tool to convert JSON decoded strings into normal strings
+ * jval - use XPath for JSON to analyse, transform and selectively extract data from JSON
  *
- * "JSON: when a minimal design falls below a critical minimum." :-)
+ * "Because specs w/o version numbers are forced to commit to their original design flaws." :-)
  *
- * Copyright (c) 2022-2026 by Cody Boone Ferguson and Landon Curt Noll. All
+ * Copyright (c) 2026 by Cody Boone Ferguson and Landon Curt Noll. All
  * rights reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
@@ -39,8 +39,9 @@
  */
 
 
-#if !defined(INCLUDE_JSTRDECODE_H)
-#    define  INCLUDE_JSTRDECODE_H
+
+#if !defined(INCLUDE_JVAL_H)
+#    define  INCLUDE_JVAL_H
 
 
 /*
@@ -61,31 +62,9 @@
 #endif
 
 /*
- * dyn_array - dynamic array facility
- */
-#if defined(INTERNAL_INCLUDE)
-  #include "../dyn_array/dyn_array.h"
-#elif defined(INTERNAL_INCLUDE_2)
-#include "../dyn_array/dyn_array.h"
-#else
-  #include <dyn_array.h>
-#endif
-
-
-/*
  * util - common utility functions for the JSON parser
  */
 #include "util.h"
-
-/*
- * json_parse - JSON parser support code
- */
-#include "json_parse.h"
-
-/*
- * jstr_util - jstrencode/jstrdecode utilities
- */
-#include "jstr_util.h"
 
 /*
  * jparse - JSON parser
@@ -97,21 +76,16 @@
  */
 #include "version.h"
 
-
 /*
- * official jstrencode version
+ * official jval version
  */
-#define JSTRENCODE_VERSION "2.2.3 2025-06-26"	/* format: major.minor YYYY-MM-DD */
-
-/*
- * jstrencode tool basename
- */
-#define JSTRENCODE_BASENAME "jstrencode"
+#define JVAL_VERSION "0.1.0 2026-05-06"	/* format: major.minor YYYY-MM-DD */
 
 
 /*
- * globals
+ * jparse tool basename
  */
+#define JPARSE_BASENAME "jval"
 
 
-#endif /* INCLUDE_JSTRDECODE_H */
+#endif /* INCLUDE_JPARSE_MAIN_H */
