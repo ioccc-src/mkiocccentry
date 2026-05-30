@@ -11,6 +11,7 @@ XX
 
 
 
+y
 
 anonymous_person
 anonymous_person
@@ -21,6 +22,7 @@ http://host2.example.us/index.html
 @user2@example.us
 @user2
 affiliation for user 2
+y
 first2_last2
 anon3
 SB
@@ -30,5 +32,6 @@ user3@example.sb
 @user3@example.sb
 
 
+y
 anon3
 ANSWERS_EOF
