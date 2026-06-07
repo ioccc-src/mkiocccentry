@@ -154,7 +154,7 @@ static char const *oebxergfB[] =
 "lwfsld-klwyhuep lybwa. Tnua iwtbuep ufw ue bqle ua ueflwyauep bnw awyxybwl\n"
 "twvwt xnufn awlusqatm wedyepwla fsyabyt bsxea yed iyhwa ub nyldwl osl asiw\n"
 "yeuiyta tuhw rstyl kwyla bs wvwe aqlvuvw. De bsr so bnyb, xyliwl xybwl ytas\n"
-"wzryeda bnw xybwl, iyhuep bnw awyxybwl twvwt wvwe nupnwl abutt.\n"
+"wzryeda, iyhuep bnw awyxybwl twvwt wvwe nupnwl abutt.\n"
 "\n"
 "Nqb esx asiw afuwebuaba yed yfbuvuaba ylw nupntupnbuep y rsaubuvw pyue yksqb\n"
 "ftuiybw fnyepw. Ga bnw rtyewb pwba nsbbwl yed dluwl, bnw bszuf pya dunmdlspwe\n"

@@ -46,7 +46,8 @@ presumably after IOCCC29 winners are released, issue #1387 can probably be
 closed.
 
 
-## Release 2.11.1 2026-05-06
+
+## Release 2.11.2 2026-05-06
 
 Update as per [jparse repo](https://github.com/xexyl/jparse) 2.5.8 2026-05-06.
 
@@ -57,6 +58,21 @@ Changed `MKIOCCCENTRY_VERSION` to "2.3.1 2026-05-06".
 
 Kept `MIN_MKIOCCCENTRY_VERSION` at "2.3.0 2015-11-30" because while
 `make release` passed, this release while nice, isn't critical.
+
+## Release 2.11.1 2026-03-14
+
+Fix issue #1380. There were two things that had to be done to get this to work
+(though I recommend more testing than what I did, even though I did try various
+combinations) is the `past_winning_author` has to be written to the answers file
+and in `yes_or_no()` the check that returns true if `answer_yes` or `force_yes`
+are true now only returns true if `!read_answers_flag_used`. This way the
+answers file controls the yes or no.
+
+To fix the test script the good slots answers files had to be updated and
+`mkiocccentry_test.sh` had to be updated too (answers function).
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.3.0 2026-03-14"`.
+Updated `MKIOCCCENTRY_TEST_VERSION` to `"2.1.3 2026-03-14"`.
 
 
 ## Release 2.11.0 2025-11-30
