@@ -1,5 +1,22 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.11.2 2026-05-11
+
+Update as per [jparse repo](https://github.com/xexyl/jparse) 2.5.9 2026-05-11
+which has in the Makefiles `-funsigned-char`. This does not, per tests locally,
+cause any problems here, and it might be necessary for another issue over there,
+and since the test suite works there too it should be fine. That issue is very
+low priority but it seems good to force `char`s to be `unsigned`.
+
+I believe this does not necessitate an update to the version of any tool here
+(possibly the parser version should have been updated over there but as no code
+was changed and I did not think of it it'll work for now) so only the repo
+version was changed.
+
+Unless this is a problem that I have not thought of, when this is merged,
+presumably after IOCCC29 winners are released, issue #1387 can probably be
+closed.
+
 
 
 ## Release 2.11.2 2026-05-06

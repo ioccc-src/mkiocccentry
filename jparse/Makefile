@@ -190,7 +190,7 @@ WARN_FLAGS= -pedantic -Wall -Wextra -Wformat -Wno-char-subscripts -Wno-sign-comp
 
 # special compiler flags
 #
-C_SPECIAL=
+C_SPECIAL= -funsigned-char
 
 # special linker flags
 #
