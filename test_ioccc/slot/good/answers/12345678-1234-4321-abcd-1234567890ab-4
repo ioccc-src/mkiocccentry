@@ -12,6 +12,7 @@ https://alt0.example.au/index.html
 @user0@example.au
 @user0
 affiliation for user 0
+y
 first0_middle0_last0
 anon3
 SB
@@ -21,5 +22,6 @@ user3@example.sb
 @user3@example.sb
 
 
+y
 anon3
 ANSWERS_EOF

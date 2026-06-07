@@ -89,7 +89,7 @@
 /*
  * official soup version (aka recipe :-) )
  */
-#define SOUP_VERSION "2.4.0 2015-11-30"		/* format: major.minor[.patch] YYYY-MM-DD */
+#define SOUP_VERSION "2.4.0 2025-11-30"		/* format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official iocccsize version
@@ -100,8 +100,9 @@
 /*
  * official mkiocccentry versions (mkiocccentry itself and answers)
  */
-#define MKIOCCCENTRY_VERSION "2.3.1 2026-05-06"	/* format: major.minor[.patch] YYYY-MM-DD */
-#define MIN_MKIOCCCENTRY_VERSION "2.3.0 2015-11-30"
+
+#define MKIOCCCENTRY_VERSION "2.3.0 2026-03-14"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define MIN_MKIOCCCENTRY_VERSION MKIOCCCENTRY_VERSION
 #define MKIOCCCENTRY_ANSWERS_VERSION "MKIOCCCENTRY_ANSWERS_IOCCC29-1.0" /* answers file version */
 #define MKIOCCCENTRY_ANSWERS_EOF "ANSWERS_EOF" /* answers file EOF marker */
 
@@ -137,13 +138,13 @@
 /*
  * official chkentry version
  */
-#define CHKENTRY_VERSION "2.3.0 2015-11-30"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define CHKENTRY_VERSION "2.3.0 2025-11-30"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_CHKENTRY_VERSION CHKENTRY_VERSION
 
 /*
  * official chksubmit version
  */
-#define CHKSUBMIT_VERSION "2.1.0 2015-11-30"	/* format: major.minor[.patch] YYYY-MM-DD */
+#define CHKSUBMIT_VERSION "2.1.0 2025-11-30"	/* format: major.minor[.patch] YYYY-MM-DD */
 #define MIN_CHKSUBMIT_VERSION CHKSUBMIT_VERSION
 
 /*
