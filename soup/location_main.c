@@ -87,6 +87,7 @@ static const char * const usage_msg =
     "    >=4\tinternal error\n"
     "\n"
     "%s version: %s\n"
+    "mkiocccentry repo release: %s\n"
     "jparse UTF-8 version: %s\n"
     "jparse library version: %s";
 
@@ -140,6 +141,7 @@ main(int argc, char **argv)
             break;
         case 'V':               /* -V - print version and exit */
             print("%s version: %s\n", LOCATION_BASENAME, LOCATION_VERSION);
+	    print("mkiocccentry repo release: %s\n", MKIOCCCENTRY_REPO_VERSION);
 	    print("jparse UTF-8 version: %s\n", JPARSE_UTF8_VERSION);
 	    print("jparse library version: %s\n", JPARSE_LIBRARY_VERSION);
             exit(2); /*ooo*/
@@ -354,7 +356,7 @@ usage(int exitcode, char const *prog, char const *str)
     }
 
     fprintf_usage(exitcode, stderr, usage_msg, prog, DBG_DEFAULT, LOCATION_BASENAME, LOCATION_VERSION,
-	    JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
+            MKIOCCCENTRY_REPO_VERSION, JPARSE_UTF8_VERSION, JPARSE_LIBRARY_VERSION);
     exit(exitcode); /*ooo*/
     not_reached();
 }

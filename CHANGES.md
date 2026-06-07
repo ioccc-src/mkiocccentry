@@ -1,5 +1,33 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.11.3 2026-06-07
+
+Resolve issues #1389, #1379, 1373.
+
+Remove the 'total file size' check in `mkiocccentry`. This does not work as
+intended because it does not account for the JSON files and it does not account
+for the compression (in fact the total file size is validated through `txzchk`
+and it's a fatal error then but if it was before that it would mean users would
+have to, assuming no answers file, input data again if say on the first time
+they had this problem, and that is just one issue amongst others).
+
+Updated tools (except `mkiocccentry` which already did this) to show in `-V` and
+`-h` option (with the latter it is shown with any usage error) the repo version
+as well (right under the tool's version and above the libraries). The tools are:
+`txzchk`, `fnamchk`, `location`, `chkentry` and `chksubmit`.
+
+Type fix in `bug_report.sh`.
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.3.2 2026-06-07"`.
+Updated `MIN_MKIOCCCENTRY_VERSION` to `MKIOCCCENTRY_VERSION`. This is because
+we're in between contests now and the next contest will require the current
+version.
+
+Because the only other code changes were to print the repo version those tools
+did not have their version updated. The only reason `mkiocccentry` had its
+version updated is because a functional change was made.
+
+
 ## Release 2.11.2 2026-05-11
 
 Update as per [jparse repo](https://github.com/xexyl/jparse) 2.5.9 2026-05-11

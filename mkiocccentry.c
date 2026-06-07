@@ -218,7 +218,6 @@ static int workdirfd = -1;              /* workdir FD */
 static int cwd = -1;                    /* initial directory FD */
 static int answersfd = -1;              /* -i answers fd */
 static struct stat answers_st;
-static off_t total_file_size = 0;       /* total size of all files to be copied (in topdir) */
 static long answer_seed = NO_SEED;	/* if != 0 ==> srandom argument used to seed generation of answers */
 static FILE *manifest = NULL;           /* manifest file */
 
@@ -1940,7 +1939,6 @@ show_copy_list(struct walk_stat *wstat, char const *context, struct info *infop,
         not_reached();
     } else {
         len = dyn_array_tell(wstat->file);
-        total_file_size = 0; /* paranoia reset */
         if (len <= 0) {
             err(4, __func__, "list of files is empty"); /*ooo*/
             not_reached();
@@ -1966,30 +1964,7 @@ show_copy_list(struct walk_stat *wstat, char const *context, struct info *infop,
                 } else if (path_in_item_array(wstat->prune, p->fts_path) != NULL) {
                     continue;
                 }
-                total_file_size += p->st_size;
                 print("%s\n", p->fts_path);
-            }
-            print("\nEstimated total file size: %lld.\n", (long long)total_file_size);
-            if (!answer_yes) {
-                if (total_file_size > MAX_SUM_FILELEN) {
-                    /*
-                     * We probably should check >= because we have to create the
-                     * JSON files as well. But since those are an indeterminate
-                     * size but are also > 1 byte it doesn't really matter.
-                     */
-                    print("\nWARNING: the %lld estimate exceeds the Rule 17 limit of %d.\n",
-                            (long long)total_file_size, MAX_SUM_FILELEN);
-                }
-                para("",
-                     "If this list is incorrect, you will have to fix your topdir and try again.",
-                     NULL);
-                yorn = yes_or_no("\nDo you wish to continue? [Yn]", true);
-                if (!yorn) {
-                    print("we suggest you fix your %s directory,\ndelete %s and try again\n",
-                            wstat->topdir, submit_path);
-                    err(5, __func__, "aborting because user said files list is not OK"); /*ooo*/
-                    not_reached();
-                }
             }
         }
     }
@@ -3353,7 +3328,7 @@ get_contest_id(bool *testp, char const *uuidfile, char *uuidstr)
 	/*
 	 * prompt for the contest ID
 	 */
-	calloc_ret = prompt("Enter IOCCC contest ID or test", &len);
+	calloc_ret = prompt("Enter the UUID username you received in the welcome email or test", &len);
 	if (!seen_answers_header && !strcmp(calloc_ret, MKIOCCCENTRY_ANSWERS_VERSION)) {
 	    dbg(DBG_HIGH, "found answers header");
 	    seen_answers_header = true;
