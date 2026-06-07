@@ -524,7 +524,7 @@ txzchk.o: txzchk.c
 	${CC} ${CFLAGS} txzchk.c -c
 
 txzchk: txzchk.o soup/soup.a cpath/libcpath.a pr/libpr.a jparse/libjparse.a dyn_array/libdyn_array.a dbg/libdbg.a
-	${CC} ${CFLAGS} $^ -o $@
+	${CC} ${CFLAGS} $^ -lm -o $@
 
 chkentry.o: chkentry.c
 	${CC} ${CFLAGS} chkentry.c -c
