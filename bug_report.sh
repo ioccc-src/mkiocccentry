@@ -198,7 +198,7 @@ done
 
 # make sure that make is an executable file
 #
-# First, if the user for some reason provided an empty string, try an correct it
+# First, if the user for some reason provided an empty string, try and correct it
 # for them:
 if [[ -z "$MAKE" ]]; then
 	# try for gmake first
