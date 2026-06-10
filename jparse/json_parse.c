@@ -2407,14 +2407,14 @@ json_alloc(enum item_type type)
      *		https://c-faq.com/null/runtime0.html
      *
      * The answer is not so simple: especially when you have to take into account
-     * the way a compiler writer (or compiler feature or compiler mis-feature)
+     * the way a compiler writer (or compiler feature or compiler misfeature)
      * might interpret such FAQs.
      *
      * Instead of diving into a pedantic details for NULL vs. 0, we explicitly
      * set NULL pointers.  And while 0 == false, we also explicitly set both
      * parsed and converted to false as well.
      *
-     * One advantage of such explicit setting is that certain code analyzers will
+     * One advantage of such explicit setting is that certain code analysers will
      * understand the NULL or false intent of such structure elements.
      */
     switch (ret->type) {

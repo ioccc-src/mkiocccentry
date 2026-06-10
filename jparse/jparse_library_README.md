@@ -451,7 +451,7 @@ A note on encoding/decoding UTF-8/UTF-16 codepoints is in order. The
 spec and that function has the **encoding** of UTF-8/UTF-16 codepoints. The
 `json_encode()` function encodes a JSON string according to the so-called JSON
 spec and the function does **NOT** encode UTF-8/UTF-16 codepoints, but it
-should. We might call this a mis-feature that should be corrected, but for now
+should. We might call this a misfeature that should be corrected, but for now
 this is not the case. The [documentation on
 jstrdecode](jparse_utils_README.md#jstrdecode) and the [documentation on
 jstrencode](jparse_utils_README.md#jstrencode) give more details on this.

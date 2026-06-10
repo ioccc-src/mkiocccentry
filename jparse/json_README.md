@@ -520,7 +520,7 @@ used as names, does not require that name strings be unique, and
 does not assign any significance to the ordering of name/value pairs
 ```
 
-The authors of this document have identified a number of mis-features
+The authors of this document have identified a number of misfeatures
 of the **so-called JSON spec** in addition to how it fails to even
 live up to various [claims made by the
 creators](https://www.youtube.com/watch?v=x92vbAN_j1k&list=PLEzQf147-uEoNCeDlRrXv6ClsLDN-HtNm&index=2&t=1343s)
@@ -532,9 +532,8 @@ may serve as a case study for **how _not_ to write a specification**.
 We end this **Substandard JSON spec editorial** with the following
 question:
 
-```
-How many mis-features and flaws can you find in the "so-called JSON spec"? :-)
-```
+> How many misfeatures and flaws can you find in the "so-called JSON spec"? :-)
+
 
 ### Appendix A
 

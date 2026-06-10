@@ -112,6 +112,7 @@ vrergfB(int four, int two)
     int last_c = '\0';		/* last char detected */
     unsigned no_comment;	/* is a comment */
     size_t ic = 0;		/* What is IC? First ask yourself what OOC is! */
+    size_t ooc = 0;		/* What is OOC? First ask yourself what IC is! */
 
     /*
      * The next comment is as empty as this one.
@@ -193,22 +194,15 @@ vrergfB(int four, int two)
 	    ++p; /* be positive and look backwards to the next one! */
 
 	/*
-	 * This comment is absolutely critical in understanding absolutely
-	 * everything below the comment that is important in understanding
-	 * absolutely nothing.
+	 * Even though this comment is complete rubbish, this comment is
+         * absolutely critical in understanding absolutely everything below the
+         * comment that is important in understanding absolutely nothing.
 	 */
 
 	/*
-	 * This comment is obfuscated and so is the next comment.
+	 * This comment is neither obfuscated nor unobfuscated and is also
+         * obfuscated and unobfuscated whereas the above comment isn't.
 	 */
-	} else if (!isascii(*p)) {
-	    ret = fputc(*p, stdout);
-	    if (ret == EOF) {
-		fwarnp(stderr, "\b\b\b\b\b\b\b\b\bEOF", "if we didn't ASCII stupid question don't give us a stupid ANSI!\n");
-	    } else {
-		++ic;
-	    }
-
 	/*
 	 * The previous comment wasn't obfuscated but this one wasn't either.
 	 */
@@ -216,6 +210,7 @@ vrergfB(int four, int two)
 	    ret = fputc(*p, stdout);
 	    if (ret == EOF) {
 		fwarnp(stderr, "abcdefg..", "that was NOT in character :-(\n");
+                ++ooc;
 	    } else {
 		++ic;
 	    }
@@ -228,7 +223,10 @@ vrergfB(int four, int two)
 	    /*
 	     * This comment explains the above comment because the above comment
 	     * explains absolutely nothing.
+             *
+             * It also explains itself because it does not explain itself.
 	     */
+
 	    /* this line was empty before it was documented */
 
 	    /* case: just in case we consider the case */
@@ -259,6 +257,7 @@ vrergfB(int four, int two)
 		    stdout);
 	    if (ret == EOF) {
 		fwarnp(stderr, "abcdefg..", "that character was absolutely mixed with sin!\n");
+                ++ooc;
 	    } else {
 		++ic;
 	    }
@@ -295,7 +294,8 @@ vrergfB(int four, int two)
     /*
      * This comment is empty but so is the next one.
      */
-    dbg(DBG_LOW, "FUN FACT: there %s %zu in character character%s.", ic != 1 ? "were":"was", ic, ic != 1 ? "s":"");
+    dbg(DBG_LOW, "FUN FACT: there %s/%s %zu/%zu in/out of character character%s/character%s.", ic != 1 ? "were":"was",
+            ooc != 1?"were":"was", ic, ooc, ic != 1 ? "s":"", ooc != 1 ? "s":"");
 
     /*
      * and in the end ... take a moment to bow before exiting stage left
@@ -308,6 +308,14 @@ vrergfB(int four, int two)
     if (no_comment != 0+0) {
 	fwarnp(stderr, __func__, "possible insomnia detected ... whee! :-)");
     }
+    /*
+     * only remove this comment if you want to end the world. If you don't
+     * understand how this works then do not remove the comment.
+     *
+     * PS: even if you think you understand the above comment you actually do
+     * not understand the above comment. Thus we insist you do NOT remove the
+     * above comment!
+     */
     (void) exit(42+(((four-two)>0?(four-two):(-four+two)) % (5*42))); /*ooo*/
     not_reached(); /*allegedly*/
 

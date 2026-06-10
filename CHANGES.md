@@ -1,5 +1,18 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.11.4 2026-06-10
+
+Sync [jparse repo](https://github.com/xexyl/jparse). The change is `mis-feature`
+to `misfeature` (this is actually in OED). There are other repos and files here
+that should be corrected, as insignificant as it probably is. These can be done
+as important fixes are made, of which some are pending (and some have been
+started but which will likely not be done for a while).
+
+A minor insignificant change in `soup/` was made but since it was updated it
+still suggests a change in version so: updated `SOUP_VERSION` to "2.4.0
+2026-06-10".
+
+
 ## Release 2.11.3 2026-06-07
 
 Resolve issues #1389, #1379, 1373.
