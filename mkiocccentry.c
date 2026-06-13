@@ -245,8 +245,8 @@ static void mkiocccentry_sanity_chks(struct info *infop, char const *workdir, ch
                                      char *make, char *rm);
 static char *prompt(char const *str, size_t *lenp);
 static char *get_contest_id(bool *testp, char const *uuidf, char *uuidstr);
-static int get_submit_slot(struct info *infop);
-static char *mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
+static unsigned int get_submit_slot(struct info *infop);
+static char *mk_submission_dir(char const *workdir, char const *ioccc_id, unsigned int submit_slot,
 			       char **tarball_path, time_t tstamp, bool test_mode, bool force_remove,
 			       char const *rm);
 static bool inspect_Makefile(char const *Makefile, struct info *infop);
@@ -266,9 +266,9 @@ static void form_info(struct info *infop);
 static void form_tarball(char const *workdir, char const *submission_dir, char const *tarball_path, char const *tar,
 			 char const *ls, char const *txzchk, char const *fnamchk, bool test_mode);
 static void remind_user(char const *workdir, char const *submission_dir, char const *tar, char const *tarball_path,
-			bool test_mode, int submit_slot);
+			bool test_mode, unsigned int submit_slot);
 static void show_registration_url(void);
-static void show_submit_url(char const *workdir, char const *tarball_path, int slot_number);
+static void show_submit_url(char const *workdir, char const *tarball_path, unsigned int slot_number);
 static void read_manifest(struct walk_stat *wstat);
 static void read_ignore(char const *ignore, struct walk_stat *wstat);
 
@@ -1087,6 +1087,11 @@ main(int argc, char *argv[])
             errp(36, __func__, "cannot obtain answers FD");
             not_reached();
         }
+
+        /*
+         * clear out answers_st first
+         */
+        memset(&answers_st, 0, sizeof(answers_st));
         /*
          * get stat(2) info for answers file
          */
@@ -1106,7 +1111,7 @@ main(int argc, char *argv[])
      * obtain submit slot number
      */
     info.submit_slot = get_submit_slot(&info);
-    dbg(DBG_LOW, "Submission: slot number: %d", info.submit_slot);
+    dbg(DBG_LOW, "Submission: slot number: %u", info.submit_slot);
 
     /*
      * create submission directory
@@ -1154,7 +1159,7 @@ main(int argc, char *argv[])
             not_reached();
 	}
 	errno = 0;			/* pre-clear errno for errp() */
-	ret = fprintf(answersp, "%d\n", info.submit_slot);
+	ret = fprintf(answersp, "%u\n", info.submit_slot);
 	if (ret <= 0) {
 	    errp(41, __func__, "fprintf error printing submit slot number to the answers file");
             not_reached();
@@ -3424,12 +3429,12 @@ get_contest_id(bool *testp, char const *uuidfile, char *uuidstr)
  *      infop   - pointer to info structure
  *
  * returns:
- *      submit slot number >= 0 <= MAX_SUBMIT_SLOT
+ *      submit slot number <= MAX_SUBMIT_SLOT (it is unsigned)
  */
-static int
+static unsigned int
 get_submit_slot(struct info *infop)
 {
-    int submit_slot;		/* submit slot number */
+    unsigned int submit_slot = MAX_SUBMIT_SLOT + 1; /* submit slot number */
     char *submission_str;	/* submit slot number string */
     int ret;			/* libc function return */
     char guard;			/* scanf guard to catch excess amount of input */
@@ -3448,7 +3453,7 @@ get_submit_slot(struct info *infop)
      */
     if (need_hints) {
         errno = 0;		/* pre-clear errno for errp() */
-        ret = printf("\nYou are allowed to submit up to %d submissions to a given IOCCC.\n", MAX_SUBMIT_SLOT + 1);
+        ret = printf("\nYou are allowed to submit up to %u submissions to a given IOCCC.\n", MAX_SUBMIT_SLOT + 1);
         if (ret <= 0) {
             errp(137, __func__, "printf error printing number of submissions allowed");
             not_reached();
@@ -3478,10 +3483,10 @@ get_submit_slot(struct info *infop)
 	 * check the submit slot number
 	 */
 	errno = 0;		/* pre-clear errno for errp() */
-	ret = sscanf(submission_str, "%d%c", &submit_slot, &guard);
-	if (ret != 1 || submit_slot < 0 || submit_slot > MAX_SUBMIT_SLOT) {
+	ret = sscanf(submission_str, "%u%c", &submit_slot, &guard);
+	if (ret != 1 || submit_slot > MAX_SUBMIT_SLOT) {
 	    errno = 0;		/* pre-clear errno for errp() */
-	    ret = fprintf(stderr, "\nThe submit slot number must be a number from 0 through %d; please re-enter.\n",
+	    ret = fprintf(stderr, "\nThe submit slot number must be a number from 0 through %u; please re-enter.\n",
 		    MAX_SUBMIT_SLOT);
 	    if (ret <= 0) {
 		errp(138, __func__, "fprintf error while informing about the valid submit slot number range");
@@ -3494,14 +3499,14 @@ get_submit_slot(struct info *infop)
                 free(submission_str);
                 submission_str = NULL;
             }
-	    submit_slot = -1;	/* invalidate input */
+	    submit_slot = MAX_SUBMIT_SLOT + 1;	/* invalidate input */
 	} else {
             /*
              * verify the slot is correct
              */
             if (need_confirm && !answer_yes) {
                 errno = 0;		/* pre-clear errno for errp() */
-                ret = printf("\nThe slot number you entered is: %d\n",
+                ret = printf("\nThe slot number you entered is: %u\n",
                              submit_slot);
                 if (ret <= 0) {
                     errp(139, __func__, "fprintf error writing slot number");
@@ -3519,12 +3524,12 @@ get_submit_slot(struct info *infop)
 	    submission_str = NULL;
 	}
 
-    } while (submit_slot < 0 || submit_slot > MAX_SUBMIT_SLOT || !yorn);
+    } while (submit_slot > MAX_SUBMIT_SLOT || !yorn);
 
     /*
      * report on the result of the submit slot number validation
      */
-    dbg(DBG_MED, "IOCCC submit slot number is valid: %d", submit_slot);
+    dbg(DBG_MED, "IOCCC submit slot number is valid: %u", submit_slot);
 
     /*
      * return the submit slot number
@@ -3555,7 +3560,7 @@ get_submit_slot(struct info *infop)
  * This function does not return on error or if the submission directory cannot be formed.
  */
 static char *
-mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
+mk_submission_dir(char const *workdir, char const *ioccc_id, unsigned int submit_slot,
 		  char **tarball_path, time_t tstamp, bool test_mode, bool force_remove,
 		  char const *rm)
 {
@@ -3574,7 +3579,7 @@ mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
     }
     test = test_submit_slot(submit_slot);
     if (test == false) {
-	err(141, __func__, "submit slot number: %d must >= 0 and <= %d", submit_slot, MAX_SUBMIT_SLOT);
+	err(141, __func__, "submit slot number: %u must >= 0 and <= %u", submit_slot, MAX_SUBMIT_SLOT);
 	not_reached();
     }
 
@@ -3593,7 +3598,7 @@ mk_submission_dir(char const *workdir, char const *ioccc_id, int submit_slot,
 	not_reached();
     }
     errno = 0;			/* pre-clear errno for errp() */
-    ret = snprintf(submission_dir, submission_dir_len + 1, "%s/%s-%d", workdir, ioccc_id, submit_slot);
+    ret = snprintf(submission_dir, submission_dir_len + 1, "%s/%s-%u", workdir, ioccc_id, submit_slot);
     if (ret <= 0) {
 	errp(143, __func__, "snprintf to form submission directory failed");
 	not_reached();
@@ -4639,7 +4644,7 @@ yes_or_no(char const *question, bool def_answer)
 	 * convert response to lower case
 	 */
 	for (p = response; *p != '\0'; ++p) {
-	    if (isascii(*p) && isalpha(*p)) {
+	    if (isalpha((unsigned char)*p)) {
 		*p = (char)tolower(*p);
 	    }
 	}
@@ -4840,7 +4845,7 @@ get_title(struct info *infop)
 	 * verify that the title has only POSIX portable filename and + chars
 	 */
 	safe = safe_path_str(title, false, false); /* ^[0-9a-z._][0-9a-z._+-]*$ */
-	if (!isascii(title[0]) || !isalnum(title[0]) || safe == false) {
+	if (!isalnum((unsigned char)title[0]) || safe == false) {
 
 	    /*
 	     * reject invalid chars in title
@@ -5140,7 +5145,7 @@ noprompt_yes_or_no(void)
      * convert response to lower case
      */
     for (p = response; *p != '\0'; ++p) {
-	if (isascii(*p) && isalpha(*p)) {
+	if (isalpha((unsigned char)*p)) {
 	    *p = (char)tolower(*p);
 	}
     }
@@ -5514,8 +5519,8 @@ get_author_info(struct author **author_set_p)
 	     * inspect code input
 	     */
 	    if (len != 2 ||
-		!isascii(author_set[i].location_code[0]) || !isalpha(author_set[i].location_code[0]) ||
-		!isascii(author_set[i].location_code[1]) || !isalpha(author_set[i].location_code[1])) {
+		!isalpha((unsigned char)author_set[i].location_code[0]) ||
+		!isalpha((unsigned char)author_set[i].location_code[1])) {
 
 		/*
 		 * provide more help on location/country codes
@@ -7375,7 +7380,7 @@ form_tarball(char const *workdir, char const *submission_dir, char const *tarbal
  */
 static void
 remind_user(char const *workdir, char const *submission_dir, char const *tar, char const *tarball_path,
-	    bool test_mode, int slot_number)
+	    bool test_mode, unsigned int slot_number)
 {
     int ret;			/* libc function return */
     char *submission_dir_esc;
@@ -7546,7 +7551,7 @@ show_registration_url(void)
  * NOTE: if either workdir or tarball_path is NULL we will do nothing.
  */
 static void
-show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
+show_submit_url(char const *workdir, char const *tarball_path, unsigned int slot_number)
 {
     int ret;			/* libc function return */
 
@@ -7561,7 +7566,7 @@ show_submit_url(char const *workdir, char const *tarball_path, int slot_number)
      * inform the user about the submit server
      */
     ret = printf("\nWhen the contest is open (see https://www.ioccc.org/status.html),\n"
-		 "after you have registered, you must upload into slot %d:\n\n\t%s/%s\n", slot_number,
+		 "after you have registered, you must upload into slot %u:\n\n\t%s/%s\n", slot_number,
 		 workdir, tarball_path);
     if (ret <= 0) {
 	errp(56, __func__, "printf error printing tarball path and slot number");

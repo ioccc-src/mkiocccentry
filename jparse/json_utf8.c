@@ -107,7 +107,7 @@ utf8len(const char *str, int32_t surrogate)
 	/*
 	 * extra sanity check
 	 */
-	if (!isxdigit(xa) || !isxdigit(xb) || !isxdigit(xc) || !isxdigit(xd)) {
+	if (!isxdigit((unsigned char)xa) || !isxdigit((unsigned char)xb) || !isxdigit((unsigned char)xc) || !isxdigit((unsigned char)xd)) {
 	    warn(__func__, "sscanf() found \\uxxxx but not all values are hex digits!");
 	    len = -1;
 

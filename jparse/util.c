@@ -298,6 +298,12 @@ string_to_uintmax(char const *str, uintmax_t *ret)
  *
  *	true	==> ptr points to a base 10 integer in ASCII
  *	false	==> ptr does NOT point to a base 10 integer in ASCII, or if ptr is NULL, or len <= 0
+ *
+ * NOTE: although we use the term ASCII, isascii() is not used because it was
+ * removed from POSIX. Instead we cast the arg to the ctype.h functions/macros
+ * (the is*() ones) to an unsigned char because the standard states that,
+ * although the arg is an int, it is undefined if it is not representable as an
+ * unsigned char or EOF.
  */
 bool
 is_decimal(char const *ptr, size_t len)
@@ -343,7 +349,7 @@ is_decimal(char const *ptr, size_t len)
      *	     "reasons other than technical reasons" *sigh*.
      */
     for (i=start; i < len; ++i) {
-	if (!isascii(ptr[i]) || !isdigit(ptr[i])) {
+	if (!isdigit((unsigned char)ptr[i])) {
 	    /* found a non-ASCII digit */
 	    return false;
 	}
@@ -425,6 +431,12 @@ is_decimal_str(char const *str, size_t *retlen)
  *
  *	true	==> ptr points to a base 10 floating point notation in ASCII
  *	false	==> ptr does NOT point to a base 10 floating point notation in ASCII, or if ptr is NULL, or len <= 0
+ *
+ * NOTE: although we use the term ASCII, isascii() is not used because it was
+ * removed from POSIX. Instead we cast the arg to the ctype.h functions/macros
+ * (the is*() ones) to an unsigned char because the standard states that,
+ * although the arg is an int, it is undefined if it is not representable as an
+ * unsigned char or EOF.
  */
 bool
 is_floating_notation(char const *str, size_t len)
@@ -450,7 +462,7 @@ is_floating_notation(char const *str, size_t len)
 	return false;	/* processing failed */
     }
 
-    if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
+    if (!isdigit((unsigned char)str[len-1])) {
 	warn(__func__, "str[%zu-1] is not an ASCII digit: 0x%02x for str: %s", len, (int)str[len-1], str);
 	return false;	/* processing failed */
     }
@@ -573,6 +585,12 @@ is_floating_notation_str(char const *str, size_t *retlen)
  *
  *	true	==> ptr points to a base 10 exponent notation in ASCII
  *	false	==> ptr does NOT point to a base 10 exponent notation in ASCII, or if ptr is NULL, or len <= 0
+ *
+ * NOTE: although we use the term ASCII, isascii() is not used because it was
+ * removed from POSIX. Instead we cast the arg to the ctype.h functions/macros
+ * (the is*() ones) to an unsigned char because the standard states that,
+ * although the arg is an int, it is undefined if it is not representable as an
+ * unsigned char or EOF.
  */
 bool
 is_e_notation(char const *str, size_t len)
@@ -601,7 +619,7 @@ is_e_notation(char const *str, size_t len)
 	return false;	/* processing failed */
     }
 
-    if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
+    if (!isdigit((unsigned char)str[len-1])) {
 	warn(__func__, "str[%zu-1] is not an ASCII digit: 0x%02x for str: %s", len, (int)str[len-1], str);
 	return false;	/* processing failed */
     }
@@ -647,7 +665,7 @@ is_e_notation(char const *str, size_t len)
     /*
      * JSON spec detail: floating point numbers must end in a digit
      */
-    } else if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
+    } else if (!isdigit((unsigned char)str[len-1])) {
 	dbg(DBG_HIGH, "in %s(): floating point numbers must end in a digit: \"%s\"",
 		       __func__, str);
 	return false;	/* processing failed */
@@ -747,7 +765,7 @@ is_e_notation(char const *str, size_t len)
 	/*
 	 * JSON spec detail: e notation number must have digit before e or E
 	 */
-	} else if (e > str && (!isascii(e[-1]) || !isdigit(e[-1]))) {
+	} else if (e > str && !isdigit((unsigned char)e[-1])) {
 	    dbg(DBG_HIGH, "in %s(): e notation numbers must have digit before e or E: \"%s\"",
 			  __func__, str);
 	    return false;	/* processing failed */
@@ -762,7 +780,7 @@ is_e_notation(char const *str, size_t len)
 	    /*
 	     * JSON spec detail: e notation number with e+ or E+ must be followed by a digit
 	     */
-	    if (e+1 < &(str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
+	    if (e+1 < &(str[len-1]) && !isdigit((unsigned char)e[2])) {
 		dbg(DBG_HIGH, "in %s(): :e notation number with e+ or E+ must be followed by a digit \"%s\"",
 			      __func__, str);
 		return false;	/* processing failed */
@@ -778,7 +796,7 @@ is_e_notation(char const *str, size_t len)
 	    /*
 	     * JSON spec detail: e notation number with e- or E- must be followed by a digit
 	     */
-	    if (e+1 < &(str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
+	    if (e+1 < &(str[len-1]) && !isdigit((unsigned char)e[2])) {
 		dbg(DBG_HIGH, "in %s(): :e notation number with e- or E- must be followed by a digit \"%s\"",
 			      __func__, str);
 		return false;	/* processing failed */
@@ -787,17 +805,15 @@ is_e_notation(char const *str, size_t len)
 	/*
 	 * JSON spec detail: e notation number must have + or - or digit after e or E
 	 */
-	} else if (!isascii(e[1]) || !isdigit(e[1])) {
+	} else if (!isdigit((unsigned char)e[1])) {
 	    dbg(DBG_HIGH, "in %s(): e notation numbers must follow e or E with + or - or digit: \"%s\"",
 			  __func__, str);
 	    return false;	/* processing failed */
 	}
     }
 
-
     return true;
 }
-
 
 /*
  * is_e_notation_str - if the string buffer str is a base 10 exponent floating point notation in ASCII
@@ -816,6 +832,12 @@ is_e_notation(char const *str, size_t len)
  *
  * NOTE: This function calls is_e_notation().  See that function for details on
  *	 what is and is not considered exponent notation.
+ *
+ * NOTE: although we use the term ASCII, isascii() is not used because it was
+ * removed from POSIX. Instead we cast the arg to the ctype.h functions/macros
+ * (the is*() ones) to an unsigned char because the standard states that,
+ * although the arg is an int, it is undefined if it is not representable as an
+ * unsigned char or EOF.
  */
 bool
 is_e_notation_str(char const *str, size_t *retlen)
@@ -868,6 +890,12 @@ is_e_notation_str(char const *str, size_t *retlen)
  * returns:
  *	number of non-whitespace/non-NUL bytes found, or
  *	0 if no non-whitespace/non-NUL bytes found, or if buf == NULL
+ *
+ * NOTE: although we use the term ASCII, isascii() is not used because it was
+ * removed from POSIX. Instead we cast the arg to the ctype.h functions/macros
+ * (the is*() ones) to an unsigned char because the standard states that,
+ * although the arg is an int, it is undefined if it is not representable as an
+ * unsigned char or EOF.
  */
 size_t
 find_text(char const *ptr, size_t len, char **first)
@@ -891,7 +919,7 @@ find_text(char const *ptr, size_t len, char **first)
      * scan the buffer for non-whitespace that is not NUL
      */
     for (i=0; i < len; ++i) {
-	if (!isascii(ptr[i]) || !isspace(ptr[i]) || ptr[i] == '\0') {
+	if (!isspace((unsigned char)ptr[i]) || ptr[i] == '\0') {
 	    break;
 	}
     }
@@ -914,7 +942,7 @@ find_text(char const *ptr, size_t len, char **first)
      * determine the length of non-whitespace that is not NUL
      */
     for (ret=1, ++i; i < len; ++i, ++ret) {
-	if ((isascii(ptr[i]) && isspace(ptr[i])) || ptr[i] == '\0') {
+	if (isspace((unsigned char)ptr[i]) || ptr[i] == '\0') {
 	    break;
 	}
     }

@@ -1287,13 +1287,13 @@ bool
 chk_submit_slot(struct json const *node,
 	      unsigned int depth, struct json_sem *sem, struct json_sem_val_err **val_err)
 {
-    int *value = NULL;				/* JSON_NUMBER as decoded int */
+    unsigned int *value = NULL;				/* JSON_NUMBER as decoded int */
     bool test = false;				/* validation test result */
 
     /*
      * firewall - args and JSON number as int check
      */
-    value = sem_member_value_int(node, depth, sem, __func__, val_err);
+    value = sem_member_value_unsigned(node, depth, sem, __func__, val_err);
     if (value == NULL) {
 	/* sem_member_value_int() will have set *val_err */
 	return false;
@@ -2689,8 +2689,8 @@ chk_tarball(struct json const *node,
     struct json *parent = NULL;			/* JSON parse tree node parent */
     struct json *IOCCC_contest_id_node = NULL;	/* JSON parse node containing IOCCC_contest_id */
     char *IOCCC_contest_id = NULL;	/* pointer to author count as int from JSON parse node for IOCCC_contest_id */
-    struct json *submit_slot_node = NULL;	/* JSON parse node containing submit_slot */
-    int *submit_slot = NULL;			/* pointer to author count as int from JSON parse node for submit_slot */
+    struct json *submit_slot_node = NULL; /* JSON parse node containing submit_slot */
+    unsigned int *submit_slot = NULL;	/* pointer to author count as int from JSON parse node for submit_slot */
     struct json *test_mode_node = NULL;		/* JSON parse node containing test_mode */
     bool *test_mode = NULL;			/* pointer to author count as int from JSON parse node for test_mode */
     struct json *formed_timestamp_node = NULL;	/* JSON parse node containing formed_timestamp */
@@ -2780,7 +2780,7 @@ chk_tarball(struct json const *node,
     /*
      * obtain the entry number
      */
-    submit_slot = sem_member_value_int(submit_slot_node, depth, sem, __func__, val_err);
+    submit_slot = sem_member_value_unsigned(submit_slot_node, depth, sem, __func__, val_err);
     if (submit_slot == NULL) {
 	/* sem_member_value_int() will have set *val_err */
 	return false;

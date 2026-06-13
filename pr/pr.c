@@ -5,7 +5,7 @@
  *
  *	-- J.R.R. Tolkien
  *
- * Copyright (c) 2008-2025 by Landon Curt Noll and Cody Boone Ferguson.
+ * Copyright (c) 2008,2022-2026 by Landon Curt Noll and Cody Boone Ferguson.
  * All rights reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
@@ -36,7 +36,7 @@
  * The origin of libpr dates back to code written by Landon Curt Noll around 2008.
  *
  * That 2008 code was copied into the jparse repo, and the mkiocccentry toolkit repo
- * by Landon Curt Noll.  While in the jparse repo, both Landon Curt Noll and
+ * by Landon Curt Noll. While in the jparse repo, both Landon Curt Noll and
  * Cody Boone Ferguson added to and improved this code base:
  *
  *  @xexyl
@@ -734,7 +734,7 @@ readline_dup(char **linep, bool strip, size_t *lenp, FILE *stream)
     if (strip) {
 	if (len > 0) {
 	    for (i = len - 1; i >= 0; --i) {
-		if (isascii(ret[i]) && isspace(ret[i])) {
+		if (isspace((unsigned char)ret[i])) {
 		    /*
 		     * strip trailing ASCII whitespace
 		     */
@@ -1097,7 +1097,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 	/*
 	 * case: character is non-NUL start or non-NUL end or non-ASCII character
 	 */
-	if ((start != 0 && c == start) || (end != 0 && c == end) || !isascii(c)) {
+	if ((start != 0 && c == start) || (end != 0 && c == end)) {
 
 	    /* print character as \x99 if non-NULL stream to avoid start/end confusion */
 	    if (stream != NULL) {
@@ -1285,9 +1285,9 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
 	    default:	/* other characters */
 
 		/*
-		 * case: ASCII printable character
+		 * case: printable character
 		 */
-		if (isascii(c) && isprint(c)) {
+		if (isprint((unsigned char)c)) {
 
 		    /* print character if non-NULL stream */
 		    if (stream != NULL) {

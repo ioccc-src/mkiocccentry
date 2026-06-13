@@ -2530,6 +2530,12 @@ json_alloc(enum item_type type)
  *
  * NOTE: While it is OK if str has trailing whitespace, str[len-1] must be an
  *	 ASCII digit.  It is assumed that str[len-1] is the final JSON number character.
+ *
+ * NOTE: although we use the term ASCII, isascii() is not used because it was
+ * removed from POSIX. Instead we cast the arg to the ctype.h functions/macros
+ * (the is*() ones) to an unsigned char because the standard states that,
+ * although the arg is an int, it is undefined if it is not representable as an
+ * unsigned char or EOF.
  */
 static bool
 json_process_decimal(struct json_number *item, char const *str, size_t len)
@@ -2556,7 +2562,7 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
 	warn(__func__, "called with empty string");
 	return false;	/* processing failed */
     }
-    if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
+    if (!isdigit((unsigned char)str[len-1])) {
 	warn(__func__, "str[%zu-1] is not an ASCII digit: 0x%02x for str: %s", len, (int)str[len-1], str);
 	return false;	/* processing failed */
     }
@@ -2585,7 +2591,7 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
         /*
 	 * JSON spec detail: leading -0 followed by digits - invalid JSON
 	 */
-	} else if (len > 2 && str[1] == '0' && isascii(str[2]) && isdigit(str[2])) {
+	} else if (len > 2 && str[1] == '0' && isdigit((unsigned char)str[2])) {
 	    dbg(DBG_HIGH, "in %s(): called with -0 followed by more digits: <%s>",
 			  __func__, str);
 	    return false;	/* processing failed */
@@ -2600,7 +2606,7 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
         /*
 	 * JSON spec detail: leading 0 followed by digits - invalid JSON
 	 */
-	if (len > 1 && str[0] == '0' && isascii(str[1]) && isdigit(str[1])) {
+	if (len > 1 && str[0] == '0' && isdigit((unsigned char)str[1])) {
 	    dbg(DBG_HIGH, "in %s(): called with 0 followed by more digits: <%s>",
 			  __func__, str);
 	    return false;	/* processing failed */
@@ -2864,6 +2870,12 @@ json_process_decimal(struct json_number *item, char const *str, size_t len)
  * NOTE: While it is OK if str has trailing whitespace, str[len-1] must be an
  *	 ASCII digit.  It is assumed that str[len-1] is the final JSON number
  *	 character.
+ *
+ * NOTE: although we use the term ASCII, isascii() is not used because it was
+ * removed from POSIX. Instead we cast the arg to the ctype.h functions/macros
+ * (the is*() ones) to an unsigned char because the standard states that,
+ * although the arg is an int, it is undefined if it is not representable as an
+ * unsigned char or EOF.
  */
 static bool
 json_process_floating(struct json_number *item, char const *str, size_t len)
@@ -2895,7 +2907,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	warn(__func__, "called with empty string");
 	return false;	/* processing failed */
     }
-    if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
+    if (!isdigit((unsigned char)str[len-1])) {
 	warn(__func__, "str[%zu-1] is not an ASCII digit: 0x%02x for str: %s", len, (int)str[len-1], str);
 	return false;	/* processing failed */
     }
@@ -2940,7 +2952,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
     /*
      * JSON spec detail: floating point numbers must end in a digit
      */
-    } else if (!isascii(str[len-1]) || !isdigit(str[len-1])) {
+    } else if (!isdigit((unsigned char)str[len-1])) {
 	dbg(DBG_HIGH, "in %s(): floating point numbers must end in a digit: <%s>",
 		       __func__, str);
 	return false;	/* processing failed */
@@ -3038,7 +3050,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	/*
 	 * JSON spec detail: e notation number must have digit before e or E
 	 */
-	} else if (e > str && (!isascii(e[-1]) || !isdigit(e[-1]))) {
+	} else if (e > str && (!isdigit((unsigned char)e[-1]))) {
 	    dbg(DBG_HIGH, "in %s(): e notation numbers must have digit before e or E: <%s>",
 			  __func__, str);
 	    return false;	/* processing failed */
@@ -3053,7 +3065,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	    /*
 	     * JSON spec detail: e notation number with e+ or E+ must be followed by a digit
 	     */
-	    if (e+1 < &(str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
+	    if (e+1 < &(str[len-1]) && !isdigit((unsigned char)e[2])) {
 		dbg(DBG_HIGH, "in %s(): :e notation number with e+ or E+ must be followed by a digit <%s>",
 			      __func__, str);
 		return false;	/* processing failed */
@@ -3069,7 +3081,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	    /*
 	     * JSON spec detail: e notation number with e- or E- must be followed by a digit
 	     */
-	    if (e+1 < &(str[len-1]) && (!isascii(e[2]) || !isdigit(e[2]))) {
+	    if (e+1 < &(str[len-1]) && (!isdigit((unsigned char)e[2]))) {
 		dbg(DBG_HIGH, "in %s(): :e notation number with e- or E- must be followed by a digit <%s>",
 			      __func__, str);
 		return false;	/* processing failed */
@@ -3078,7 +3090,7 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
 	/*
 	 * JSON spec detail: e notation number must have + or - or digit after e or E
 	 */
-	} else if (!isascii(e[1]) || !isdigit(e[1])) {
+	} else if (!isdigit((unsigned char)e[1])) {
 	    dbg(DBG_HIGH, "in %s(): e notation numbers must follow e or E with + or - or digit: <%s>",
 			  __func__, str);
 	    return false;	/* processing failed */
@@ -3191,6 +3203,11 @@ json_process_floating(struct json_number *item, char const *str, size_t len)
  *
  * NOTE: This function will not return on calloc error.
  * NOTE: This function will not return NULL.
+ * NOTE: although we use the term ASCII, isascii() is not used because it was
+ * removed from POSIX. Instead we cast the arg to the ctype.h functions/macros
+ * (the is*() ones) to an unsigned char because the standard states that,
+ * although the arg is an int, it is undefined if it is not representable as an
+ * unsigned char or EOF.
  */
 struct json *
 json_conv_number(char const *ptr, size_t len)
@@ -3478,6 +3495,12 @@ json_conv_number_str(char const *str, size_t *retlen)
  *			- set to false ==> no UPPER case chars found
  *
  * NOTE: This function does not return when given NULL ptr
+ *
+ * NOTE: although we use the term ASCII, isascii() is not used because it was
+ * removed from POSIX. Instead we cast the arg to the ctype.h functions/macros
+ * (the is*() ones) to an unsigned char because the standard states that,
+ * although the arg is an int, it is undefined if it is not representable as an
+ * unsigned char or EOF.
  */
 static void
 posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool *first_alphanum, bool *upper)
@@ -3512,50 +3535,33 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
     /*
      * test first character
      */
-    if (isascii(str[0])) {
-
-	/*
-	 * case: first character is /
-	 */
-	if (str[0] == '/') {
-	    *slash = true;
-	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is /: 0x%02x", (unsigned int)str[0]);
-
-	/*
-	 * case: first character is alphanumeric
-	 */
-	} else if (isalnum(str[0])) {
-	    *first_alphanum = true;
-	    if (isupper(str[0])) {
-		*upper = true;
-		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is UPPER CASE: 0x%02x", (unsigned int)str[0]);
-	    } else {
-		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is alphanumeric: 0x%02x", (unsigned int)str[0]);
-	    }
-
-	/*
-	 * case: first character is non-alphanumeric portable POSIX safe plus +
-	 */
-	} else if (str[0] == '.' || str[0] == '_' || str[0] == '+') {
-	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is ASCII non-alphanumeric POSIX portable safe plus +: 0x%02x",
-			     (unsigned int)str[0]);
-
-	/*
-	 * case: first character is not POSIX portable safe plus +
-	 */
-	} else {
-	    found_unsafe = true;
-	    dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is not POSIX portable safe plus +/: 0x%02x",
-			     (unsigned int)str[0]);
-	}
 
     /*
-     * case: first character is not ASCII
+     * case: first character is /
      */
-    } else {
-	found_unsafe = true;
-	dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is non-ASCII: 0x%02x",
-			 (unsigned int)str[0]);
+    if (str[0] == '/') {
+        *slash = true;
+        dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is /: 0x%02x", (unsigned int)str[0]);
+
+    /*
+     * case: first character is alphanumeric
+     */
+    } else if (isalnum((unsigned char)str[0])) {
+        *first_alphanum = true;
+        if (isupper((unsigned char)str[0])) {
+            *upper = true;
+            dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is UPPER CASE: 0x%02x", (unsigned int)str[0]);
+        } else {
+            dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is alphanumeric: 0x%02x", (unsigned int)str[0]);
+        }
+
+    /*
+     * case: first character is non-alphanumeric portable POSIX safe plus +
+     */
+    } else if (str[0] == '.' || str[0] == '_' || str[0] == '+') {
+        dbg(DBG_VVVHIGH, "posix_safe_chk(): str[0] is ASCII non-alphanumeric POSIX portable safe plus +: 0x%02x",
+                         (unsigned int)str[0]);
+
     }
 
     /*
@@ -3566,7 +3572,6 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	/*
 	 * test character
 	 */
-	if (isascii(str[i])) {
 
 	    /*
 	     * case: / check
@@ -3581,8 +3586,8 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 	    /*
 	     * case: character is alphanumeric
 	     */
-	    } else if (isalnum(str[i])) {
-		if (*upper == false && isupper(str[i])) {
+	    } else if (isalnum((unsigned char)str[i])) {
+		if (*upper == false && isupper((unsigned char)str[i])) {
 		    dbg(DBG_VVVHIGH, "posix_safe_chk(): found first UPPER CASE at str[%zu]: 0x%02x",
 				     i, (unsigned int)str[i]);
 		    *upper = true;
@@ -3598,17 +3603,6 @@ posix_safe_chk(char const *str, size_t len, bool *slash, bool *posix_safe, bool 
 		}
 		found_unsafe = true;
 	    }
-
-	/*
-	 * case: character is non-ASCII
-	 */
-	} else {
-	    if (found_unsafe == false) {
-		dbg(DBG_VVVHIGH, "posix_safe_chk(): str[%zu] found first non-ASCII: 0x%02x",
-				 i, (unsigned int)str[i]);
-	    }
-	    found_unsafe = true;
-	}
     }
 
     /*

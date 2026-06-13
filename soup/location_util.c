@@ -96,9 +96,8 @@ lookup_location_name(char const *code, bool use_common)
     /*
      * sanity check - code must be 2 ASCII alpha characters
      */
-    if (!isascii(code[0]) || !isalpha(code[0]) ||
-	!isascii(code[1]) || !isalpha(code[1])) {
-	dbg(DBG_HIGH, "code: <%s> is not 2 ASCII alpha characters", code);
+    if (!isalpha((unsigned char)code[0]) || !isalpha((unsigned char)code[1])) {
+	dbg(DBG_HIGH, "code: <%s> is not 2 alpha characters", code);
 	return NULL;
     }
 
@@ -236,8 +235,7 @@ lookup_location_name_r(char const *code, size_t *idx, struct location **location
     /*
      * sanity check - code must be 2 ASCII alpha characters
      */
-    if (!isascii(code[0]) || !isalpha(code[0]) ||
-	!isascii(code[1]) || !isalpha(code[1])) {
+    if (!isalpha((unsigned char)code[0]) || !isalpha((unsigned char)code[1])) {
 	dbg(DBG_HIGH, "code: <%s> is not 2 ASCII alpha characters", code);
 	return NULL;
     }

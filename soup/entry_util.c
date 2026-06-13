@@ -2174,7 +2174,7 @@ object2manifest(struct json *node, unsigned int depth, struct json_sem *sem,
  *	malloced tarball filename or NULL ==> error
  */
 char *
-form_tar_filename(char const *IOCCC_contest_id, int submit_slot, bool test_mode,
+form_tar_filename(char const *IOCCC_contest_id, unsigned int submit_slot, bool test_mode,
 		  time_t formed_timestamp)
 {
     size_t tarball_len;			/* length of the compressed tarball path */
@@ -2254,11 +2254,11 @@ form_tar_filename(char const *IOCCC_contest_id, int submit_slot, bool test_mode,
     errno = 0;			/* pre-clear errno for warnp() */
     if ((time_t)-1 > 0) {
 	/* case: unsigned time_t */
-	ret = snprintf(tarball_filename, tarball_len + 1, "submit.%s-%d.%ju.txz",
+	ret = snprintf(tarball_filename, tarball_len + 1, "submit.%s-%u.%ju.txz",
 		       IOCCC_contest_id, submit_slot, (uintmax_t)formed_timestamp);
     } else {
 	/* case: signed time_t */
-	ret = snprintf(tarball_filename, tarball_len + 1, "submit.%s-%d.%jd.txz",
+	ret = snprintf(tarball_filename, tarball_len + 1, "submit.%s-%u.%jd.txz",
 		       IOCCC_contest_id, submit_slot, (intmax_t)formed_timestamp);
     }
     if (ret <= 0) {
@@ -2816,7 +2816,7 @@ test_author_handle(char const *str)
     }
     /* IOCCC author_handle must use POSIX portable filename and + chars */
     test = safe_path_str(str, true, false); /* ^[0-9A-Za-z._][0-9A-Za-z._+-]*$ */
-    if (!isascii(str[0]) || !isalnum(str[0]) || test == false) {
+    if (!isalnum((unsigned char)str[0]) || test == false) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: author_handle does not match regexp: ^[0-9A-Za-z][0-9A-Za-z._+-]*$");
 	json_dbg(JSON_DBG_HIGH, __func__,
@@ -3280,18 +3280,14 @@ test_empty_override(bool boolean)
  *	false ==> submit_slot is NOT valid, or some internal error
  */
 bool
-test_submit_slot(int submit_slot)
+test_submit_slot(unsigned int submit_slot)
 {
     /*
      * validate count
      */
-    if (submit_slot < 0) {
+    if (submit_slot > MAX_SUBMIT_SLOT) {
 	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: submit_slot: %d < 0", submit_slot);
-	return false;
-    } else if (submit_slot > MAX_SUBMIT_SLOT) {
-	json_dbg(JSON_DBG_MED, __func__,
-		 "invalid: submit_slot: %d > MAX_SUBMIT_SLOT: %d", submit_slot, MAX_SUBMIT_SLOT);
+		 "invalid: submit_slot: %u > MAX_SUBMIT_SLOT: %u", submit_slot, MAX_SUBMIT_SLOT);
 	return false;
     }
     json_dbg(JSON_DBG_MED, __func__, "submit_slot is valid");
@@ -3916,7 +3912,7 @@ test_location_code(char const *str)
     }
 
     /* validate 2 ASCII UPPER CASE characters */
-    if (!isascii(str[0]) || !isupper(str[0]) || !isascii(str[1]) || !isupper(str[1])) {
+    if (!isupper((unsigned char)str[0]) || !isupper((unsigned char)str[1])) {
 	json_dbg(JSON_DBG_MED, __func__,
 		 "invalid: location_code: is not 2 ASCII UPPER CASE characters");
 	json_dbg(JSON_DBG_HIGH, __func__,
@@ -5086,7 +5082,7 @@ test_rule_2b_size(size_t rule_2b_size)
  *	false ==> tarball is NOT valid, or some internal error
  */
 bool
-test_tarball(char const *str, char const *IOCCC_contest_id, int submit_slot, bool test_mode,
+test_tarball(char const *str, char const *IOCCC_contest_id, unsigned int submit_slot, bool test_mode,
 	     time_t formed_timestamp)
 {
     char *tar_filename = NULL;	/* formed tarball filename */
