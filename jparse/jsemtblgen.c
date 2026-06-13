@@ -410,7 +410,7 @@ main(int argc, char **argv)
 	not_reached();
     }
     for (c=0; c < len; ++c) {
-	if (isascii(tbl_name[c]) && islower(tbl_name[c])) {
+	if (islower(tbl_name[c])) {
 	    cap_tbl_name[c] = (char)toupper(tbl_name[c]);
 	}
     }
@@ -882,7 +882,7 @@ alloc_c_funct_name(char const *prefix, char const *str)
 	 * case: prefix begins with a digit
 	 * case: prefix begins with an underscore
 	 */
-	if (prefix_is_reserved == true || prefix[0] == '\0' || (isascii(prefix[0]) && isdigit(prefix[0])) || prefix[0] == '_') {
+	if (prefix_is_reserved == true || prefix[0] == '\0' || isdigit(prefix[0]) || prefix[0] == '_') {
 	    /* add x due to the cases mentioned above */
 	    *p++ = 'x';
 	}
@@ -891,7 +891,7 @@ alloc_c_funct_name(char const *prefix, char const *str)
 	 * process prefix
 	 */
 	while (prefix[0] != '\0') {
-	    if (!isascii(prefix[0]) || !isalnum(prefix[0])) {
+	    if (!isalnum(prefix[0])) {
 		/* convert non-C name character to underscore */
 		*p++ = '_';
 	    } else {
@@ -912,7 +912,7 @@ alloc_c_funct_name(char const *prefix, char const *str)
      * case: str begins with a digit
      * case: str begins with an underscore
      */
-    if (str_is_reserved == true || str[0] == '\0' || (isascii(str[0]) && isdigit(str[0])) || str[0] == '_') {
+    if (str_is_reserved == true || str[0] == '\0' || isdigit(str[0]) || str[0] == '_') {
 	/* add x due to the cases mentioned above */
 	*p++ = 'x';
     }
@@ -921,7 +921,7 @@ alloc_c_funct_name(char const *prefix, char const *str)
      * process each str character in C, converting non-alphanumeric characters to underscore.
      */
     while (str[0] != '\0') {
-	if (!isascii(str[0]) || !isalnum(str[0])) {
+	if (!isalnum(str[0])) {
 	    /* convert non-C name character to underscore */
 	    *p++ = '_';
 	} else {

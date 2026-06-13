@@ -1750,11 +1750,7 @@ default_handle(char const *name)
 	    /* case: 1st character map */
 	    if (def_len == 0) {
 
-		/* ignore if 1st mapped character is not an ASCII [0-9A-Za-z] character */
-		if (!isascii(m->posix_str[0])) {
-		    continue;
-		}
-		if (!isalnum(m->posix_str[0])) {
+		if (!isalnum((unsigned char)m->posix_str[0])) {
 		    continue;
 		}
 	    }
@@ -1942,11 +1938,7 @@ default_handle(char const *name)
 		    /* case: 1st character map */
 		    if (cur_len == 0) {
 
-			/* ignore if 1st mapped character is not an ASCII [0-9A-Za-z] character */
-			if (!isascii(m->posix_str[0])) {
-			    continue;
-			}
-			if (!isalnum(m->posix_str[0])) {
+			if (!isalnum((unsigned char)m->posix_str[0])) {
 			    continue;
 			}
 		    }

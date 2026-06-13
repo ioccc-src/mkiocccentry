@@ -31,7 +31,7 @@
  * Share and enjoy! :-)
  *
  * We gratefully acknowledge the concept contributions, plus the documentation
- * corrections, and other suggestions made by Cody Boone Ferguson:
+ * and code corrections, and other suggestions made by Cody Boone Ferguson:
  *
  *	@xexyl
  *	https://xexyl.net

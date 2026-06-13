@@ -1,5 +1,47 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.5.10 2026-06-13
+
+Removed calls to `isascii()` as it was deprecated in POSIX.1-2008 and finally
+removed from POSIX.1-2024.
+
+The functions/macros (they appear to be macros in linux and inline functions in
+macOS although I might be wrong) from `ctype.h`, i.e. the `is*()` ones, although
+they take an `int` as an arg, require that the arg be representable as either
+`EOF` or an `unsigned char`. If neither are fulfilled then it is undefined. Thus
+the calls to these functions now cast the arg to an unsigned char.
+
+The above changes are not insignificant and were tested with local (but
+installed in the system) to the cpath and pr libraries but those changes have
+not yet been updated in the respective repos. Additionally, the files changed
+here as well as the cpath and pr files changed, have all been copied to the
+mkiocccentry repo and everything seems to be in order there too.
+
+NOTE: there are still comments and messages that refer to ASCII and also the
+`isascii()` function/macro (and as for ASCII, it's also in `json_README.md`). In
+one case it's because it's actually the ASCII table (the one in `json_parse.c`,
+the `byte2asciistr` which is almost certainly in need of some fixes if not
+replacement, but which is rather a low priority at this time) and in others
+because we might say that the values we check (with the ctype.h
+functions/macros) are typically within the range 0..127 and thus ASCII, though
+the cast to `unsigned char` would result in 0..255 in range. Actually the real
+reason is to simplify the change as it is not even clear in every case what to
+change it to, and to save time and effort (as it's not really important).
+Nonetheless the calls themselves have all been removed and the ctype.h
+functions/macros now have their arg cast to an `unsigned int`.
+
+Additionally added `sem_member_value_unsigned()` to `json_sem` for mkiocccentry
+(to fix a potential overflow if a user wants to be silly and risk a problem with
+their submission), in particular
+https://github.com/ioccc-src/mkiocccentry/issues/1381.
+
+Updated `JPARSE_LIBRARY_VERSION` to `"2.4.4 2026-06-13"`.
+Updated `JPARSE_UTILS_VERSION` to `"2.1.8 2026-06-13"`.
+Updated `JPARSE_UTF8_VERSION` to `"2.1.4 2026-06-13".`
+Updated `VERGE_VERSION` to `"2.0.5 2026-06-13"`.
+Updated `JSEMTBLGEN_VERSION` to `"2.0.4 2026-06-13"`.
+
+
 ## Release 2.5.9 2026-05-11
 
 Added `-funsigned-char` to Makefiles. It is possible that this will be useful in

@@ -275,7 +275,7 @@ allocate_vers(char *str, intmax_t **pvers)
      * trim leading non-digits
      */
     for (i=0; i < len; ++i) {
-	if (isascii(wstr[i]) && isdigit(wstr[i])) {
+	if (isdigit((unsigned char)wstr[i])) {
 	    /* stop on first digit */
 	    break;
 	}
@@ -297,7 +297,7 @@ allocate_vers(char *str, intmax_t **pvers)
      * trim at and beyond any whitespace
      */
     for (i=0; i < len; ++i) {
-	if (isascii(wstr[i]) && isspace(wstr[i])) {
+	if (isspace((unsigned char)wstr[i])) {
 	    wstr[i] = '\0';
 	    len = i;
 	    break;
@@ -308,7 +308,7 @@ allocate_vers(char *str, intmax_t **pvers)
      * trim trailing non-digits
      */
     for (i=len-1; i > 0; --i) {
-	if (isascii(wstr[i]) && isdigit(wstr[i])) {
+	if (isdigit((unsigned char)wstr[i])) {
 	    /* stop on first digit */
 	    break;
 	}
@@ -324,7 +324,7 @@ allocate_vers(char *str, intmax_t **pvers)
      */
     dbg(DBG_VHIGH, "trimmed version string: <%s>", wstr);
     for (i=0; i < len; ++i) {
-	if (isascii(wstr[i]) && isdigit(wstr[i])) {
+	if (isdigit((unsigned char)wstr[i])) {
 	    dot = false;
 	} else if (wstr[i] == '.') {
 	    if (dot == true) {

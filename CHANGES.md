@@ -2,6 +2,30 @@
 
 ## Release 2.11.4 2026-06-10
 
+Resolve issues #1381 and #1384.
+
+These fixes involved not insignificant changes to jparse repo so the [jparse
+repo](https://github.com/xexyl/jparse) has been synced again. As well, as for
+issue #1384, this required some minor changes to the `pr` and `cpath` repos.
+Pull requests will be opened to those repos but in the meantime I have copied
+the local code to the subdirectories here. Those other library changes were
+installed locally before testing `jparse` with `make release`.
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.3.3 2026-06-13"`.
+Updated `TXZCHK_VERSION` to `"2.1.2 2026-06-13"`.
+Updated `SOUP_VERSION` to `"2.4.1 2026-06-13"`.
+
+Also changed min txzchk version back to the current version as we're in between
+contests.
+
+Once the two issues here are closed it should be only one more issue before the
+next contest can be opened, that I need to resolve, until such a time as another
+issue is opened :-).
+
+
+
+## Release 2.11.4 2026-06-10
+
 Sync [jparse repo](https://github.com/xexyl/jparse). The change is `mis-feature`
 to `misfeature` (this is actually in OED). There are other repos and files here
 that should be corrected, as insignificant as it probably is. These can be done

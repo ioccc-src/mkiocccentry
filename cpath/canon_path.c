@@ -5,7 +5,7 @@
  *
  *      -- J.R.R. Tolkien
  *
- * Copyright (c) 1991,2008,2014-2016,2022-2025 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 1991,2008,2014-2016,2022-2026 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -24,14 +24,14 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * This code was developed between 1991-2025 by Landon Curt Noll:
+ * This code was developed between 1991-2026 by Landon Curt Noll:
  *
  *	chongo (Landon Curt Noll, http://www.isthe.com/chongo/index.html) /\oo/\
  *
  * Share and enjoy! :-)
  *
  * We gratefully acknowledge the concept contributions, plus the documentation
- * corrections, and other suggestions made by Cody Boone Ferguson:
+ * and code corrections, and other suggestions made by Cody Boone Ferguson:
  *
  *	@xexyl
  *	https://xexyl.net
@@ -167,6 +167,7 @@ private_strlcat(char *dst, const char *src, size_t dsize)
 	src++;
     }
     *dst = '\0';
+
     return(dlen + (src - osrc));	/* count does not include NUL */
 }
 
@@ -228,6 +229,7 @@ path_sanity_name(enum path_sanity sanity)
             str = "unknown_sanity_valud";
             break;
     }
+
     return str;
 }
 
@@ -289,6 +291,7 @@ path_sanity_error(enum path_sanity sanity)
             str = "invalid path_sanity value";
             break;
     }
+
     return str;
 }
 
@@ -444,9 +447,6 @@ safe_path_str(char const *path_str, bool any_case, bool slash_ok)
 	return false;
     } else if (path_str[0] == '/' && slash_ok == false) {
 	/* string starts with '/' (slash), however slash_ok is false, thus is NOT safe */
-	return false;
-    } else if (!isascii(path_str[0])) {
-	/* string starts with a non-ASCII character, thus is NOT safe */
 	return false;
     } else if (path_str[0] != '.' && path_str[0] != '_' &&
 	      any_case == true && !isalnum(path_str[0])) {
@@ -715,14 +715,14 @@ canon_path(char const *orig_path,
 		    /*
 		     * push component onto the path stack
 		     *
-		     * NOTE: If the path stack were to grow to larger than INT32_MAX,
+		     * NOTE: If the path stack were to grow to larger than INT_LEAST32_MAX,
 		     *	     and if we have a maximum depth allowed, we will declare
 		     *	     an immediate PATH_ERR_PATH_TOO_DEEP, even if some later
 		     *	     .. (dot-dot) might be able to later reduce the depth.
 		     */
 		    test = dyn_array_push(array, p);
 		    deep = dyn_array_tell(array);
-		    if (max_depth > 0 && deep > INT32_MAX) {
+		    if (max_depth > 0 && deep > INT_LEAST32_MAX) {
 
 			/* path component too deep */
 			dbg(DBG_V3_HIGH, "%s: error #7: path depth: %d max_depth: %d", __func__, deep, max_depth);
@@ -796,14 +796,14 @@ canon_path(char const *orig_path,
 		    /*
 		     * push component onto the path stack
 		     *
-		     * NOTE: If the path stack were to grow to larger than INT32_MAX,
+		     * NOTE: If the path stack were to grow to larger than INT_LEAST32_MAX,
 		     *	     and if we have a maximum depth allowed, we will declare
 		     *	     an immediate PATH_ERR_PATH_TOO_DEEP, even if some later
 		     *	     .. (dot-dot) might be able to later reduce the depth.
 		     */
 		    test = dyn_array_push(array, p);
 		    deep = dyn_array_tell(array);
-		    if (max_depth > 0 && deep > INT32_MAX) {
+		    if (max_depth > 0 && deep > INT_LEAST32_MAX) {
 
 			/* path component too deep */
 			dbg(DBG_V3_HIGH, "%s: error #12: path depth: %d max_depth: %d", __func__, deep, max_depth);
@@ -868,14 +868,14 @@ canon_path(char const *orig_path,
 	    /*
 	     * push component onto the path stack
 	     *
-	     * NOTE: If the path stack were to grow to larger than INT32_MAX,
+	     * NOTE: If the path stack were to grow to larger than INT_LEAST32_MAX,
 	     *	     and if we have a maximum depth allowed, we will declare
 	     *	     an immediate PATH_ERR_PATH_TOO_DEEP, even if some later
 	     *	     .. (dot-dot) might be able to later reduce the depth.
 	     */
 	    test = dyn_array_push(array, p);
 	    deep = dyn_array_tell(array);
-	    if (max_depth > 0 && deep > INT32_MAX) {
+	    if (max_depth > 0 && deep > INT_LEAST32_MAX) {
 
 		/* path component too deep */
 		dbg(DBG_V3_HIGH, "%s: error #16: path depth: %d max_depth: %d", __func__, deep, max_depth);

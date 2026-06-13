@@ -9,7 +9,7 @@
  * makes sure that the mkiocccentry tool was used and there was no screwing
  * around with the resultant tarball.
  *
- * Copyright (c) 2022-2025 by Cody Boone Ferguson.  All Rights Reserved.
+ * Copyright (c) 2022-2026 by Cody Boone Ferguson.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,

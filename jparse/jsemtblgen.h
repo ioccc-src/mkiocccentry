@@ -103,7 +103,7 @@
 /*
  * official jsemtblgen version
  */
-#define JSEMTBLGEN_VERSION "2.0.3 2025-09-08"		/* format: major.minor YYYY-MM-DD */
+#define JSEMTBLGEN_VERSION "2.0.4 2026-06-13"		/* format: major.minor YYYY-MM-DD */
 
 /*
  * jsemtblgen tool basename

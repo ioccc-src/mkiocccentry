@@ -9,7 +9,7 @@
  * makes sure that the mkiocccentry tool was used and there was no screwing
  * around with the resultant tarball.
  *
- * Copyright (c) 2022-2025 by Cody Boone Ferguson.  All Rights Reserved.
+ * Copyright (c) 2022-2026 by Cody Boone Ferguson.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -920,7 +920,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname, 
     }
 
     /* verify that this is a UID, not a username */
-    for ( ; *p && isascii(*p) && isdigit(*p) && *p != '/'; ) {
+    for ( ; *p && isdigit((unsigned char)*p) && *p != '/'; ) {
 	++p;
     }
 
@@ -938,7 +938,7 @@ parse_linux_txz_line(char *p, char *linep, char *line_dup, char const *dirname, 
     /*
      * now do the same for group id
      */
-    for ( ; *p && isascii(*p) && isdigit(*p); ) {
+    for ( ; *p && isdigit((unsigned char)*p); ) {
 	++p; /* satisfy frivolous warning (give loop a body instead of having the loop do the actual action) */
     }
 
@@ -1064,7 +1064,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname, ch
      * attempt to find !isdigit() chars (i.e. verify the tarball listing includes
      * the UID, not the user name).
      */
-    for (; p && *p && isascii(*p) && isdigit(*p); ) {
+    for (; p && *p && isdigit((unsigned char)*p); ) {
 	++p; /* satisfy frivolous warning (give loop a body instead of having the loop do the actual action) */
     }
 
@@ -1086,7 +1086,7 @@ parse_bsd_txz_line(char *p, char *linep, char *line_dup, char const *dirname, ch
      * attempt to find !isdigit() chars (i.e. verify the tarball listing includes
      * the GID of the file, not group name).
      */
-    for (; p && *p && isascii(*p) && isdigit(*p); ) {
+    for (; p && *p && isdigit((unsigned char)*p); ) {
 	++p; /* satisfy frivolous warnings */
     }
 
