@@ -449,11 +449,11 @@ safe_path_str(char const *path_str, bool any_case, bool slash_ok)
 	/* string starts with '/' (slash), however slash_ok is false, thus is NOT safe */
 	return false;
     } else if (path_str[0] != '.' && path_str[0] != '_' &&
-	      any_case == true && !isalnum(path_str[0])) {
+	      any_case == true && !isalnum((unsigned char)path_str[0])) {
 	/* string does NOT start with an UPPERcase character NOR a lowercase character, NOR a digit, thus is NOT safe */
 	return false;
     } else if (path_str[0] != '.' && path_str[0] != '_' &&
-	       any_case == false && !(islower(path_str[0]) || isdigit(path_str[0]))) {
+	       any_case == false && !(islower((unsigned char)path_str[0]) || isdigit((unsigned char)path_str[0]))) {
 	/* string does NOT start with a lowercase character, NOR a digit, thus is NOT safe */
 	return false;
     }
