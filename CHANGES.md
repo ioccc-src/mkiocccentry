@@ -1,5 +1,32 @@
 # Major changes to the IOCCC entry toolkit
 
+Resolved issue #1378 and fixed some other issues (somewhat related) that I
+found (as below).
+
+The code now does some simple checks to try and ascertain if the user swapped
+the topdir and workdir on the command line by checking for prog.c, Makefile,
+remarks.md in the workdir but not in the topdir. It's okay for them to exist in
+both because in the workdir a subdirectory is created and the files that will be
+copied there come from topdir (and there is nothing we can do in this case: if
+the user provided the wrong order and the files differ but they exist in both
+directories we can't know this). If they do not exist in either we do not report
+an earlier error because shortly after the walking code will report the error.
+The related issues are two and are below.
+
+For `realpath(3)` we used `PATH_MAX`. However one can construct a path longer
+than this and although it's unlikely it still should be considered: especially
+since that's the directory names and did not consider files under them. POSIX
+allows `realpath()`'s second arg to take NULL and it will allocate memory in
+that case.
+
+Also since we do use `realpath(3)` we did not need to use `getcwd(3)` for the
+topdir (it used both the result of `getcwd(3)` and `realpath(3)` and the former
+for topdir was used in places where the `realpath(3)` for the workdir
+counterpart is used).
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.3.4 2026-06-16"`.
+
+
 ## Release 2.11.4 2026-06-10
 
 Resolve issues #1381 and #1384.
