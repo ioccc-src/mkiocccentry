@@ -1465,13 +1465,12 @@ main(int argc, char *argv[])
      */
     if (read_answers_flag_used || seed_used) {
 	if (info.empty_override ||
-	    info.rule_2a_override ||
+            info.rule_2a_override ||
 	    info.rule_2a_mismatch ||
 	    info.rule_2b_override ||
 	    info.trigraph_warning ||
 	    info.ungetc_warning ||
-	    info.Makefile_override) {
-
+            info.Makefile_override) {
 	    do {
 		if (!ignore_warnings || (read_answers_flag_used && !force_yes)) {
 		    need_confirm = true;
@@ -1491,9 +1490,9 @@ main(int argc, char *argv[])
 		    if (info.ungetc_warning) {
 			warn_ungetc();
 		    }
-		    if (info.Makefile_override) {
-			warn_Makefile(&info);
-		    }
+                    if (info.Makefile_override) {
+                        warn_Makefile(&info);
+                    }
 		}
 	    } while (0);
 	}
@@ -2485,7 +2484,7 @@ check_submission_dir(struct walk_stat *wstat, char const *context, struct info *
              * there (i.e. p2->fts_name is the basename and p2->fts_path is the
              * path in the submission directory).
              */
-            if (!strcmp(p2->fts_name, PROG_C_FILENAME)) {
+            if (!strcasecmp(p2->fts_name, PROG_C_FILENAME) && p2->fts_level < 2) {
                 if (!quiet) {
                     para("Checking prog.c ...", NULL);
                 }
@@ -2494,7 +2493,7 @@ check_submission_dir(struct walk_stat *wstat, char const *context, struct info *
                     para("... completed prog.c check.", "", NULL);
                 }
                 dbg(DBG_HIGH, "prog.c OK");
-            } else if (!strcmp(p2->fts_name, MAKEFILE_FILENAME)) {
+            } else if (!strcasecmp(p2->fts_name, MAKEFILE_FILENAME) && p2->fts_level < 2) {
                 if (!quiet) {
                     para("Checking Makefile ...", NULL);
                 }
@@ -2503,7 +2502,7 @@ check_submission_dir(struct walk_stat *wstat, char const *context, struct info *
                     para("... completed Makefile check.", "", NULL);
                 }
                 dbg(DBG_HIGH, "Makefile OK");
-            } else if (!strcmp(p2->fts_name, REMARKS_FILENAME)) {
+            } else if (!strcasecmp(p2->fts_name, REMARKS_FILENAME) && p2->fts_level < 2) {
                 if (!quiet) {
                     para("Checking remarks.md ...", NULL);
                 }
@@ -7068,25 +7067,25 @@ write_json_files(struct walk_stat *wstat, struct auth *authp, struct info *infop
 	/*
 	 * set mark_ptr according to the manifest type by matching
 	 */
-	if (strcmp(p->fts_name, INFO_JSON_FILENAME) == 0) {
+	if (strcasecmp(p->fts_name, INFO_JSON_FILENAME) == 0 && p->fts_level < 2) {
 	    p->mark_ptr = "info_JSON";
-	} else if (strcmp(p->fts_name, AUTH_JSON_FILENAME) == 0) {
+	} else if (strcasecmp(p->fts_name, AUTH_JSON_FILENAME) == 0 && p->fts_level < 2) {
 	    p->mark_ptr = "auth_JSON";
-	} else if (strcmp(p->fts_name, PROG_C_FILENAME) == 0) {
+	} else if (strcasecmp(p->fts_name, PROG_C_FILENAME) == 0 && p->fts_level < 2) {
 	    p->mark_ptr = "c_src";
-	} else if (strcmp(p->fts_name, MAKEFILE_FILENAME) == 0) {
+	} else if (strcasecmp(p->fts_name, MAKEFILE_FILENAME) == 0 && p->fts_level < 2) {
 	    p->mark_ptr = "Makefile";
-	} else if (strcmp(p->fts_name, REMARKS_FILENAME) == 0) {
+	} else if (strcasecmp(p->fts_name, REMARKS_FILENAME) == 0 && p->fts_level < 2) {
 	    p->mark_ptr = "remarks";
-	} else if (strcmp(p->fts_name, PROG_ALT_C) == 0) {
+	} else if (strcasecmp(p->fts_name, PROG_ALT_C) == 0 && p->fts_level < 2) {
 	    p->mark_ptr = "c_alt_src";
-	} else if (strcmp(p->fts_name, TRY_SH) == 0) {
+	} else if (strcasecmp(p->fts_name, TRY_SH) == 0 && p->fts_level < 2) {
 	    p->mark_ptr = "try_sh";
-	} else if (strcmp(p->fts_name, TRY_ALT_SH) == 0) {
+	} else if (strcasecmp(p->fts_name, TRY_ALT_SH) == 0 && p->fts_level < 2) {
 	    p->mark_ptr = "try_alt_sh";
 	/* shell scripts end in .sh */
 	} else if (p->fts_namelen >= LITLEN(".sh") &&
-		   strcmp(p->fts_name + p->fts_namelen - LITLEN(".sh"), ".sh") == 0) {
+		   strcasecmp(p->fts_name + p->fts_namelen - LITLEN(".sh"), ".sh") == 0) {
 	    p->mark_ptr = "shell_script";
 
 	/*

@@ -1,5 +1,35 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.11.5 2026-06-17
+
+Resolved issues #1394 and #1395.
+
+The `mkiocccentry` code did not allow `prog.c`, `Makefile`, `remarks.md`,
+`try.sh` and `try.alt.sh` to exist in subdirectories, as the maximum allowed is
+1 but it did not check depth before writing e.g. `"remarks": "remarks.md"`
+etc.).  This was actually appearing to be a problem with the manifest but that
+was because `mkiocccentry` was creating it (the manifest) wrong. It should write
+it as the specific names (rather than an extra file) if the level < 2 (which
+means it's in the top level directory).
+
+A related problem is that it did not check for these filenames
+case-insensitively which meant that if a person submitted a directory with
+`Makefile` and `makefile` it would not be flagged as two of the same which it is
+supposed to be not only for file systems which are case-insensitive (default in
+macOS) but also because it could cause problems in entries (for instance GNU
+`make(1)`, which is what the contest uses, checks for Makefiles in the order:
+`GNUmakefile`, `makefile` and `Makefile`, which obviously is a problem) and the
+website (in various ways).
+
+Somewhat related to the above two problems is that if the user had e.g.
+`foo/Makefile` it would run `check_Makefile()` on both `Makefile` and
+`foo/Makefile` which is not only incorrect but it is confusing as well.
+
+Updated `MKIOCCCENTRY_VERSION` to `"2.3.5 2026-06-17"`.
+
+
+## Release 2.11.5 2026-06-16
+
 Resolved issue #1378 and fixed some other issues (somewhat related) that I
 found (as below).
 
