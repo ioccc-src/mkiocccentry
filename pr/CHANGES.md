@@ -1,6 +1,11 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.1.6 2026-06-18
+
+Removed use of `isascii(3)` macro.
+
+
 ## Release 1.1.5 2025-10-02
 
 Fixed possible race condition was possible between when a file was

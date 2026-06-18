@@ -87,7 +87,7 @@
 /*
  * official version
  */
-#define PR_VERSION "1.1.5 2025-10-02"    /* format: major.minor YYYY-MM-DD */
+#define PR_VERSION "1.1.6 2026-06-18"    /* format: major.minor YYYY-MM-DD */
 
 
 /*

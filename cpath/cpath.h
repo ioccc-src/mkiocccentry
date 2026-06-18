@@ -87,7 +87,7 @@
 /*
  * official cpath version
  */
-#define CPATH_VERSION "2.0.0 2025-10-16" /* format: major.minor YYYY-MM-DD */
+#define CPATH_VERSION "2.0.2 2026-06-18" /* format: major.minor YYYY-MM-DD */
 
 
 /*
