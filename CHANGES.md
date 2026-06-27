@@ -1,5 +1,13 @@
 # Major changes to the IOCCC entry toolkit
 
+## Release 2.11.6 2026-06-27
+
+Fix bug in `fts_icmp()` (in `soup/walk_util.c`): it used `strcmp()` instead of
+`strcasecmp()`.
+
+Updated `SOUP_VERSION` to `"2.4.2 2026-06-27"`.
+
+
 ## Release 2.11.5 2026-06-17
 
 Resolved issues #1394 and #1395.

@@ -3875,7 +3875,7 @@ fts_cmp(const FTSENT **a, const FTSENT **b)
      * compare FTSENTs
      *
      * Empty fts_name's are sorted AFTER non-empty fts_name's.
-     * We adopt this storing style do that the sorted list will
+     * We adopt this storing style so that the sorted list will
      * have empty names at the end, similar to the "convention" that
      * a list of string pointers may end with a NULL pointer.
      */
@@ -3986,7 +3986,7 @@ fts_icmp(const FTSENT **a, const FTSENT **b)
     /*
      * string compare FTSENTs
      */
-    cmp = strcmp((*a)->fts_name, (*b)->fts_name);
+    cmp = strcasecmp((*a)->fts_name, (*b)->fts_name);
     /* convert strcmp(3) return into -1, 0, or 1 to simplify debugging */
     cmp = ((cmp <= -1) ? -1 : ((cmp == 0) ? 0 : 1));
 
