@@ -3489,11 +3489,14 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
     intmax_t too_long_path_count = 0;	/* number of items whose path is too deep */
     intmax_t too_long_name_count = 0;	/* number of items whose path is too deep */
     intmax_t fts_err_count = 0;		/* number of items causing fts_read(3) errors. */
+    intmax_t fts_all_count = 0;		/* number of items if any kind */
+    intmax_t fts_idup_count = 0;	/* number of items that are case-independent duplicates */
     intmax_t counted_file_count = 0;	/* number of counted (non-free) files */
     intmax_t counted_dir_count = 0;	/* number of counted (non-free) directories */
     intmax_t counted_sym_count = 0;	/* number of counted (non-free) symlinks */
     intmax_t counted_other_count = 0;	/* number of counted (non-free) non-file/dir/symlink items */
     struct item *i_p;		    /* pointer to an element in the dynamic array */
+    struct item *i_p2;		    /* pointer to a 2nd element in the dynamic array */
     bool ret = true;		    /* true ==> no errors found, false ==> some errors found */
     int i;
 
@@ -3765,6 +3768,58 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
     }
 
     /*
+     * scan all paths to look for any case independent duplicates
+     *
+     * Because we always call sort_walk_istat() before we call this function, any case independent duplicates
+     * will be sorted next to each other.
+     */
+    fts_idup_count = 0;
+    i_p2 = NULL;
+    fts_all_count = dyn_array_tell(wstat_p->all);
+    for (i=0; i < fts_all_count; ++i, i_p2 = i_p) {
+
+	/*
+	 * look at the next item
+	 */
+	i_p = dyn_array_value(wstat_p->all, struct item *, i);
+	if (i_p == NULL) { /* paranoia */
+	    err(83, __func__, "item[%d] all #4 is NULL", i);
+	    not_reached();
+	}
+
+	/*
+	 * nothing to do if this is our 1st item
+	 */
+	if (i_p2 == NULL) {
+	    continue;
+	}
+
+	/*
+	 * look for a case-independent match on canonicalized path
+	 */
+	if (strcasecmp(i_p2->fts_path, i_p->fts_path) == 0) {
+	    ++fts_idup_count;
+	    fmsg(stream, "    %s has the same case-independent canonicalized path as: %s",
+		         i_p2->fts_path, i_p->fts_path);
+	    continue;
+	}
+
+	/*
+	 * look for a case-independent match on the pre-canonicalized path - paranoia
+	 */
+	if (strcasecmp(i_p2->orig_path, i_p->orig_path) == 0) {
+	    ++fts_idup_count;
+	    fmsg(stream, "    %s has the same case-independent path from topdir as: %s",
+		         i_p2->orig_path, i_p->orig_path);
+	    continue;
+	}
+    }
+    if (fts_idup_count > 0) {
+	fmsg(stream, "%s found %jd item%s with duplicate case-independent paths",
+		     wset_p->context, fts_idup_count, SINGULAR_OR_PLURAL(fts_idup_count));
+    }
+
+    /*
      * verify we do not have too many counted (non-free) files
      */
     counted_file_count = dyn_array_tell(wstat_p->counted_file);
@@ -3856,19 +3911,19 @@ fts_cmp(const FTSENT **a, const FTSENT **b)
      */
     if (a == NULL) {
 	fprintf(stderr, "%s: a is NULL\n", __func__);
-	exit(83);
+	exit(84);
     }
     if (b == NULL) {
 	fprintf(stderr, "%s: b is NULL\n", __func__);
-	exit(84);
+	exit(85);
     }
     if (*a == NULL) {
 	fprintf(stderr, "%s: *a is NULL\n", __func__);
-	exit(85);
+	exit(86);
     }
     if (*b == NULL) {
 	fprintf(stderr, "%s: *b is NULL\n", __func__);
-	exit(86);
+	exit(87);
     }
 
     /*
@@ -3938,19 +3993,19 @@ fts_icmp(const FTSENT **a, const FTSENT **b)
      */
     if (a == NULL) {
 	fprintf(stderr, "%s: a is NULL\n", __func__);
-	exit(87);
+	exit(88);
     }
     if (b == NULL) {
 	fprintf(stderr, "%s: b is NULL\n", __func__);
-	exit(88);
+	exit(89);
     }
     if (*a == NULL) {
 	fprintf(stderr, "%s: *a is NULL\n", __func__);
-	exit(89);
+	exit(90);
     }
     if (*b == NULL) {
 	fprintf(stderr, "%s: *b is NULL\n", __func__);
-	exit(90);
+	exit(91);
     }
 
     /*
@@ -4018,23 +4073,23 @@ record_fts_err(struct walk_stat *wstat_p, char const *path, off_t st_size, mode_
      * firewall - catch NULL ptrs
      */
     if (wstat_p == NULL) {
-	err(91, __func__, "called with NULL wstat_p");
+	err(92, __func__, "called with NULL wstat_p");
 	not_reached();
     }
     if (wstat_p->fts_err == NULL) {
-        err(92, __func__, "called with NULL wstat_p->fts_err");
+        err(93, __func__, "called with NULL wstat_p->fts_err");
         not_reached();
     }
     if (wstat_p->prune == NULL) {
-        err(93, __func__, "called with NULL wstat_p->prune");
+        err(94, __func__, "called with NULL wstat_p->prune");
         not_reached();
     }
     if (wstat_p->all == NULL) {
-        err(94, __func__, "called with NULL wstat_p->all");
+        err(95, __func__, "called with NULL wstat_p->all");
         not_reached();
     }
     if (path == NULL) {
-	err(95, __func__, "called with path topdir");
+	err(96, __func__, "called with path topdir");
 	not_reached();
     }
 
@@ -4100,7 +4155,7 @@ fts_walk(struct walk_stat *wstat_p)
      * firewall
      */
     if (wstat_p == NULL) {
-	err(96, __func__, "wstat_p is NULL");
+	err(97, __func__, "wstat_p is NULL");
 	not_reached();
     }
 
@@ -4111,7 +4166,7 @@ fts_walk(struct walk_stat *wstat_p)
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(97, __func__, "wstat_p failed the chk_walk_stat function test suite");
+	err(98, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
 
@@ -4900,15 +4955,15 @@ path_in_item_array(struct dyn_array *item_array, char const *c_path)
      * firewall
      */
     if (item_array == NULL) {
-	err(98, __func__, "item_array is NULL");
+	err(99, __func__, "item_array is NULL");
 	not_reached();
     }
     if (c_path == NULL) {
-	err(99, __func__, "c_path is NULL");
+	err(100, __func__, "c_path is NULL");
 	not_reached();
     }
     if (item_array->elm_size != sizeof(struct item *)) {
-	err(100, __func__, "item_array->elm_size: %zu != sizeof(struct item *): %zu",
+	err(101, __func__, "item_array->elm_size: %zu != sizeof(struct item *): %zu",
 			  item_array->elm_size, sizeof(struct item *));
 	not_reached();
     }
@@ -5009,11 +5064,11 @@ path_in_walk_stat(struct walk_stat *wstat_p, char const *c_path)
      * firewall
      */
     if (wstat_p == NULL) {
-	err(101, __func__, "wstat_p is NULL");
+	err(102, __func__, "wstat_p is NULL");
 	not_reached();
     }
     if (c_path == NULL) {
-	err(102, __func__, "c_path is NULL");
+	err(103, __func__, "c_path is NULL");
 	not_reached();
     }
 
@@ -5024,7 +5079,7 @@ path_in_walk_stat(struct walk_stat *wstat_p, char const *c_path)
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(103, __func__, "wstat_p failed the chk_walk_stat function test suite");
+	err(104, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
 

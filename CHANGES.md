@@ -1,5 +1,14 @@
 # Major changes to the IOCCC entry toolkit
 
+
+## Release 2.11.7 2026-06-30
+
+Added to the `chk_walk()` function in `soup/walk_util.c`, an attempt
+to test for case-independent duplicate paths.
+
+Updated `SOUP_VERSION` to "2.4.3 2026-06-30"
+
+
 ## Release 2.11.6 2026-06-27
 
 Fix bug in `fts_icmp()` (in `soup/walk_util.c`): it used `strcmp()` instead of
