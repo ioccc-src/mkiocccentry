@@ -15,6 +15,13 @@ Changed `TXZCHK_TEST_VERSION` in `test_ioccc/txzchk_test.sh` to "2.0.3 2026-08-2
 Improved `make clobber` in top level `Makefile` to remove any temporary file
 that may have been left behind by use of `test_ioccc/txzchk_test.sh -k`.
 
+Added `make slots` to top level `Makefile` to form compressed tarball
+test submissions, both good, and faked bad, under `./test_ioccc/slot/good/workdir`.
+Such test submissions can be used to test uploads to the submit server.
+
+Added `make lstxz` to top level `Makefile` to list, if any exist,
+the compressed tarball test submissions: first good then bad.
+
 
 ## Release 2.12.0 2026-08-10
 

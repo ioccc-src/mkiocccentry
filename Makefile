@@ -58,14 +58,17 @@
 #
 AWK= awk
 CC= cc
+CP= cp
 CMP= cmp
 CTAGS= ctags
 DIFF= diff
+FIND= find
 GIT= git
 GREP= grep
 INDEPEND= independ
 INSTALL= install
 IS_AVAILABLE= soup/is_available.sh
+MKDIR= mkdir
 MV= mv
 PICKY= picky
 RM= rm
@@ -77,6 +80,7 @@ SHELL= bash
 SHELLCHECK= shellcheck
 SLEEP= sleep
 SORT= sort
+TAR= tar
 TEE= tee
 TR= tr
 
@@ -398,6 +402,22 @@ ALL_OTHER_TARGETS= ${SH_TARGETS} ${ALL_SUBDIRS} ${ALL_MAN_PAGES} build_man
 # what to make by all, what to install, and removed by clobber (and thus not ${ALL_OTHER_TARGETS})
 #
 TARGETS= ${PROG_TARGETS} ${ALL_MAN_BUILT}
+
+
+############################
+# make slot specific paths #
+############################
+
+# slot tree related paths relative to this directory
+#
+SLOTS= test_ioccc/slot
+GOOD_SLOTS= ${SLOTS}/good
+BAD_SLOTS= ${SLOTS}/bad
+GOOD_WORK= ${GOOD_SLOTS}/workdir
+GOOD_TOP= ${GOOD_SLOTS}/topdir
+BAD_WORK= ${BAD_SLOTS}/workdir
+BAD_TOP= ${BAD_SLOTS}/topdir
+BAD_TIME= 1787448662
 
 
 ############################################################
@@ -840,6 +860,61 @@ all_sem_ref: soup/Makefile
 all_sem_ref_ptch: soup/Makefile
 	${E} ${MAKE} ${MAKE_CD_Q} -C soup $@ C_SPECIAL="${C_SPECIAL}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
 
+
+# form good slot compressed tarballs and fake bad slot compressed tarballs
+#
+slots: all test_ioccc/mkiocccentry_slots.sh
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ starting"
+	${S} echo
+	${S} echo about to test_ioccc/mkiocccentry_slots.sh -v 1
+	${E} test_ioccc/mkiocccentry_slots.sh -v 1
+	${S} echo
+	${S} echo forcing the build of bad compressed tarballs
+	${S} echo
+	${Q} for ID in 12345678-1234-4321-abcd-1234567890ab-3 12345678-1234-4321-abcd-1234567890ab-4 \
+		       12345678-1234-4321-abcd-1234567890ab-5 12345678-1234-4321-abcd-1234567890ab-6 \
+		       12345678-1234-4321-abcd-1234567890ab-7 12345678-1234-4321-abcd-1234567890ab-8 \
+		       12345678-1234-4321-abcd-1234567890ab-9; do \
+	    echo faking the formation of ${BAD_WORK}/${ID}; \
+	    echo; \
+	    echo ${RM} -rf ${BAD_WORK}/$${ID}; \
+	    ${RM} -rf ${BAD_WORK}/$${ID}; \
+	    echo ${MKDIR} -p ${BAD_WORK}/$${ID}; \
+	    ${MKDIR} -p ${BAD_WORK}/$${ID}; \
+	    echo ${MKDIR} -p ${BAD_WORK}/$${ID}/$${ID}; \
+	    ${MKDIR} -p ${BAD_WORK}/$${ID}/$${ID}; \
+	    echo ${CP} -r ${BAD_TOP}/$${ID} ${BAD_WORK}/$${ID}; \
+	    ${CP} -r ${BAD_TOP}/$${ID} ${BAD_WORK}/$${ID}; \
+	    echo ${CP} -f ${GOOD_WORK}/$${ID}/$${ID}/.auth.json ${BAD_WORK}/$${ID}/$${ID}; \
+	    ${CP} -f ${GOOD_WORK}/$${ID}/$${ID}/.auth.json ${BAD_WORK}/$${ID}/$${ID}; \
+	    echo ${CP} -f ${GOOD_WORK}/$${ID}/$${ID}/.info.json ${BAD_WORK}/$${ID}/$${ID}; \
+	    ${CP} -f ${GOOD_WORK}/$${ID}/$${ID}/.info.json ${BAD_WORK}/$${ID}/$${ID}; \
+	    echo ${TAR} -C ${BAD_WORK}/$${ID} --format=v7 -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.${BAD_TIME}.txz $${ID}; \
+	    ${TAR} -C ${BAD_WORK}/$${ID} --format=v7 -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.${BAD_TIME}.txz $${ID}; \
+	    echo; \
+	    echo formed fake ${BAD_WORK}/${ID}; \
+	done
+	${S} echo
+	${S} echo list of good compressed tarballs starts below
+	${S} echo
+	${Q} ${FIND} ${GOOD_WORK} -name '*.txz' | LC_ALL="C" LANG="C" ${SORT}
+	${S} echo
+	${S} echo list of good compressed tarballs ends above
+	${S} echo
+	${S} echo list of bad compressed tarballs starts below
+	${S} echo
+	${Q} ${FIND} ${BAD_WORK} -name '*.txz' | LC_ALL="C" LANG="C" ${SORT}
+	${S} echo
+	${S} echo list of bad compressed tarballs ends above
+	${S} echo
+	${S} echo "${OUR_NAME}: make $@ ending"
+
+# list good slot compressed tarballs and fake bad slot compressed tarballs
+#
+lstxz:
+	${Q} if [[ -d  ${GOOD_WORK} ]]; then ${FIND} ${GOOD_WORK} -name '*.txz' | LC_ALL="C" LANG="C" ${SORT}; fi
+	${Q} if [[ -d  ${BAD_WORK} ]]; then ${FIND} ${BAD_WORK} -name '*.txz' | LC_ALL="C" LANG="C" ${SORT}; fi
 
 # sequence exit codes
 #
