@@ -4,7 +4,7 @@
 #
 # For mkiocccentry:
 #
-# Copyright (c) 2021-2025 by Landon Curt Noll and Cody Boone Ferguson.
+# Copyright (c) 2021-2026 by Landon Curt Noll and Cody Boone Ferguson.
 # All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
@@ -1992,6 +1992,10 @@ clobber: legacy_clobber clean dbg/Makefile dyn_array/Makefile jparse/Makefile \
 	${RM} -rf man
 	${RM} -f jparse_test.log chksubmit_test.log txzchk_test.log ${BUILD_LOG}
 	${RM} -f tags ${LOCAL_DIR_TAGS}
+	${RM} -f .txzchk_test.stderr.*
+	${RM} -f .txzchk_test.tar_err.out.*
+	${RM} -f .txzchk_test.tarball.txz.*
+	${RM} -f .txzchk_test.test_file.*
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

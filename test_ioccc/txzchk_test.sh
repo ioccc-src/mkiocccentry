@@ -2,7 +2,7 @@
 #
 # txzchk_test.sh - test txzchk with good and bad tarballs (as text files)
 #
-# Copyright (c) 2022-2025 by Cody Boone Ferguson.  All Rights Reserved.
+# Copyright (c) 2022-2026 by Cody Boone Ferguson.  All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -93,7 +93,7 @@ TAR="$(type -P tar 2>/dev/null)"
 # but due to the reasons cited above we must rely on the more complicated form:
 [[ -z "$TAR" ]] && TAR="/usr/bin/tar"
 
-export TXZCHK_TEST_VERSION="2.0.2 2025-11-15"
+export TXZCHK_TEST_VERSION="2.0.3 2026-08-22"
 export FNAMCHK="./test_ioccc/fnamchk"
 export TXZCHK="./txzchk"
 export TXZCHK_TREE="./test_ioccc/test_txzchk"
@@ -472,7 +472,10 @@ fi
 
 # tar test clean up
 #
-if [[ -n $TAR_TEST_SUCCESS ]]; then
+if [[ -n $TAR_TEST_SUCCESS && -z $K_FLAG ]]; then
+    if [[ $V_FLAG -ge 1 ]]; then
+	echo "$0: debug[1]: about to rm -f $TEST_FILE $TAR_ERROR $TARBALL" 1>&2
+    fi
     rm -f "$TEST_FILE" "$TAR_ERROR" "$TARBALL"
 fi
 
@@ -667,16 +670,16 @@ else
     echo
     echo -n "rm -f"
     if [[ -e $TARBALL ]]; then
-	echo -n " $TARBALL"
+	echo -n " $PWD/$TARBALL"
     fi
     if [[ -e $TEST_FILE ]]; then
-	echo -n " $TEST_FILE"
+	echo -n " $PWD/$TEST_FILE"
     fi
     if [[ -e $TAR_ERROR ]]; then
-	echo -n " $TAR_ERROR"
+	echo -n " $PWD/$TAR_ERROR"
     fi
     if [[ -e $TMP_STDERR_FILE ]]; then
-	echo -n " $TMP_STDERR_FILE"
+	echo -n " $PWD/$TMP_STDERR_FILE"
     fi
     echo
 fi

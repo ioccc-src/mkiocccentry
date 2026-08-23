@@ -1,6 +1,21 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 2.12.1 2026-08-22
+
+Improved `make clobber` rule in `test_ioccc/Makefile` to remove both the
+`slot/good/build.out/` directory, and the `slot/bad/build.out` directory.
+
+Fixed `test_ioccc/txzchk_test.sh -k` to not remove temporary files.
+Added full path for temporary files when listing files next behind
+in case the tool is run from the `test_ioccc` sub-directory.
+
+Changed `TXZCHK_TEST_VERSION` in `test_ioccc/txzchk_test.sh` to "2.0.3 2026-08-22"
+
+Improved `make clobber` in top level `Makefile` to remove any temporary file
+that may have been left behind by use of `test_ioccc/txzchk_test.sh -k`.
+
+
 ## Release 2.12.0 2026-08-10
 
 Prepare for **IOCCC30**.

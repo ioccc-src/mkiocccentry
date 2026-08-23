@@ -2,7 +2,7 @@
 #
 # test_ioccc - mkiocccentry test tools
 #
-# Copyright (c) 2021-2025 by Landon Curt Noll and Cody Boone Ferguson.
+# Copyright (c) 2021-2026 by Landon Curt Noll and Cody Boone Ferguson.
 # All Rights Reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
@@ -770,6 +770,7 @@ clobber: legacy_clobber clean
 	${E} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
 	${E} ${RM} ${RM_V} -rf test_iocccsize topdir workdir test_JSON
 	${E} ${RM} ${RM_V} -rf slot/good/workdir slot/bad/workdir
+	${E} ${RM} ${RM_V} -rf slot/good/build.out slot/bad/build.out
 	${E} ${RM} ${RM_V} -f test_file_util.copy.c test_file_util.copy.o test_file_util
 	${E} ${RM} ${RM_V} -rf aa bb
 	${S} echo
