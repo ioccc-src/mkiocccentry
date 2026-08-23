@@ -61,6 +61,7 @@ CC= cc
 CP= cp
 CMP= cmp
 CTAGS= ctags
+DD= dd
 DIFF= diff
 FIND= find
 GIT= git
@@ -871,6 +872,51 @@ slots: all test_ioccc/mkiocccentry_slots.sh
 	${E} test_ioccc/mkiocccentry_slots.sh -v 1
 	${S} echo
 	${S} echo forcing the build of bad compressed tarballs
+	${S} echo
+	${Q} for ID in 12345678-1234-4321-abcd-1234567890ab-0; do \
+	    echo faking the formation of ${BAD_WORK}/${ID}; \
+	    echo; \
+	    echo ${RM} -rf ${BAD_WORK}/$${ID}; \
+	    ${RM} -rf ${BAD_WORK}/$${ID}; \
+	    echo ${MKDIR} -p ${BAD_WORK}/$${ID}; \
+	    ${MKDIR} -p ${BAD_WORK}/$${ID}; \
+	    echo ${TAR} -C ${GOOD_WORK}/$${ID}/$${ID} --format=v7 -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.${BAD_TIME}.txz prog.c; \
+	    ${TAR} -C ${GOOD_WORK}/$${ID}/$${ID} --format=v7 -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.${BAD_TIME}.txz prog.c; \
+	    echo; \
+	    echo formed fake ${BAD_WORK}/${ID}; \
+	done
+	${S} echo
+	${Q} for ID in 12345678-1234-4321-abcd-1234567890ab-1; do \
+	    echo faking the formation of ${BAD_WORK}/${ID}; \
+	    echo; \
+	    echo ${RM} -rf ${BAD_WORK}/$${ID}; \
+	    ${RM} -rf ${BAD_WORK}/$${ID}; \
+	    echo ${MKDIR} -p ${BAD_WORK}/$${ID}; \
+	    ${MKDIR} -p ${BAD_WORK}/$${ID}; \
+	    echo ${MKDIR} -p ${BAD_WORK}/$${ID}/$${ID}; \
+	    ${MKDIR} -p ${BAD_WORK}/$${ID}/$${ID}; \
+	    echo ${CP} -r ${GOOD_WORK}/$${ID}/$${ID} ${BAD_WORK}/$${ID}; \
+	    ${CP} -r ${GOOD_WORK}/$${ID}/$${ID} ${BAD_WORK}/$${ID}; \
+	    echo ${TAR} -C ${BAD_WORK}/$${ID} -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.${BAD_TIME}.txz $${ID}; \
+	    ${TAR} -C ${BAD_WORK}/$${ID} -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.${BAD_TIME}.txz $${ID}; \
+	    echo; \
+	    echo formed fake ${BAD_WORK}/${ID}; \
+	done
+	${S} echo
+	${Q} for ID in 12345678-1234-4321-abcd-1234567890ab-2; do \
+	    echo faking the formation of ${BAD_WORK}/${ID}; \
+	    echo; \
+	    echo ${RM} -rf ${BAD_WORK}/$${ID}; \
+	    ${RM} -rf ${BAD_WORK}/$${ID}; \
+	    echo ${MKDIR} -p ${BAD_WORK}/$${ID}; \
+	    ${MKDIR} -p ${BAD_WORK}/$${ID}; \
+	    echo ${MKDIR} -p ${BAD_WORK}/$${ID}/$${ID}; \
+	    ${MKDIR} -p ${BAD_WORK}/$${ID}/$${ID}; \
+	    echo ${DD} if=/dev/zero bs=333331 count=12 of=${BAD_WORK}/$${ID}/submit.$${ID}.${BAD_TIME}.txz; \
+	    ${DD} if=/dev/zero bs=333331 count=12 of=${BAD_WORK}/$${ID}/submit.$${ID}.${BAD_TIME}.txz; \
+	    echo; \
+	    echo formed fake ${BAD_WORK}/${ID}; \
+	done
 	${S} echo
 	${Q} for ID in 12345678-1234-4321-abcd-1234567890ab-3 12345678-1234-4321-abcd-1234567890ab-4 \
 		       12345678-1234-4321-abcd-1234567890ab-5 12345678-1234-4321-abcd-1234567890ab-6 \
