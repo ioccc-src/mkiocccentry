@@ -61,6 +61,7 @@ CC= cc
 CP= cp
 CMP= cmp
 CTAGS= ctags
+DATE= date
 DD= dd
 DIFF= diff
 FIND= find
@@ -418,7 +419,6 @@ GOOD_WORK= ${GOOD_SLOTS}/workdir
 GOOD_TOP= ${GOOD_SLOTS}/topdir
 BAD_WORK= ${BAD_SLOTS}/workdir
 BAD_TOP= ${BAD_SLOTS}/topdir
-BAD_TIME= 1787448662
 
 
 ############################################################
@@ -880,8 +880,8 @@ slots: all test_ioccc/mkiocccentry_slots.sh
 	    ${RM} -rf ${BAD_WORK}/$${ID}; \
 	    echo ${MKDIR} -p ${BAD_WORK}/$${ID}; \
 	    ${MKDIR} -p ${BAD_WORK}/$${ID}; \
-	    echo ${TAR} -C ${GOOD_WORK}/$${ID}/$${ID} --format=v7 -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.${BAD_TIME}.txz prog.c; \
-	    ${TAR} -C ${GOOD_WORK}/$${ID}/$${ID} --format=v7 -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.${BAD_TIME}.txz prog.c; \
+	    echo ${TAR} -C ${GOOD_WORK}/$${ID}/$${ID} --format=v7 -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.$$(${DATE} '+%s').txz prog.c; \
+	    ${TAR} -C ${GOOD_WORK}/$${ID}/$${ID} --format=v7 -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.$$(${DATE} '+%s').txz prog.c; \
 	    echo; \
 	    echo formed fake ${BAD_WORK}/${ID}; \
 	done
@@ -897,8 +897,8 @@ slots: all test_ioccc/mkiocccentry_slots.sh
 	    ${MKDIR} -p ${BAD_WORK}/$${ID}/$${ID}; \
 	    echo ${CP} -r ${GOOD_WORK}/$${ID}/$${ID} ${BAD_WORK}/$${ID}; \
 	    ${CP} -r ${GOOD_WORK}/$${ID}/$${ID} ${BAD_WORK}/$${ID}; \
-	    echo ${TAR} -C ${BAD_WORK}/$${ID} -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.${BAD_TIME}.txz $${ID}; \
-	    ${TAR} -C ${BAD_WORK}/$${ID} -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.${BAD_TIME}.txz $${ID}; \
+	    echo ${TAR} -C ${BAD_WORK}/$${ID} -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.$$(${DATE} '+%s').txz $${ID}; \
+	    ${TAR} -C ${BAD_WORK}/$${ID} -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.$$(${DATE} '+%s').txz $${ID}; \
 	    echo; \
 	    echo formed fake ${BAD_WORK}/${ID}; \
 	done
@@ -912,8 +912,8 @@ slots: all test_ioccc/mkiocccentry_slots.sh
 	    ${MKDIR} -p ${BAD_WORK}/$${ID}; \
 	    echo ${MKDIR} -p ${BAD_WORK}/$${ID}/$${ID}; \
 	    ${MKDIR} -p ${BAD_WORK}/$${ID}/$${ID}; \
-	    echo ${DD} if=/dev/zero bs=333331 count=12 of=${BAD_WORK}/$${ID}/submit.$${ID}.${BAD_TIME}.txz; \
-	    ${DD} if=/dev/zero bs=333331 count=12 of=${BAD_WORK}/$${ID}/submit.$${ID}.${BAD_TIME}.txz; \
+	    echo ${DD} if=/dev/zero bs=333331 count=12 of=${BAD_WORK}/$${ID}/submit.$${ID}.$$(${DATE} '+%s').txz; \
+	    ${DD} if=/dev/zero bs=333331 count=12 of=${BAD_WORK}/$${ID}/submit.$${ID}.$$(${DATE} '+%s').txz; \
 	    echo; \
 	    echo formed fake ${BAD_WORK}/${ID}; \
 	done
@@ -936,8 +936,8 @@ slots: all test_ioccc/mkiocccentry_slots.sh
 	    ${CP} -f ${GOOD_WORK}/$${ID}/$${ID}/.auth.json ${BAD_WORK}/$${ID}/$${ID}; \
 	    echo ${CP} -f ${GOOD_WORK}/$${ID}/$${ID}/.info.json ${BAD_WORK}/$${ID}/$${ID}; \
 	    ${CP} -f ${GOOD_WORK}/$${ID}/$${ID}/.info.json ${BAD_WORK}/$${ID}/$${ID}; \
-	    echo ${TAR} -C ${BAD_WORK}/$${ID} --format=v7 -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.${BAD_TIME}.txz $${ID}; \
-	    ${TAR} -C ${BAD_WORK}/$${ID} --format=v7 -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.${BAD_TIME}.txz $${ID}; \
+	    echo ${TAR} -C ${BAD_WORK}/$${ID} --format=v7 -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.$$(${DATE} '+%s').txz $${ID}; \
+	    ${TAR} -C ${BAD_WORK}/$${ID} --format=v7 -cJf ${BAD_WORK}/$${ID}/submit.$${ID}.$$(${DATE} '+%s').txz $${ID}; \
 	    echo; \
 	    echo formed fake ${BAD_WORK}/${ID}; \
 	done
