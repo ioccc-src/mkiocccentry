@@ -11,7 +11,7 @@
  *
  *      man 3 dyn_array
  *
- * Copyright (c) 2025 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2025-2026 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -136,14 +136,15 @@ main(void)
     }
 
     /*
-     * free the dynamic array structure
+     * destroy the dynamic array structure
      *
      * NOTE: Because the dynamic array was allocated with a zeroize value true,
      *       the array of pointers to strings will be zeroized before the
-     *       dynamic array structure if finally freed.
+     *       backing storage is released and the heap-allocated struct pointer
+     *       is then cleared.
      */
-    msg("free the dynamic array structure");
-    dyn_array_free(array);
+    msg("destroy the dynamic array structure");
+    dyn_array_destroy(&array);
 
     /*
      * allocate an dynamic array of integers
@@ -214,14 +215,14 @@ main(void)
     }
 
     /*
-     * free the dynamic array structure
+     * destroy the dynamic array structure
      *
      * NOTE: Because the dynamic array was allocated with a zeroize value true,
-     *       the array of pointers to strings will be zeroized before the
-     *       dynamic array structure if finally freed.
+     *       the array backing storage will be zeroized before the
+     *       heap-allocated struct pointer is cleared.
      */
-    msg("free the dynamic array structure");
-    dyn_array_free(array);
+    msg("destroy the dynamic array structure");
+    dyn_array_destroy(&array);
 
     /*
      * exit 0

@@ -307,6 +307,9 @@ EXTERN_MAN= ${ALL_MAN_TARGETS}
 EXTERN_LIBA= libdyn_array.a
 EXTERN_PROG= dyn_test
 
+# EXTERN_ETEST - add flag to dyn_test
+EXTERN_ETEST=
+
 # NOTE: ${EXTERN_CLOBBER} used outside of this directory and removed by make clobber
 #
 EXTERN_CLOBBER= ${EXTERN_O} ${EXTERN_LIBA} ${EXTERN_PROG}
@@ -449,8 +452,8 @@ test:
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
 	    exit 1; \
 	else \
-	    echo ./dyn_test -v ${VERBOSITY}; \
-	    ./dyn_test -v ${VERBOSITY}; \
+	    echo ./dyn_test -v ${VERBOSITY} ${EXTERN_ETEST}; \
+	    ./dyn_test -v ${VERBOSITY} ${EXTERN_ETEST}; \
 	    EXIT_CODE="$$?"; \
 	    if [[ $$EXIT_CODE -ne 0 ]]; then \
 		echo "${OUR_NAME}: ERROR: dyn_test failed, error code: $$EXIT_CODE"; \
@@ -761,7 +764,8 @@ depend: ${ALL_CSRC}
 	    fi; \
 	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
 	    ${CC} ${CFLAGS} -MM -I. ${ALL_CSRC} | \
-		${SED} -E -e 's;\s/usr/local/include/\S+;;g' -e 's;\s/usr/include/\S+;;g' | \
+		${SED} -E -e 's;\s/usr/local/include/\S+;;g' -e 's;\s/usr/include/\S+;;g' \
+			  -e 's;\s/Library/Developer/\S+;;g' | \
 		${INDEPEND} >> Makefile; \
 	    if ${CMP} -s Makefile.orig Makefile; then \
 		${RM} ${RM_V} -f Makefile.orig; \

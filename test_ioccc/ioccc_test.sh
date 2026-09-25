@@ -519,10 +519,10 @@ fi
 # dyn_test
 #
 echo | tee -a -- "$LOGFILE"
-echo "RUNNING: dyn_array/dyn_test" | tee -a -- "$LOGFILE"
+echo "RUNNING: dyn_array/dyn_test -v 0 -e" | tee -a -- "$LOGFILE"
 echo | tee -a -- "$LOGFILE"
-echo "dyn_array/dyn_test" | tee -a -- "$LOGFILE"
-dyn_array/dyn_test | tee -a -- "$LOGFILE"
+echo "dyn_array/dyn_test" -v 0 -e | tee -a -- "$LOGFILE"
+dyn_array/dyn_test -v 0 -e | tee -a -- "$LOGFILE"
 status="${PIPESTATUS[0]}"
 if [[ $status -ne 0 ]]; then
     echo "$0: ERROR: dyn_array/dyn_test non-zero exit code: $status" 1>&2 | tee -a -- "$LOGFILE"

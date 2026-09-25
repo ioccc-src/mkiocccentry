@@ -76,7 +76,7 @@
  *		     some minor help in forming one, please consider asking by
  *		     opening an issue at dbg repo.
  *
- * Copyright (c) 1989,1997,2018-2024 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 1989,1997,2018-2024,2026 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -111,6 +111,7 @@
  * dbg - info, debug, warning, error, and usage message facility
  */
 #include "dbg.h"
+#include <limits.h>
 
 
 /*
@@ -483,9 +484,17 @@ sndbg_write(char *str, size_t size, char const *caller, int level, char const *f
      */
     errno = 0;		/* pre-clear errno for warnp() */
     ret = snprintf(str, size, "debug[%d]: ", level);
+    if (ret < 0) {
+	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, ap): snprintf returned: %d\n",
+		      __func__, size, caller, level, fmt, ret);
+	errno = saved_errno;
+	return;
+    }
     if ((size_t)ret >= size) {
 	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, ap): snprintf returned: %d\n",
 		      __func__, size, caller, level, fmt, ret);
+	errno = saved_errno;
+	return;
     }
 
     /*
@@ -493,10 +502,19 @@ sndbg_write(char *str, size_t size, char const *caller, int level, char const *f
      */
     errno = 0;		/* pre-clear errno for warnp() */
     ret2 = vsnprintf(str+ret, size-(size_t)ret, fmt, ap);
+    if (ret2 < 0) {
+	warnp(caller, "\nin %s(str, %zu, %s, %s, ap): "
+		      "snprintf returned: %d vsnprintf returned: %d\n",
+		      __func__, size, caller, fmt, ret, ret2);
+	errno = saved_errno;
+	return;
+    }
     if ((size_t)ret2 >= size-(size_t)ret) {
 	warnp(caller, "\nin %s(str, %zu, %s, %s, ap): "
 		      "snprintf returned: %d vsnprintf returned: %d\n",
 		      __func__, size, caller, fmt, ret, ret2);
+	errno = saved_errno;
+	return;
     }
 
     /*
@@ -659,12 +677,22 @@ snwarn_write(char *str, size_t size, char const *caller, char const *name, char 
      */
     errno = 0;		/* pre-clear errno for warnp() */
     ret = snprintf(str, size, "Warning: %s: ", name);
+    if (ret < 0) {
+	if (stderr != NULL) {
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
+				   caller, __func__, size, caller, name, fmt, ret);
+	}
+	errno = saved_errno;
+	return;
+    }
     if ((size_t)ret >= size) {
 	/* we cannot call warn() because that would produce an infinite loop! */
 	if (stderr != NULL) {
 	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
 				   caller, __func__, size, caller, name, fmt, ret);
         }
+	errno = saved_errno;
+	return;
     }
 
     /*
@@ -672,6 +700,15 @@ snwarn_write(char *str, size_t size, char const *caller, char const *name, char 
      */
     errno = 0;		/* pre-clear errno for strerror() */
     ret2 = vsnprintf(str+ret, size-(size_t)ret, fmt, ap);
+    if (ret2 < 0) {
+	if (stderr != NULL) {
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
+				   "snprintf returned: %d vsnprintf returned: %d\n",
+				   caller, __func__, size, caller, name, fmt, ret, ret2);
+	}
+	errno = saved_errno;
+	return;
+    }
     if ((size_t)ret2 >= size-(size_t)ret) {
 	/* we cannot call warn() because that would produce an infinite loop! */
 	if (stderr != NULL) {
@@ -679,6 +716,8 @@ snwarn_write(char *str, size_t size, char const *caller, char const *name, char 
 				   "snprintf returned: %d vsnprintf returned: %d\n",
 				   caller, __func__, size, caller, name, fmt, ret, ret2);
         }
+	errno = saved_errno;
+	return;
     }
 
     /*
@@ -842,12 +881,22 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
      */
     errno = 0;		/* pre-clear errno for warnp() */
     ret = snprintf(str, size, "Warning: %s: ", name);
+    if (ret < 0) {
+	if (stderr != NULL) {
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
+				   caller, __func__, size, caller, name, fmt, ret);
+	}
+	errno = saved_errno;
+	return;
+    }
     if ((size_t)ret >= size) {
 	/* we cannot call warn() because that would produce an infinite loop! */
 	if (stderr != NULL) {
 	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): snprintf returned: %d\n",
 				   caller, __func__, size, caller, name, fmt, ret);
         }
+	errno = saved_errno;
+	return;
     }
 
     /*
@@ -855,6 +904,15 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
      */
     errno = 0;		/* pre-clear errno for strerror() */
     ret2 = vsnprintf(str+ret, size-(size_t)ret, fmt, ap);
+    if (ret2 < 0) {
+	if (stderr != NULL) {
+	    (void) fprintf(stderr, "\nWarning: %s: in %s(str, %zu, %s, %s, %s, ap): "
+				   "snprintf returned: %d vsnprintf returned: %d\n",
+				   caller, __func__, size, caller, name, fmt, ret, ret2);
+	}
+	errno = saved_errno;
+	return;
+    }
     if ((size_t)ret2 >= size-(size_t)ret) {
 	/* we cannot call warn() because that would produce an infinite loop! */
 	if (stderr != NULL) {
@@ -862,6 +920,8 @@ snwarnp_write(char *str, size_t size, char const *caller, char const *name, char
 				   "snprintf returned: %d vsnprintf returned: %d\n",
 				   caller, __func__, size, caller, name, fmt, ret, ret2);
         }
+	errno = saved_errno;
+	return;
     }
 
     /*
@@ -1041,10 +1101,19 @@ snerr_write(char *str, size_t size, int error_code, char const *caller,
      */
     errno = 0;		/* pre-clear errno for warnp() */
     ret = snprintf(str, size, "ERROR[%d]: %s: ", error_code, name);
+    if (ret < 0) {
+	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, %s, ap): "
+		      "snprintf returned: %d\n",
+		      __func__, size, caller, error_code, name, fmt, ret);
+	errno = saved_errno;
+	return;
+    }
     if ((size_t)ret >= size) {
 	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, %s, ap): "
-		      "snprintf returned: %d",
+		      "snprintf returned: %d\n",
 		      __func__, size, caller, error_code, name, fmt, ret);
+	errno = saved_errno;
+	return;
     }
 
     /*
@@ -1052,10 +1121,19 @@ snerr_write(char *str, size_t size, int error_code, char const *caller,
      */
     errno = 0;		/* pre-clear errno for strerror() */
     ret2 = vsnprintf(str+ret, size-(size_t)ret, fmt, ap);
+    if (ret2 < 0) {
+	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, %s, ap): "
+		      "snprintf returned: %d vsnprintf returned: %d\n",
+		      __func__, size, caller, error_code, name, fmt, ret, ret2);
+	errno = saved_errno;
+	return;
+    }
     if ((size_t)ret2 >= size-(size_t)ret) {
 	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, %s, ap): "
 		      "snprintf returned: %d vsnprintf returned: %d\n",
 		      __func__, size, caller, error_code, name, fmt, ret, ret2);
+	errno = saved_errno;
+	return;
     }
 
     /*
@@ -1225,10 +1303,19 @@ snerrp_write(char *str, size_t size, int error_code, char const *caller,
      */
     errno = 0;		/* pre-clear errno for warnp() */
     ret = snprintf(str, size, "ERROR[%d]: %s: ", error_code, name);
+    if (ret < 0) {
+	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, %s, ap): "
+		      "snprintf returned: %d\n",
+		      __func__, size, caller, error_code, name, fmt, ret);
+	errno = saved_errno;
+	return;
+    }
     if ((size_t)ret >= size) {
 	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, %s, ap): "
-		      "snprintf returned: %d",
+		      "snprintf returned: %d\n",
 		      __func__, size, caller, error_code, name, fmt, ret);
+	errno = saved_errno;
+	return;
     }
 
     /*
@@ -1236,10 +1323,19 @@ snerrp_write(char *str, size_t size, int error_code, char const *caller,
      */
     errno = 0;		/* pre-clear errno for warnp() */
     ret2 = vsnprintf(str+ret, size-(size_t)ret, fmt, ap);
+    if (ret2 < 0) {
+	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, %s, ap): "
+		      "snprintf returned: %d vsnprintf returned: %d\n",
+		      __func__, size, caller, error_code, name, fmt, ret, ret2);
+	errno = saved_errno;
+	return;
+    }
     if ((size_t)ret2 >= size-(size_t)ret) {
 	warnp(caller, "\nin %s(str, %zu, %s, %d, %s, %s, ap): "
 		      "snprintf returned: %d vsnprintf returned: %d\n",
 		      __func__, size, caller, error_code, name, fmt, ret, ret2);
+	errno = saved_errno;
+	return;
     }
 
     /*
@@ -6277,6 +6373,8 @@ int
 parse_verbosity(char const *optarg)
 {
     int verbosity = DBG_NONE;	/* parsed verbosity or DBG_NONE */
+    long parsed_verbosity = 0;	/* parsed verbosity before int conversion */
+    char *endptr = NULL;	/* first byte after parsed integer */
 
     /*
      * firewall
@@ -6289,13 +6387,14 @@ parse_verbosity(char const *optarg)
      * parse verbosity
      */
     errno = 0;		/* pre-clear errno for warnp() */
-    verbosity = (int)strtol(optarg, NULL, 0);
-    if (errno != 0) {
+    parsed_verbosity = strtol(optarg, &endptr, 0);
+    if (errno != 0 || endptr == optarg || *endptr != '\0') {
 	return DBG_INVALID;
     }
-    if (verbosity < 0) {
+    if (parsed_verbosity < 0 || parsed_verbosity > INT_MAX) {
 	return DBG_INVALID;
     }
+    verbosity = (int)parsed_verbosity;
     return verbosity;
 }
 

@@ -1,9 +1,24 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 1.1.6 2026-06-18
+## Release 1.1.6 2026-06-13
 
-Removed use of `isascii(3)` macro.
+Remove calls to `isascii()` as this function was removed from POSIX.1-2024 (it
+was deprecated in POSIX.1-2008).
+
+For the `to*()` functions/macros of `ctype.h`, although the arg is an `int`, it
+is still undefined if it is not representable as either `EOF` or an `unsigned
+char`, thus in calls to these functions/macros, we cast to an unsigned char the
+arg. This change was tested in the jparse repo (i.e. `make ; sudo make install`
+first) and it all seems good.
+
+Also fixed date range in copyright in `pr.c`: 2008,2022-2026. The 2022 is just a
+guess. It is not entirely possible (without digging through old email) to
+determine it due to how it was first in the mkiocccentry repo under root and
+then it was moved to jparse/ and that was then moved to its own repo. However as
+mkiocccentry started in late 2021 I believe util.c (which is a significant
+source of `pr.c`) I think 2022 is a fair guess.
+
 
 
 ## Release 1.1.5 2025-10-02

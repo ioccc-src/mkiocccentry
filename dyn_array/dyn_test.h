@@ -1,7 +1,7 @@
 /*
  * dyn_array - dynamic array facility
  *
- * Copyright (c) 2014,2015,2022 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2014,2015,2022,2026 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -43,7 +43,7 @@
 /*
  * official versions
  */
-#define DYN_TEST_VERSION "1.11.2 2025-09-29"	/* format: major.minor YYYY-MM-DD */
+#define DYN_TEST_VERSION "1.12.1 2026-09-25"	/* format: major.minor.patch YYYY-MM-DD */
 
 /*
  * dyn_array - dynamic array facility

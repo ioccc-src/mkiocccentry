@@ -1,7 +1,7 @@
 /*
  * dyn_array - dynamic array facility
  *
- * Copyright (c) 2014,2015,2022-2025 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2014,2015,2022-2026 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -68,7 +68,54 @@
 /*
  * official version
  */
-#define DYN_ARRAY_VERSION "2.5.3 2024-10-03"	/* format: major.minor YYYY-MM-DD */
+#define DYN_ARRAY_VERSION "2.6.0 2026-09-24"	/* format: major.minor YYYY-MM-DD */
+
+
+/*
+ * dyn_array - a dynamic array of elements of the same type
+ *
+ * The dynamic array maintains both an allocated element count
+ * and a number of elements in use.
+ *
+ * The actual storage allocated will be a number of elements
+ * beyond the allocated element count, to serve as a guard chunk.
+ *
+ * If zeroize is true, then all allocated elements will be
+ * zeroized when first allocated, and zeroized when dyn_array_free()
+ * or dyn_array_destroy() releases the backing storage.
+ */
+struct dyn_array
+{
+    size_t elm_size;		/* Number of bytes for a single element */
+    bool zeroize;		/* true ==> always zero newly allocated chunks, false ==> don't */
+    intmax_t count;		/* Number of elements in use */
+    intmax_t allocated;		/* Number of elements allocated (>= count) */
+    intmax_t chunk;		/* Number of elements to expand by when allocating */
+    void *data;			/* allocated dynamic array of identical things or NULL */
+};
+
+
+/*
+ * public helper functions used by the convenience macros
+ *
+ * dyn_array_value_ref() / dyn_array_value_c_ref() return the address of an
+ * in-use element.
+ * dyn_array_addr_ref() / dyn_array_addr_c_ref() return the address of an
+ * in-use element or the one-past-the-end address used for range iteration.
+ *
+ * These helpers can validate only generic dynamic-array invariants.
+ * The caller must still ensure that:
+ *
+ *	- type exactly matches the stored element type
+ *	- sizeof(type) == elm_size
+ *	- type's alignment requirements are compatible with the stored elements
+ *
+ * Those properties are not knowable from a generic C macro.
+ */
+extern void *dyn_array_value_ref(struct dyn_array *array, intmax_t index);
+extern void *dyn_array_addr_ref(struct dyn_array *array, intmax_t index);
+extern const void *dyn_array_value_c_ref(const struct dyn_array *array, intmax_t index);
+extern const void *dyn_array_addr_c_ref(const struct dyn_array *array, intmax_t index);
 
 
 /*
@@ -102,7 +149,7 @@
  *
  *	next = dyn_array_first(array, struct json_member);
  *
- *	WARNING: Do NOT reference unless the dynamic array contains 1 or more elements.
+ *	WARNING: Do NOT dereference unless the dynamic array contains 1 or more elements.
  *
  * Address of the element just beyond the elements in use:
  *
@@ -111,7 +158,7 @@
  *
  *	next = dyn_array_beyond(array, struct json_member);
  *
- *	WARNING: Do NOT reference this this address.
+ *	WARNING: Do NOT dereference this address.
  *
  * Number of elements allocated in memory for the dynamic array:
  *
@@ -141,8 +188,14 @@
  *
  *	data_moved = dyn_array_push(array, value);
  */
-#define dyn_array_value(array, type, index) (((type *)(((struct dyn_array *)(array))->data))[(index)])
-#define dyn_array_addr(array, type, index) (((type *)(((struct dyn_array *)(array))->data))+(index))
+#define dyn_array_value(array, type, index) _Generic((array), \
+    const struct dyn_array *: (*(type const *)(dyn_array_value_c_ref((const struct dyn_array *)(array), (intmax_t)(index)))), \
+    struct dyn_array *: (*(type *)(dyn_array_value_ref((struct dyn_array *)(array), (intmax_t)(index)))), \
+    default: (*(type *)(dyn_array_value_ref((struct dyn_array *)(array), (intmax_t)(index)))))
+#define dyn_array_addr(array, type, index) _Generic((array), \
+    const struct dyn_array *: ((type const *)(dyn_array_addr_c_ref((const struct dyn_array *)(array), (intmax_t)(index)))), \
+    struct dyn_array *: ((type *)(dyn_array_addr_ref((struct dyn_array *)(array), (intmax_t)(index)))), \
+    default: ((type *)(dyn_array_addr_ref((struct dyn_array *)(array), (intmax_t)(index)))))
 #define dyn_array_tell(array) (((struct dyn_array *)(array))->count)
 #define dyn_array_first(array, type) (dyn_array_addr(array, type, 0))
 #define dyn_array_beyond(array, type) (dyn_array_addr(array, type, dyn_array_tell(array)))
@@ -150,30 +203,6 @@
 #define dyn_array_avail(array) (dyn_array_alloced(array) - dyn_array_tell(array))
 #define dyn_array_rewind(array) (dyn_array_seek((struct dyn_array *)(array), 0, SEEK_SET))
 #define dyn_array_push(array, value_to_push) (dyn_array_append_value((array), ((void *)&(value_to_push))))
-
-
-/*
- * dyn_array - a dynamic array of elements of the same type
- *
- * The dynamic array maintains both an allocated element count
- * and a number of elements in use.
- *
- * The actual storage allocated will be a number of elements
- * beyond the allocated element count, to serve as a guard chunk.
- *
- * If zeroize is true, then all allocated elements will be
- * zeroized when first allocated, and zeroized when dyn_array_free()
- * is called.
- */
-struct dyn_array
-{
-    size_t elm_size;		/* Number of bytes for a single element */
-    bool zeroize;		/* true ==> always zero newly allocated chunks, false ==> don't */
-    intmax_t count;		/* Number of elements in use */
-    intmax_t allocated;		/* Number of elements allocated (>= count) */
-    intmax_t chunk;		/* Number of elements to expand by when allocating */
-    void *data;			/* allocated dynamic array of identical things or NULL */
-};
 
 
 /*
@@ -192,6 +221,12 @@ extern bool dyn_array_concat_array(struct dyn_array *array, struct dyn_array *ot
 extern bool dyn_array_seek(struct dyn_array *array, off_t offset, int whence);
 extern void dyn_array_clear(struct dyn_array *array);
 extern void dyn_array_free(struct dyn_array *array);
+/*
+ * dyn_array_destroy() frees a heap-allocated struct dyn_array created by
+ * dyn_array_create() and clears the caller's pointer.  Passing a non-NULL
+ * pointer variable whose value is already NULL is a documented no-op.
+ */
+extern void dyn_array_destroy(struct dyn_array **array_p);
 /**/
 extern void dyn_array_qsort(struct dyn_array *array, int (*compar)(const void *, const void *));
 /**/

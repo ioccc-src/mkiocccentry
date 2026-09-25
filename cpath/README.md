@@ -589,8 +589,8 @@ This code was written by [Landon Curt Noll](https://github.com/lcn2).
 
 Various parts of the canonicalization code dates back as early as 1991.
 
-We gratefully acknowledge the concept contributions, plus the documentation
-corrections, and other suggestions made by Cody Boone Ferguson.
+We gratefully acknowledge the concept contributions, plus the documentation and
+code corrections, and other suggestions made by Cody Boone Ferguson.
 See GitHub user **@xexyl**,
 as well as
 [https://xexyl.net](https://xexyl.net),

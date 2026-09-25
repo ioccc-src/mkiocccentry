@@ -1,7 +1,7 @@
 /*
  * dyn_array - dynamic array facility
  *
- * Copyright (c) 2014,2015,2022-2025 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2014,2015,2022-2026 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -74,6 +74,8 @@ static bool dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate);
 static enum ptr_compare compare_addr(void *a, void *b);
 static enum move_case determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *last_add);
 static char const *move_case_name(enum move_case mv_case);
+static const void *dyn_array_element_ref(const struct dyn_array *array, intmax_t index,
+					 bool allow_one_past_end, char const *caller);
 
 
 /*
@@ -101,8 +103,10 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
     void *data;			/* Reallocated array */
     intmax_t old_allocated;	/* Old number of elements allocated */
     intmax_t new_allocated;	/* New number of elements allocated */
-    intmax_t old_bytes;		/* Old size of data in dynamic array */
-    intmax_t new_bytes;		/* New size of data in dynamic array after allocation */
+    intmax_t total_allocated;	/* New elements count including guard chunk */
+    size_t old_bytes;		/* Old size of data in dynamic array */
+    size_t new_bytes;		/* New size of data in dynamic array after allocation */
+    size_t zeroize_bytes;	/* Number of bytes to zeroize after growth */
     uint8_t *p;			/* Pointer to the beginning of the new allocated space */
     bool moved = false;		/* true ==> location of the elements array moved during realloc() */
 
@@ -147,29 +151,43 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
      * determine the size of the realloced area
      */
     old_allocated = array->allocated;
-    new_allocated = old_allocated + elms_to_allocate;
-    old_bytes = old_allocated * (intmax_t)array->elm_size;
-    /* +array->chunk for guard chunk */
-    new_bytes = (new_allocated+array->chunk) * (intmax_t)array->elm_size;
-
-    /*
-     * firewall - check if new_bytes fits in a size_t variable
-     */
-    if ((double)new_bytes > (double)SIZE_MAX) {
-	err(57, __func__, "the total number of bytes occupied by %jd elements of size %zu is too big "
-			  "and does not fit the bounds of a size_t [%zu,%zu]",
-			  new_allocated, array->elm_size, SIZE_MIN, SIZE_MAX);
+    if (old_allocated > INTMAX_MAX - elms_to_allocate) {
+	err(57, __func__, "the total number of elements to allocate is too big "
+			  "[old_allocated: %jd, elms_to_allocate: %jd, INTMAX_MAX: %jd]",
+			  old_allocated, elms_to_allocate, (intmax_t)INTMAX_MAX);
 	not_reached();
     }
+    new_allocated = old_allocated + elms_to_allocate;
+    if (new_allocated > INTMAX_MAX - array->chunk) {
+	err(58, __func__, "the total number of elements including guard chunk is too big "
+			  "[new_allocated: %jd, chunk: %jd, INTMAX_MAX: %jd]",
+			  new_allocated, array->chunk, (intmax_t)INTMAX_MAX);
+	not_reached();
+    }
+    total_allocated = new_allocated + array->chunk;
+    if ((size_t)old_allocated > SIZE_MAX / array->elm_size) {
+	err(59, __func__, "the existing number of bytes occupied by %jd elements of size %zu is too big "
+			  "and does not fit the bounds of a size_t [%zu,%zu]",
+			  old_allocated, array->elm_size, SIZE_MIN, SIZE_MAX);
+	not_reached();
+    }
+    old_bytes = (size_t)old_allocated * array->elm_size;
+    if ((size_t)total_allocated > SIZE_MAX / array->elm_size) {
+	err(60, __func__, "the total number of bytes occupied by %jd elements of size %zu is too big "
+			  "and does not fit the bounds of a size_t [%zu,%zu]",
+			  total_allocated, array->elm_size, SIZE_MIN, SIZE_MAX);
+	not_reached();
+    }
+    new_bytes = (size_t)total_allocated * array->elm_size;
 
     /*
      * reallocate array
      */
     errno = 0;			/* pre-clear errno for errp() */
-    data = realloc(array->data, (size_t)new_bytes);
+    data = realloc(array->data, new_bytes);
     if (data == NULL) {
-	errp(58, __func__, "failed to reallocate the dynamic array from a size of %jd bytes "
-			   "to a size of %jd bytes",
+	errp(61, __func__, "failed to reallocate the dynamic array from a size of %zu bytes "
+			   "to a size of %zu bytes",
 			   old_bytes, new_bytes);
 	not_reached();
     }
@@ -196,12 +214,159 @@ dyn_array_grow(struct dyn_array *array, intmax_t elms_to_allocate)
      * Zeroize new elements if requested
      */
     if (array->zeroize == true) {
-	    p = (uint8_t *) (array->data) + old_bytes;
-	    /* +array->chunk for guard chunk */
-	    memset(p, 0, (elms_to_allocate+array->chunk) * (intmax_t)array->elm_size);
+	p = (uint8_t *) (array->data) + old_bytes;
+	zeroize_bytes = new_bytes - old_bytes;
+	memset(p, 0, zeroize_bytes);
     }
 
     return moved;
+}
+
+
+/*
+ * dyn_array_element_ref - return the address of an element or one-past-the-end
+ *
+ * given:
+ *	array			- dynamic array to reference
+ *	index			- element index to reference
+ *	allow_one_past_end	- true ==> permit index == array->count
+ *	caller			- helper function name for diagnostics
+ *
+ * returns:
+ *	address of the requested element
+ *
+ * We cannot validate the caller's chosen C type here, but we can at least reject
+ * structurally invalid arrays, negative indexes, out-of-range indexes, and byte
+ * offset calculations that would overflow size_t before pointer arithmetic occurs.
+ *
+ * NOTE: This function does not return on error.
+ */
+static const void *
+dyn_array_element_ref(const struct dyn_array *array, intmax_t index, bool allow_one_past_end, char const *caller)
+{
+    size_t offset;
+
+    /*
+     * Check preconditions (firewall) - sanity check args
+     */
+    if (caller == NULL) {
+	caller = __func__;
+    }
+    if (array == NULL) {
+	err(62, caller, "array arg is NULL");
+	not_reached();
+    }
+
+    /*
+     * After dyn_array_free() the struct intentionally remains, but its backing
+     * storage pointer becomes NULL.  Preserve the common empty-range pattern by
+     * allowing dyn_array_addr(array, type, 0) / dyn_array_beyond(array, type) to
+     * yield that NULL boundary without performing pointer arithmetic on a NULL base.
+     */
+    if (allow_one_past_end == true && index == 0 && array->count == 0 && array->data == NULL) {
+	return NULL;
+    }
+
+    if (array->data == NULL) {
+	err(63, caller, "array->data in dynamic array is NULL");
+	not_reached();
+    }
+    if (array->elm_size <= 0) {
+	err(64, caller, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
+	not_reached();
+    }
+    if (array->count < 0) {
+	err(65, caller, "array->count in dynamic array must be >= 0: %jd", array->count);
+	not_reached();
+    }
+    if (array->allocated < array->count) {
+	err(66, caller, "array->allocated: %jd in dynamic array must be >= array->count: %jd",
+			  array->allocated, array->count);
+	not_reached();
+    }
+    if (index < 0) {
+	err(67, caller, "index must be >= 0: %jd", index);
+	not_reached();
+    }
+
+    /*
+     * dyn_array_value() may only fetch elements already in use.
+     * dyn_array_addr() also permits the standard one-past-the-end iterator value.
+     */
+    if (allow_one_past_end == false && index >= array->count) {
+	err(68, caller, "index: %jd must be < array->count: %jd", index, array->count);
+	not_reached();
+    }
+    if (allow_one_past_end == true && index > array->count) {
+	err(69, caller, "index: %jd must be <= array->count: %jd", index, array->count);
+	not_reached();
+    }
+
+    /*
+     * Convert the element index to a byte offset only after proving the
+     * multiplication fits in size_t, so the pointer arithmetic below cannot wrap.
+     */
+    if ((uintmax_t)index > ((uintmax_t)SIZE_MAX / (uintmax_t)array->elm_size)) {
+	err(70, caller, "index: %jd * elm_size: %zu exceeds size_t bounds [%zu,%zu]",
+			  index, array->elm_size, SIZE_MIN, SIZE_MAX);
+	not_reached();
+    }
+    offset = (size_t)index * array->elm_size;
+    return (uint8_t *)(array->data) + offset;
+}
+
+
+/*
+ * dyn_array_value_ref - return the address of an in-use element
+ *
+ * See dyn_array.h for the typed macro wrapper and its remaining type/alignment
+ * preconditions.
+ *
+ * NOTE: This function does not return on error.
+ */
+void *
+dyn_array_value_ref(struct dyn_array *array, intmax_t index)
+{
+    return (void *)dyn_array_element_ref(array, index, false, __func__);
+}
+
+
+/*
+ * dyn_array_addr_ref - return the address of an in-use element or one-past-end
+ *
+ * See dyn_array.h for the typed macro wrapper and its remaining type/alignment
+ * preconditions.
+ *
+ * NOTE: This function does not return on error.
+ */
+void *
+dyn_array_addr_ref(struct dyn_array *array, intmax_t index)
+{
+    return (void *)dyn_array_element_ref(array, index, true, __func__);
+}
+
+
+/*
+ * dyn_array_value_c_ref - return the address of an in-use element from a const array
+ *
+ * NOTE: This function does not return on error.
+ */
+const void *
+dyn_array_value_c_ref(const struct dyn_array *array, intmax_t index)
+{
+    return dyn_array_element_ref(array, index, false, __func__);
+}
+
+
+/*
+ * dyn_array_addr_c_ref - return the address of an in-use element or one-past-end from a const array
+ *
+ * NOTE: This function does not return on error.
+ */
+const void *
+dyn_array_addr_c_ref(const struct dyn_array *array, intmax_t index)
+{
+    return dyn_array_element_ref(array, index, true, __func__);
 }
 
 
@@ -311,19 +476,19 @@ determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *
      * Check preconditions (firewall) - sanity check args
      */
     if (first_alloc == NULL) {
-	err(59, __func__, "first_alloc arg is NULL");
+	err(71, __func__, "first_alloc arg is NULL");
 	not_reached();
     }
     if (last_alloc == NULL) {
-	err(60, __func__, "last_alloc arg is NULL");
+	err(72, __func__, "last_alloc arg is NULL");
 	not_reached();
     }
     if (first_add == NULL) {
-	err(61, __func__, "first_add arg is NULL");
+	err(73, __func__, "first_add arg is NULL");
 	not_reached();
     }
     if (last_add == NULL) {
-	err(62, __func__, "last_add arg is NULL");
+	err(74, __func__, "last_add arg is NULL");
 	not_reached();
     }
     if (dbg_allowed(DBG_V7_HIGH)) {
@@ -331,11 +496,11 @@ determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *
 		      __func__, first_alloc, last_alloc, first_add, last_add);
     }
     if (first_alloc > last_alloc) {
-	err(63, __func__, "first_alloc: %p > last_alloc: %p", first_alloc, last_alloc);
+	err(75, __func__, "first_alloc: %p > last_alloc: %p", first_alloc, last_alloc);
 	not_reached();
     }
     if (first_add > last_add) {
-	err(64, __func__, "first_add: %p > last_add: %p", first_add, last_add);
+	err(76, __func__, "first_add: %p > last_add: %p", first_add, last_add);
 	not_reached();
     }
 
@@ -385,47 +550,47 @@ determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *
 	    case PTR_BELOW_ADDR:	/* data ends before end of allocated */
 		if (dbg_allowed(DBG_V7_HIGH)) {
 		    dbg(DBG_V7_HIGH, "in %s: last_add: %p < last_alloc: %p",
-				  __func__, last_add, last_alloc);
+			  __func__, last_add, last_alloc);
 		}
 		ret = MOVE_CASE_BEFORE_INTO;
 		if (dbg_allowed(DBG_V7_HIGH)) {
 		    dbg(DBG_V7_HIGH, "in %s: ret #2: %s: last_add: %p < last_alloc: %p",
-				  __func__, move_case_name(ret), last_add, last_alloc);
+			  __func__, move_case_name(ret), last_add, last_alloc);
 		}
 		break;
 
 	    case PTR_EQ:		/* end of data matches end of allocated */
 		if (dbg_allowed(DBG_V7_HIGH)) {
 		    dbg(DBG_V7_HIGH, "in %s: last_add: %p == last_alloc: %p",
-				  __func__, last_add, last_alloc);
+			  __func__, last_add, last_alloc);
 		}
 		ret = MOVE_CASE_BEFORE_INTO;
 		if (dbg_allowed(DBG_V7_HIGH)) {
 		    dbg(DBG_V7_HIGH, "in %s: ret #3: %s: last_add: %p == last_alloc: %p",
-				  __func__, move_case_name(ret), last_add, last_alloc);
+			  __func__, move_case_name(ret), last_add, last_alloc);
 		}
 		break;
 
 	    case PTR_ABOVE_ADDR:	/* data ends beyond end of allocated */
 		if (dbg_allowed(DBG_V7_HIGH)) {
 		    dbg(DBG_V7_HIGH, "in %s: last_add: %p > last_alloc: %p",
-				  __func__, last_add, last_alloc);
+			  __func__, last_add, last_alloc);
 		}
 		ret = MOVE_CASE_BEFORE_IN_BEYOND;
 		if (dbg_allowed(DBG_V7_HIGH)) {
 		    dbg(DBG_V7_HIGH, "in %s: ret #4: %s: last_add: %p > last_alloc: %p",
-				  __func__, move_case_name(ret), last_add, last_alloc);
+			  __func__, move_case_name(ret), last_add, last_alloc);
 		}
 		break;
 
 	    default:
-		err(65, __func__, "compare_addr(%p, %p) #0 returned unknown enum value", last_add, last_alloc);
+		err(77, __func__, "compare_addr(%p, %p) #0 returned unknown enum value", last_add, last_alloc);
 		not_reached();
 	    }
 	    break;
 
 	default:
-	    err(66, __func__, "compare_addr(%p, %p) #1 returned unknown enum value", last_add, first_alloc);
+	    err(78, __func__, "compare_addr(%p, %p) #1 returned unknown enum value", last_add, first_alloc);
 	    not_reached();
 	}
 	break;
@@ -478,7 +643,7 @@ determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *
 	    break;
 
 	default:
-	    err(67, __func__, "compare_addr(%p, %p) #2 returned unknown enum value", last_add, last_alloc);
+	    err(79, __func__, "compare_addr(%p, %p) #2 returned unknown enum value", last_add, last_alloc);
 	    not_reached();
 	}
 	break;
@@ -503,41 +668,41 @@ determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *
 	    case PTR_BELOW_ADDR:	/* data ends before end of allocated */
 		if (dbg_allowed(DBG_V7_HIGH)) {
 		    dbg(DBG_V7_HIGH, "in %s: last_add: %p < last_alloc: %p",
-				  __func__, last_add, last_alloc);
+			  __func__, last_add, last_alloc);
 		}
 		ret = MOVE_CASE_INSIDE;
 		if (dbg_allowed(DBG_V7_HIGH)) {
 		    dbg(DBG_V7_HIGH, "in %s: ret #8: %s: last_add: %p < last_alloc: %p",
-				   __func__, move_case_name(ret), last_add, last_alloc);
+			   __func__, move_case_name(ret), last_add, last_alloc);
 		}
 		break;
 
 	    case PTR_EQ:		/* data ends matches end of allocated */
 		if (dbg_allowed(DBG_V7_HIGH)) {
 		    dbg(DBG_V7_HIGH, "in %s: last_add: %p == last_alloc: %p",
-				  __func__, last_add, last_alloc);
+			  __func__, last_add, last_alloc);
 		}
 		ret = MOVE_CASE_INSIDE;
 		if (dbg_allowed(DBG_V7_HIGH)) {
 		    dbg(DBG_V7_HIGH, "in %s: ret #9: %s: last_add: %p == last_alloc: %p",
-				   __func__, move_case_name(ret), last_add, last_alloc);
+			   __func__, move_case_name(ret), last_add, last_alloc);
 		}
 		break;
 
 	    case PTR_ABOVE_ADDR:	/* data ends beyond end of allocated */
 		if (dbg_allowed(DBG_V7_HIGH)) {
 		    dbg(DBG_V7_HIGH, "in %s: last_add: %p > last_alloc: %p",
-				  __func__, last_add, last_alloc);
+			  __func__, last_add, last_alloc);
 		}
 		ret = MOVE_CASE_IN_BEYOND;
 		if (dbg_allowed(DBG_V7_HIGH)) {
 		    dbg(DBG_V7_HIGH, "in %s: ret #10: %s: last_add: %p > last_alloc: %p",
-				   __func__, move_case_name(ret), last_add, last_alloc);
+			   __func__, move_case_name(ret), last_add, last_alloc);
 		}
 		break;
 
 	    default:
-		err(68, __func__, "compare_addr(%p, %p) #3 returned unknown enum value", first_add, last_alloc);
+		err(80, __func__, "compare_addr(%p, %p) #3 returned unknown enum value", first_add, last_alloc);
 		not_reached();
 	    }
 	    break;
@@ -563,13 +728,13 @@ determine_move_case(void *first_alloc, void *last_alloc, void *first_add, void *
 	    break;
 
 	default:
-	    err(69, __func__, "compare_addr(%p, %p) #4 returned unknown enum value", first_add, last_alloc);
+	    err(81, __func__, "compare_addr(%p, %p) #4 returned unknown enum value", first_add, last_alloc);
 	    not_reached();
 	}
 	break;
 
     default:
-	err(70, __func__, "compare_addr(%p, %p) #5 returned unknown enum value", first_add, first_alloc);
+	err(82, __func__, "compare_addr(%p, %p) #5 returned unknown enum value", first_add, first_alloc);
 	not_reached();
     }
 
@@ -646,21 +811,29 @@ struct dyn_array *
 dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool zeroize)
 {
     struct dyn_array *ret;		/* Created dynamic array to return */
-    intmax_t number_of_bytes;		/* Total number of bytes occupied by the initialized array */
+    intmax_t chunk_multiple;		/* Number of whole chunks to allocate */
+    intmax_t rounded_request;		/* start_elm_count rounded up to chunk */
+    intmax_t guarded_elements;		/* allocated elements plus the hidden guard chunk */
+    size_t number_of_bytes;		/* Total number of bytes occupied by the initialized array */
 
     /*
      * Check preconditions (firewall) - sanity check args
      */
     if (elm_size <= 0) {
-	err(71, __func__, "elm_size must be > 0: %zu", elm_size);
+	err(83, __func__, "elm_size must be > 0: %zu", elm_size);
 	not_reached();
     }
     if (chunk <= 0) {
-	err(72, __func__, "chunk must be > 0: %jd", chunk);
+	err(84, __func__, "chunk must be > 0: %jd", chunk);
 	not_reached();
     }
     if (start_elm_count <= 0) {
-	err(73, __func__, "start_elm_count must be > 0: %jd", start_elm_count);
+	err(85, __func__, "start_elm_count must be > 0: %jd", start_elm_count);
+	not_reached();
+    }
+    if (elm_size > (size_t)INTMAX_MAX) {
+	err(86, __func__, "elm_size: %zu exceeds INTMAX_MAX: %jd and would overflow internal signed arithmetic",
+			  elm_size, INTMAX_MAX);
 	not_reached();
     }
 
@@ -670,7 +843,7 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
     errno = 0;			/* pre-clear errno for errp() */
     ret = calloc(1, sizeof(struct dyn_array));
     if (ret == NULL) {
-	errp(74, __func__, "cannot calloc %zu bytes for a struct dyn_array", sizeof(struct dyn_array));
+	errp(87, __func__, "cannot calloc %zu bytes for a struct dyn_array", sizeof(struct dyn_array));
 	not_reached();
     }
 
@@ -678,26 +851,61 @@ dyn_array_create(size_t elm_size, intmax_t chunk, intmax_t start_elm_count, bool
      * Initialize empty dynamic array
      * Start with a dynamic array with allocated enough chunks to hold at least start_elm_count elements
      */
-    ret->elm_size = (intmax_t)elm_size;
+    ret->elm_size = elm_size;
     ret->zeroize = zeroize;
     /* Allocated array is empty */
     ret->count = 0;
-    /* Allocate a number of elements multiple of chunk */
-    ret->allocated = chunk * ((start_elm_count + (chunk - 1)) / chunk);
+
+    /*
+     * Round the caller's request up to the next chunk boundary only after proving
+     * the addition cannot overflow intmax_t.
+     */
+    if (start_elm_count > INTMAX_MAX - (chunk - 1)) {
+	err(88, __func__, "start_elm_count: %jd + chunk-1: %jd exceeds INTMAX_MAX: %jd",
+			  start_elm_count, chunk - 1, INTMAX_MAX);
+	not_reached();
+    }
+    rounded_request = start_elm_count + (chunk - 1);
+    chunk_multiple = rounded_request / chunk;
+
+    /*
+     * Validate the chunk multiple before multiplying so the public allocated count
+     * itself cannot overflow.
+     */
+    if (chunk_multiple > INTMAX_MAX / chunk) {
+	err(89, __func__, "chunk multiple: %jd * chunk: %jd exceeds INTMAX_MAX: %jd",
+			  chunk_multiple, chunk, INTMAX_MAX);
+	not_reached();
+    }
+    ret->allocated = chunk * chunk_multiple;
     ret->chunk = chunk;
 
     /*
      * determine the size of the allocated area
      */
-    /* +chunk for guard chunk */
-    number_of_bytes = (ret->allocated+chunk) * (intmax_t)elm_size;
+    /*
+     * The hidden guard chunk is counted in bytes but not in array->allocated.
+     * Prove the element-count addition and the byte-count multiplication fit before
+     * performing either operation.
+     */
+    if (ret->allocated > INTMAX_MAX - chunk) {
+	err(90, __func__, "allocated: %jd + guard chunk: %jd exceeds INTMAX_MAX: %jd",
+			  ret->allocated, chunk, INTMAX_MAX);
+	not_reached();
+    }
+    guarded_elements = ret->allocated + chunk;
+    if ((uintmax_t)guarded_elements > ((uintmax_t)SIZE_MAX / (uintmax_t)elm_size)) {
+	err(91, __func__, "guarded element count: %jd * elm_size: %zu exceeds size_t bounds [%zu,%zu]",
+			  guarded_elements, elm_size, SIZE_MIN, SIZE_MAX);
+	not_reached();
+    }
+    number_of_bytes = (size_t)guarded_elements * elm_size;
 
     errno = 0;			/* pre-clear errno for errp() */
-    ret->data = malloc((size_t)number_of_bytes);
+    ret->data = malloc(number_of_bytes);
     if (ret->data == NULL) {
-	/* +chunk for guard chunk */
-	errp(75, __func__, "cannot malloc %jd elements of %zu bytes each for dyn_array->data",
-			   (ret->allocated+chunk), elm_size);
+	errp(92, __func__, "cannot malloc %jd elements of %zu bytes each for dyn_array->data",
+			   guarded_elements, elm_size);
 	not_reached();
     }
 
@@ -748,11 +956,11 @@ dyn_array_append_value(struct dyn_array *array, void *value_to_add)
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(76, __func__, "array arg is NULL");
+	err(93, __func__, "array arg is NULL");
 	not_reached();
     }
     if (value_to_add == NULL) {
-	err(77, __func__, "value_to_add arg is NULL");
+	err(94, __func__, "value_to_add arg is NULL");
 	not_reached();
     }
 
@@ -760,23 +968,23 @@ dyn_array_append_value(struct dyn_array *array, void *value_to_add)
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(78, __func__, "array->data in dynamic array is NULL");
+	err(95, __func__, "array->data in dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(79, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
+	err(96, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(80, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	err(97, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
 	not_reached();
     }
     if (array->allocated <= 0) {
-	err(81, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
+	err(98, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(82, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
+	err(99, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
@@ -829,11 +1037,11 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(83, __func__, "array arg is NULL");
+	err(100, __func__, "array arg is NULL");
 	not_reached();
     }
     if (array_to_add_p == NULL) {
-	err(84, __func__, "array_to_add_p arg is NULL");
+	err(101, __func__, "array_to_add_p arg is NULL");
 	not_reached();
     }
 
@@ -841,23 +1049,23 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(85, __func__, "array->data in dynamic array is NULL");
+	err(102, __func__, "array->data in dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(86, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
+	err(103, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(87, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	err(104, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
 	not_reached();
     }
     if (array->allocated <= 0) {
-	err(88, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
+	err(105, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(89, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
+	err(106, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
@@ -930,8 +1138,9 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
     } else {
 
 	uint8_t *new_array_to_add_p = NULL;	/* newly moved data to append, location */
+	uint8_t *dest = NULL;		/* next destination byte for multi-part moves */
 	intmax_t pre_length = 0;		/* length of data before dynamic array allocated data, or 0 */
-	intmax_t in_length = 0;			/* length of dynamic array allocated data, or 0 */
+	intmax_t in_length = 0;		/* length of dynamic array allocated data, or 0 */
 	intmax_t post_length = 0;		/* length of data after dynamic array allocated data, or 0 */
 
 	/*
@@ -943,13 +1152,13 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 	switch (mv_case) {
 
 	case MOVE_CASE_UNSET:
-	    err(90, __func__, "mv_case: %s but previous if says this is impossible",
+	    err(107, __func__, "mv_case: %s but previous if says this is impossible",
 			       move_case_name(mv_case));
 	    not_reached();
 	    break;
 
 	case MOVE_CASE_OUTSIDE:
-	    err(91, __func__, "mv_case: %s but previous if says this is impossible",
+	    err(108, __func__, "mv_case: %s but previous if says this is impossible",
 			       move_case_name(mv_case));
 	    not_reached();
 	    break;
@@ -958,8 +1167,8 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 
 	    /* firewall */
 	    if (data_first_offset < 0) {
-		err(92, __func__, "mv_case == %s but data_first_offset < 0: %ju",
-				  move_case_name(mv_case), data_first_offset);
+		err(109, __func__, "mv_case == %s but data_first_offset < 0: %ju",
+			  move_case_name(mv_case), data_first_offset);
 		not_reached();
 	    }
 
@@ -978,113 +1187,122 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 
 	    /* firewall */
 	    if (data_first_offset >= 0) {
-		err(93, __func__, "mv_case: %s but data_first_offset >= 0: %ju",
-				  move_case_name(mv_case), data_first_offset);
+		err(110, __func__, "mv_case: %s but data_first_offset >= 0: %ju",
+			  move_case_name(mv_case), data_first_offset);
 		not_reached();
 	    }
 	    pre_length = -data_first_offset;
 	    if (pre_length <= 0) {
-		err(94, __func__, "mv_case: %s but pre_length: %jd <= 0",
-				  move_case_name(mv_case), pre_length);
+		err(111, __func__, "mv_case: %s but pre_length: %jd <= 0",
+			  move_case_name(mv_case), pre_length);
 		not_reached();
 	    }
 	    in_length = data_size - pre_length;
 	    if (in_length <= 0) {
-		err(95, __func__, "mv_case: %s but in_length: %jd <= 0",
-				  move_case_name(mv_case), in_length);
+		err(112, __func__, "mv_case: %s but in_length: %jd <= 0",
+			  move_case_name(mv_case), in_length);
 		not_reached();
 	    }
 
 	    /* append data that is before the dynamic array allocated data */
+	    dest = beyond;
 	    if (dbg_allowed(DBG_V6_HIGH)) {
 		dbg(DBG_V6_HIGH, "mv_case: %s special "
-			     "memmove(beyond: %p, new_array_to_add_p: %p, pre_length: %ju)",
+			     "memmove(dest: %p, array_to_add_p: %p, pre_length: %ju)",
 			     move_case_name(mv_case),
-			     (void *)beyond, (void *)new_array_to_add_p, pre_length);
+			     (void *)dest, (void *)array_to_add_p, pre_length);
 	    }
-	    memmove((void *)beyond, (void *)array_to_add_p, pre_length);
+	    memmove((void *)dest, (void *)array_to_add_p, pre_length);
 
 	    /* append data that moved with the dynamic array allocated data */
+	    dest = beyond + pre_length;
 	    if (dbg_allowed(DBG_V6_HIGH)) {
 		dbg(DBG_V6_HIGH, "mv_case: %s special "
-			     "memmove(beyond: %p, array->data: %p, in_length: %ju)",
+			     "memmove(dest: %p, array->data: %p, in_length: %ju)",
 			     move_case_name(mv_case),
-			     (void *)beyond, array->data, in_length);
+			     (void *)dest, array->data, in_length);
 	    }
-	    memmove((void *)beyond, array->data, in_length);
+	    memmove((void *)dest, array->data, in_length);
 	    break;
 
 	case MOVE_CASE_BEFORE_IN_BEYOND:
 
 	    /* firewall */
 	    if (data_first_offset >= 0) {
-		err(96, __func__, "mv_case: %s but data_first_offset >= 0: %ju",
-				  move_case_name(mv_case), data_first_offset);
+		err(113, __func__, "mv_case: %s but data_first_offset >= 0: %ju",
+			  move_case_name(mv_case), data_first_offset);
 		not_reached();
 	    }
 	    pre_length = -data_first_offset;
 	    if (pre_length <= 0) {
-		err(97, __func__, "mv_case: %s but pre_length: %jd <= 0",
-				  move_case_name(mv_case), pre_length);
+		err(114, __func__, "mv_case: %s but pre_length: %jd <= 0",
+			  move_case_name(mv_case), pre_length);
 		not_reached();
 	    } else if (pre_length >= data_size) {
-		err(98, __func__, "mv_case: %s but pre_length: %jd >= data_size: %jd",
-				  move_case_name(mv_case), pre_length, data_size);
+		err(115, __func__, "mv_case: %s but pre_length: %jd >= data_size: %jd",
+			  move_case_name(mv_case), pre_length, data_size);
 		not_reached();
 	    }
 	    post_length = data_size - pre_length - alloc_size;
 	    if (post_length <= 0) {
-		err(99, __func__, "mv_case: %s but post_length: %jd <= 0",
-				  move_case_name(mv_case), post_length);
+		err(116, __func__, "mv_case: %s but post_length: %jd <= 0",
+			  move_case_name(mv_case), post_length);
 		not_reached();
 	    }
 
 	    /* append data that is before the dynamic array allocated data */
+	    dest = beyond;
 	    if (dbg_allowed(DBG_V6_HIGH)) {
 		dbg(DBG_V6_HIGH, "mv_case: %s special "
-			     "memmove(beyond: %p array_to_add_p: %p, pre_length: %ju)",
+			     "memmove(dest: %p array_to_add_p: %p, pre_length: %ju)",
 			     move_case_name(mv_case),
-			     (void *)beyond, (void *)array_to_add_p, pre_length);
+			     (void *)dest, (void *)array_to_add_p, pre_length);
 	    }
-	    memmove((void *)beyond, (void *)array_to_add_p, pre_length);
+	    memmove((void *)dest, (void *)array_to_add_p, pre_length);
 
 	    /* append the section that was part of the previous dynamic array allocated data */
+	    dest = beyond + pre_length;
 	    if (dbg_allowed(DBG_V6_HIGH)) {
 		dbg(DBG_V6_HIGH, "mv_case: %s special "
-			     "memmove(beyond: %p array->data: %p, alloc_size: %ju)",
+			     "memmove(dest: %p array->data: %p, alloc_size: %ju)",
 			     move_case_name(mv_case),
-			     (void *)beyond, array->data, alloc_size);
+			     (void *)dest, array->data, alloc_size);
 	    }
-	    memmove((void *)beyond, array->data, alloc_size);
+	    memmove((void *)dest, array->data, alloc_size);
 
 	    /* append the data that was beyond the end of the previous dynamic array allocated data */
+	    dest = beyond + pre_length + alloc_size;
 	    if (dbg_allowed(DBG_V6_HIGH)) {
 		dbg(DBG_V6_HIGH, "mv_case: %s special "
-			     "memmove(beyond: %p array_to_add_p+pre_length+data_size: %p, post_length: %ju)",
+			     "memmove(dest: %p array_to_add_p+pre_length+alloc_size: %p, post_length: %ju)",
 			     move_case_name(mv_case),
-			     (void *)beyond, (void *)((uint8_t *)(array_to_add_p) + pre_length+data_size), post_length);
+			     (void *)dest,
+			     (void *)((uint8_t *)(array_to_add_p) + pre_length + alloc_size),
+			     post_length);
 	    }
-	    memmove((void *)beyond, (void *)((uint8_t *)(array_to_add_p) + pre_length+data_size), post_length);
+	    memmove((void *)dest,
+		    (void *)((uint8_t *)(array_to_add_p) + pre_length + alloc_size),
+		    post_length);
 	    break;
 
 	case MOVE_CASE_IN_BEYOND:
 
 	    /* firewall */
 	    if (data_first_offset < 0) {
-		err(100, __func__, "mv_case: %s but data_first_offset < 0: %ju",
-				  move_case_name(mv_case), data_first_offset);
+		err(117, __func__, "mv_case: %s but data_first_offset < 0: %ju",
+			  move_case_name(mv_case), data_first_offset);
 		not_reached();
 	    }
 	    in_length = data_size - (alloc_size - data_first_offset);
 	    if (in_length <= 0) {
-		err(101, __func__, "mv_case: %s but in_length: %jd <= 0",
-				  move_case_name(mv_case), in_length);
+		err(118, __func__, "mv_case: %s but in_length: %jd <= 0",
+			  move_case_name(mv_case), in_length);
 		not_reached();
 	    }
 	    post_length = data_size - in_length;
 	    if (post_length <= 0) {
-		err(102, __func__, "mv_case: %s but post_length: %jd <= 0",
-				  move_case_name(mv_case), post_length);
+		err(119, __func__, "mv_case: %s but post_length: %jd <= 0",
+			  move_case_name(mv_case), post_length);
 		not_reached();
 	    }
 
@@ -1099,17 +1317,18 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
 	    memmove((void *)beyond, (void *)new_array_to_add_p, in_length);
 
 	    /* append the data that was beyond the end of the previous dynamic array allocated data */
+	    dest = beyond + in_length;
 	    if (dbg_allowed(DBG_V6_HIGH)) {
 		dbg(DBG_V6_HIGH, "mv_case: %s special "
-			     "memmove(beyond: %p array_to_add_p+in_length: %p, post_length: %ju)",
+			     "memmove(dest: %p array_to_add_p+in_length: %p, post_length: %ju)",
 			     move_case_name(mv_case),
-			     (void *)beyond, (void *)((uint8_t *)(array_to_add_p) + in_length), post_length);
+			     (void *)dest, (void *)((uint8_t *)(array_to_add_p) + in_length), post_length);
 	    }
-	    memmove((void *)beyond, (void *)((uint8_t *)(array_to_add_p) + in_length), post_length);
+	    memmove((void *)dest, (void *)((uint8_t *)(array_to_add_p) + in_length), post_length);
 	    break;
 
 	default:
-	    err(103, __func__, "mv_case is an unknown enum value: %d", (int)mv_case);
+	    err(120, __func__, "mv_case is an unknown enum value: %d", (int)mv_case);
 	    not_reached();
 	    break;
 	}
@@ -1132,8 +1351,6 @@ dyn_array_append_set(struct dyn_array *array, void *array_to_add_p, intmax_t cou
     /* return array moved condition */
     return moved;
 }
-
-
 /*
  * dyn_array_concat_array - concatenate a dynamic array with another dynamic array
  *
@@ -1170,11 +1387,11 @@ dyn_array_concat_array(struct dyn_array *array, struct dyn_array *other)
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(104, __func__, "array arg is NULL");
+	err(121, __func__, "array arg is NULL");
 	not_reached();
     }
     if (other == NULL) {
-	err(105, __func__, "other arg is NULL");
+	err(122, __func__, "other arg is NULL");
 	not_reached();
     }
 
@@ -1182,23 +1399,23 @@ dyn_array_concat_array(struct dyn_array *array, struct dyn_array *other)
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(106, __func__, "array->data in first dynamic array is NULL");
+	err(123, __func__, "array->data in first dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(107, __func__, "array->elm_size in first dynamic array must be > 0: %zu", array->elm_size);
+	err(124, __func__, "array->elm_size in first dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(108, __func__, "array->chunk in first dynamic array must be > 0: %jd", array->chunk);
+	err(125, __func__, "array->chunk in first dynamic array must be > 0: %jd", array->chunk);
 	not_reached();
     }
     if (array->allocated <= 0) {
-	err(109, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
+	err(126, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(110, __func__, "array->count: %jd in first dynamic array must be <= array->allocated: %jd",
+	err(128, __func__, "array->count: %jd in first dynamic array must be <= array->allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
@@ -1207,23 +1424,23 @@ dyn_array_concat_array(struct dyn_array *array, struct dyn_array *other)
      * Check preconditions (firewall) - sanity check other
      */
     if (other->data == NULL) {
-	err(111, __func__, "other->data in second dynamic array is NULL");
+	err(129, __func__, "other->data in second dynamic array is NULL");
 	not_reached();
     }
     if (other->elm_size <= 0) {
-	err(112, __func__, "other->elm_size in second dynamic array must be > 0: %zu", other->elm_size);
+	err(130, __func__, "other->elm_size in second dynamic array must be > 0: %zu", other->elm_size);
 	not_reached();
     }
     if (other->chunk <= 0) {
-	err(113, __func__, "other->chunk in second dynamic array must be > 0: %jd", other->chunk);
+	err(131, __func__, "other->chunk in second dynamic array must be > 0: %jd", other->chunk);
 	not_reached();
     }
     if (other->allocated <= 0) {
-	err(114, __func__, "other->chunk in dynamic array must be > 0: %jd", other->allocated);
+	err(132, __func__, "other->chunk in dynamic array must be > 0: %jd", other->allocated);
 	not_reached();
     }
     if (other->count > other->allocated) {
-	err(115, __func__, "other->count: %jd in second dynamic array must be <= other->allocated: %jd",
+	err(133, __func__, "other->count: %jd in second dynamic array must be <= other->allocated: %jd",
 			  other->count, other->allocated);
 	not_reached();
     }
@@ -1261,13 +1478,15 @@ bool
 dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
 {
     bool moved = false;		/* true ==> location of the elements array moved during realloc() */
+    intmax_t offset_intmax = 0;	/* offset converted after representability checks */
     intmax_t setpoint = 0;	/* calculated new amount of elements in use */
+    intmax_t base = 0;		/* base position for SEEK_CUR / SEEK_END arithmetic */
 
     /*
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(116, __func__, "array arg is NULL");
+	err(134, __func__, "array arg is NULL");
 	not_reached();
     }
 
@@ -1275,26 +1494,45 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(117, __func__, "array->data in dynamic array is NULL");
+	err(135, __func__, "array->data in dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(118, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
+	err(136, __func__, "array->elm_size in dynamic array must be > 0: %ju", (uintmax_t)array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(119, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	err(137, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
 	not_reached();
     }
     if (array->allocated <= 0) {
-	err(120, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
+	err(138, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(121, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
+	err(139, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
+
+    /*
+     * Reject offsets that cannot be represented as intmax_t before doing any
+     * arithmetic with array->count or array->allocated.
+     */
+    if (sizeof(off_t) > sizeof(intmax_t)) {
+	/*
+	 * Only wider off_t types need an explicit range test.  In that case the
+	 * conversions below widen INTMAX_* into off_t, so the comparison stays in
+	 * the wider signed type and we can reject unrepresentable offsets before
+	 * narrowing them to intmax_t.
+	 */
+	if (offset > (off_t)INTMAX_MAX || offset < (off_t)INTMAX_MIN) {
+	    err(140, __func__, "offset is outside the representable intmax_t range [%jd,%jd]",
+			      INTMAX_MIN, INTMAX_MAX);
+	    not_reached();
+	}
+    }
+    offset_intmax = (intmax_t)offset;
 
     /*
      * process seek
@@ -1305,25 +1543,39 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
      * case SEEK_SET: offset from the dynamic array beginning
      */
     case SEEK_SET:
-	setpoint = offset;
+	setpoint = offset_intmax;
 	break;
 
     /*
      * case SEEK_CUR: offset from the current elements in use
      */
     case SEEK_CUR:
-	setpoint = array->count + offset;
+	base = array->count;
+	if ((offset_intmax > 0 && base > INTMAX_MAX - offset_intmax) ||
+	    (offset_intmax < 0 && base < INTMAX_MIN - offset_intmax)) {
+	    err(141, __func__, "array->count: %jd + offset: %jd overflows the valid element-count range",
+			      base, offset_intmax);
+	    not_reached();
+	}
+	setpoint = base + offset_intmax;
 	break;
 
     /*
      * case SEEK_END: offset from the end of allocated elements
      */
     case SEEK_END:
-	setpoint = array->allocated + offset;
+	base = array->allocated;
+	if ((offset_intmax > 0 && base > INTMAX_MAX - offset_intmax) ||
+	    (offset_intmax < 0 && base < INTMAX_MIN - offset_intmax)) {
+	    err(142, __func__, "array->allocated: %jd + offset: %jd overflows the valid element-count range",
+			      base, offset_intmax);
+	    not_reached();
+	}
+	setpoint = base + offset_intmax;
 	break;
 
     default:
-	err(122, __func__, "whence: %d != SEEK_SET: %d != SEEK_CUR: %d != SEEK_END: %d",
+	err(143, __func__, "whence: %d != SEEK_SET: %d != SEEK_CUR: %d != SEEK_END: %d",
 			  whence, SEEK_SET, SEEK_CUR, SEEK_END);
 	not_reached();
 	break;
@@ -1332,7 +1584,9 @@ dyn_array_seek(struct dyn_array *array, off_t offset, int whence)
     /*
      * case: setpoint before beginning
      *
-     * Convert from before beginning to just the beginning (empty the array).
+     * Representable negative seeks are still part of the documented API: clamp them
+     * back to the beginning.  Arithmetic overflow was rejected above because an
+     * overflowed negative value is not a real caller request.
      */
     if (setpoint < 0) {
 	setpoint = 0;	/* before beginning turns in to empty */
@@ -1434,7 +1688,7 @@ dyn_array_clear(struct dyn_array *array)
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(123, __func__, "array arg is NULL");
+	err(144, __func__, "array arg is NULL");
 	not_reached();
     }
 
@@ -1442,23 +1696,23 @@ dyn_array_clear(struct dyn_array *array)
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(124, __func__, "array->data for dynamic array is NULL");
+	err(145, __func__, "array->data for dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(125, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
+	err(146, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(126, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	err(147, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
 	not_reached();
     }
     if (array->allocated <= 0) {
-	err(128, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
+	err(148, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(129, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
+	err(149, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
@@ -1483,15 +1737,17 @@ dyn_array_clear(struct dyn_array *array)
 
 
 /*
- * dyn_array_free - free the contents of a dynamic array
+ * dyn_array_free - free the backing storage of a dynamic array
  *
- * This function zeroize any elements in use (if array->zeroize is true),
- * free the data storage, and set the dynamic array to empty.
+ * This function zeroize the currently allocated backing storage (if array->zeroize
+ * is true), free that storage, and reset the struct dyn_array to empty.
  *
  * This function does NOT free the struct dyn_array itself.
- * This function only frees any allocated storage.
+ * This function only frees any allocated storage so that caller-owned structs
+ * remain valid and so a later dyn_array_destroy() call can safely free the
+ * heap-allocated struct without double-freeing the backing storage.
  *
- * See also dyn_array_clear().
+ * See also dyn_array_clear() and dyn_array_destroy().
  *
  * given:
  *      array           - pointer to the dynamic array
@@ -1505,7 +1761,7 @@ dyn_array_free(struct dyn_array *array)
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(130, __func__, "array arg is NULL");
+	err(150, __func__, "array arg is NULL");
 	not_reached();
     }
 
@@ -1536,10 +1792,46 @@ dyn_array_free(struct dyn_array *array)
 	dbg(DBG_V5_HIGH, "in %s(array)", __func__);
     }
 
-    free(array);
-    array = NULL;
-
     return;
+}
+
+
+/*
+ * dyn_array_destroy - free both backing storage and the heap-allocated struct
+ *
+ * given:
+ *	array_p		- address of a struct dyn_array pointer
+ *
+ * This helper is the safe companion to dyn_array_create().  It preserves the
+ * long-documented dyn_array_free() contract while also clearing the caller's
+ * pointer so repository code does not keep a dangling struct pointer around.
+ * If *array_p is already NULL, nothing is freed and the call is a documented no-op.
+ *
+ * NOTE: This function does not return on error.
+ */
+void
+dyn_array_destroy(struct dyn_array **array_p)
+{
+    struct dyn_array *array;
+
+    /*
+     * Check preconditions (firewall) - sanity check args
+     */
+    if (array_p == NULL) {
+	err(151, __func__, "array_p arg is NULL");
+	not_reached();
+    }
+    if (*array_p == NULL) {
+	return;
+    }
+
+    array = *array_p;
+    dyn_array_free(array);
+    free(array);
+    *array_p = NULL;
+    if (dbg_allowed(DBG_V5_HIGH)) {
+	dbg(DBG_V5_HIGH, "in %s(array_p): caller pointer cleared", __func__);
+    }
 }
 
 
@@ -1565,11 +1857,11 @@ dyn_array_qsort(struct dyn_array *array, int (*compar)(const void *, const void 
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(131, __func__, "array arg is NULL");
+	err(152, __func__, "array arg is NULL");
 	not_reached();
     }
     if (compar == NULL) {
-	err(132, __func__, "compar arg is NULL");
+	err(153, __func__, "compar arg is NULL");
 	not_reached();
     }
 
@@ -1577,23 +1869,23 @@ dyn_array_qsort(struct dyn_array *array, int (*compar)(const void *, const void 
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(133, __func__, "array->data in dynamic array is NULL");
+	err(154, __func__, "array->data in dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(134, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
+	err(155, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(135, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	err(156, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
 	not_reached();
     }
     if (array->allocated <= 0) {
-	err(136, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
+	err(157, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(137, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
+	err(158, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
@@ -1649,11 +1941,11 @@ dyn_array_qsort_r(struct dyn_array *array, void *thunk, int (*compar)(void *, co
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(138, __func__, "array arg is NULL");
+	err(159, __func__, "array arg is NULL");
 	not_reached();
     }
     if (compar == NULL) {
-	err(139, __func__, "compar arg is NULL");
+	err(160, __func__, "compar arg is NULL");
 	not_reached();
     }
 
@@ -1661,23 +1953,23 @@ dyn_array_qsort_r(struct dyn_array *array, void *thunk, int (*compar)(void *, co
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(140, __func__, "array->data in dynamic array is NULL");
+	err(161, __func__, "array->data in dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(141, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
+	err(162, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(142, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	err(163, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
 	not_reached();
     }
     if (array->allocated <= 0) {
-	err(143, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
+	err(164, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(144, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
+	err(165, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
@@ -1724,11 +2016,11 @@ dyn_array_heapsort(struct dyn_array *array, int (*compar)(const void *, const vo
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(145, __func__, "array arg is NULL");
+	err(166, __func__, "array arg is NULL");
 	not_reached();
     }
     if (compar == NULL) {
-	err(146, __func__, "compar arg is NULL");
+	err(167, __func__, "compar arg is NULL");
 	not_reached();
     }
 
@@ -1736,23 +2028,23 @@ dyn_array_heapsort(struct dyn_array *array, int (*compar)(const void *, const vo
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(147, __func__, "array->data in dynamic array is NULL");
+	err(168, __func__, "array->data in dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(148, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
+	err(169, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(149, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	err(170, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
 	not_reached();
     }
     if (array->allocated <= 0) {
-	err(150, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
+	err(171, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(151, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
+	err(172, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }
@@ -1801,11 +2093,11 @@ dyn_array_mergesort(struct dyn_array *array, int (*compar)(const void *, const v
      * Check preconditions (firewall) - sanity check args
      */
     if (array == NULL) {
-	err(152, __func__, "array arg is NULL");
+	err(173, __func__, "array arg is NULL");
 	not_reached();
     }
     if (compar == NULL) {
-	err(153, __func__, "compar arg is NULL");
+	err(174, __func__, "compar arg is NULL");
 	not_reached();
     }
 
@@ -1813,23 +2105,23 @@ dyn_array_mergesort(struct dyn_array *array, int (*compar)(const void *, const v
      * Check preconditions (firewall) - sanity check array
      */
     if (array->data == NULL) {
-	err(154, __func__, "array->data in dynamic array is NULL");
+	err(175, __func__, "array->data in dynamic array is NULL");
 	not_reached();
     }
     if (array->elm_size <= 0) {
-	err(155, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
+	err(176, __func__, "array->elm_size in dynamic array must be > 0: %zu", array->elm_size);
 	not_reached();
     }
     if (array->chunk <= 0) {
-	err(156, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
+	err(177, __func__, "array->chunk in dynamic array must be > 0: %jd", array->chunk);
 	not_reached();
     }
     if (array->allocated <= 0) {
-	err(157, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
+	err(178, __func__, "array->allocated in dynamic array must be > 0: %jd", array->allocated);
 	not_reached();
     }
     if (array->count > array->allocated) {
-	err(158, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
+	err(179, __func__, "array->count: %jd in dynamic array must be <= array->allocated: %jd",
 			  array->count, array->allocated);
 	not_reached();
     }

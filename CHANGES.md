@@ -1,7 +1,7 @@
 # Major changes to the IOCCC entry toolkit
 
 
-## Release 2.12.1 2026-08-22
+## Release 2.12.1 2026-09-25
 
 Improved `make clobber` rule in `test_ioccc/Makefile` to remove both the
 `slot/good/build.out/` directory, and the `slot/bad/build.out` directory.
@@ -21,6 +21,18 @@ Such test submissions can be used to test uploads to the submit server.
 
 Added `make lstxz` to top level `Makefile` to list, if any exist,
 the compressed tarball test submissions: first good then bad.
+
+Update to using dyn_array release to "2.6.0 2026-09-24".
+
+Use `-e` when testing dyn_array via `dyn_test`.
+
+Update to using dbg release to "3.3.0 2026-09-24".
+
+Fixed `make depend` for macOS 27.
+
+Update to using pr release to "1.2.0 2026-09-25"
+
+Update to using cpath release to "2.1.0 2026-09-25"
 
 
 ## Release 2.12.0 2026-08-10

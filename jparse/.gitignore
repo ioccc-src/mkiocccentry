@@ -41,6 +41,7 @@ jparse_bug_report.*.c
 /makefile.local
 /.sorry.*.c
 .*.sw[a-zA-Z0-9]*
+.sw*
 /tags
 /test_jparse/Makefile.local
 /test_jparse/Makefile.orig

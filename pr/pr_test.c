@@ -5,7 +5,7 @@
  *
  *      -- J.R.R. Tolkien
  *
- * Copyright (c) 2008-2025 by Landon Curt Noll and Cody Boone Ferguson.
+ * Copyright (c) 2008-2026 by Landon Curt Noll and Cody Boone Ferguson.
  * All rights reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
@@ -60,6 +60,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <unistd.h>
 
 /*
@@ -73,7 +75,7 @@
  */
 #define REQUIRED_ARGS (0)	/* number of required arguments on the command line */
 #define PR_TEST_BASENAME "pr_test"
-#define PR_TEST_VERSION "1.1.0 2025-09-20"
+#define PR_TEST_VERSION "1.2.0 2026-09-25"
 
 
 /*
@@ -103,6 +105,237 @@ static const char * const usage_msg =
  * forward declarations
  */
 static void usage(int exitcode, char const *prog, char const *str);
+static long fd_limit(void);
+static bool fd_is_open(int fd);
+static bool snapshot_open_fds(bool *open_fds, size_t fd_count);
+static bool test_readline_dup_strip(void);
+static bool test_read_all_chunk_terminated(void);
+static bool test_open_dir_file_no_fd_leak(void);
+
+
+/*
+ * fd_limit - return the process file descriptor limit used by tests
+ */
+static long
+fd_limit(void)
+{
+    long max_fd = 0;
+
+    max_fd = sysconf(_SC_OPEN_MAX);
+    if (max_fd <= 0) {
+	max_fd = 1024;
+    } else if (max_fd > 256) {
+	max_fd = 256;
+    }
+    return max_fd;
+}
+
+
+/*
+ * fd_is_open - determine if a file descriptor is open
+ */
+static bool
+fd_is_open(int fd)
+{
+    errno = 0;
+    return fcntl(fd, F_GETFD) >= 0 || errno != EBADF;
+}
+
+
+/*
+ * snapshot_open_fds - record which file descriptors are currently open
+ */
+static bool
+snapshot_open_fds(bool *open_fds, size_t fd_count)
+{
+    size_t i;
+
+    if (open_fds == NULL) {
+	return false;
+    }
+    for (i = 0; i < fd_count; ++i) {
+	open_fds[i] = fd_is_open((int)i);
+    }
+    return true;
+}
+
+
+/*
+ * test_readline_dup_strip - verify readline_dup strips trailing whitespace
+ */
+static bool
+test_readline_dup_strip(void)
+{
+    FILE *stream = NULL;
+    char *linep = NULL;
+    char *dup = NULL;
+    size_t len = 0;
+    bool success = false;
+
+    stream = tmpfile();
+    if (stream == NULL) {
+	warnp(__func__, "tmpfile failed");
+	return false;
+    }
+    if (fputs("abc \t\n", stream) == EOF) {
+	warnp(__func__, "fputs failed");
+    } else if (fflush(stream) == EOF) {
+	warnp(__func__, "fflush failed");
+    } else {
+	rewind(stream);
+	dup = readline_dup(&linep, true, &len, stream);
+	if (dup == NULL) {
+	    warn(__func__, "readline_dup returned NULL");
+	} else if (len != 3) {
+	    warn(__func__, "readline_dup returned length: %zu != 3", len);
+	} else if (strcmp(dup, "abc") != 0) {
+	    warn(__func__, "readline_dup returned <%s> != <abc>", dup);
+	} else {
+	    success = true;
+	}
+    }
+
+    free(dup);
+    free(linep);
+    clearerr_or_fclose(stream);
+    return success;
+}
+
+
+/*
+ * test_read_all_chunk_terminated - verify read_all keeps an extra NUL byte
+ */
+static bool
+test_read_all_chunk_terminated(void)
+{
+    FILE *stream = NULL;
+    unsigned char *data = NULL;
+    size_t len = 0;
+    size_t written = 0;
+    char chunk[4096];
+    bool success = false;
+
+    memset(chunk, 'A', sizeof(chunk));
+    stream = tmpfile();
+    if (stream == NULL) {
+	warnp(__func__, "tmpfile failed");
+	return false;
+    }
+
+    while (written < READ_ALL_CHUNK) {
+	size_t to_write = READ_ALL_CHUNK - written;
+
+	if (to_write > sizeof(chunk)) {
+	    to_write = sizeof(chunk);
+	}
+	if (fwrite(chunk, 1, to_write, stream) != to_write) {
+	    warnp(__func__, "fwrite failed after %zu bytes", written);
+	    clearerr_or_fclose(stream);
+	    return false;
+	}
+	written += to_write;
+    }
+    if (fflush(stream) == EOF) {
+	warnp(__func__, "fflush failed");
+    } else if (fseek(stream, 0L, SEEK_SET) != 0) {
+	warnp(__func__, "fseek failed");
+    } else {
+	data = read_all(stream, &len);
+	if (data == NULL) {
+	    warn(__func__, "read_all returned NULL");
+	} else if (len != READ_ALL_CHUNK) {
+	    warn(__func__, "read_all length: %zu != %d", len, READ_ALL_CHUNK);
+	} else if (data[0] != 'A' || data[len - 1] != 'A') {
+	    warn(__func__, "read_all data did not preserve written content");
+	} else if (data[len] != '\0') {
+	    warn(__func__, "read_all buffer is not NUL terminated at offset %zu", len);
+	} else {
+	    success = true;
+	}
+    }
+
+    free(data);
+    clearerr_or_fclose(stream);
+    return success;
+}
+
+
+/*
+ * test_open_dir_file_no_fd_leak - verify open_dir_file(NULL, ...) closes temp cwd state
+ */
+static bool
+test_open_dir_file_no_fd_leak(void)
+{
+    char path[] = "/tmp/pr_test_open_dir_file.XXXXXX";
+    int fd = -1;
+    long max_fd = 0;
+    bool *before = NULL;
+    bool *after = NULL;
+    FILE *stream = NULL;
+    bool success = false;
+    long i;
+
+    fd = mkstemp(path);
+    if (fd < 0) {
+	warnp(__func__, "mkstemp failed");
+	return false;
+    }
+    if (write(fd, "data\n", 5) != 5) {
+	warnp(__func__, "write failed");
+	(void)close(fd);
+	(void)unlink(path);
+	return false;
+    }
+    if (close(fd) != 0) {
+	warnp(__func__, "close failed");
+	(void)unlink(path);
+	return false;
+    }
+
+    max_fd = fd_limit();
+    before = calloc((size_t)max_fd, sizeof(*before));
+    after = calloc((size_t)max_fd, sizeof(*after));
+    if (before == NULL || after == NULL) {
+	warnp(__func__, "calloc failed");
+	free(before);
+	free(after);
+	(void)unlink(path);
+	return false;
+    }
+    if (snapshot_open_fds(before, (size_t)max_fd) == false) {
+	warn(__func__, "snapshot_open_fds failed before open_dir_file");
+	free(before);
+	free(after);
+	(void)unlink(path);
+	return false;
+    }
+
+    stream = open_dir_file(NULL, path);
+    if (stream == NULL) {
+	warn(__func__, "open_dir_file returned NULL");
+    }
+    if (stream != NULL) {
+	clearerr_or_fclose(stream);
+    }
+    if (snapshot_open_fds(after, (size_t)max_fd) == false) {
+	warn(__func__, "snapshot_open_fds failed after close");
+    } else {
+	for (i = 0; i < max_fd; ++i) {
+	    if (after[i] && before[i] == false) {
+		warn(__func__, "open_dir_file(NULL, ...) left leaked fd open after close: %ld", i);
+		break;
+	    }
+	}
+	if (i >= max_fd) {
+	    success = true;
+	}
+    }
+
+    free(before);
+    free(after);
+    (void)unlink(path);
+    return success;
+}
 
 
 int
@@ -157,7 +390,15 @@ main(int argc, char *argv[])
 	not_reached();
     }
 
-    /* XXX - add test code here - XXX */
+    if (test_readline_dup_strip() == false) {
+	error = true;
+    }
+    if (test_read_all_chunk_terminated() == false) {
+	error = true;
+    }
+    if (test_open_dir_file_no_fd_leak() == false) {
+	error = true;
+    }
 
     /*
      * exit based on the test result

@@ -100,7 +100,7 @@ utf8len(const char *str, int32_t surrogate)
      */
     scanned = sscanf(str, "\\u%c%c%c%c", &xa, &xb, &xc, &xd);
     if (scanned != 4) {
-	warn(__func__, "expected \\u followed by FOUR HEX digits, only got %d", scanned);
+	warn(__func__, "expected \\u followed by four hex digits, only got %d", scanned);
 	len = -1;
 	return len;
     } else {
@@ -120,8 +120,8 @@ utf8len(const char *str, int32_t surrogate)
      */
 
     /*
-     * now that we know that there is a \u followed by FOUR HEX digits we can
-     * try and extract it as a SINGLE HEX number
+     * now that we know that there is a \u followed by four hex digits we can
+     * try and extract it as a single hex number
      */
     scanned = sscanf(str, "\\u%4x", &x);
     if (scanned != 1) {
@@ -129,7 +129,7 @@ utf8len(const char *str, int32_t surrogate)
 	not_reached();
     } else {
 	/*
-	 * now that we have a SINGLE HEX number, we need to check the number of
+	 * now that we have a single hex number, we need to check the number of
 	 * bytes required, setting it in len.
 	 */
 	if (x < 0x80) {
@@ -165,7 +165,7 @@ utf8len(const char *str, int32_t surrogate)
  * NOTE: if a value is out of range the function will return a negative number.
  * NOTE: although we could use is_surrogate_pair() this would needlessly
  * complicate the decode functions in json_parse.c. In that code if this
- * function returns < 0 it the string is processed as if it was a single \uxxxx.
+ * function returns < 0 the string is processed as if it was a single \uxxxx.
  * That happens if one or both of the bytes is out of range. Otherwise the
  * codepoint is returned and it is processed in the other function (the decode
  * on in json_parse.c).

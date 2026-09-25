@@ -22,7 +22,7 @@
  *
  *      -- Samwise Gamgee to Gollum in Ithilien, The Two Towers.
  *
- * Copyright (c) 2025 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2025,2026 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -225,16 +225,8 @@
 
     /*
      * Within this _MSC_VER code block, we have STD__C_VERSION, we are C90 or earlier
-     *
-     * If we have no __STDC_VERSION__, so set __STDC_VERSION__ to STD__C_VERSION because we must.
-     * Yes, defining __STDC_VERSION__ is a "no-no", however it wasn't defined when it should have
-     * been defined!  What else can we do?!?
      */
-    #if !defined(__STDC_VERSION__)
-        #define __STDC_VERSION__ STD__C_VERSION /* sorry (tm Canada) */
-    #endif
-
-    /* assertion: Within this _MSC_VER code block, __STDC_VERSION__ was defined or was set best as we can */
+    /* assertion: Within this _MSC_VER code block, STD__C_VERSION was defined or was set best as we can */
 
   /*
    * Within this _MSC_VER code block, we have __STDC_VERSION__ and it is post C90
@@ -251,7 +243,6 @@
     #endif
   #endif
 
-  /* assertion: Within this _MSC_VER code block, __STDC_VERSION__ was defined or was set best as we can */
   /* assertion: Within this _MSC_VER code block, STD__C_VERSION was defined or was set best as we can */
 
 #endif    /* end of "Microsoft land" and the end of the _MSC_VER section */
@@ -373,30 +364,20 @@
   /* assertion: At this point in the code, C_STD was defined or was set best as we can */
   /* assertion: At this point in the code, STD__C_VERSION was defined or was set best as we can */
 
-  /*
-   * time to set __STDC_VERSION__ according to STD__C_VERSION
-   *
-   * If we have no __STDC_VERSION__, so set __STDC_VERSION__ to STD__C_VERSION because we must.
-   * Yes, defining __STDC_VERSION__ is a "no-no", however it wasn't defined when it should have
-   * been defined!  What else can we do?!?
-   */
-  #define __STDC_VERSION__ STD__C_VERSION       /* sorry (tm Canada) */
-
 #endif
 
 
-/* assertion: At this point in the code, __STDC_VERSION__ was defined or was set best as we can */
 /* assertion: At this point in the code, STD__C_VERSION was defined or was set best as we can */
 /* assertion: At this point in the code, C_STD was defined or was set best as we can */
 
 
 /*
- * Now that we have __STDC_VERSION__, STD__C_VERSION, and C_STD we can now
+ * Now that we have STD__C_VERSION and C_STD we can now
  * go about assuring we know some form of standard truth.  That is, we will
  * be sure that bool, true, and false are understood by the C compiler.
  */
 
-#if __STDC_VERSION__ >= 202311L
+#if STD__C_VERSION >= 202311L
 
   /*
    * Starting with C23:
@@ -411,7 +392,7 @@
 /*
  * From C99 up thru C17 and NOT C23, use <stdbool.h>
  */
-#elif (__STDC_VERSION__ >= 199901L) && (__STDC_VERSION__ < 202311L)
+#elif (STD__C_VERSION >= 199901L) && (STD__C_VERSION < 202311L)
 
    /*
     * For C99 up thru C17 but NOT including C23 has <stdbool.h>
@@ -431,7 +412,7 @@
  *
  *      We have to hack together our bool, true, and false via the enum method.
  */
-#elif (__STDC_VERSION__ >= 198900L) && (__STDC_VERSION__ < 199901L)
+#elif (STD__C_VERSION >= 198900L) && (STD__C_VERSION < 199901L)
 
   /*
    * paranoia - in case something else defined bool, true, or false

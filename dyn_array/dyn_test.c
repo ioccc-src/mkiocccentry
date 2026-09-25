@@ -1,7 +1,7 @@
 /*
  * dyn_array_test - test the dynamic array facility
  *
- * Copyright (c) 2014,2015,2022-2025 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2014,2015,2022-2026 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -35,6 +35,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 /*
@@ -57,12 +58,13 @@
  * Use the usage() function to print the usage_msg([0-9]?)+ strings.
  */
 static const char * const usage_msg =
-    "usage: %s [-h] [-v level] [-V] [-s seed]\n"
+    "usage: %s [-h] [-v level] [-V] [-s seed] [-e]\n"
     "\n"
     "\t-h\t\tprint help message and exit\n"
     "\t-v level\tset verbosity level (def level: %d)\n"
     "\t-V\t\tprint version string and exit\n"
     "\t-s seed\t\tset seed for srandom() (def: %u)\n"
+    "\t-e\t\tdisable expect_fatal_exit() tests (def: enable)\n"
     "\n"
     "\n"
     "Exit codes:\n"
@@ -83,6 +85,17 @@ static int dbl_cmp(const void *pa, const void *pb);
 #if defined(NON_STANDARD_SORT)
 static int thunk_dbl_cmp(void *pthunk, const void *pa, const void *pb);
 #endif /* NON_STANDARD_SORT */
+static bool expect_fatal_exit(char const *label, int expected_exit, void (*child_test)(void));
+static bool run_remaining_finding_regressions(void);
+#if SIZE_MAX > INTMAX_MAX
+static void test_create_elm_size_overflow(void);
+#endif
+static void test_create_rounding_overflow(void);
+static void test_create_guard_chunk_overflow(void);
+static void test_create_allocation_size_overflow(void);
+static void test_seek_cur_overflow(void);
+static void test_seek_end_overflow(void);
+static void test_macro_value_bounds(void);
 static void usage(int exitcode, char const *str, char const *prog) __attribute__((noreturn));
 
 
@@ -114,6 +127,10 @@ static void usage(int exitcode, char const *str, char const *prog) __attribute__
 #  define DBG_DEFAULT (DBG_NONE)  /* default debugging level */
 #  endif
 
+#  if !defined(DBG_LOW)
+#  define DBG_LOW (1)		   /* minimal debugging */
+#  endif
+
 
 /*
  * not_reached
@@ -142,6 +159,9 @@ bool warn_output_allowed = true;	/* false ==> disable warning messages */
 bool err_output_allowed = true;		/* false ==> disable error messages */
 bool usage_output_allowed = true;	/* false ==> disable usage messages */
 bool msg_warn_silent = false;		/* true ==> silence info & warnings if verbosity_level <= 0 */
+bool error_or_ok = true;		/* true ==> output ERROR[code], false ==> output OK[code] */
+int ok_min_verbosity_level = DBG_LOW;	/* don't output OK unless verbosity_level >= ok_min_verbosity_level */
+bool enable_expect_fatal_exit = true;   /* true ==> enable use of expect_fatal_exit(), false => disable */
 
 /*
  * forward declarations
@@ -286,6 +306,267 @@ thunk_dbl_cmp(void *pthunk, const void *pa, const void *pb)
 #endif /* NON_STANDARD_SORT */
 
 
+/*
+ * expect_fatal_exit - verify that a child process exits with a specific code
+ *
+ * returns:
+ *	true ==> child exited with the expected fatal exit code
+ *	false ==> child exited unexpectedly
+ */
+static bool
+expect_fatal_exit(char const *label, int expected_exit, void (*child_test)(void))
+{
+    pid_t pid;
+    int status;
+
+    if (label == NULL) {
+	label = "((NULL label))";
+    }
+    if (child_test == NULL) {
+	warn(__func__, "child_test is NULL for %s", label);
+	return false;
+    }
+
+    /*
+     * quick exit if these tests are disabled
+     *
+     * If not enabled, we will just pretend the child process was OK
+     */
+    if (!enable_expect_fatal_exit) {
+	return true;
+    }
+
+    pid = fork();
+    if (pid < 0) {
+	errp(15, __func__, "fork failed for %s", label);
+	not_reached();
+    }
+    if (pid == 0) {
+	child_test();
+	exit(0); /*ooo*/
+    }
+
+    if (waitpid(pid, &status, 0) < 0) {
+	errp(16, __func__, "waitpid failed for %s", label);
+	not_reached();
+    }
+    if (!WIFEXITED(status)) {
+	warn(__func__, "%s did not exit normally", label);
+	return false;
+    }
+    if (WEXITSTATUS(status) != expected_exit) {
+	warn(__func__, "%s exit code: %d != expected: %d", label, WEXITSTATUS(status), expected_exit);
+	return false;
+    }
+    return true;
+}
+
+
+/*
+ * run_remaining_finding_regressions - focused regression coverage for the audit fixes
+ *
+ * returns:
+ *	true ==> all focused regressions passed
+ *	false ==> 1 or more regressions failed
+ */
+static bool
+run_remaining_finding_regressions(void)
+{
+    struct dyn_array *array = NULL;
+    const struct dyn_array *const_array = NULL;
+    int values[3] = { 10, 20, 30 };
+    int *mid = NULL;
+    int const *const_mid = NULL;
+    int value = 0;
+    bool ok = true;
+
+    dbg(DBG_LOW, "running focused regression tests for the remaining audit findings");
+
+    /*
+     * Valid helper / macro use should continue to work for in-range element access.
+     */
+    array = dyn_array_create(sizeof(int), 4, 4, true);
+    if (dyn_array_addr(array, int, 0) != dyn_array_beyond(array, int)) {
+	warn(__func__, "empty-array range regression before append");
+	ok = false;
+    }
+    (void) dyn_array_append_set(array, values, 3);
+    const_array = array;
+    mid = dyn_array_addr(array, int, 1);
+    const_mid = dyn_array_addr(const_array, int, 1);
+    value = dyn_array_value(array, int, 1);
+    if (mid == NULL || const_mid == NULL || *mid != 20 || *const_mid != 20 || value != 20 ||
+	dyn_array_value(const_array, int, 1) != 20) {
+	warn(__func__, "macro/helper regression: mid=%p const_mid=%p *mid=%d *const_mid=%d value=%d",
+		       (void *)mid, (void *)const_mid,
+		       (mid == NULL ? -1 : *mid),
+		       (const_mid == NULL ? -1 : *const_mid),
+		       value);
+	ok = false;
+    }
+
+    /*
+     * Representable seeks before the beginning should still clamp to zero.
+     */
+    (void) dyn_array_seek(array, -10, SEEK_CUR);
+    if (dyn_array_tell(array) != 0) {
+	warn(__func__, "seek clamp regression: dyn_array_tell(array): %jd != 0", dyn_array_tell(array));
+	ok = false;
+    }
+
+    /*
+     * dyn_array_free() must leave the struct valid for an explicit destroy call.
+     */
+    (void) dyn_array_append_set(array, values, 3);
+    dyn_array_free(array);
+    if (dyn_array_addr(array, int, 0) != NULL || dyn_array_beyond(array, int) != NULL) {
+	warn(__func__, "empty-array range regression after dyn_array_free()");
+	ok = false;
+    }
+    if (array == NULL || array->data != NULL || array->elm_size != 0 || array->count != 0 ||
+	array->allocated != 0 || array->chunk != 0 || array->zeroize != false) {
+	warn(__func__, "dyn_array_free() ownership regression: array=%p data=%p elm_size=%zu zeroize=%s "
+		       "count=%jd allocated=%jd chunk=%jd",
+		       (void *)array, (array == NULL ? NULL : array->data),
+		       (array == NULL ? 0U : array->elm_size),
+		       (array != NULL ? booltostr(array->zeroize) : "((NULL array))"),
+		       (array == NULL ? (intmax_t)0 : array->count),
+		       (array == NULL ? (intmax_t)0 : array->allocated),
+		       (array == NULL ? (intmax_t)0 : array->chunk));
+	ok = false;
+    }
+    dyn_array_destroy(&array);
+    if (array != NULL) {
+	warn(__func__, "dyn_array_destroy() did not clear caller pointer after dyn_array_free()");
+	ok = false;
+    }
+
+    array = dyn_array_create(sizeof(int), 4, 4, true);
+    dyn_array_destroy(&array);
+    if (array != NULL) {
+	warn(__func__, "dyn_array_destroy() did not clear caller pointer");
+	ok = false;
+    }
+    dyn_array_destroy(&array);
+
+    /*
+     * Fatal firewall paths are checked in subprocesses so the main test can continue.
+     */
+#if SIZE_MAX > INTMAX_MAX
+    ok = expect_fatal_exit("dyn_array_create elm_size overflow", 86, test_create_elm_size_overflow) && ok;
+#endif
+    ok = expect_fatal_exit("dyn_array_create rounding overflow", 88, test_create_rounding_overflow) && ok;
+    ok = expect_fatal_exit("dyn_array_create guard chunk overflow", 90, test_create_guard_chunk_overflow) && ok;
+    ok = expect_fatal_exit("dyn_array_create byte count overflow", 91, test_create_allocation_size_overflow) && ok;
+    ok = expect_fatal_exit("dyn_array_seek SEEK_CUR overflow", 141, test_seek_cur_overflow) && ok;
+    ok = expect_fatal_exit("dyn_array_seek SEEK_END overflow", 142, test_seek_end_overflow) && ok;
+    ok = expect_fatal_exit("dyn_array_value bounds check", 68, test_macro_value_bounds) && ok;
+
+    return ok;
+}
+
+
+#if SIZE_MAX > INTMAX_MAX
+static void
+test_create_elm_size_overflow(void)
+{
+    error_or_ok = false; /* output OK not ERROR when an error is discovered */
+    (void) dyn_array_create(SIZE_MAX, 1, 1, false);
+    error_or_ok = true; /* output ERROR again when an error is discovered */
+}
+#endif
+
+
+static void
+test_create_rounding_overflow(void)
+{
+    error_or_ok = false; /* output OK not ERROR when an error is discovered */
+    (void) dyn_array_create(1, 4, INTMAX_MAX, false);
+    error_or_ok = true; /* output ERROR again when an error is discovered */
+}
+
+
+static void
+test_create_guard_chunk_overflow(void)
+{
+    error_or_ok = false; /* output OK not ERROR when an error is discovered */
+    (void) dyn_array_create(1, 1, INTMAX_MAX, false);
+    error_or_ok = true; /* output ERROR again when an error is discovered */
+}
+
+
+static void
+test_create_allocation_size_overflow(void)
+{
+    intmax_t start_elm_count;
+
+    error_or_ok = false; /* output OK not ERROR when an error is discovered */
+    start_elm_count = ((INTMAX_MAX / 3) * 2) + 2;
+    (void) dyn_array_create(3, 1, start_elm_count, false);
+    error_or_ok = true; /* output ERROR again when an error is discovered */
+}
+
+
+static void
+test_seek_cur_overflow(void)
+{
+    struct dyn_array array;
+
+    memset(&array, 0, sizeof(array));
+    array.elm_size = 1;
+    array.zeroize = false;
+    array.count = INTMAX_MAX;
+    array.allocated = INTMAX_MAX;
+    array.chunk = 1;
+    array.data = malloc(1);
+    if (array.data == NULL) {
+	errp(17, __func__, "malloc failed");
+	not_reached();
+    }
+    error_or_ok = false; /* output OK not ERROR when an error is discovered */
+    (void) dyn_array_seek(&array, 1, SEEK_CUR);
+    error_or_ok = true; /* output ERROR again when an error is discovered */
+}
+
+
+static void
+test_seek_end_overflow(void)
+{
+    struct dyn_array array;
+
+    memset(&array, 0, sizeof(array));
+    array.elm_size = 1;
+    array.zeroize = false;
+    array.count = 1;
+    array.allocated = INTMAX_MAX;
+    array.chunk = 1;
+    array.data = malloc(1);
+    if (array.data == NULL) {
+	errp(18, __func__, "malloc failed");
+	not_reached();
+    }
+    error_or_ok = false; /* output OK not ERROR when an error is discovered */
+    (void) dyn_array_seek(&array, 1, SEEK_END);
+    error_or_ok = true; /* output ERROR again when an error is discovered */
+}
+
+
+static void
+test_macro_value_bounds(void)
+{
+    struct dyn_array *array;
+    int value = 42;
+    volatile int fetched;
+
+    error_or_ok = false; /* output OK not ERROR when an error is discovered */
+    array = dyn_array_create(sizeof(int), 4, 4, true);
+    (void) dyn_array_append_value(array, &value);
+    fetched = dyn_array_value(array, int, 1);
+    (void) fetched;
+    error_or_ok = true; /* output ERROR again when an error is discovered */
+}
+
+
 int
 main(int argc, char *argv[])
 {
@@ -306,7 +587,7 @@ main(int argc, char *argv[])
      * parse args
      */
     program = argv[0];
-    while ((i = getopt(argc, argv, ":hv:Vs:")) != -1) {
+    while ((i = getopt(argc, argv, ":hv:Vs:e")) != -1) {
 	switch (i) {
 	case 'h':		/* -h - print help to stderr and exit 0 */
 	    usage(2, program, ""); /*ooo*/
@@ -331,9 +612,12 @@ main(int argc, char *argv[])
 	    errno = 0;
 	    seed = strtoul(optarg, NULL, 0);
 	    if (errno != 0) {
-		err(15, __func__, "strtoul error");
+		err(19, __func__, "strtoul error");
 		not_reached();
 	    }
+	    break;
+	case 'e':
+	    enable_expect_fatal_exit = false;
 	    break;
 	case ':':   /* option requires an argument */
 	case '?':   /* illegal option */
@@ -445,7 +729,7 @@ main(int argc, char *argv[])
     dbg(DBG_MED, "dyn_array_heapsort() array, that is already sorted, using dbl_cmp");
     ret = dyn_array_heapsort(array, dbl_cmp);
     if (ret != 0) {
-	errp(16, __func__, "dyn_array_heapsort() error: %d", ret);
+	errp(20, __func__, "dyn_array_heapsort() error: %d", ret);
 	not_reached();
     }
 
@@ -467,7 +751,7 @@ main(int argc, char *argv[])
     dbg(DBG_MED, "dyn_array_mergesort() array, that is already sorted, using dbl_cmp");
     ret = dyn_array_mergesort(array, dbl_cmp);
     if (ret != 0) {
-	errp(17, __func__, "dyn_array_mergesort() error: %d", ret);
+	errp(21, __func__, "dyn_array_mergesort() error: %d", ret);
 	not_reached();
     }
 
@@ -630,7 +914,7 @@ main(int argc, char *argv[])
     dbg(DBG_LOW, "calling dyn_array_heapsort() array, that as quasi-sorted, using dbl_cmp");
     ret = dyn_array_heapsort(array, dbl_cmp);
     if (ret != 0) {
-	errp(18, __func__, "dyn_array_heapsort() error: %d", ret);
+	errp(22, __func__, "dyn_array_heapsort() error: %d", ret);
 	not_reached();
     }
 
@@ -666,7 +950,7 @@ main(int argc, char *argv[])
     dbg(DBG_LOW, "calling dyn_array_mergesort() array, that as quasi-sorted, using dbl_cmp");
     ret = dyn_array_mergesort(array, dbl_cmp);
     if (ret != 0) {
-	errp(19, __func__, "dyn_array_mergesort() error: %d", ret);
+	errp(23, __func__, "dyn_array_mergesort() error: %d", ret);
 	not_reached();
     }
 
@@ -685,11 +969,17 @@ main(int argc, char *argv[])
 #endif /* NON_STANDARD_SORT */
 
     /*
+     * focused regressions for the remaining audit findings
+     */
+    if (run_remaining_finding_regressions() == false) {
+	error = true;
+    }
+
+    /*
      * free dynamic array
      */
     if (array != NULL) {
-	dyn_array_free(array);
-	array = NULL;
+	dyn_array_destroy(&array);
     }
 
     /*
@@ -1006,6 +1296,13 @@ ferr_write(FILE *stream, int error_code, char const *caller,
     }
 
     /*
+     * when in OK mode, don't output OK unless verbose enough
+     */
+    if (!error_or_ok && verbosity_level < ok_min_verbosity_level) {
+	return;
+    }
+
+    /*
      * save errno so we can restore it before returning
      */
     saved_errno = errno;
@@ -1014,7 +1311,7 @@ ferr_write(FILE *stream, int error_code, char const *caller,
      * write error diagnostic header to stream
      */
     errno = 0;		/* pre-clear errno for warnp() */
-    ret = fprintf(stream, "ERROR[%d]: %s: ", error_code, name);
+    ret = fprintf(stream, "%s[%d]: %s: ", (error_or_ok ? "ERROR" : "OK"), error_code, name);
     if (ret < 0) {
 	warnp(caller, "\nin %s(stream, %s, %d, %s, %s, ap): fprintf error\n",
 			       __func__, caller, error_code, name, fmt);
@@ -1105,6 +1402,13 @@ ferrp_write(FILE *stream, int error_code, char const *caller,
     }
 
     /*
+     * when in OK mode, don't output OK unless verbose enough
+     */
+    if (!error_or_ok && verbosity_level < ok_min_verbosity_level) {
+	return;
+    }
+
+    /*
      * save errno so we can restore it before returning
      */
     saved_errno = errno;
@@ -1113,7 +1417,7 @@ ferrp_write(FILE *stream, int error_code, char const *caller,
      * write error diagnostic warning header to stream
      */
     errno = 0;		/* pre-clear errno for warnp() */
-    ret = fprintf(stream, "ERROR[%d]: %s: ", error_code, name);
+    ret = fprintf(stream, "%s[%d]: %s: ", (error_or_ok ? "ERROR" : "OK"), error_code, name);
     if (ret < 0) {
 	warnp(caller, "\nin %s(stream, %s, %d, %s, %s, ap): fprintf #0 error\n",
 		      __func__, caller, error_code, name, fmt);

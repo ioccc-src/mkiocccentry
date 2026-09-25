@@ -1256,7 +1256,8 @@ test:
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${E} ${MAKE} ${MAKE_CD_Q} -C dbg $@ C_SPECIAL="${C_SPECIAL}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
-	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}"
+	${E} ${MAKE} ${MAKE_CD_Q} -C dyn_array $@ C_SPECIAL="${C_SPECIAL}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" \
+					EXTERN_ETEST='-e'
 	${E} ${MAKE} ${MAKE_CD_Q} -C pr $@ C_SPECIAL="${C_SPECIAL}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" \
 					LD_DIR="${LD_DIR}"
 	${E} ${MAKE} ${MAKE_CD_Q} -C cpath $@ C_SPECIAL="${C_SPECIAL}" CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" \
@@ -2207,6 +2208,7 @@ depend: ${ALL_CSRC}
 	    ${SED} -i.orig -n -e '1,/^### DO NOT CHANGE MANUALLY BEYOND THIS LINE$$/p' Makefile; \
 	    ${CC} ${CFLAGS} -MM -I. -DMKIOCCCENTRY_USE ${ALL_CSRC} | \
 	      ${SED} -E -e 's;\s/usr/local/include/\S+;;g' -e 's;\s/usr/include/\S+;;g' \
+			-e 's;\s/Library/Developer/\S+;;g' \
 			-e 's;pr/\.\./dyn_array/;dyn_array/;g' \
 			-e 's;pr/\.\./dbg/;dbg/;g' \
 			-e 's;cpath/\.\./dyn_array/;dyn_array/;g' \

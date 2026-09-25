@@ -9,7 +9,7 @@
 .\" "Share and Enjoy!"
 .\"     --  Sirius Cybernetics Corporation Complaints Division, JSON spec department. :-)
 .\"
-.TH dyn_array 3 "26 September 2025" "dyn_array"
+.TH dyn_array 3 "24 September 2026" "dyn_array"
 .SH NAME
 .BR dyn_array_value() \|,
 .BR dyn_array_addr() \|,
@@ -21,6 +21,7 @@
 .BR dyn_array_rewind() \|,
 .BR dyn_array_create() \|,
 .BR dyn_array_free() \|,
+.BR dyn_array_destroy() \|,
 .BR dyn_array_append_value() \|,
 .BR dyn_array_append_set() \|,
 .BR dyn_array_concat_array() \|,
@@ -66,6 +67,10 @@
 .I void
 .br
 .B "dyn_array_free(struct dyn_array *array);"
+.sp
+.I void
+.br
+.B "dyn_array_destroy(struct dyn_array **array_p);"
 .sp
 .I void
 .br
@@ -244,6 +249,19 @@ first.
 The function does not free the
 .B struct dyn_array
 itself: it only frees any allocated storage.
+.PP
+The function
+.B dyn_array_destroy()
+is the safe companion to
+.BR dyn_array_create() .
+It first calls
+.BR dyn_array_free()
+and then frees the heap-allocated
+.B struct dyn_array
+itself, finally setting the caller's pointer to NULL to avoid leaving a dangling pointer behind.
+If the caller passes a non-NULL pointer variable whose value is already NULL,
+.B dyn_array_destroy()
+does nothing and returns.
 .SS The struct dyn_array
 .PP
 The
@@ -283,7 +301,10 @@ obtains the element (the value) of the dynamic array
 of type
 .I type
 at index
-.I index
+.IR index .
+The index must reference an element currently in use, and the
+.I type
+must exactly match the stored element type, size, and alignment.
 .TP
 .B dyn_array_addr((struct dyn_array *) array, type, (intmax_t) index)
 obtains the address of the dynamic array
@@ -292,6 +313,12 @@ of an element of type
 .I type
 at index
 .IR index .
+.sp
+This helper may be used for in-use elements or for the one-past-the-end address
+used by iteration.  The caller must still ensure that
+.I type
+matches the stored element type, size, and alignment requirements because C macros
+cannot prove those properties.
 .TP
 .B dyn_array_tell((struct dyn_array *) array)
 returns the current element count of the dynamic array
@@ -703,7 +730,7 @@ The following uses a dynamic array to hold pointers to malloced strings:
  *
  *      man 3 dyn_array
  *
- * Copyright (c) 2025 by Landon Curt Noll.  All Rights Reserved.
+ * Copyright (c) 2026 by Landon Curt Noll.  All Rights Reserved.
  *
  * Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
@@ -828,14 +855,14 @@ main(void)
     }
 
     /*
-     * free the dynamic array structure
+     * destroy the dynamic array structure
      *
      * NOTE: Because the dynamic array was allocated with a zeroize value true,
      *       the array of pointers to strings will be zeroized before the
-     *       dynamic array structure if finally freed.
+     *       heap-allocated struct pointer is cleared.
      */
-    msg("free the dynamic array structure");
-    dyn_array_free(array);
+    msg("destroy the dynamic array structure");
+    dyn_array_destroy(&array);
 
     /*
      * allocate an dynamic array of integers
@@ -906,14 +933,14 @@ main(void)
     }
 
     /*
-     * free the dynamic array structure
+     * destroy the dynamic array structure
      *
      * NOTE: Because the dynamic array was allocated with a zeroize value true,
-     *       the array of pointers to strings will be zeroized before the
-     *       dynamic array structure if finally freed.
+     *       the array backing storage will be zeroized before the
+     *       heap-allocated struct pointer is cleared.
      */
-    msg("free the dynamic array structure");
-    dyn_array_free(array);
+    msg("destroy the dynamic array structure");
+    dyn_array_destroy(&array);
 
     /*
      * exit 0
