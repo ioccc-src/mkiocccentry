@@ -232,9 +232,8 @@ DYN_ARRAY_MAN3_DUPS= \
 	man/man3/dyn_array_append_value.3 man/man3/dyn_array_append_set.3 \
 	man/man3/dyn_array_concat_array.3 man/man3/dyn_array_avail.3 man/man3/dyn_array_clear.3 \
 	man/man3/dyn_array_tell.3 man/man3/dyn_array_beyond.3 man/man3/dyn_array_addr.3 \
-	man/man3/dyn_array_alloced.3 man/man3/dyn_array_create.3 man/man3/dyn_array_qsort.3 \
 	man/man3/dyn_array_first.3 man/man3/dyn_array_push.3 man/man3/dyn_array_top.3 man/man3/dyn_array_pop.3 \
-# NON_STANDARD_SORT	man/man3/dyn_array_alloced.3 man/man3/dyn_array_create.3 man/man3/dyn_array_qsort.3
+	man/man3/dyn_array_alloced.3 man/man3/dyn_array_create.3 man/man3/dyn_array_qsort.3
 
 MAN3_PAGES= ${DYN_ARRAY_MAN3} ${DYN_ARRAY_MAN3_DUPS}
 MAN8_PAGES=
@@ -405,12 +404,65 @@ dyn_test: dyn_test.o dyn_array.o
 
 # form the duplicate copies of the `dyn_array(3)` man page
 #
-${DYN_ARRAY_MAN3_DUPS}: ${DYN_ARRAY_MAN3}
-	@for i in ${DYN_ARRAY_MAN3_DUPS}; do \
-	    if ! ${CMP} -s ${DYN_ARRAY_MAN3} "$$i" > /dev/null 2>&1; then \
-		${CP} -f -p -v ${DYN_ARRAY_MAN3} "$$i"; \
-	    fi; \
-	done
+man/man3/dyn_array_rewind.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/dyn_array_free.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/dyn_array_seek.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/dyn_array_append_value.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/dyn_array_append_set.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/dyn_array_concat_array.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/dyn_array_avail.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/dyn_array_clear.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/dyn_array_tell.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/dyn_array_beyond.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/dyn_array_addr.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/dyn_array_first.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/dyn_array_push.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/dyn_array_top.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/dyn_array_pop.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+# NON_STANDARD_SORT
+#
+man/man3/dyn_array_alloced.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+# NON_STANDARD_SORT
+#
+man/man3/dyn_array_create.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+# NON_STANDARD_SORT
+#
+man/man3/dyn_array_qsort.3: ${DYN_ARRAY_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
 
 
 ####################################
@@ -739,6 +791,7 @@ uninstall:
 	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_addr.3
 	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_alloced.3
 	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_create.3
+	${E} ${RM} -f ${RM_V} ${MAN3_DIR}/dyn_array_qsort.3
 	${S} echo
 	${S} echo "${OUR_NAME}: make $@ ending"
 

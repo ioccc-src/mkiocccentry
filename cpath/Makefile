@@ -429,12 +429,18 @@ cpath: cpath.o canon_path.o
 
 # form the duplicate copies of the `canon_path(3)` man page
 #
-${CPATH_MAN_DUPS}: ${CPATH_MAN}
-	@for i in ${CPATH_MAN_DUPS}; do \
-	    if ! ${CMP} -s ${CPATH_MAN} "$$i" > /dev/null 2>&1; then \
-		${CP} -f -p -v ${CPATH_MAN} "$$i"; \
-	    fi; \
-	done
+man/man3/path_sanity_error.3: ${CPATH_MAN}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/path_sanity_name.3: ${CPATH_MAN}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/safe_path_str.3: ${CPATH_MAN}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/safe_str.3: ${CPATH_MAN}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
 
 
 ####################################

@@ -434,12 +434,44 @@ pr_test: pr_test.o pr.o
 
 # form the duplicate copies of the `pr(3)` man page
 #
-${PR_MAN3_DUPS}: ${PR_MAN3}
-	@for i in ${PR_MAN3_DUPS}; do \
-	    if ! ${CMP} -s ${PR_MAN3} "$$i" > /dev/null 2>&1; then \
-		${CP} -f -p -v ${PR_MAN3} "$$i"; \
-	    fi; \
-	done
+man/man3/chk_stdio_printf_err.3: ${PR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/para.3: ${PR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/fpara.3: ${PR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vfpr.3: ${PR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/fpr.3: ${PR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/readline.3: ${PR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/readline_dup.3: ${PR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/read_all.3: ${PR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/clearerr_or_fclose.3: ${PR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/fprint_line_buf.3: ${PR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/fprint_line_str.3: ${PR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/open_dir_file.3: ${PR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/fchk_inval_opt.3: ${PR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
 
 
 ####################################

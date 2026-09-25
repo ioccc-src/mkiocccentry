@@ -433,48 +433,140 @@ dbg_example: dbg_example.o dbg.o
 
 # form the duplicate copies of the `dyn_array(3)` man page
 #
-${DBG_MAN3_DUPS}: ${DBG_MAN3}
-	@for i in ${DBG_MAN3_DUPS}; do \
-	    if ! ${CMP} -s ${DBG_MAN3} "$$i" > /dev/null 2>&1; then \
-		${CP} -f -p -v ${DBG_MAN3} "$$i"; \
-	    fi; \
-	done
-${WARN_MAN3_DUPS}: ${WARN_MAN3}
-	@for i in ${WARN_MAN3_DUPS}; do \
-	    if ! ${CMP} -s ${WARN_MAN3} "$$i" > /dev/null 2>&1; then \
-		${CP} -f -p -v ${WARN_MAN3} "$$i"; \
-	    fi; \
-	done
-${WERR_MAN3_DUPS}: ${WERR_MAN3}
-	@for i in ${WERR_MAN3_DUPS}; do \
-	    if ! ${CMP} -s ${WERR_MAN3} "$$i" > /dev/null 2>&1; then \
-		${CP} -f -p -v ${WERR_MAN3} "$$i"; \
-	    fi; \
-	done
-${WARN_OR_ERR_MAN3_DUPS}: ${WARN_OR_ERR_MAN3}
-	@for i in ${WARN_OR_ERR_MAN3_DUPS}; do \
-	    if ! ${CMP} -s ${WARN_OR_ERR_MAN3} "$$i" > /dev/null 2>&1; then \
-		${CP} -f -p -v ${WARN_OR_ERR_MAN3} "$$i"; \
-	    fi; \
-	done
-${ERR_MAN3_DUPS}: ${ERR_MAN3}
-	@for i in ${ERR_MAN3_DUPS}; do \
-	    if ! ${CMP} -s ${ERR_MAN3} "$$i" > /dev/null 2>&1; then \
-		${CP} -f -p -v ${ERR_MAN3} "$$i"; \
-	    fi; \
-	done
-${MSG_MAN3_DUPS}: ${MSG_MAN3}
-	@for i in ${MSG_MAN3_DUPS}; do \
-	    if ! ${CMP} -s ${MSG_MAN3} "$$i" > /dev/null 2>&1; then \
-		${CP} -f -p -v ${MSG_MAN3} "$$i"; \
-	    fi; \
-	done
-${PRINTF_USAGE_MAN3_DUPS}: ${PRINTF_USAGE_MAN3}
-	@for i in ${PRINTF_USAGE_MAN3_DUPS}; do \
-	    if ! ${CMP} -s ${PRINTF_USAGE_MAN3} "$$i" > /dev/null 2>&1; then \
-		${CP} -f -p -v ${PRINTF_USAGE_MAN3} "$$i"; \
-	    fi; \
-	done
+man/man3/fdbg.3: ${DBG_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/sndbg.3: ${DBG_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vdbg.3: ${DBG_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vfdbg.3: ${DBG_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vsndbg.3: ${DBG_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/fwarn.3: ${WARN_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/fwarnp.3: ${WARN_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/snwarn.3: ${WARN_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/snwarnp.3: ${WARN_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vfwarn.3: ${WARN_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vfwarnp.3: ${WARN_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vsnwarn.3: ${WARN_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vsnwarnp.3: ${WARN_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vwarn.3: ${WARN_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vwarnp.3: ${WARN_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/warnp.3: ${WARN_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/fwerr.3: ${WERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/fwerrp.3: ${WERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/snwerr.3: ${WERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/snwerrp.3: ${WERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vfwerr.3: ${WERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vfwerrp.3: ${WERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vsnwerr.3: ${WERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vsnwerrp.3: ${WERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vwerr.3: ${WERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vwerrp.3: ${WERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/werrp.3: ${WERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/fwarn_or_err.3: ${WARN_OR_ERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vfwarn_or_err.3: ${WARN_OR_ERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vwarn_or_err.3: ${WARN_OR_ERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/errp.3: ${ERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/ferr.3: ${ERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/ferrp.3: ${ERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/verr.3: ${ERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/verrp.3: ${ERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vferr.3: ${ERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vferrp.3: ${ERR_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/fmsg.3: ${MSG_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/snmsg.3: ${MSG_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vfmsg.3: ${MSG_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vmsg.3: ${MSG_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vsnmsg.3: ${MSG_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/fprintf_usage.3: ${PRINTF_USAGE_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vfprintf_usage.3: ${PRINTF_USAGE_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
+
+man/man3/vprintf_usage.3: ${PRINTF_USAGE_MAN3}
+	-${Q} ${CMP} -s $< $@ || ${CP} -f -p $< $@
 
 
 #########################################################

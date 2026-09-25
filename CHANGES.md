@@ -1,4 +1,15 @@
-# Major changes to the IOCCC entry toolkit
+# Major changes to the IOCCC mkiocccentry toolkit
+
+
+## Release 2.12.2 2026-09-25
+
+Updates from dyn_array, dbg, pr, and cpath that were about addressing
+issues that tripped up CodeQL parallel make.  Use of parallel make in
+building the IOCCC mkiocccentry toolkit, however we wanted to sync the
+`Makefiles` from those libraries anyway.
+
+There are no actual code changes in this release as compared to Release
+2.12.1 2026-09-25.
 
 
 ## Release 2.12.1 2026-09-25
@@ -21,6 +32,8 @@ Such test submissions can be used to test uploads to the submit server.
 
 Added `make lstxz` to top level `Makefile` to list, if any exist,
 the compressed tarball test submissions: first good then bad.
+
+Performed security audits on dyn_array, dbg, pr, and cpath.
 
 Update to using dyn_array release to "2.6.0 2026-09-24".
 
