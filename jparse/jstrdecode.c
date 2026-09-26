@@ -194,6 +194,7 @@ add_decoded_string(char *string, size_t bufsiz)
 static char *
 dup_without_nl(char *input, size_t *inputlen)
 {
+    size_t alloc_len = 0;	/* allocated size of dup_input */
     char *dup_input = NULL;	/* duplicate of input */
     size_t i;
     size_t j;
@@ -213,7 +214,11 @@ dup_without_nl(char *input, size_t *inputlen)
     /*
      * copy input removing all newlines
      */
-    dup_input = calloc(*inputlen + 1, sizeof(*dup_input));	/* + 1 for guard NUL byte */
+    if (size_add(*inputlen, 1, &alloc_len) == false) {
+	warn(__func__, "input length overflow: %zu", *inputlen);
+	return NULL;
+    }
+    dup_input = calloc(alloc_len, sizeof(*dup_input));   /* + 1 for guard NUL byte */
     if (dup_input == NULL) {
 	warn(__func__, "calloc of input failed");
 	return NULL;

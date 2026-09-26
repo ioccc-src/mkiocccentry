@@ -70,7 +70,7 @@
  */
 #define JPARSE_UTF8_VERSION "2.1.4 2026-06-13"	/* format: major.minor YYYY-MM-DD */
 
-extern size_t utf8len(const char *str, int32_t surrogate);
+extern ssize_t utf8len(const char *str, int32_t surrogate);
 extern int32_t surrogate_pair_to_codepoint(int32_t hi, int32_t lo);
 extern int codepoint_to_unicode(char *str, unsigned int val);
 extern uint32_t utf8_to_codepoint(const char *str);

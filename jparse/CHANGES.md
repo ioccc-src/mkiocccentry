@@ -1,5 +1,63 @@
 # Significant changes in the JSON parser repo
 
+
+## Release 2.6.0 2026-09-25
+
+Performed a major code audit.
+
+Harden parser allocation and length handling across JSON decode and scanner entry points
+
+This PR audits the parser and supporting utilities for high-confidence
+memory-safety and logic issues, with emphasis on allocation sizing, decode
+paths, scanner length boundaries, and exact-length buffer handling. The
+changes target overflow/OOB conditions in public and internal APIs while
+preserving existing parser behavior for valid inputs.
+
+- **JSON decode and encode bounds**
+  - Added checked `size_t` helpers for additive/multiplicative allocation math.
+  - Guarded encoded/decoded length accumulation before allocation and before buffer growth assumptions.
+  - Hardened decode buffer allocation against wrapped `mlen + 2` sizing.
+
+- **Malformed `\u` escape handling**
+  - Changed `utf8len()` to return a signed length so malformed escapes propagate failure instead of wrapping to `SIZE_MAX`.
+  - Updated JSON decode paths to reject invalid UTF-8 escape length results before folding them into decoded-size calculations.
+
+- **Scanner length boundary**
+  - Added an explicit `INT_MAX` guard before passing caller-controlled lengths into flex `yy_scan_bytes()`.
+  - Oversized inputs now fail safely instead of truncating through the scanner’s signed-length boundary.
+
+- **Exact-length API correctness**
+  - Fixed `json_conv_bool()` and `json_conv_null()` to copy exactly `len` bytes and terminate locally.
+  - This removes the implicit read of `len + 1` bytes from caller-provided slices that are not required to be NUL-terminated.
+
+- **Overflow hardening in utility paths**
+  - Applied checked allocation sizing to helper paths that duplicate or build derived strings
+    (`jstrencode`, `jstrdecode`, `jsemtblgen`, `verge`).
+  - Synced the scanner source change into the checked-in flex reference files used by non-regenerated builds.
+
+- **Focused regression coverage**
+  - Added a small API-level regression test binary covering:
+    - malformed Unicode escapes
+    - exact-length boolean/null slices
+    - oversized `parse_json()` length rejection
+
+Example of the exact-length fix:
+
+```c
+    item->as_str = calloc(alloc_len, sizeof(*(item->as_str)));
+    memcpy(item->as_str, ptr, len);
+    item->as_str[len] = '\0';
+```
+
+In theory, the normal execution of this code should be identical to
+"Release 2.5.11 2026-08-03", except in extreme or unusual cases.
+
+Updated `JPARSE_REPO_VERSION` to `"2.6.0 2026-09-25"`.
+Updated `JPARSE_TOOL_VERSION` to `"2.1.0 2026-09-25"`.
+Updated `JPARSE_LIBRARY_VERSION` to `"2.5.0 2026-09-25"`.
+Updated `JPARSE_UTILS_VERSION` to `"2.2.0 2026-06-25"`.
+
+
 ## Release 2.5.11 2026-08-03
 
 Make jval.c `#include "jval.h"` rather than `jparse_main.h`. The code is

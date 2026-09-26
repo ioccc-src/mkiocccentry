@@ -843,6 +843,7 @@ alloc_c_funct_name(char const *prefix, char const *str)
 {
     bool prefix_is_reserved = false;	/* true ==> prefix is a reserved word in C */
     bool str_is_reserved = false;	/* true ==> str is a reserved word in C */
+    size_t alloc_len = 0;			/* allocated size of ret including guard byte */
     size_t len = 0;			/* length of allocated string */
     char *ret = NULL;			/* allocated string to return */
     char *p = NULL;			/* next character to add */
@@ -860,13 +861,23 @@ alloc_c_funct_name(char const *prefix, char const *str)
      */
     if (prefix != NULL) {
 	prefix_is_reserved = test_reserved(prefix);
-	len = strlen(prefix) + (prefix_is_reserved ? 1 : 0) + 1;	/* + 1 for _ after prefix */
+	if (size_add(strlen(prefix), (prefix_is_reserved ? 1 : 0), &len) == false ||
+	    size_add(len, 1, &len) == false) {
+	    err(20, __func__, "prefix length overflow");
+	    not_reached();
+	}
     }
     str_is_reserved = test_reserved(str);
-    len += strlen(str) + (str_is_reserved ? 1 : 0) + 1;	/* + 1 for NUL */
-    ret = calloc(len + 1, sizeof(*ret));		/* + 1 for guard byte paranoia */
+    if (size_add(len, strlen(str), &len) == false ||
+	size_add(len, (str_is_reserved ? 1 : 0), &len) == false ||
+	size_add(len, 1, &len) == false ||
+	size_add(len, 1, &alloc_len) == false) {
+	err(21, __func__, "function name length overflow");
+	not_reached();
+    }
+    ret = calloc(alloc_len, sizeof(*ret));		/* + 1 for guard byte paranoia */
     if (ret == NULL) {
-	errp(20, __func__, "calloc of %zu bytes failed", len);
+	errp(22, __func__, "calloc of %zu bytes failed", alloc_len);
 	not_reached();
     }
     p = ret;
@@ -967,11 +978,11 @@ append_unique_str(struct dyn_array *tbl, char *str)
      * firewall
      */
     if (tbl == NULL) {
-	err(21, __func__, "tbl is NULL");
+	err(23, __func__, "tbl is NULL");
 	not_reached();
     }
     if (str == NULL) {
-	err(22, __func__, "str is NULL");
+	err(24, __func__, "str is NULL");
 	not_reached();
     }
 
@@ -990,7 +1001,7 @@ append_unique_str(struct dyn_array *tbl, char *str)
 	/* get next string pointer */
 	u = dyn_array_value(tbl, char *, i);
 	if (u == NULL) {	/* paranoia */
-	    err(23, __func__, "found NULL pointer in function name dynamic array element: %ju", (uintmax_t)i);
+	    err(25, __func__, "found NULL pointer in function name dynamic array element: %ju", (uintmax_t)i);
 	    not_reached();
 	}
 
@@ -1031,15 +1042,15 @@ print_sem_c_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      * firewall
      */
     if (tbl == NULL) {
-	err(24, __func__, "tbl is NULL");
+	err(26, __func__, "tbl is NULL");
 	not_reached();
     }
     if (tbl_name == NULL) {
-	err(25, __func__, "tbl_name is NULL");
+	err(27, __func__, "tbl_name is NULL");
 	not_reached();
     }
     if (cap_tbl_name == NULL) {
-	err(26, __func__, "cap_tbl_name is NULL");
+	err(28, __func__, "cap_tbl_name is NULL");
 	not_reached();
     }
 
@@ -1247,15 +1258,15 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      * firewall
      */
     if (tbl == NULL) {
-	err(27, __func__, "tbl is NULL");
+	err(29, __func__, "tbl is NULL");
 	not_reached();
     }
     if (tbl_name == NULL) {
-	err(28, __func__, "tbl_name is NULL");
+	err(30, __func__, "tbl_name is NULL");
 	not_reached();
     }
     if (cap_tbl_name == NULL) {
-	err(29, __func__, "cap_tbl_name is NULL");
+	err(31, __func__, "cap_tbl_name is NULL");
 	not_reached();
     }
 
@@ -1269,7 +1280,7 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
      */
     unique_tbl = dyn_array_create(sizeof(char *), CHUNK, CHUNK, true);
     if (unique_tbl == NULL) {
-	err(30, __func__, "dyn_array_create failed");
+	err(32, __func__, "dyn_array_create failed");
 	not_reached();
     }
 
@@ -1351,7 +1362,7 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 		/* form function name based on -M member_func */
 		func_name = alloc_c_funct_name(prefix, member_func);
 		if (func_name == NULL) {
-		    err(31, __func__, "alloc_c_funct_name for member_func returned NULL");
+		    err(33, __func__, "alloc_c_funct_name for member_func returned NULL");
 		    not_reached();
 		}
 		is_unique = append_unique_str(unique_tbl, func_name);
@@ -1378,7 +1389,7 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 		/* form function name based on JSON member name */
 		func_name = alloc_c_funct_name(prefix, p->name);
 		if (func_name == NULL) {
-		    err(32, __func__, "alloc_c_funct_name for JSON member name returned NULL");
+		    err(34, __func__, "alloc_c_funct_name for JSON member name returned NULL");
 		    not_reached();
 		}
 		is_unique = append_unique_str(unique_tbl, func_name);
@@ -1416,7 +1427,7 @@ print_sem_h_src(struct dyn_array *tbl, char *tbl_name, char *cap_tbl_name)
 	    /* form function name based validation function */
 	    func_name = alloc_c_funct_name(prefix, validate);
 	    if (func_name == NULL) {
-		err(33, __func__, "alloc_c_funct_name for validation function name returned NULL");
+		err(35, __func__, "alloc_c_funct_name for validation function name returned NULL");
 		not_reached();
 	    }
 	    is_unique = append_unique_str(unique_tbl, func_name);

@@ -165,6 +165,35 @@
 #define is_all_whitespace_str(str) (is_all_whitespace((str), strlen(str)))
 
 /*
+ * size_t overflow helpers
+ */
+static inline bool
+size_add(size_t a, size_t b, size_t *sum)
+{
+    if (sum == NULL) {
+	return false;
+    }
+    if (a > SIZE_MAX - b) {
+	return false;
+    }
+    *sum = a + b;
+    return true;
+}
+
+static inline bool
+size_mul(size_t a, size_t b, size_t *product)
+{
+    if (product == NULL) {
+	return false;
+    }
+    if (a > 0 && b > SIZE_MAX / a) {
+	return false;
+    }
+    *product = a * b;
+    return true;
+}
+
+/*
  * non-strict floating match to 1 part in MATCH_PRECISION
  */
 #define MATCH_PRECISION ((long double)(1<<22))

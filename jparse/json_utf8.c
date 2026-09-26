@@ -62,7 +62,7 @@
  *
  * NOTE: *str should point to the \u!
  */
-size_t
+ssize_t
 utf8len(const char *str, int32_t surrogate)
 {
     unsigned char xa = 0;   /* first hex digit */
@@ -70,7 +70,7 @@ utf8len(const char *str, int32_t surrogate)
     unsigned char xc = 0;   /* third hex digit */
     unsigned char xd = 0;   /* fourth hex digit */
     unsigned int x = 0;	    /* the hex value we attempt to extract */
-    size_t len = 0;	    /* the number of bytes to return */
+    ssize_t len = 0;	    /* the number of bytes to return */
     int scanned = 0;	    /* how many values read */
 
     if (str == NULL) {

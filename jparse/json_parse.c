@@ -227,18 +227,18 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
 {
     char *ret = NULL;	    /* allocated encoding string or NULL */
     char *beyond = NULL;    /* beyond the end of the allocated encoding string */
-    ssize_t mlen = 0;	    /* length of allocated encoded string */
+    size_t alloc_len = 0;   /* allocated size of ret including guard bytes */
+    size_t mlen = 0;	    /* length of allocated encoded string */
     char *p;		    /* next place to encode */
     size_t i;
 
     /*
      * firewall
      */
+    if (retlen != NULL) {
+	*retlen = 0;
+    }
     if (ptr == NULL) {
-	/* error - clear allocated length */
-	if (retlen != NULL) {
-	    *retlen = 0;
-	}
 	warn(__func__, "called with NULL ptr");
 	return NULL;
     }
@@ -247,27 +247,22 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
      * count the bytes that will be in the encoded allocated string
      */
     for (i=0; i < len; ++i) {
-	mlen += byte2asciistr[(uint8_t)(ptr[i])].len;
-    }
-    if (mlen < 0) { /* paranoia */
-	/* error - clear allocated length */
-	if (retlen != NULL) {
-	    *retlen = 0;
+	if (size_add(mlen, byte2asciistr[(uint8_t)(ptr[i])].len, &mlen) == false) {
+	    warn(__func__, "encoded length overflow for len: %zu", len);
+	    return NULL;
 	}
-	warn(__func__, "mlen #0: %zd < 0", mlen);
-	return NULL;
     }
 
     /*
      * calloc the encoded string
      */
-    ret = calloc((size_t)mlen + 1 + 1, sizeof(*ret));
+    if (size_add(mlen, 2, &alloc_len) == false) {
+	warn(__func__, "encoded allocation length overflow for len: %zu", len);
+	return NULL;
+    }
+    ret = calloc(alloc_len, sizeof(*ret));
     if (ret == NULL) {
-	/* error - clear allocated length */
-	if (retlen != NULL) {
-	    *retlen = 0;
-	}
-	warn(__func__, "calloc of %zd bytes failed", (mlen + 1 + 1));
+	warn(__func__, "calloc of %zu bytes failed", alloc_len);
 	return NULL;
     }
     ret[mlen] = '\0';   /* terminate string */
@@ -308,23 +303,15 @@ json_encode(char const *ptr, size_t len, size_t *retlen, bool skip_quote)
 	p += byte2asciistr[(uint8_t)(ptr[i])].len;
     }
     *p = '\0';	/* paranoia */
-    mlen = p - ret; /* paranoia */
-    if (mlen < 0) { /* paranoia */
-	warn(__func__, "mlen #1: %zd < 0", mlen);
-	if (ret != NULL) {
-	    free(ret);
-	    ret = NULL;
-	}
-	return NULL;
-    }
+    mlen = (size_t)(p - ret); /* paranoia */
 
     /*
      * return result
      */
-    dbg(DBG_VVVHIGH, "returning from json_encode(ptr, %zu, *%zd, %s)",
+    dbg(DBG_VVVHIGH, "returning from json_encode(ptr, %zu, *%zu, %s)",
 		     len, mlen, booltostr(skip_quote));
     if (retlen != NULL) {
-	*retlen = (size_t)mlen;
+	*retlen = mlen;
     }
     return ret;
 }
@@ -1343,6 +1330,7 @@ chkbyte2asciistr(void)
 static char *
 decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
 {
+    size_t alloc_len = 0;   /* allocated size of ret including guard bytes */
     char *ret = NULL;	    /* allocated encoding string or NULL */
     char *beyond = NULL;    /* beyond the end of the allocated encoding string */
     char *p = NULL;	    /* next place to encode */
@@ -1371,13 +1359,20 @@ decode_json_string(char const *ptr, size_t len, size_t mlen, size_t *retlen)
     /*
      * allocated decoded string
      */
-    ret = calloc(mlen + 1 + 1, sizeof(*ret));
+    if (size_add(mlen, 2, &alloc_len) == false) {
+	if (retlen != NULL) {
+	    *retlen = 0;
+	}
+	warn(__func__, "decoded allocation length overflow for len: %zu", len);
+	return NULL;
+    }
+    ret = calloc(alloc_len, sizeof(*ret));
     if (ret == NULL) {
 	/* error - clear allocated length */
 	if (retlen != NULL) {
 	    *retlen = 0;
 	}
-	warn(__func__, "calloc of %zu bytes failed", (mlen + 1 + 1));
+	warn(__func__, "calloc of %zu bytes failed", alloc_len);
 	return NULL;
     }
     ret[mlen] = '\0';   /* terminate string */
@@ -1678,16 +1673,15 @@ json_decode(char const *ptr, size_t len, bool quote, size_t *retlen)
     int32_t surrogate = 0;  /* for surrogate pairs */
     int scanned = 0;	    /* for sscanf() */
     size_t i;
-    size_t bytes = 0;	    /* for utf8len() */
+    ssize_t bytes = 0;	    /* for utf8len() */
 
     /*
      * firewall
      */
+    if (retlen != NULL) {
+	*retlen = 0;
+    }
     if (ptr == NULL) {
-	/* error - clear allocated length */
-	if (retlen != NULL) {
-	    *retlen = 0;
-	}
 	warn(__func__, "called with NULL ptr");
 	return NULL;
     }
@@ -1753,7 +1747,10 @@ json_decode(char const *ptr, size_t len, bool quote, size_t *retlen)
 	     * count a valid character
 	     */
 	    default:
-		++mlen;
+		if (size_add(mlen, 1, &mlen) == false) {
+		    warn(__func__, "decoded length overflow for len: %zu", len);
+		    return NULL;
+		}
 		break;
 	    }
 
@@ -1794,7 +1791,10 @@ json_decode(char const *ptr, size_t len, bool quote, size_t *retlen)
 		/*
 		 * count \c escaped pair as 1 character
 		 */
-		++mlen;
+		if (size_add(mlen, 1, &mlen) == false) {
+		    warn(__func__, "decoded length overflow for len: %zu", len);
+		    return NULL;
+		}
 		++i;
 		break;
 
@@ -1834,8 +1834,11 @@ json_decode(char const *ptr, size_t len, bool quote, size_t *retlen)
 			/* utf8len() already warns */
 			return NULL;
 		    }
-		    dbg(DBG_VVHIGH, "UTF-8 bytes: %zu", bytes);
-		    mlen += bytes;
+		    dbg(DBG_VVHIGH, "UTF-8 bytes: %zd", bytes);
+		    if (size_add(mlen, bytes, &mlen) == false) {
+			warn(__func__, "decoded length overflow for len: %zu", len);
+			return NULL;
+		    }
 		    i += 5;
 		} else if (scanned == 2) {
 		    /*
@@ -1864,8 +1867,11 @@ json_decode(char const *ptr, size_t len, bool quote, size_t *retlen)
 			/* utf8len() already warns */
 			return NULL;
 		    }
-		    dbg(DBG_VVHIGH, "UTF-8 bytes: %zu", bytes);
-		    mlen += bytes;
+		    dbg(DBG_VVHIGH, "UTF-8 bytes: %zd", bytes);
+		    if (size_add(mlen, bytes, &mlen) == false) {
+			warn(__func__, "decoded length overflow for len: %zu", len);
+			return NULL;
+		    }
 
 		    /*
 		     * we skip 11 instead of 5 because 5 + LITLEN("\\uxxxx") is
@@ -3214,6 +3220,7 @@ json_conv_number(char const *ptr, size_t len)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_number *item = NULL;	    /* JSON number item inside JSON parser tree node */
+    size_t alloc_len = 0;		    /* allocated size of item->as_str including guard bytes */
     bool decimal = false;		    /* true ==> ptr points to a base 10 integer in ASCII */
     bool e_notation = false;		    /* true ==> ptr points to e notation in ASCII */
     bool floating_notation = false;	    /* true ==> ptr points to floating point notation in ASCII */
@@ -3291,10 +3298,14 @@ json_conv_number(char const *ptr, size_t len)
     /*
      * duplicate the JSON integer string
      */
+    if (size_add(len, 2, &alloc_len) == false) {
+	warn(__func__, "JSON number string length overflow: %zu", len);
+	return ret;
+    }
     errno = 0;			/* pre-clear errno for errp() */
-    item->as_str = calloc(len+1+1, sizeof(*(item->as_str)));
+    item->as_str = calloc(alloc_len, sizeof(*(item->as_str)));
     if (item->as_str == NULL) {
-	errp(13, __func__, "calloc #1 error allocating %zu bytes", (len+1+1));
+	errp(13, __func__, "calloc #1 error allocating %zu bytes", alloc_len);
 	not_reached();
     }
     strncpy(item->as_str, ptr, len);
@@ -3653,6 +3664,7 @@ json_conv_string(char const *ptr, size_t len, bool quote)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_string *item = NULL;	    /* JSON string item inside JSON parser tree node */
+    size_t alloc_len = 0;		    /* allocated size of item->as_str including guard bytes */
 
     /*
      * allocate an initialized JSON parse tree item
@@ -3720,10 +3732,14 @@ json_conv_string(char const *ptr, size_t len, bool quote)
     /*
      * duplicate the JSON string
      */
+    if (size_add(len, 2, &alloc_len) == false) {
+	warn(__func__, "JSON string length overflow: %zu", len);
+	return ret;
+    }
     errno = 0;			/* pre-clear errno for errp() */
-    item->as_str = calloc(len+1+1, sizeof(*(item->as_str)));
+    item->as_str = calloc(alloc_len, sizeof(*(item->as_str)));
     if (item->as_str == NULL) {
-	errp(17, __func__, "calloc #1 error allocating %zu bytes", (len+1+1));
+	errp(17, __func__, "calloc #1 error allocating %zu bytes", alloc_len);
 	not_reached();
     }
     strncpy(item->as_str, ptr, len);
@@ -3849,6 +3865,7 @@ json_conv_bool(char const *ptr, size_t len)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_boolean *item = NULL;	    /* allocated decoding string or NULL */
+    size_t alloc_len = 0;		    /* allocated size of item->as_str including guard bytes */
 
     /*
      * allocate an initialized JSON parse tree item
@@ -3887,13 +3904,17 @@ json_conv_bool(char const *ptr, size_t len)
     /*
      * duplicate the JSON encoded string
      */
+    if (size_add(len, 2, &alloc_len) == false) {
+	warn(__func__, "JSON boolean string length overflow: %zu", len);
+	return ret;
+    }
     errno = 0;			/* pre-clear errno for errp() */
-    item->as_str = calloc(len+1+1, sizeof(*(item->as_str)));
+    item->as_str = calloc(alloc_len, sizeof(*(item->as_str)));
     if (item->as_str == NULL) {
-	errp(20, __func__, "calloc #1 error allocating %zu bytes", (len+1+1));
+	errp(20, __func__, "calloc #1 error allocating %zu bytes", alloc_len);
 	not_reached();
     }
-    memcpy(item->as_str, ptr, len+1);
+    memcpy(item->as_str, ptr, len);
     item->as_str[len] = '\0';	/* paranoia */
     item->as_str[len+1] = '\0';	/* paranoia */
     item->as_str_len = len;
@@ -4004,6 +4025,7 @@ json_conv_null(char const *ptr, size_t len)
 {
     struct json *ret = NULL;		    /* JSON parser tree node to return */
     struct json_null *item = NULL;	    /* allocated decoding string or NULL */
+    size_t alloc_len = 0;		    /* allocated size of item->as_str including guard bytes */
 
     /*
      * allocate an initialized JSON parse tree item
@@ -4042,13 +4064,17 @@ json_conv_null(char const *ptr, size_t len)
     /*
      * duplicate the JSON string
      */
+    if (size_add(len, 2, &alloc_len) == false) {
+	warn(__func__, "JSON null string length overflow: %zu", len);
+	return ret;
+    }
     errno = 0;			/* pre-clear errno for errp() */
-    item->as_str = calloc(len+1+1, sizeof(*(item->as_str)));
+    item->as_str = calloc(alloc_len, sizeof(*(item->as_str)));
     if (item->as_str == NULL) {
-	errp(23, __func__, "calloc #1 error allocating %zu bytes", (len+1+1));
+	errp(23, __func__, "calloc #1 error allocating %zu bytes", alloc_len);
 	not_reached();
     }
-    memcpy(item->as_str, ptr, len+1);
+    memcpy(item->as_str, ptr, len);
     item->as_str[len] = '\0';	/* paranoia */
     item->as_str[len+1] = '\0';	/* paranoia */
     item->as_str_len = len;

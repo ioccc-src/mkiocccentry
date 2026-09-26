@@ -238,6 +238,8 @@ vercmp(char *ver1, char *ver2)
 size_t
 allocate_vers(char *str, intmax_t **pvers)
 {
+    size_t array_len = 0;	/* number of intmax_t values to allocate */
+    size_t alloc_size = 0;	/* size in bytes of *pvers allocation */
     char *wstr = NULL;		/* working allocated copy of orig_str */
     char *wstr_start = NULL;	/* pointer to starting point of wstr */
     size_t len;			/* length of version string */
@@ -359,10 +361,19 @@ allocate_vers(char *str, intmax_t **pvers)
      *
      * Allocate the array of dot_count+1 versions.
      */
+    if (size_add(dot_count, 2, &array_len) == false ||
+	size_mul(array_len, sizeof(**pvers), &alloc_size) == false) {
+	warn(__func__, "version component allocation overflow for: <%s>", wstr);
+	if (wstr_start != NULL) {
+	    free(wstr_start);
+	    wstr_start = NULL;
+	}
+	return 0;
+    }
     errno = 0;		/* pre-clear errno for errp() */
-    *pvers = (intmax_t *)calloc(dot_count+1+1, sizeof(**pvers));
+    *pvers = (intmax_t *)calloc(array_len, sizeof(**pvers));
     if (*pvers == NULL) {
-	errp(59, __func__, "cannot calloc %zu intmax_ts", dot_count+1+1);
+	errp(59, __func__, "cannot calloc %zu bytes", alloc_size);
 	not_reached();
     }
 

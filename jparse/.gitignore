@@ -1,13 +1,11 @@
 # We sort the list below via: sort -d -u
 #
-.DS_Store
-/Makefile.local
-/Makefile.orig
 *.[ao]
 /backup
 /bug-report*
 *build.log*
 /c.tmpfile.*.c
+.DS_Store
 *.dSYM/
 foobar
 /jfmt
@@ -39,12 +37,12 @@ jparse_bug_report.*.c
 /lex.jparse_.c
 /.local.dir.tags
 /makefile.local
+/Makefile.local
+/Makefile.orig
 /.sorry.*.c
-.*.sw[a-zA-Z0-9]*
 .sw*
+.*.sw[a-zA-Z0-9]*
 /tags
-/test_jparse/Makefile.local
-/test_jparse/Makefile.orig
 /test_jparse/c.tmpfile.*.c
 /test_jparse/jnum_chk
 /test_jparse/jnum_chk-*.tmp
@@ -53,10 +51,13 @@ jparse_bug_report.*.c
 /test_jparse/jnum_test-*.tmp
 /test_jparse/jparse_test.log
 /test_jparse/.jparse_test.stderr.*
+test_jparse/json_api_test
 /test_jparse/jstr_test2.out
 /test_jparse/jstr_test.out
 /test_jparse/.local.dir.tags
 /test_jparse/makefile.local
+/test_jparse/Makefile.local
+/test_jparse/Makefile.orig
 /test_jparse/print_test
 /test_jparse/pr_jparse_test
 /test_jparse/pr_jparse_test-*.tmp

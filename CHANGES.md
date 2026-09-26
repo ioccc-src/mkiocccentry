@@ -1,6 +1,24 @@
 # Major changes to the IOCCC mkiocccentry toolkit
 
 
+## Release 2.12.3 2026-09-26
+
+Performed security audits on dyn_array, dbg, pr, cpath, and jparse.
+
+For the `jparse/` sub-directory:
+Updated `JPARSE_REPO_VERSION` to "2.6.0 2026-09-25"
+Updated `JPARSE_TOOL_VERSION` to "2.1.0 2026-09-25"
+Updated `JPARSE_LIBRARY_VERSION` to "2.5.0 2026-09-25"
+Updated `JPARSE_UTILS_VERSION` to "2.2.0 2026-06-25"
+
+For the `dyn_array/` sub-directory: `DYN_ARRAY_VERSION` is "2.6.0 2026-09-24"
+For the `dbg/` sub-directory: `DBG_VERSION` is "3.3.0 2026-09-24"
+For the `cpath/` sub-directory: `CPATH_VERSION` is "2.1.0 2026-09-25"
+For the `pr/` sub-directory: `PR_VERSION` is "1.2.0 2026-09-25"
+
+Changed `MKIOCCCENTRY_REPO_VERSION` to "2.12.3 2026-09-26"
+
+
 ## Release 2.12.2 2026-09-25
 
 Updates from dyn_array, dbg, pr, and cpath that were about addressing

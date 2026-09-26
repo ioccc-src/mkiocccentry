@@ -217,7 +217,7 @@ CFLAGS= ${C_STD} ${C_OPT} -pedantic ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 
 # source files that are permanent (not made, nor removed)
 #
-C_SRC= jnum_chk.c jnum_gen.c jnum_header.c pr_jparse_test.c
+C_SRC= jnum_chk.c jnum_gen.c jnum_header.c json_api_test.c pr_jparse_test.c
 H_SRC= jnum_chk.h jnum_gen.h
 #
 PICKY_OPTIONS= -c -e -s -t8 -u -v -w132
@@ -250,7 +250,7 @@ LIB_OBJS=
 
 # NOTE: ${OTHER_OBJS} are objects NOT put into a library and ARE removed by make clean
 #
-OTHER_OBJS= jnum_gen.o jnum_chk.o jnum_test.o pr_jparse_test.o
+OTHER_OBJS= jnum_gen.o jnum_chk.o jnum_test.o json_api_test.o pr_jparse_test.o
 
 # NOTE: intermediate files to make and removed by make clean
 #
@@ -306,7 +306,7 @@ SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS= jnum_chk jnum_gen pr_jparse_test
+PROG_TARGETS= jnum_chk jnum_gen json_api_test pr_jparse_test
 
 # what to make by all but NOT to removed by clobber
 #
@@ -370,6 +370,12 @@ jnum_gen.o: jnum_gen.c jnum_gen.h ../json_utf8.h ../version.h
 	${CC} ${CFLAGS} jnum_gen.c -c
 
 jnum_gen: jnum_gen.o ../libjparse.a
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR2} -lpr -ldyn_array -ldbg
+
+json_api_test.o: json_api_test.c ../json_utf8.h ../version.h
+	${CC} ${CFLAGS} json_api_test.c -c
+
+json_api_test: json_api_test.o ../libjparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR2} -lpr -ldyn_array -ldbg
 
 pr_jparse_test.o: pr_jparse_test.c pr_jparse_test.h ../json_utf8.h ../version.h
@@ -444,7 +450,20 @@ test:
 	    echo "${OUR_NAME}: ERROR: executable not found: ./jnum_chk" 1>&2; \
 	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
 	    exit 1; \
+	elif [[ ! -x ./json_api_test ]]; then \
+	    echo "${OUR_NAME}: ERROR: executable not found: ./json_api_test" 1>&2; \
+	    echo "${OUR_NAME}: ERROR: unable to perform complete test" 1>&2; \
+	    exit 1; \
 	else \
+	    echo "${OUR_NAME}: RUNNING: ./json_api_test"; \
+	    ./json_api_test; \
+	    EXIT_CODE="$$?"; \
+	    if [[ $$EXIT_CODE -ne 0 ]]; then \
+		echo "${OUR_NAME}: ERROR: json_api_test failed, error code: $$EXIT_CODE"; \
+		exit "$$EXIT_CODE"; \
+	    else \
+		echo "${OUR_NAME}: PASSED: json_api_test"; \
+	    fi; \
 	    echo "${OUR_NAME}: RUNNING: ./run_jparse_test.sh -D ${VERBOSITY} -v ${VERBOSITY} -j ./jparse -p test_jparse/pr_jparse_test -c test_jparse/jnum_chk"; \
 	    ./run_jparse_tests.sh -D ${VERBOSITY} -v ${VERBOSITY} -j ./jparse -p test_jparse/pr_jparse_test -c test_jparse/jnum_chk; \
 	    EXIT_CODE="$$?"; \
@@ -685,7 +704,7 @@ clobber: legacy_clobber clean
 	${S} echo "${OUR_NAME}: make $@ starting"
 	${S} echo
 	${Q} ${RM} ${RM_V} -f ${TARGETS}
-	${Q} ${RM} ${RM_V} -f jparse_test.log
+	${Q} ${RM} ${RM_V} -f jparse_test.log json_api_test
 	${Q} ${RM} ${RM_V} -f tags ${LOCAL_DIR_TAGS}
 	${Q} ${RM} ${RM_V} -rf a b
 	${S} echo
@@ -787,6 +806,10 @@ jnum_test.o: ../../dbg/c_bool.h ../../dbg/c_compat.h ../../dbg/dbg.h \
     ../../dyn_array/dyn_array.h ../../pr/pr.h ../jparse.h ../jparse.tab.h \
     ../json_parse.h ../json_sem.h ../json_utf8.h ../json_util.h ../util.h \
     ../version.h jnum_chk.h jnum_test.c
+json_api_test.o: ../../dbg/c_bool.h ../../dbg/c_compat.h ../../dbg/dbg.h \
+    ../../dyn_array/dyn_array.h ../../pr/pr.h ../jparse.h ../jparse.tab.h \
+    ../json_parse.h ../json_sem.h ../json_utf8.h ../json_util.h ../util.h \
+    json_api_test.c
 pr_jparse_test.o: ../../dbg/c_bool.h ../../dbg/c_compat.h ../../dbg/dbg.h \
     ../../dyn_array/dyn_array.h ../../pr/pr.h ../jparse.h ../jparse.tab.h \
     ../json_parse.h ../json_sem.h ../json_utf8.h ../json_util.h ../util.h \
