@@ -4,7 +4,7 @@ _README.md last updated: 24 June 2025_
 
 `jparse` is a JSON parser (as a stand-alone tool and a library) written in C
 with the help of `flex(1)` and `bison(1)`. This library, and all the tools, some
-of which use the library and others which do not, were were co-developed in
+of which use the library and others which do not, were co-developed in
 2022-2024 by:
 
 *@xexyl* (**Cody Boone Ferguson**, [https://xexyl.net](https://xexyl.net),
@@ -139,7 +139,7 @@ make all
 
 **IMPORTANT NOTE**: the Makefiles allow one to override certain things by having
 a file `Makefile.local` in the same directory. This can cause compilation errors
-so if you do have such a file you should use so with caution.
+so if you do have such a file you should do so with caution.
 
 
 

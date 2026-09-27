@@ -410,8 +410,8 @@ main(int argc, char **argv)
 	not_reached();
     }
     for (c=0; c < len; ++c) {
-	if (islower(tbl_name[c])) {
-	    cap_tbl_name[c] = (char)toupper(tbl_name[c]);
+	if (islower((unsigned char)tbl_name[c])) {
+	    cap_tbl_name[c] = (char)toupper((unsigned char)tbl_name[c]);
 	}
     }
     dbg(DBG_MED, "output_mode: %s", h_mode ? ".h include file" : ".c src file");
@@ -893,7 +893,8 @@ alloc_c_funct_name(char const *prefix, char const *str)
 	 * case: prefix begins with a digit
 	 * case: prefix begins with an underscore
 	 */
-	if (prefix_is_reserved == true || prefix[0] == '\0' || isdigit(prefix[0]) || prefix[0] == '_') {
+	if (prefix_is_reserved == true || prefix[0] == '\0' ||
+	    isdigit((unsigned char)prefix[0]) || prefix[0] == '_') {
 	    /* add x due to the cases mentioned above */
 	    *p++ = 'x';
 	}
@@ -902,7 +903,7 @@ alloc_c_funct_name(char const *prefix, char const *str)
 	 * process prefix
 	 */
 	while (prefix[0] != '\0') {
-	    if (!isalnum(prefix[0])) {
+	    if (!isalnum((unsigned char)prefix[0])) {
 		/* convert non-C name character to underscore */
 		*p++ = '_';
 	    } else {
@@ -923,7 +924,8 @@ alloc_c_funct_name(char const *prefix, char const *str)
      * case: str begins with a digit
      * case: str begins with an underscore
      */
-    if (str_is_reserved == true || str[0] == '\0' || isdigit(str[0]) || str[0] == '_') {
+    if (str_is_reserved == true || str[0] == '\0' ||
+	isdigit((unsigned char)str[0]) || str[0] == '_') {
 	/* add x due to the cases mentioned above */
 	*p++ = 'x';
     }
@@ -932,7 +934,7 @@ alloc_c_funct_name(char const *prefix, char const *str)
      * process each str character in C, converting non-alphanumeric characters to underscore.
      */
     while (str[0] != '\0') {
-	if (!isalnum(str[0])) {
+	if (!isalnum((unsigned char)str[0])) {
 	    /* convert non-C name character to underscore */
 	    *p++ = '_';
 	} else {

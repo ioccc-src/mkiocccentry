@@ -2931,7 +2931,7 @@ parse_json(char const *ptr, size_t len, char const *filename, bool *is_valid)
 	not_reached();
     } else {
 	/*
-	 * assume the JSON block is is valid; set *is_valid to true so that the
+	 * assume the JSON block is valid; set *is_valid to true so that the
          * caller does not need to worry about it (well they should in case this
          * is removed but we do it explicitly for them anyway).
 	 */
@@ -3143,7 +3143,7 @@ parse_json_str(char const *ptr, size_t len, bool *is_valid)
 	not_reached();
     } else {
 	/*
-	 * assume the JSON block is is valid; set *is_valid to true so that the
+	 * assume the JSON block is valid; set *is_valid to true so that the
          * caller does not need to worry about it (well they should in case this
          * is removed but we do it explicitly for them anyway).
 	 */
@@ -3184,8 +3184,8 @@ parse_json_str(char const *ptr, size_t len, bool *is_valid)
  *
  * given:
  *	stream      - open file stream containing JSON data
- *	filename    - name of file or NULL for stdin
- *	is_valid    - non-NULL printer to boolean to set depending on json validity
+ *	filename    - name of file, "-" for stdin, or NULL if no filename should be reported
+ *	is_valid    - non-NULL pointer to boolean to set depending on json validity
  *
  * return:
  *	pointer to a JSON parse tree
@@ -3197,8 +3197,11 @@ parse_json_str(char const *ptr, size_t len, bool *is_valid)
  *	 YY_BUFFER_STATE is part of the scanner and not the parser and that's required
  *	 for the parse_json() function.
  *
- * NOTE: if filename is "-" and stream is NULL, then the stream is set to stdin,
- * as if the filename was NULL.
+ * NOTE: if filename is NULL, it is reported as "-" only when stream is also
+ *       NULL.  Otherwise, the supplied stream is used and the filename is just
+ *       omitted from diagnostics.
+ *
+ * NOTE: if filename is "-" and stream is NULL, then the stream is set to stdin.
  *
  * NOTE: this function only warns on error, except for NULL is_valid, in which
  *       case it is an error; warning on errors is so that an entire report of
@@ -3223,7 +3226,7 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 	not_reached();
     } else {
 	/*
-	 * assume the JSON stream is is valid JSON; set *is_valid to true so
+	 * assume the JSON stream is valid JSON; set *is_valid to true so
          * that the caller does not need to worry about it (well they should in
          * case this is removed but we do it explicitly for them anyway).
 	 */
@@ -3231,9 +3234,13 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
     }
 
     if (filename == NULL) {
-	json_dbg(JSON_DBG_HIGH, __func__, "filename is NULL, forcing it to be \"-\" for stdin");
-	filename = "-";
-	stream = stdin;
+	if (stream == NULL) {
+	    json_dbg(JSON_DBG_HIGH, __func__, "filename and stream are NULL, forcing stdin");
+	    filename = "-";
+	    stream = stdin;
+	} else {
+	    json_dbg(JSON_DBG_HIGH, __func__, "filename is NULL, using supplied stream without a filename");
+	}
     } else if (!strcmp(filename, "-") && stream == NULL) {
 	stream = stdin;
     }
@@ -3288,7 +3295,7 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
 	/*
          * warn about read error
          */
-	werr(48, __func__, "could not read read stream");
+	werr(48, __func__, "could not read stream");
         /*
          * we need to clearerr() or fclose(), depending on the stream.
          */
@@ -3371,7 +3378,7 @@ parse_json_stream(FILE *stream, char const *filename, bool *is_valid)
     stream = NULL;
 
     /*
-     * return the JSON parse tree tree
+     * return the JSON parse tree
      */
     return tree;
 }
@@ -3527,7 +3534,7 @@ is_read(char const *path)
  *
  * given:
  *	filename    - filename of file to parse
- *	is_valid    - non-NULL printer to boolean to set depending on json validity
+ *	is_valid    - non-NULL pointer to boolean to set depending on json validity
  *
  * return:
  *	pointer to a JSON parse tree
@@ -3558,7 +3565,7 @@ parse_json_file(char const *filename, bool *is_valid)
 	not_reached();
     } else {
 	/*
-	 * assume the JSON file is is valid JSON; set *is_valid to true so
+	 * assume the JSON file is valid JSON; set *is_valid to true so
          * that the caller does not need to worry about it (well they should in
          * case this is removed but we do it explicitly for them anyway).
 	 */
@@ -3695,8 +3702,7 @@ parse_json_file(char const *filename, bool *is_valid)
     tree = parse_json_stream(stream, filename, is_valid);
 
     /*
-     * return the JSON parse tree tree
+     * return the JSON parse tree
      */
     return tree;
 }
-

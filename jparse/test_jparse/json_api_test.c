@@ -101,6 +101,42 @@ test_parse_json_len_limit(void)
 }
 
 
+static int
+test_parse_json_stream_null_filename_uses_stream(void)
+{
+    struct json *tree = NULL;
+    FILE *stream = NULL;
+    bool is_valid = false;
+
+    if (freopen("/dev/null", "r", stdin) == NULL) {
+	fprintf(stderr, "freopen(/dev/null) failed\n");
+	return 1;
+    }
+
+    stream = tmpfile();
+    if (stream == NULL) {
+	fprintf(stderr, "tmpfile() failed\n");
+	return 1;
+    }
+    if (fputs("{\"k\":1}", stream) == EOF) {
+	fprintf(stderr, "writing temporary JSON stream failed\n");
+	fclose(stream);
+	return 1;
+    }
+    rewind(stream);
+
+    tree = parse_json_stream(stream, NULL, &is_valid);
+    if (tree == NULL || is_valid != true || tree->type != JTYPE_OBJECT) {
+	fprintf(stderr, "parse_json_stream() ignored the supplied stream when filename is NULL\n");
+	free_tree(tree);
+	return 1;
+    }
+
+    free_tree(tree);
+    return 0;
+}
+
+
 int
 main(void)
 {
@@ -110,5 +146,6 @@ main(void)
     ret |= test_bool_slice();
     ret |= test_null_slice();
     ret |= test_parse_json_len_limit();
+    ret |= test_parse_json_stream_null_filename_uses_stream();
     return ret;
 }
