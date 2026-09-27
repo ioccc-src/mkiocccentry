@@ -1,6 +1,22 @@
 # Major changes to the IOCCC entry toolkit
 
 
+## Release 1.2.0 2026-09-25
+
+Fix undefined behavior in the defensive early-return paths of `fpr()` and
+`pr()` by ensuring each `va_start()` is matched with a `va_end()` before
+returning.
+
+Correct `pr_test -h` so the usage text reports the `libpr` version instead of
+the unrelated `dyn_array` version string.
+
+Update the `README.md` and `SECURITY.md` security-reporting links to point to
+the `ioccc-src/mkiocccentry` repository instead of the standalone `lcn2/pr`
+repository.
+
+Fix several `pr/`-local comment and documentation typos.
+
+
 ## Release 1.1.6 2026-06-13
 
 Remove calls to `isascii()` as this function was removed from POSIX.1-2024 (it
@@ -75,7 +91,7 @@ Code has been copied over from [mkiocccentry
 repo](https://github.com/ioccc-src/mkiocccentry) and from the [jparse
 repo](https://github.com/xexyl/jparse).
 
-The code in this from repo was copied out of the [mkiocccentry toolkit
+The code in this repo was copied out of the [mkiocccentry toolkit
 repo](https://github.com/ioccc-src/mkiocccentry) and out of the  [jparse
 repo](https://github.com/xexyl/jparse).
 
