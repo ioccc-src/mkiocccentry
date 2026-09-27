@@ -354,6 +354,26 @@ make_action() {
 
 	    return
 	fi
+    elif [[ "$RULE" = tags ]]; then
+	if ! ./soup/is_available.sh ctags; then
+	    if [[ -z "$LOGFILE" ]]; then
+		write_echo
+		write_echo "=-=-= SKIPPED: $MAKE $RULE =-=-="
+		write_echo
+	    else
+		write_echo "SKIPPED"
+	    fi
+	SKIPPED_SUMMARY="$SKIPPED_SUMMARY
+	make_action $CODE $RULE: the ctags tool cannot be found or is unreliable on your system.
+	We cannot use the ctags tool.
+	Please consider installing or updating ctags from:
+
+	    https://github.com/universal-ctags/ctags
+
+	Please do NOT file a bug report with us as we do not maintain ctags."
+
+	    return
+	fi
     elif [[ "$RULE" = check_man ]]; then
 	if ! ./soup/is_available.sh checknr; then
 	    if [[ -z "$LOGFILE" ]]; then
