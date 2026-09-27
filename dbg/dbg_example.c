@@ -71,10 +71,10 @@ main(void)
     }
 
     /*
-     * Because verbosity_level == 3 (DBG_MED) and filename is "foo.bar" and
-     * length == 7 this will print (with newlines added as described):
+     * Because verbosity_level == 3 (DBG_MED), filename is "foo.bar", and
+     * length == 1290, this will print (with newlines added as described):
      *
-     *	    debug[3]: file: foo.bar has length: 7
+     *	    debug[3]: file: foo.bar has length: 1290
      */
     msg("NOTE: The next line should read: \"debug[3]: file: %s has length: %ld\"", filename, length);
     dbg(DBG_MED, "file: %s has length: %ld", filename, length);
@@ -99,7 +99,7 @@ main(void)
     dbg_output_allowed = false;
     msg("\nNOTE: all debugging has been disabled");
     if (is_dbg_enabled) {
-	warn(__func__, "debugging should have been been disabled!");
+	warn(__func__, "debugging should have been disabled!");
     }
     dbg(DBG_LOW, "\nNOTE: this minimal debug message will not print because debugging has been disabled");
 
