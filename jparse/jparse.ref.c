@@ -52,9 +52,9 @@
  *	accordingly.
  */
 #line 1 "./jparse.c"
-#line 1 "jparse.c"
+#line 2 "jparse.c"
 
-#line 3 "jparse.c"
+#line 4 "jparse.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -877,7 +877,7 @@ static YY_BUFFER_STATE bs;
 				} \
 			    } \
 			}
-#line 826 "jparse.c"
+#line 827 "jparse.c"
 /*
  * Section 1 - Patterns (regular expressions) and actions.
  */
@@ -947,7 +947,7 @@ static YY_BUFFER_STATE bs;
  * JSON_COMMA		","
  */
 /* Actions. */
-#line 896 "jparse.c"
+#line 897 "jparse.c"
 
 #define INITIAL 0
 
@@ -1229,7 +1229,7 @@ YY_DECL
 	{
 #line 214 "./jparse.l"
 
-#line 1178 "jparse.c"
+#line 1179 "jparse.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1491,7 +1491,7 @@ YY_RULE_SETUP
 #line 357 "./jparse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1440 "jparse.c"
+#line 1441 "jparse.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
