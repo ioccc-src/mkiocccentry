@@ -50,10 +50,12 @@
 /* exit code change of order - use new value in sequencing - coo */
 
 
+#include <ctype.h>
+#include <errno.h>
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include <unistd.h>
 
 /*
@@ -103,7 +105,7 @@ static const char * const usage_msg =
     "    2\t-h and help string printed or -V and version string printed\n"
     "    3\tcommand line error\n"
     "    4\tcanonicalized path byte length exceeds -m max_path limit\n"
-    "    5\tcanonicalized component byte length path exceeds -M max_file limit\n"
+    "    5\tcanonicalized component byte length exceeds -M max_file limit\n"
     "    6\tcanonicalized path depth exceeds -d max_depth limit\n"
     "    7\tcanonicalized is not safe, and -s was used, or -S regex is an invalid extended regex\n"
     "    8\t-D and use of .. (dot-dot) attempted to move before start of path\n"
@@ -222,7 +224,7 @@ main(int argc, char *argv[])
 
 		memset(errbuf, 0, sizeof(errbuf));
 		(void) regerror(regcomp_ret, &reg, errbuf, BUFSIZ);
-		err(7, CPATH_BASENAME, " invalid regular expression: %s: error: %s", regex, errbuf); /*ooo*/
+		err(7, CPATH_BASENAME, "invalid regular expression: %s: error: %s", regex, errbuf); /*ooo*/
 		not_reached();
 	    }
 	    safe_chk = true;
@@ -257,7 +259,7 @@ main(int argc, char *argv[])
 	dbg(DBG_MED, "%s: max length of each component is unlimited", CPATH_BASENAME);
     }
     if (max_depth > 0) {
-	dbg(DBG_MED, "%s: max canonicalized path depth: %d", CPATH_BASENAME, max_depth);
+	dbg(DBG_MED, "%s: max canonicalized path depth: %jd", CPATH_BASENAME, (intmax_t)max_depth);
     } else {
 	dbg(DBG_MED, "%s: max canonicalized path depth is unlimited", CPATH_BASENAME);
     }
@@ -412,7 +414,7 @@ process_sanity(char const *cpath, enum path_sanity sanity, size_t path_len, int_
 
 	/* debugging - print results */
 	dbg(DBG_MED, "canonicalized path length: %zu", path_len);
-	dbg(DBG_MED, "canonicalized path depth: %d", deep);
+	dbg(DBG_MED, "canonicalized path depth: %jd", (intmax_t)deep);
 
 	/* print canonical path on stdout */
 	if (cpath == NULL) {

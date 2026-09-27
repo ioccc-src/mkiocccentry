@@ -28,7 +28,7 @@ function.  **NO** filesystem checks are performed.  Symbolic links are
 
 To check the filesystem, after using `cpath(1)` to canonicalize a path,
 use the `realpath(1)` command to check the filesystem. Similarly, after using
-`canon_path(1)` to canonicalize a path, use `realpath(3)`.
+`canon_path(3)` to canonicalize a path, use `realpath(3)`.
 
 
 # Table of Contents
@@ -162,8 +162,8 @@ then you must do instead:
 
 # Canonicalization details
 
-Unlike the `realpath(1)` command and `realpath(3)` that operates on the
-filesystem, cpath operating on strings.  In particular **the string does
+Unlike the `realpath(1)` command and `realpath(3)` that operate on the
+filesystem, `cpath` operates on strings.  In particular **the string does
 NOT have to exist in a filesystem**.
 
 Among the actions performed during canonicalization are:
@@ -221,7 +221,7 @@ path length is set after the path has been canonicalized.
 ## Set a maximum length of any canonicalized path component
 
 A "_path component_" is a part of a path.  For example, the canonicalized path `/usr/bin/make`
-contains a path components: `usr`, `bin`, and `make`.
+contains the path components `usr`, `bin`, and `make`.
 
 By default, the length of any canonicalized path component is unlimited.
 One may optionally set a maximum path component length.
@@ -232,11 +232,11 @@ One may optionally set a maximum path component length.
 By default, the path depth is unlimited.
 
 The path depth is the depth from the top level directory or "_topdir_".
-If the path is an absolute path (starts with "/" (slash), then the
-"_topdir_" is "/" (slash), other the "_topdir_" is assumed to be
+If the path is an absolute path (starts with "/" (slash)), then the
+"_topdir_" is "/" (slash); otherwise the "_topdir_" is assumed to be
 "." (dot).
 
-The "_topdir_" level is **0**.  A "_path component_" directly under _topdir_"
+The "_topdir_" level is **0**.  A "_path component_" directly under "_topdir_"
 is at level **1**.
 
 Absolute path depths:
@@ -264,7 +264,7 @@ an error.
 
 ## Convert paths to lower case
 
-By default, the case of letters in paths are **NOT** changed.
+By default, the case of letters in paths is **NOT** changed.
 
 One may, as part of the canonicalization process, optionally convert all
 **UPPER CASE** letters into lower case.  Converting to lower case may be
@@ -274,29 +274,29 @@ i.e., where `foo` and `Foo` and `FOO` refer to the same file.
 
 ## Require canonicalized path components to be safe
 
-By default, canonicalized paths may contain any character other the `NUL` (`'\0'`
+By default, canonicalized paths may contain any character other than `NUL` (`'\0'`
 or 0 byte) character.
 
-One may require all canonicalized path components to conform to an safety check extended regular expression.
+One may require all canonicalized path components to conform to a safety-check extended regular expression.
 
-By default, the safety check is perform by the following extended regular expression:
+By default, the safety check is performed by the following extended regular expression:
 
 ```
     ^[0-9A-Za-z._][0-9A-Za-z._+-]*$
 ```
 
-**IMPORTANT**: We recommend that extended regular expression begin with
-a **^** character and end with a **$ &**character.  This will force
+**IMPORTANT**: We recommend that the extended regular expression begin with
+a **^** character and end with a **$** character.  This will force
 the extended regular expression to match the entire canonicalized path component.
 
 The path component safety check is performed after canonicalization.
 For example, `a/-b/../c` is considered safe because after canonicalization
 the canonicalized path `a/c` contains only safe path components.
 
-**NOTE**: The term safe is used in what may be used in an application
-that performs file name pattern matching is as that used by a shell.
+**NOTE**: The term safe is used in the sense of what may be accepted by an
+application that performs file name pattern matching similar to a shell.
 There is nothing inherently dangerous about a path, per se, especially
-when the application is the canonicalized path to most functions, such
+when an application passes the canonicalized path to functions such
 as **fopen(3)**.  Nevertheless, an application may wish to restrict the
 length, depth, and character set used in paths.
 
@@ -333,7 +333,7 @@ Multiple command line arguments:
     whey
 ```
 
-Without and path arguments, `cpath(1)` reads paths from standard input (stdin).
+Without any path arguments, `cpath(1)` reads paths from standard input (stdin).
 In this mode, lines that begin with "#" (hash) and empty lines are ignored:
 
 ```sh
@@ -382,7 +382,7 @@ Exit codes:
     2   -h and help string printed or -V and version string printed
     3   command line error
     4   canonicalized path byte length exceeds -m max_path limit
-    5   canonicalized component byte length path exceeds -M max_file limit
+    5   canonicalized component byte length exceeds -M max_file limit
     6   canonicalized path depth exceeds -d max_depth limit
     7   canonicalized is not safe, and -s was used, or -S regex is an invalid extended regex
     8   -D and use of .. (dot-dot) attempted to move before start of path
@@ -411,6 +411,9 @@ compile C code such as the code below using:
 Consider the following C code framework:
 
 ```c
+    #include <inttypes.h>
+    #include <stdlib.h>
+    #include <string.h>
     #include <cpath.h>
 
     char *path;                                 /* path to canonicalize */
@@ -456,7 +459,7 @@ Consider the following C code framework:
     size_t max_filename_len = 14;               /* maximum canonicalized path2 component length */
     int_least32_t max_depth = 5;                /* maximum canonicalized path2 depth */
     size_t len2;                                /* length of canonicalized path2 */
-    size_t depth2;                              /* length of canonicalized path depth */
+    int_least32_t depth2;                       /* canonicalized path depth */
 
     /*
      * set path2 to be a pointer to some path string
@@ -485,7 +488,7 @@ Consider the following C code framework:
 
         /* report on canonicalized path2 to stdout using the libpr print(3) function */
         print("path2: %s is canonicalized into: %s", path2, cpath2);
-        print("canonicalized path2 length: %zu path2 depth: %d", len2, depth2);
+        print("canonicalized path2 length: %zu path2 depth: %jd\\n", len2, (intmax_t)depth2);
 
         /* free malloced canonicalized path storage */
         free(cpath2);
@@ -496,8 +499,8 @@ Consider the following C code framework:
 
     char *path3;                                /* yet another path to canonicalize */
     char *cpath3;                               /* canonicalized path3 or NULL */
-    enum path_sanity sanity2 = PATH_ERR_UNSET;  /* canon_path() path3 error code, or PATH_OK */
-    char *regex = "^[0-9A-Za-z]+$";             /* alphanumeric only extended regular expression */
+    enum path_sanity sanity3 = PATH_ERR_UNSET;  /* canon_path() path3 error code, or PATH_OK */
+    char const *regex = "^[0-9A-Za-z]+$";       /* alphanumeric only extended regular expression */
     regex_t reg;                                /* compiled extended regular expression */
     int regcomp_ret = -1;                       /* regcomp(3) return value or -1 (REG_ENOSYS) */
 
@@ -512,7 +515,7 @@ Consider the following C code framework:
      * compile an extended regular expression
      */
     regcomp_ret = regcomp(&reg, regex, REG_EXTENDED);
-    if (regcomp_ret != 0)
+    if (regcomp_ret != 0) {
         char errbuf[BUFSIZ+1];  /* regerror() message buffer */
 
         /* write regular expression compile error to stderr and exit(12) */
@@ -527,7 +530,7 @@ Consider the following C code framework:
      */
     cpath3 = canon_path(path3, max_path_len, max_filename_len, max_depth,
                         &sanity3, NULL, NULL, false, false, true, false, &reg);
-    regfree(&reg); /* free the regular extended regular expression storage */
+    regfree(&reg); /* free the compiled extended regular expression storage */
     if (cpath3 == NULL) {
 
         /* write canonization error to stderr and exit(13) */
@@ -545,7 +548,7 @@ Consider the following C code framework:
     }
 ```
 
-The `canon_path()` function is defined in `cpath.h` is:
+The `canon_path()` function as declared in `cpath.h` is:
 
 ```c
     /*
@@ -574,10 +577,11 @@ The `canon_path()` function is defined in `cpath.h` is:
      *                  if sanity_p != NULL then *sanity_p is set to PATH_OK
      */
 
-    extern char * canon_path(char const *orig_path,
-                             size_t max_path_len, size_t max_filename_len, int_least32_t max_depth,
-                             enum path_sanity *sanity_p, size_t *len_p, int_least32_t *depth_p,
-                             bool rel_only, bool lower_case, bool safe_chk);
+    extern char *canon_path(char const *orig_path,
+                            size_t max_path_len, size_t max_filename_len, int_least32_t max_depth,
+                            enum path_sanity *sanity_p, size_t *len_p, int_least32_t *depth_p,
+                            bool rel_only, bool lower_case, bool safe_chk, bool dotdot_err,
+                            const regex_t *restrict preg);
 ```
 
 
