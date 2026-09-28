@@ -2225,7 +2225,7 @@ calloc_path(char const *dirname, char const *filename)
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = snprintf(buf, len, "%s/%s", dirname, filename);
 	if (ret < 0) {
-	    errp(90, __func__, "snprintf returned: %zu < 0", len);
+	    errp(90, __func__, "snprintf returned: %d < 0", ret);
 	    not_reached();
 	}
     }
