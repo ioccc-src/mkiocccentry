@@ -42,7 +42,7 @@ you think is a bug, please see the
 FAQ on "[reporting bugs](https://www.ioccc.org/faq.html#mkiocccentry_bugs)".
 
 Additionally, if you have more questions on the use of the toolkit, see the FAQ section
-[Entering the IOCCC: the bare minimum you need to know](https:/www.ioccc.org/faq.html#enter_questions),
+[Entering the IOCCC: the bare minimum you need to know](https://www.ioccc.org/faq.html#enter_questions),
 the FAQ section
 [Entering the IOCCC: more help and details](https://www.ioccc.org/faq.html#submitting_help),
 the

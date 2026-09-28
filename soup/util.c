@@ -989,12 +989,12 @@ sum_and_count(intmax_t value, intmax_t *sump, intmax_t *countp, intmax_t *sum_ch
  * return:
  *	a malloced copy of str
  *
- * NOTE: If str == NULL, then a calloc this function will attempt to return a calloc a zero length string.
- *	 That is, calloc will attempt to allocated a single NUL byte.
+ * NOTE: If str == NULL, then this function will attempt to return a calloced zero length string.
+ *	 That is, calloc will attempt to allocate a single NUL byte.
  *	 A debug message at DBG_HIGH is issued when this happens.
  *
- * NOTE: This function attempts to return a calloc a zero length string if strdup(3) fails.
- *	 That is, calloc will attempt to allocated a single NUL byte.
+ * NOTE: This function attempts to return a calloced zero length string if strdup(3) fails.
+ *	 That is, calloc will attempt to allocate a single NUL byte.
  *	 A debug message at DBG_HIGH is issued when this happens.
  *
  * NOTE: In the unlikely event of the calloc of a zero length string failed, this function will NOT return.
@@ -1013,7 +1013,7 @@ str_dup(char const *str)
      * firewall
      */
     if (str == NULL) {
-	dbg(DBG_HIGH, "%s: str is NULL, will will attempt return a calloc a single NUL byte", __func__);
+	dbg(DBG_HIGH, "%s: str is NULL, will attempt to return a calloced single NUL byte", __func__);
 	ret = calloc(1, 1);
 	if (ret == NULL) {
 	    /* likely a serious memory correction as happened: we exit */
@@ -1029,7 +1029,7 @@ str_dup(char const *str)
     errno = 0; /* pre-clear errno for errp() */
     ret = strdup(str);
     if (ret == NULL) {
-	dbg(DBG_HIGH, "%s: strdup(\"%s\") failed, will attempt return a calloc a single NUL byte", __func__, str);
+	dbg(DBG_HIGH, "%s: strdup(\"%s\") failed, will attempt to return a calloced single NUL byte", __func__, str);
 	ret = calloc(1, 1);
 	if (ret == NULL) {
 	    /* likely a serious memory correction as happened: we exit */
