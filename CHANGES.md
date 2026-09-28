@@ -1,6 +1,42 @@
 # Major changes to the IOCCC mkiocccentry toolkit
 
 
+## Release 2.12.4 2026-09-27
+
+Updated Supported Versions in various `SECURITY.md` files.
+
+Fixed a few comment typos, and string typos.
+
+Improve a few NULL tests.
+
+Fix undefined behavior in the defensive early-return paths of `fpr()` and
+`pr()` by ensuring each `va_start()` is matched with a `va_end()` before
+returning.
+
+Correct `pr_test -h` so the usage text reports the `libpr` version instead of
+the unrelated `dyn_array` version string.
+
+Fix several `pr/`-local comment and documentation typos.
+
+Improved `jparse(3)` man page to discuss when `filename`
+is `NULL`, and `stream` is `!= NULL`.
+
+Added test for when JSON stream is `NULL`, and `filename` uses stream.
+
+This update should have nil effect on use of this library
+and the API remains identical to "release 3.3.0 2026-09-24".
+
+Changed `DBG_VERSION` to "3.3.1 2026-09-27"
+Changed `CPATH_VERSION` to "2.1.1 2026-09-27"
+Changed `PR_VERSION` to "1.2.1 2026-09-27"
+Changed `JPARSE_REPO_VERSION` to "2.6.1 2026-09-27"
+Changed `JPARSE_TOOL_VERSION` to "2.1.1 2026-09-27"
+Changed `JPARSE_LIBRARY_VERSION` to "2.5.1 2026-09-27"
+Changed `JPARSE_UTILS_VERSION` to "2.2.1 2026-06-27"
+Changed `SOUP_VERSION` to "2.4.4 2026-09-27"
+Changed `MKIOCCCENTRY_REPO_VERSION` to "2.12.4 2026-09-27"
+
+
 ## Release 2.12.3 2026-09-26
 
 Performed security audits on dyn_array, dbg, pr, cpath, and jparse.
