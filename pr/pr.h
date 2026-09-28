@@ -23,9 +23,9 @@
  * AUTHORS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
  * DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE OR JSON.
+ * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * The code in this from repo was copied out of the mkiocccentry toolkit repo:
+ * The code in this repo was copied out of the mkiocccentry toolkit repo:
  *
  *	https://github.com/ioccc-src/mkiocccentry
  *
@@ -87,7 +87,7 @@
 /*
  * official version
  */
-#define PR_VERSION "1.2.0 2026-09-25"    /* format: major.minor YYYY-MM-DD */
+#define PR_VERSION "1.2.1 2026-09-27"    /* format: major.minor YYYY-MM-DD */
 
 
 /*

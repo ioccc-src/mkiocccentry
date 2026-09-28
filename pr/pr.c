@@ -23,9 +23,9 @@
  * AUTHORS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
  * DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE OR JSON.
+ * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * The code in this from repo was copied out of the mkiocccentry toolkit repo:
+ * The code in this repo was copied out of the mkiocccentry toolkit repo:
  *
  *	https://github.com/ioccc-src/mkiocccentry
  *
@@ -521,6 +521,7 @@ fpr(FILE *stream, char const *name, char const *fmt, ...)
      */
     if (stream == NULL) {
 	warn(__func__, "stream is NULL");
+	va_end(ap);
 	return;
     }
     if (name == NULL) {
@@ -529,6 +530,7 @@ fpr(FILE *stream, char const *name, char const *fmt, ...)
     }
     if (fmt == NULL) {
 	warn(__func__, "called from %s: fmt is NULL", name);
+	va_end(ap);
 	return;
     }
 
@@ -574,6 +576,7 @@ pr(char const *name, char const *fmt, ...)
     }
     if (fmt == NULL) {
 	warn(__func__, "called from %s: fmt is NULL", name);
+	va_end(ap);
 	return;
     }
 
@@ -650,7 +653,7 @@ readline(char **linep, FILE * stream)
     }
 
     /*
-     * process trailing newline or lack there of
+     * process trailing newline or lack thereof
      */
     if ((*linep)[ret - 1] != '\n') {
 	warn(__func__, "line does not end in newline: %s", *linep);
@@ -820,7 +823,7 @@ read_all(FILE *stream, size_t *psize)
     long read_cycle = 0;		/* number of read cycles */
     size_t last_read = 0;		/* amount last fread read from open stream */
     intmax_t used = 0;		        /* amount of data read into the buffer */
-    uint8_t *ret = NULL;		/* buffer containing the while file to return */
+    uint8_t *ret = NULL;		/* buffer containing the whole file to return */
     int fread_errno = 0;		/* errno after fread() call */
 
     /*
@@ -1053,7 +1056,7 @@ clearerr_or_fclose(FILE *stream)
  *		   any start character found in buf will be \-escaped
  *
  * returns:
- *	length of line (even if MULL stream), or
+ *	length of line (even if NULL stream), or
  *	EOF ==> write error or NULL buf
  *
  * NOTE: this function will NOT print unicode symbols. To do this a new flag
@@ -1414,7 +1417,7 @@ fprint_line_buf(FILE *stream, const void *buf, size_t len, int start, int end)
  *		   any start character found in buf will be \-escaped
  *
  * returns:
- *	length of line (even if MULL stream), or
+ *	length of line (even if NULL stream), or
  *	EOF ==> write error or NULL buf
  */
 ssize_t
@@ -1537,7 +1540,7 @@ open_dir_file(char const *dir, char const *file)
 	}
 
 	/*
-	 * chdir to to the directory
+	 * chdir to the directory
 	 */
 	errno = 0;		/* pre-clear errno for errp() */
 	ret = fchdir(dirfd);

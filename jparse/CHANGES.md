@@ -1,6 +1,26 @@
 # Significant changes in the JSON parser repo
 
 
+## Release 2.6.1 2026-09-27
+
+Fixed a few comment typos, and string typos.
+
+Improve a few NULL tests.
+
+Improved `jparse(3)` man page to discuss when `filename`
+is `NULL`, and `stream` is `!= NULL`.
+
+Added test for when JSON stream is `NULL`, and `filename` uses stream.
+
+This update should have nil effect on use of this library
+and the API remains identical to "2.6.0 2026-09-25".
+
+Changed `JPARSE_REPO_VERSION` to "2.6.1 2026-09-27"
+Changed `JPARSE_TOOL_VERSION` to "2.1.1 2026-09-27"
+Changed `JPARSE_LIBRARY_VERSION` to "2.5.1 2026-09-27"
+Changed `JPARSE_UTILS_VERSION` to "2.2.1 2026-06-27"
+
+
 ## Release 2.6.0 2026-09-25
 
 Performed a major code audit.
@@ -56,6 +76,10 @@ Updated `JPARSE_REPO_VERSION` to `"2.6.0 2026-09-25"`.
 Updated `JPARSE_TOOL_VERSION` to `"2.1.0 2026-09-25"`.
 Updated `JPARSE_LIBRARY_VERSION` to `"2.5.0 2026-09-25"`.
 Updated `JPARSE_UTILS_VERSION` to `"2.2.0 2026-06-25"`.
+
+Sequenced exit codes.
+
+Updated `JPARSE_UTF8_VERSION` to `"2.1.5 2026-09-27"` for recent changes.
 
 
 ## Release 2.5.11 2026-08-03

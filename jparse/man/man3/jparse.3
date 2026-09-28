@@ -103,9 +103,9 @@ described later.
 .PP
 If
 .I filename
-is not NULL and is an empty string, then it will set the filename to
+is
 .BR \*(lq-\*(rq ,
-indicating that the input comes from stdin.
+it indicates that the input comes from stdin.
 If it is a NULL pointer, the filename in the parser extra data will be set to NULL, and messages will not show a filename.
 .PP
 The variable
@@ -150,6 +150,16 @@ and does not accept a number of bytes to scan.
 The
 .I filename
 is for messages and is not used to determine what file to open as the stream should already be open.
+If
+.I filename
+is NULL and
+.I stream
+is non-NULL, the supplied stream is still parsed; only the diagnostic filename is omitted.
+If both
+.I filename
+and
+.I stream
+are NULL, stdin is used.
 If you wish to do that you should use the
 .BR parse_json_file ()
 function instead, which takes a filename and the

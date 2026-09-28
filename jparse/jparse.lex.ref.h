@@ -56,9 +56,9 @@
 #define jparse_HEADER_H 1
 #define jparse_IN_HEADER 1
 
-#line 6 "jparse.lex.h"
+#line 5 "jparse.lex.h"
 
-#line 8 "jparse.lex.h"
+#line 7 "jparse.lex.h"
 
 #define  YY_INT_ALIGNED short int
 
@@ -783,6 +783,6 @@ extern int yylex \
 #line 357 "./jparse.l"
 
 
-#line 733 "jparse.lex.h"
+#line 732 "jparse.lex.h"
 #undef jparse_IN_HEADER
 #endif /* jparse_HEADER_H */

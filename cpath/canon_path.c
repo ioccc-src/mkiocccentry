@@ -53,6 +53,11 @@
 /*
  * cpath - canonicalize a path
  */
+#include <ctype.h>
+#include <inttypes.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "cpath.h"
 
 
@@ -249,7 +254,7 @@ path_sanity_name(enum path_sanity sanity)
             str = "PATH_ERR_WRONG_LEN";
             break;
         default:
-            str = "unknown_sanity_valud";
+            str = "unknown_sanity_value";
             break;
     }
 
@@ -410,7 +415,7 @@ safe_str(char const *str, bool any_case, bool slash_ok)
     ret = strspn(str, accept);
 
     /*
-     * string is case if all characters in string are allowed
+     * string is safe if all characters in string are allowed
      */
     if (ret == len) {
 	return true;
@@ -423,7 +428,7 @@ safe_str(char const *str, bool any_case, bool slash_ok)
  * safe_path_str - test if a path string is safe
  *
  * A path string starts with an ANYcase alphanumeric or lowercase alphanumeric character,
- * depending on any_case, or '_' (underscore), or '-' (dash),
+ * depending on any_case, or '.' (dot), or '_' (underscore),
  * or with '/' (slash) depending on slash_ok.
  *
  * After the 1st path character, a safe path string contains ('+-._'), and either
@@ -777,21 +782,22 @@ canon_path(char const *orig_path,
 		    }
 		    deep = (int_least32_t)tell_ret;
 		    if (deep != old_deep + 1) {
-			dbg(DBG_V2_HIGH, "%s: error #8b: dyn_array_push() failed to increase depth: old: %d new: %d",
-			    __func__, old_deep, deep);
+			dbg(DBG_V2_HIGH, "%s: error #8b: dyn_array_push() failed to increase depth: old: %jd new: %jd",
+			    __func__, (intmax_t)old_deep, (intmax_t)deep);
 			report_canon_err(PATH_ERR_MALLOC, sanity_p, len_p, depth_p, path, array);
 			return NULL;
 		    }
 		    if (max_depth > 0 && deep > max_depth) {
 
 			/* path component too deep */
-			dbg(DBG_V3_HIGH, "%s: error #7: path depth: %d max_depth: %d", __func__, deep, max_depth);
+			dbg(DBG_V3_HIGH, "%s: error #7: path depth: %jd max_depth: %jd",
+			    __func__, (intmax_t)deep, (intmax_t)max_depth);
 			dbg(DBG_V2_HIGH, "%s: error #8: while canonicalizing, path became too deep %s: %s",
 			    __func__, path_sanity_name(sanity), path_sanity_error(sanity));
 			report_canon_err(PATH_ERR_PATH_TOO_DEEP, sanity_p, len_p, depth_p, path, array);
 			return NULL;
 		    }
-		    dbg(DBG_V3_HIGH, "%s: #0: pushed path component on stack, depth: %d", __func__, deep);
+		    dbg(DBG_V3_HIGH, "%s: #0: pushed path component on stack, depth: %jd", __func__, (intmax_t)deep);
 		    dbg(DBG_V4_HIGH, "%s: #0: data moved: %s", __func__, booltostr(test));
 
 		/*
@@ -882,21 +888,22 @@ canon_path(char const *orig_path,
 		    }
 		    deep = (int_least32_t)tell_ret;
 		    if (deep != old_deep + 1) {
-			dbg(DBG_V2_HIGH, "%s: error #13c: dyn_array_push() failed to increase depth: old: %d new: %d",
-			    __func__, old_deep, deep);
+			dbg(DBG_V2_HIGH, "%s: error #13c: dyn_array_push() failed to increase depth: old: %jd new: %jd",
+			    __func__, (intmax_t)old_deep, (intmax_t)deep);
 			report_canon_err(PATH_ERR_MALLOC, sanity_p, len_p, depth_p, path, array);
 			return NULL;
 		    }
 		    if (max_depth > 0 && deep > max_depth) {
 
 			/* path component too deep */
-			dbg(DBG_V3_HIGH, "%s: error #12: path depth: %d max_depth: %d", __func__, deep, max_depth);
+			dbg(DBG_V3_HIGH, "%s: error #12: path depth: %jd max_depth: %jd",
+			    __func__, (intmax_t)deep, (intmax_t)max_depth);
 			dbg(DBG_V2_HIGH, "%s: error #13: while canonicalizing, path became too deep %s: %s",
 			    __func__, path_sanity_name(sanity), path_sanity_error(sanity));
 			report_canon_err(PATH_ERR_PATH_TOO_DEEP, sanity_p, len_p, depth_p, path, array);
 			return NULL;
 		    }
-		    dbg(DBG_V3_HIGH, "%s: #1: pushed path component on stack, depth: %d", __func__, deep);
+		    dbg(DBG_V3_HIGH, "%s: #1: pushed path component on stack, depth: %jd", __func__, (intmax_t)deep);
 		    dbg(DBG_V4_HIGH, "%s: #1: data moved: %s", __func__, booltostr(test));
 
 		/*
@@ -929,12 +936,12 @@ canon_path(char const *orig_path,
 			return NULL;
 		    }
 		    if ((int_least32_t)tell_ret != deep || deep != old_deep - 1) {
-			dbg(DBG_V2_HIGH, "%s: error #13d: dyn_array_pop() failed to decrease depth: old: %d new: %d tell: %jd",
-			    __func__, old_deep, deep, tell_ret);
+			dbg(DBG_V2_HIGH, "%s: error #13d: dyn_array_pop() failed to decrease depth: old: %jd new: %jd tell: %jd",
+			    __func__, (intmax_t)old_deep, (intmax_t)deep, tell_ret);
 			report_canon_err(PATH_ERR_MALLOC, sanity_p, len_p, depth_p, path, array);
 			return NULL;
 		    }
-		    dbg(DBG_V3_HIGH, "%s: .. component stack pop, stack depth: %d", __func__, deep);
+		    dbg(DBG_V3_HIGH, "%s: .. component stack pop, stack depth: %jd", __func__, (intmax_t)deep);
 		}
 	    }
 
@@ -1006,21 +1013,22 @@ canon_path(char const *orig_path,
 	    }
 	    deep = (int_least32_t)tell_ret;
 	    if (deep != old_deep + 1) {
-		dbg(DBG_V2_HIGH, "%s: error #17b: dyn_array_push() failed to increase depth: old: %d new: %d",
-		    __func__, old_deep, deep);
+		dbg(DBG_V2_HIGH, "%s: error #17b: dyn_array_push() failed to increase depth: old: %jd new: %jd",
+		    __func__, (intmax_t)old_deep, (intmax_t)deep);
 		report_canon_err(PATH_ERR_MALLOC, sanity_p, len_p, depth_p, path, array);
 		return NULL;
 	    }
 	    if (max_depth > 0 && deep > max_depth) {
 
 		/* path component too deep */
-		dbg(DBG_V3_HIGH, "%s: error #16: path depth: %d max_depth: %d", __func__, deep, max_depth);
+		dbg(DBG_V3_HIGH, "%s: error #16: path depth: %jd max_depth: %jd",
+		    __func__, (intmax_t)deep, (intmax_t)max_depth);
 		dbg(DBG_V2_HIGH, "%s: error #17: while canonicalizing, path became too deep %s: %s",
 		    __func__, path_sanity_name(sanity), path_sanity_error(sanity));
 		report_canon_err(PATH_ERR_PATH_TOO_DEEP, sanity_p, len_p, depth_p, path, array);
 		return NULL;
 	    }
-	    dbg(DBG_V3_HIGH, "%s: #2: pushed path component on stack, depth: %d", __func__, deep);
+	    dbg(DBG_V3_HIGH, "%s: #2: pushed path component on stack, depth: %jd", __func__, (intmax_t)deep);
 	    dbg(DBG_V4_HIGH, "%s: #2: data moved: %s", __func__, booltostr(test));
 	}
     }
@@ -1033,7 +1041,8 @@ canon_path(char const *orig_path,
     if (max_depth > 0 && deep > max_depth) {
 
 	/* path component too deep */
-	dbg(DBG_V3_HIGH, "%s: error #18: path depth: %d max_depth: %d", __func__, deep, max_depth);
+	dbg(DBG_V3_HIGH, "%s: error #18: path depth: %jd max_depth: %jd",
+	    __func__, (intmax_t)deep, (intmax_t)max_depth);
 	dbg(DBG_V2_HIGH, "%s: error #19: path component too is deep %s: %s",
 	    __func__, path_sanity_name(sanity), path_sanity_error(sanity));
 	report_canon_err(PATH_ERR_PATH_TOO_DEEP, sanity_p, len_p, depth_p, path, array);
@@ -1050,7 +1059,7 @@ canon_path(char const *orig_path,
      * it were a absolute path because the canonicalized path length doesn't start with "/" (slash).
      */
     if (deep < 0) {
-	dbg(DBG_V2_HIGH, "%s: error #19a: negative path depth: %d", __func__, deep);
+	dbg(DBG_V2_HIGH, "%s: error #19a: negative path depth: %jd", __func__, (intmax_t)deep);
 	report_canon_err(PATH_ERR_MALLOC, sanity_p, len_p, depth_p, path, array);
 	return NULL;
     }

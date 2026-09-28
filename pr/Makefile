@@ -2,7 +2,7 @@
 #
 # pr - stdio helper library
 #
-# Copyright (c) 2008-2025 by Landon Curt Noll and Cody Boone Ferguson.  All rights reserved.
+# Copyright (c) 2008-2026 by Landon Curt Noll and Cody Boone Ferguson.  All rights reserved.
 #
 # Permission to use, copy, modify, and distribute this software and
 # its documentation for any purpose and without fee is hereby granted,
@@ -19,10 +19,10 @@
 # AUTHORS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES OR ANY
 # DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 # ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
-# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE OR JSON.
+# CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #
 
-# The code in this from repo was copied out of the mkiocccentry toolkit repo:
+# The code in this repo was copied out of the mkiocccentry toolkit repo:
 #
 #	https://github.com/ioccc-src/mkiocccentry
 #
@@ -501,7 +501,7 @@ man/man3/pr.3:
 
 
 ###########################################################
-# repo tools - rules for those who maintain the this repo #
+# repo tools - rules for those who maintain this repo #
 ###########################################################
 
 test: pr_test

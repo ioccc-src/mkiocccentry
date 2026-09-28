@@ -136,7 +136,7 @@ const char *const dbg_version = DBG_VERSION;	/* library version format: major.mi
 /*
  * usage message
  *
- * The follow usage message came from an early draft of mkiocccentry. This is
+ * The following usage message came from an early draft of mkiocccentry. This is
  * just an example usage string: there is no mkiocccentry functionality here.
  */
 static char const * const usage =
@@ -528,7 +528,7 @@ sndbg_write(char *str, size_t size, char const *caller, int level, char const *f
 /*
  * fwarn_write - write a warning to a stream
  *
- * Write a warming message to a stream. The diagnostic is followed by
+ * Write a warning message to a stream. The diagnostic is followed by
  * a newline and then the stream is flushed.
  *
  * given:
@@ -731,7 +731,7 @@ snwarn_write(char *str, size_t size, char const *caller, char const *name, char 
 /*
  * fwarnp_write - write a warning message with errno details, to a stream
  *
- * Write a warming message with errno info to a stream. The diagnostic is followed by
+ * Write a warning message with errno info to a stream. The diagnostic is followed by
  * a newline and then the stream is flushed.
  *
  * given:
@@ -1160,7 +1160,7 @@ snerr_write(char *str, size_t size, int error_code, char const *caller,
  * NOTE: If stream is NULL, stderr will be used.  If stderr is also NULL,
  *	 this function does nothing (just returns).
  *
- * NOTE: This function does nothing (just returns) if passed a other NULL pointers.
+ * NOTE: This function does nothing (just returns) if passed other NULL pointers.
  *
  * NOTE: We call warnp() with extra newlines to help internal fault messages stand out.
  *	 Normally one should NOT include newlines in warn messages.
@@ -1884,10 +1884,8 @@ snmsg(char *str, size_t size, char const *fmt, ...)
     /*
      * stage 3: firewall checks
      */
-    if (str == NULL) {
-	return;
-    }
-    if (fmt == NULL) {
+    if (str == NULL || fmt == NULL) {
+	va_end(ap);
 	return;
     }
 
@@ -1955,10 +1953,7 @@ vsnmsg(char *str, size_t size, char const *fmt, va_list ap)
     /*
      * stage 3: firewall checks
      */
-    if (str == NULL) {
-	return;
-    }
-    if (fmt == NULL) {
+    if (str == NULL || fmt == NULL) {
 	return;
     }
 
@@ -2316,10 +2311,8 @@ sndbg(char *str, size_t size, int level, char const *fmt, ...)
     /*
      * stage 3: firewall checks
      */
-    if (str == NULL) {
-	return;
-    }
-    if (fmt == NULL) {
+    if (str == NULL || fmt == NULL) {
+	va_end(ap);
 	return;
     }
 
@@ -2746,7 +2739,7 @@ vfwarn(FILE *stream, char const *name, char const *fmt, va_list ap)
  *
  * Example:
  *
- *	snwarn(buf, BUFSIZ, __func__, "whey value: %d", value);
+ *	snwarn(buf, BUFSIZ, __func__, "important value: %d", value);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
  *
@@ -2780,13 +2773,8 @@ snwarn(char *str, size_t size, char const *name, char const *fmt, ...)
     /*
      * stage 3: firewall checks
      */
-    if (str == NULL) {
-	return;
-    }
-    if (name == NULL) {
-	return;
-    }
-    if (fmt == NULL) {
+    if (str == NULL || name == NULL || fmt == NULL) {
+	va_end(ap);
 	return;
     }
 
@@ -2824,7 +2812,7 @@ snwarn(char *str, size_t size, char const *name, char const *fmt, ...)
  *
  * Example:
  *
- *	vsnwarn(buf, BUFSIZ, __func__, "whey value: %d", ap);
+ *	vsnwarn(buf, BUFSIZ, __func__, "important value: %d", ap);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
  *
@@ -2854,13 +2842,7 @@ vsnwarn(char *str, size_t size, char const *name, char const *fmt, va_list ap)
     /*
      * stage 3: firewall checks
      */
-    if (str == NULL) {
-	return;
-    }
-    if (name == NULL) {
-	return;
-    }
-    if (fmt == NULL) {
+    if (str == NULL || name == NULL || fmt == NULL) {
 	return;
     }
 
@@ -3249,13 +3231,8 @@ snwarnp(char *str, size_t size, char const *name, char const *fmt, ...)
     /*
      * stage 3: firewall checks
      */
-    if (str == NULL) {
-	return;
-    }
-    if (name == NULL) {
-	return;
-    }
-    if (fmt == NULL) {
+    if (str == NULL || name == NULL || fmt == NULL) {
+	va_end(ap);
 	return;
     }
 
@@ -3323,13 +3300,7 @@ vsnwarnp(char *str, size_t size, char const *name, char const *fmt, va_list ap)
     /*
      * stage 3: firewall checks
      */
-    if (str == NULL) {
-	return;
-    }
-    if (name == NULL) {
-	return;
-    }
-    if (fmt == NULL) {
+    if (str == NULL || name == NULL || fmt == NULL) {
 	return;
     }
 
@@ -4447,7 +4418,7 @@ vfwerr(int error_code, FILE *stream, char const *name, char const *fmt, va_list 
  *
  * Example:
  *
- *	snwerr(123, buf, BUFSIZ, __func__, "invalid whey value: %d", value);
+ *	snwerr(123, buf, BUFSIZ, __func__, "invalid value: %d", value);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
  *
@@ -4481,13 +4452,8 @@ snwerr(int error_code, char *str, size_t size, char const *name, char const *fmt
     /*
      * stage 3: firewall checks
      */
-    if (str == NULL) {
-	return;
-    }
-    if (name == NULL) {
-	return;
-    }
-    if (fmt == NULL) {
+    if (str == NULL || name == NULL || fmt == NULL) {
+	va_end(ap);
 	return;
     }
 
@@ -4526,7 +4492,7 @@ snwerr(int error_code, char *str, size_t size, char const *name, char const *fmt
  *
  * Example:
  *
- *	vsnwerr(123, buf, BUFSIZ, __func__, "invalid whey value: %d", ap);
+ *	vsnwerr(123, buf, BUFSIZ, __func__, "invalid value: %d", ap);
  *
  * NOTE: This function does nothing (just returns) if passed a NULL pointer.
  *
@@ -4556,13 +4522,7 @@ vsnwerr(int error_code, char *str, size_t size, char const *name, char const *fm
     /*
      * stage 3: firewall checks
      */
-    if (str == NULL) {
-	return;
-    }
-    if (name == NULL) {
-	return;
-    }
-    if (fmt == NULL) {
+    if (str == NULL || name == NULL || fmt == NULL) {
 	return;
     }
 
@@ -4958,13 +4918,8 @@ snwerrp(int error_code, char *str, size_t size, char const *name, char const *fm
     /*
      * stage 3: firewall checks
      */
-    if (str == NULL) {
-	return;
-    }
-    if (name == NULL) {
-	return;
-    }
-    if (fmt == NULL) {
+    if (str == NULL || name == NULL || fmt == NULL) {
+	va_end(ap);
 	return;
     }
 
