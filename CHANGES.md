@@ -15,7 +15,7 @@ Updated `jparse/jparse.lex.ref.h`, and `jparse/jparse.ref.c` as per `flex(1)` v2
 
 Changed `HOSTCHK_VERSION` to "2.0.3 2026-11-18".
 
-Updated `test_ioccc/hostchk.sh` to ignore C++ header files as per GitHub user @xexyl.
+Updated `test_ioccc/hostchk.sh` to ignore C++ header files as per GitHub user @uguu-org.
 
 
 ## Release 2.12.6 2026-11-07
