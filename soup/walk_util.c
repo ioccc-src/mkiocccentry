@@ -1671,6 +1671,16 @@ match_walk_rule(struct walk_rule *rule_p, struct item *i_p, int indx)
 	break;
 
     case MATCH_FNMATCH_ANYCASE:
+	/*
+	 * FNM_CASEFOLD is not defined under cygwin, unless we also define
+	 * _GNU_SOURCE.  But doing that breaks other places (e.g. poll
+	 * doesn't work).  Since windows file system is not case sensitive
+	 * anyway, we will patch around it by assuming FNM_CASEFOLD happens
+	 * by default.
+	 */
+	#if !defined(FNM_CASEFOLD) && defined(__CYGWIN__)
+	    #define FNM_CASEFOLD 0
+	#endif
 	if (fnmatch(rule_p->pattern, i_p->fts_name, FNM_CASEFOLD) != 0) {
 	    dbg(DBG_V3_HIGH, "%s: rule[%d]: match MATCH_FNMATCH_ANYCASE: pattern: %s doesn't match fts_name: %s",
 			     __func__, indx, rule_p->pattern, i_p->fts_name);
@@ -3943,8 +3953,13 @@ chk_walk(struct walk_stat *wstat_p, FILE *stream,
  *	0  if  a == b
  *	1  if  a > b
  */
+#ifdef __CYGWIN__
+int
+fts_cmp(const FTSENT* const* a, const FTSENT* const* b)
+#else
 int
 fts_cmp(const FTSENT **a, const FTSENT **b)
+#endif
 {
     int cmp = 0;	/* FTSENT comparison */
 
@@ -4002,88 +4017,6 @@ fts_cmp(const FTSENT **a, const FTSENT **b)
      * string compare FTSENTs
      */
     cmp = strcmp((*a)->fts_name, (*b)->fts_name);
-    /* convert strcmp(3) return into -1, 0, or 1 to simplify debugging */
-    cmp = ((cmp <= -1) ? -1 : ((cmp == 0) ? 0 : 1));
-
-    /* return comparison result */
-    return cmp;
-}
-
-
-/*
- * fts_icmp - compare FTSENT fts_name strings case dependently via strcasecmp(3)
- *
- * NOTE: The fts_accpath, fts_path and fts_pathlen fields of the FTSENT may
- *	 never be used in this comparison.  We compare with fts_name instead.
- *
- * given:
- *	a	pointer to pointer to 1st FTSENT to compare
- *	b	pointer to pointer to 2nd FTSENT to compare
- *
- * returns:
- *	-1 if  a < b
- *	0  if  a == b
- *	1  if  a > b
- */
-int
-fts_icmp(const FTSENT **a, const FTSENT **b)
-{
-    int cmp = 0;	/* FTSENT comparison */
-
-    /*
-     * firewall
-     */
-    if (a == NULL) {
-	fprintf(stderr, "%s: a is NULL\n", __func__);
-	exit(89);
-    }
-    if (b == NULL) {
-	fprintf(stderr, "%s: b is NULL\n", __func__);
-	exit(90);
-    }
-    if (*a == NULL) {
-	fprintf(stderr, "%s: *a is NULL\n", __func__);
-	exit(91);
-    }
-    if (*b == NULL) {
-	fprintf(stderr, "%s: *b is NULL\n", __func__);
-	exit(92);
-    }
-
-    /*
-     * compare FTSENTs
-     *
-     * Empty fts_name's are sorted AFTER non-empty fts_name's.
-     * We adopt this storing style do that the sorted list will
-     * have empty names at the end, similar to the "convention" that
-     * a list of string pointers may end with a NULL pointer.
-     */
-    /* case: a is empty */
-    if (*(*a)->fts_name == '\0') {
-
-	/* a is empty */
-	if (*(*b)->fts_name == '\0') {
-
-	    /* a and b are both empty, and thus equal  */
-	    return 0;
-
-	} else {
-
-	    /* empty a > non-empty b */
-	    return 1;
-	}
-
-    /* case: b is empty, but a is non-empty */
-    } else if (*(*b)->fts_name == '\0') {
-
-	/* non-empty a < empty b */
-	return -1;
-    }
-
-    /*
-     * string compare FTSENTs
-     */
-    cmp = strcasecmp((*a)->fts_name, (*b)->fts_name);
     /* convert strcmp(3) return into -1, 0, or 1 to simplify debugging */
     cmp = ((cmp <= -1) ? -1 : ((cmp == 0) ? 0 : 1));
 

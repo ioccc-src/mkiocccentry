@@ -548,8 +548,11 @@ extern void sort_walk_stat(struct walk_stat *wstat_p);
 extern void sort_walk_istat(struct walk_stat *wstat_p);
 extern bool chk_walk(struct walk_stat *wstat_p, FILE *stream,
 		     int_least32_t max_file, int_least32_t max_dir, int_least32_t max_sym, int_least32_t max_other, bool walk_done);
+#ifdef __CYGWIN__
+extern int fts_cmp(const FTSENT* const* a, const FTSENT* const* b);
+#else
 extern int fts_cmp(const FTSENT **a, const FTSENT **b);
-extern int fts_icmp(const FTSENT **a, const FTSENT **b);
+#endif
 extern bool fts_walk(struct walk_stat *wstat_p);
 extern char const *canonicalize_path(struct walk_stat *wstat_p, char const *fts_path,
                                      enum path_sanity *sanity_p, size_t *len_p, int_least32_t *depth_p);
