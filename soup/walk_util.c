@@ -4048,23 +4048,23 @@ record_fts_err(struct walk_stat *wstat_p, char const *path, off_t st_size, mode_
      * firewall - catch NULL ptrs
      */
     if (wstat_p == NULL) {
-	err(93, __func__, "called with NULL wstat_p");
+	err(89, __func__, "called with NULL wstat_p");
 	not_reached();
     }
     if (wstat_p->fts_err == NULL) {
-        err(94, __func__, "called with NULL wstat_p->fts_err");
+        err(90, __func__, "called with NULL wstat_p->fts_err");
         not_reached();
     }
     if (wstat_p->prune == NULL) {
-        err(95, __func__, "called with NULL wstat_p->prune");
+        err(91, __func__, "called with NULL wstat_p->prune");
         not_reached();
     }
     if (wstat_p->all == NULL) {
-        err(96, __func__, "called with NULL wstat_p->all");
+        err(92, __func__, "called with NULL wstat_p->all");
         not_reached();
     }
     if (path == NULL) {
-	err(97, __func__, "called with path topdir");
+	err(93, __func__, "called with path topdir");
 	not_reached();
     }
 
@@ -4130,7 +4130,7 @@ fts_walk(struct walk_stat *wstat_p)
      * firewall
      */
     if (wstat_p == NULL) {
-	err(98, __func__, "wstat_p is NULL");
+	err(94, __func__, "wstat_p is NULL");
 	not_reached();
     }
 
@@ -4141,7 +4141,7 @@ fts_walk(struct walk_stat *wstat_p)
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(99, __func__, "wstat_p failed the chk_walk_stat function test suite");
+	err(95, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
 
@@ -4930,15 +4930,15 @@ path_in_item_array(struct dyn_array *item_array, char const *c_path)
      * firewall
      */
     if (item_array == NULL) {
-	err(100, __func__, "item_array is NULL");
+	err(96, __func__, "item_array is NULL");
 	not_reached();
     }
     if (c_path == NULL) {
-	err(101, __func__, "c_path is NULL");
+	err(97, __func__, "c_path is NULL");
 	not_reached();
     }
     if (item_array->elm_size != sizeof(struct item *)) {
-	err(102, __func__, "item_array->elm_size: %zu != sizeof(struct item *): %zu",
+	err(98, __func__, "item_array->elm_size: %zu != sizeof(struct item *): %zu",
 			  item_array->elm_size, sizeof(struct item *));
 	not_reached();
     }
@@ -5039,11 +5039,11 @@ path_in_walk_stat(struct walk_stat *wstat_p, char const *c_path)
      * firewall
      */
     if (wstat_p == NULL) {
-	err(103, __func__, "wstat_p is NULL");
+	err(99, __func__, "wstat_p is NULL");
 	not_reached();
     }
     if (c_path == NULL) {
-	err(104, __func__, "c_path is NULL");
+	err(100, __func__, "c_path is NULL");
 	not_reached();
     }
 
@@ -5054,7 +5054,7 @@ path_in_walk_stat(struct walk_stat *wstat_p, char const *c_path)
      *       in this function.
      */
     if (! chk_walk_stat(wstat_p)) {
-	err(105, __func__, "wstat_p failed the chk_walk_stat function test suite");
+	err(101, __func__, "wstat_p failed the chk_walk_stat function test suite");
 	not_reached();
     }
 

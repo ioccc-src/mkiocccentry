@@ -1,6 +1,19 @@
 # Major changes to the IOCCC mkiocccentry toolkit
 
 
+## Release 2.12.7 2026-11-18
+
+Fix mkiocccentry for cygwin, thanks to a PR 1427 from GitHub user @uguu-org.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` to "2.12.7 2026-11-18"
+Changed `SOUP_VERSION` to "2.4.5 2026-11-18"
+Changed `MKIOCCCENTRY_VERSION` to "2.5.1 2026-11-18"
+Changed `CHKENTRY_VERSION` to "2.4.1 2026-11-18"
+Changed `CHKSUBMIT_VERSION` to "2.2.1 2026-11-18"
+
+Updated `jparse/jparse.lex.ref.h`, and `jparse/jparse.ref.c` as per `flex(1)` v2.7.0.
+
+
 ## Release 2.12.6 2026-11-07
 
 Disable `test_ioccc/mkiocccentry_slots.sh` is `rsync(1)` is missing.
