@@ -277,7 +277,7 @@ if [[ -n $F_FLAG ]]; then
     printf "%s\\n%s\\n" "$(grep '#include.*<.*>' "$TOPDIR"/*.[hc] "$TOPDIR"/dbg/*.[hc] \
 	"$TOPDIR"/dyn_array/*.[hc] "$TOPDIR"/test_ioccc/*.[ch] "$TOPDIR"/soup/*.[hc] \
 	"$TOPDIR"/pr/*.[hc] "$TOPDIR"/jparse/*.[hcly] \
-	"$TOPDIR"/jparse/test_jparse/*.[hc]|grep -vE '<dbg\.h>|<dyn_array\.h>|<c_bool\.h>|<c_compat\.h>|<pr.h>' |cut -f 2- -d:|sort -u)" "int main(void) { return 0; }" |
+	"$TOPDIR"/jparse/test_jparse/*.[hc]|grep -vE '<dbg\.h>|<dyn_array\.h>|<c_bool\.h>|<c_compat\.h>|<pr.h>|<[^.]+>' |cut -f 2- -d:|sort -u)" "int main(void) { return 0; }" |
 	    "${CC}" -x c - -o "$PROG_FILE"
     status="$?"
     if [[ $status -ne 0 ]]; then
