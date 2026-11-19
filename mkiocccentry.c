@@ -33,6 +33,7 @@
  * in alphabetical GitHub username order:
  *
  *	@ilyakurdyukov		Ilya Kurdyukov
+ *	@omoikane               Don Yang
  *	@SirWumpus		Anthony Howe
  *	@vog			Volker Diels-Grabsch
  *
