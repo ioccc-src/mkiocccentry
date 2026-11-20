@@ -220,10 +220,10 @@ CFLAGS= ${C_STD} ${C_OPT} ${WARN_FLAGS} ${C_SPECIAL} ${LDFLAGS}
 # source files that are permanent (not made, nor removed)
 #
 C_SRC= jparse_main.c json_sem.c json_util.c \
-       jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c jstr_util.c jval.c
+       jsemtblgen.c jstrdecode.c jstrencode.c util.c verge.c jstr_util.c jval.c jprint.c
 H_SRC= jparse.h jparse_main.h jsemtblgen.h json_parse.h json_sem.h json_util.h jval.h \
        jstrdecode.h jstrencode.h sorry.tm.ca.h util.h verge.h jparse.tab.ref.h \
-       jstr_util.h version.h
+       jstr_util.h version.h jprint.h
 #
 PICKY_OPTIONS= -c -e -s -t8 -u -v -w132
 
@@ -421,13 +421,13 @@ SH_TARGETS=
 
 # program targets to make by all, installed by install, and removed by clobber
 #
-PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode jval
+PROG_TARGETS= jparse verge jsemtblgen jstrdecode jstrencode jval jprint
 
 # include files NOT to removed by clobber
 #
 H_SRC_TARGETS= jparse.h jparse.lex.h jparse.lex.ref.h jparse.tab.h jparse.tab.ref.h \
 	       jparse_main.h jval.h json_parse.h json_sem.h json_util.h sorry.tm.ca.h util.h \
-	       version.h json_utf8.h verge.h
+	       version.h json_utf8.h verge.h jprint.h
 
 # what to make by all but NOT to removed by clobber
 #
@@ -522,6 +522,12 @@ jval.o: jval.c jval.h version.h jparse.h
 	${CC} ${CFLAGS} jval.c -c
 
 jval: jval.o libjparse.a
+	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -lpr -ldbg -ldyn_array
+
+jprint.o: jprint.c jprint.h version.h jparse.h
+	${CC} ${CFLAGS} jprint.c -c
+
+jprint: jprint.o libjparse.a
 	${CC} ${CFLAGS} $^ -lm -o $@ ${LD_DIR} -lpr -ldbg -ldyn_array
 
 jstr_util.o: jstr_util.c jstr_util.h
@@ -1360,6 +1366,10 @@ jparse.tab.ref.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
 jparse_main.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.tab.h jparse_main.c \
     jparse_main.h json_parse.h json_sem.h json_utf8.h json_util.h util.h \
+    version.h
+jprint.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
+    ../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.tab.h jprint.c \
+    jprint.h json_parse.h json_sem.h json_utf8.h json_util.h util.h \
     version.h
 jsemtblgen.o: ../dbg/c_bool.h ../dbg/c_compat.h ../dbg/dbg.h \
     ../dyn_array/dyn_array.h ../pr/pr.h jparse.h jparse.tab.h jsemtblgen.c \

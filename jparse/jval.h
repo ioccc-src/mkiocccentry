@@ -83,9 +83,9 @@
 
 
 /*
- * jparse tool basename
+ * jval tool basename
  */
-#define JPARSE_BASENAME "jval"
+#define JVAL_BASENAME "jval"
 
 
 #endif /* INCLUDE_JPARSE_MAIN_H */
