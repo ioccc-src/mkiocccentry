@@ -1,5 +1,14 @@
 # Significant changes in the JSON parser repo
 
+## Release 2.6.3 2026-11-23
+
+Updated `jparse.lex.ref.h` and `jparse.ref.c` for updated flex(1) (version
+2.7.4).
+
+Updated `JPARSE_LIBRARY_VERSION` to `"2.5.3 2026-11-23"` (technically it would
+be 2.5.2 due to accidentally not updating the version last time but as this was
+a mistake I make it 2.5.3).
+
 
 ## Release 2.6.2 2026-11-20
 

@@ -93,7 +93,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 7
-#define YY_FLEX_SUBMINOR_VERSION 2
+#define YY_FLEX_SUBMINOR_VERSION 4
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -284,6 +284,16 @@
 #define yyset_column jparse_set_column
 #endif
 
+        #ifndef YY_TYPEDEF_YY_SCANNER_T
+        
+#ifdef yyguts_t
+#define jparse_guts_t_ALREADY_DEFINED
+#else
+#define yyguts_t jparse_guts_t
+#endif
+
+        #endif
+    
 #ifdef yywrap
 #define jparse_wrap_ALREADY_DEFINED
 #else
@@ -468,7 +478,7 @@ typedef void* yyscan_t;
 #define yytext yyg->yytext_r
 #define yylineno (YY_CURRENT_BUFFER_LVALUE->yy_bs_lineno)
 #define yycolumn (YY_CURRENT_BUFFER_LVALUE->yy_bs_column)
-#define yyflexdebug yyg->yyflexdebug_r
+#define yyflexdebug yyg->yy_flex_debug_r
 /* Legacy interface */
 #define yy_flex_debug yyflexdebug
 
@@ -551,8 +561,10 @@ typedef size_t yy_size_t;
 		/* Undo effects of setting up yytext. */ \
         int yyless_macro_arg = (n); \
         YY_LESS_LINENO(yyless_macro_arg);\
-		*yy_cp = yyg->yy_hold_char; \
+		*yyg->yy_hold_ptr = yyg->yy_hold_char; \
 		YY_RESTORE_YY_MORE_OFFSET \
+		/* input() can move or reallocate the buffer, so yy_bp may be stale. */ \
+		yy_bp = yyg->yytext_ptr + YY_MORE_ADJ; \
 		yyg->yy_c_buf_p = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ; \
 		YY_DO_BEFORE_ACTION; /* set up yytext again */ \
 		YY_CURRENT_BUFFER_LVALUE->yy_at_bol = ( yyleng > 0 ) ? \
@@ -1022,7 +1034,7 @@ static YY_BUFFER_STATE bs;
 				} \
 			    } \
 			}
-#line 972 "jparse.c"
+#line 984 "jparse.c"
 /*
  * Section 1 - Patterns (regular expressions) and actions.
  */
@@ -1092,7 +1104,7 @@ static YY_BUFFER_STATE bs;
  * JSON_COMMA		","
  */
 /* Actions. */
-#line 1042 "jparse.c"
+#line 1054 "jparse.c"
 
 #define INITIAL 0
 
@@ -1133,7 +1145,7 @@ struct yyguts_t {
 	char* yy_last_accepting_cpos;
 
 	int yylineno_r;
-	int yyflexdebug_r;
+	int yy_flex_debug_r;
 
 	char *yytext_r;
 	int yy_more_flag;
@@ -1411,7 +1423,7 @@ YY_DECL {
 /* %% [4.0] user's declarations go here */
 #line 214 "./jparse.l"
 
-#line 1361 "jparse.c"
+#line 1373 "jparse.c"
 
 		while ( /*CONSTCOND*/1 ) {		/* loops until end-of-file is reached */
 
@@ -1726,8 +1738,8 @@ YY_RULE_SETUP
 #line 357 "./jparse.l"
 YY_FATAL_ERROR("flex scanner jammed");
 	YY_BREAK
-#line 1676 "jparse.c"
-#line 1677 "jparse.c"
+#line 1688 "jparse.c"
+#line 1689 "jparse.c"
 	case YY_STATE_EOF(INITIAL):
 		yyterminate();
 
