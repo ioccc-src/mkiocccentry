@@ -97,7 +97,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 7
-#define YY_FLEX_SUBMINOR_VERSION 2
+#define YY_FLEX_SUBMINOR_VERSION 4
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -288,6 +288,16 @@
 #define yyset_column jparse_set_column
 #endif
 
+        #ifndef YY_TYPEDEF_YY_SCANNER_T
+        
+#ifdef yyguts_t
+#define jparse_guts_t_ALREADY_DEFINED
+#else
+#define yyguts_t jparse_guts_t
+#endif
+
+        #endif
+    
 #ifdef yywrap
 #define jparse_wrap_ALREADY_DEFINED
 #else
@@ -464,7 +474,7 @@ typedef void* yyscan_t;
 #define yytext yyg->yytext_r
 #define yylineno (YY_CURRENT_BUFFER_LVALUE->yy_bs_lineno)
 #define yycolumn (YY_CURRENT_BUFFER_LVALUE->yy_bs_column)
-#define yyflexdebug yyg->yyflexdebug_r
+#define yyflexdebug yyg->yy_flex_debug_r
 /* Legacy interface */
 #define yy_flex_debug yyflexdebug
 
@@ -811,6 +821,9 @@ extern int yylex \
 #ifndef jparse_set_column_ALREADY_DEFINED
 #undef yyset_column
 #endif
+#ifndef jparse_guts_t_ALREADY_DEFINED
+#undef yyguts_t
+#endif
 #ifndef jparse_wrap_ALREADY_DEFINED
 #undef yywrap
 #endif
@@ -868,4 +881,4 @@ extern int yylex \
 #line 357 "./jparse.l"
 
 
-#line 818 "jparse.lex.h"
+#line 831 "jparse.lex.h"
