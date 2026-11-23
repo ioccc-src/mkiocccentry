@@ -85,7 +85,7 @@
  *
  * NOTE: This should match the latest Release string in CHANGES.md
  */
-#define MKIOCCCENTRY_REPO_VERSION "2.12.7 2026-11-18"	/* special release format: major.minor[.patch] YYYY-MM-DD */
+#define MKIOCCCENTRY_REPO_VERSION "2.12.8 2026-11-23"	/* special release format: major.minor[.patch] YYYY-MM-DD */
 
 /*
  * official soup version (aka recipe :-) )

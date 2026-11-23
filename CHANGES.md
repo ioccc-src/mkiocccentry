@@ -1,6 +1,14 @@
 # Major changes to the IOCCC mkiocccentry toolkit
 
 
+## Release 2.12.8 2026-11-23
+
+Updated `jparse/jparse.lex.ref.h` as per `flex(1)` v2.7.5.
+Updated `jparse/jparse.ref.c` as per `flex(1)` v2.7.5.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` to "2.12.8 2026-11-23"
+
+
 ## Release 2.12.7 2026-11-18
 
 Fix mkiocccentry for cygwin, thanks to a PR 1427 from GitHub user @uguu-org.
