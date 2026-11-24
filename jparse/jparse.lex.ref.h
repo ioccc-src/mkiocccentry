@@ -97,7 +97,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 7
-#define YY_FLEX_SUBMINOR_VERSION 5
+#define YY_FLEX_SUBMINOR_VERSION 7
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -350,30 +350,15 @@
 
 /* begin standard C headers. */
 
-/* Feature test macros. Flex uses functions that require a minimum set of
- * macros defined. As defining some macros may hide function declarations that
- * user code might use, be conservative and respect user's definitions as much
- * as possible. In glibc, feature test macros may not be all set up until one
- * of the libc header (that includes <features.h>) is included. This creates
- * a circular dependency when we check the macros. <assert.h> is the safest
- * header we can include and does not declare too many functions we don't need.
+/* The scanner calls fileno(), which a strict ISO C mode does not declare.
+ * Declare it here, and leave the feature test macros alone: defining them
+ * before the program's own includes would hide declarations the program
+ * uses, such as those in the system's networking headers.
  */
-#if !defined(__GNU_LIBRARY__) && defined(__STDC__)
-#include <assert.h>
-#endif
-#if !(defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE) || \
-    defined(_POSIX_SOURCE))
-# define _POSIX_C_SOURCE 1 /* Required for fileno() */
-# define _POSIX_SOURCE 1
-# if defined(__STRICT_ANSI__)
-/* In a strict ISO C mode the headers have already been set up without
- * POSIX, so the definitions above come too late to make <stdio.h>
- * declare fileno().  Declare it here instead of changing what the user's
- * code can see.
- */
-#  include <stdio.h>
+#if defined(__STRICT_ANSI__) && !(defined(_POSIX_C_SOURCE) || \
+    defined(_XOPEN_SOURCE) || defined(_POSIX_SOURCE))
+# include <stdio.h>
 extern int fileno(FILE *);
-# endif
 #endif
 #include <stdio.h>
 #include <string.h>
@@ -881,4 +866,4 @@ extern int yylex \
 #line 357 "./jparse.l"
 
 
-#line 831 "jparse.lex.h"
+#line 816 "jparse.lex.h"

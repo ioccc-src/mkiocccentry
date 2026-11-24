@@ -93,7 +93,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 7
-#define YY_FLEX_SUBMINOR_VERSION 5
+#define YY_FLEX_SUBMINOR_VERSION 7
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -346,30 +346,15 @@
 
 /* begin standard C headers. */
 
-/* Feature test macros. Flex uses functions that require a minimum set of
- * macros defined. As defining some macros may hide function declarations that
- * user code might use, be conservative and respect user's definitions as much
- * as possible. In glibc, feature test macros may not be all set up until one
- * of the libc header (that includes <features.h>) is included. This creates
- * a circular dependency when we check the macros. <assert.h> is the safest
- * header we can include and does not declare too many functions we don't need.
+/* The scanner calls fileno(), which a strict ISO C mode does not declare.
+ * Declare it here, and leave the feature test macros alone: defining them
+ * before the program's own includes would hide declarations the program
+ * uses, such as those in the system's networking headers.
  */
-#if !defined(__GNU_LIBRARY__) && defined(__STDC__)
-#include <assert.h>
-#endif
-#if !(defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE) || \
-    defined(_POSIX_SOURCE))
-# define _POSIX_C_SOURCE 1 /* Required for fileno() */
-# define _POSIX_SOURCE 1
-# if defined(__STRICT_ANSI__)
-/* In a strict ISO C mode the headers have already been set up without
- * POSIX, so the definitions above come too late to make <stdio.h>
- * declare fileno().  Declare it here instead of changing what the user's
- * code can see.
- */
-#  include <stdio.h>
+#if defined(__STRICT_ANSI__) && !(defined(_POSIX_C_SOURCE) || \
+    defined(_XOPEN_SOURCE) || defined(_POSIX_SOURCE))
+# include <stdio.h>
 extern int fileno(FILE *);
-# endif
 #endif
 #include <stdio.h>
 #include <string.h>
@@ -1034,7 +1019,7 @@ static YY_BUFFER_STATE bs;
 				} \
 			    } \
 			}
-#line 984 "jparse.c"
+#line 969 "jparse.c"
 /*
  * Section 1 - Patterns (regular expressions) and actions.
  */
@@ -1104,7 +1089,7 @@ static YY_BUFFER_STATE bs;
  * JSON_COMMA		","
  */
 /* Actions. */
-#line 1054 "jparse.c"
+#line 1039 "jparse.c"
 
 #define INITIAL 0
 
@@ -1423,7 +1408,7 @@ YY_DECL {
 /* %% [4.0] user's declarations go here */
 #line 214 "./jparse.l"
 
-#line 1373 "jparse.c"
+#line 1358 "jparse.c"
 
 		while ( /*CONSTCOND*/1 ) {		/* loops until end-of-file is reached */
 
@@ -1554,6 +1539,7 @@ YY_RULE_SETUP
 							     (int)yyleng, yyleng==1?"":"s");
 			}
 	YY_BREAK
+#line 1489 "jparse.c"
 	case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
@@ -1567,6 +1553,7 @@ YY_RULE_SETUP
 			    yycolumn = 1;
 			}
 	YY_BREAK
+#line 1503 "jparse.c"
 	case 3:
 YY_RULE_SETUP
 
@@ -1578,6 +1565,7 @@ YY_RULE_SETUP
 			    return JSON_STRING;
 			}
 	YY_BREAK
+#line 1515 "jparse.c"
 	case 4:
 YY_RULE_SETUP
 
@@ -1589,6 +1577,7 @@ YY_RULE_SETUP
 			    return JSON_NUMBER;
 			}
 	YY_BREAK
+#line 1527 "jparse.c"
 	case 5:
 YY_RULE_SETUP
 
@@ -1600,6 +1589,7 @@ YY_RULE_SETUP
 			    return JSON_NULL;
 			}
 	YY_BREAK
+#line 1539 "jparse.c"
 	case 6:
 YY_RULE_SETUP
 
@@ -1611,6 +1601,7 @@ YY_RULE_SETUP
 			    return JSON_TRUE;
 			}
 	YY_BREAK
+#line 1551 "jparse.c"
 	case 7:
 YY_RULE_SETUP
 
@@ -1625,6 +1616,7 @@ YY_RULE_SETUP
 			    return JSON_FALSE;
 			}
 	YY_BREAK
+#line 1566 "jparse.c"
 	case 8:
 YY_RULE_SETUP
 
@@ -1636,6 +1628,7 @@ YY_RULE_SETUP
 			    return JSON_OPEN_BRACE;
 			}
 	YY_BREAK
+#line 1578 "jparse.c"
 	case 9:
 YY_RULE_SETUP
 
@@ -1647,6 +1640,7 @@ YY_RULE_SETUP
 			    return JSON_CLOSE_BRACE;
 			}
 	YY_BREAK
+#line 1590 "jparse.c"
 	case 10:
 YY_RULE_SETUP
 
@@ -1658,6 +1652,7 @@ YY_RULE_SETUP
 			    return JSON_OPEN_BRACKET;
 			}
 	YY_BREAK
+#line 1602 "jparse.c"
 	case 11:
 YY_RULE_SETUP
 
@@ -1669,6 +1664,7 @@ YY_RULE_SETUP
 			    return JSON_CLOSE_BRACKET;
 			}
 	YY_BREAK
+#line 1614 "jparse.c"
 	case 12:
 YY_RULE_SETUP
 
@@ -1680,6 +1676,7 @@ YY_RULE_SETUP
 			    return JSON_COLON;
 			}
 	YY_BREAK
+#line 1626 "jparse.c"
 	case 13:
 YY_RULE_SETUP
 
@@ -1691,6 +1688,7 @@ YY_RULE_SETUP
 			    return JSON_COMMA;
 			}
 	YY_BREAK
+#line 1638 "jparse.c"
 	case 14:
 YY_RULE_SETUP
 
@@ -1731,15 +1729,15 @@ YY_RULE_SETUP
 			    return token;
 			}
 	YY_BREAK
+#line 1679 "jparse.c"
 	case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
 
-#line 357 "./jparse.l"
 YY_FATAL_ERROR("flex scanner jammed");
 	YY_BREAK
-#line 1688 "jparse.c"
-#line 1689 "jparse.c"
+#line 1686 "jparse.c"
+#line 1687 "jparse.c"
 	case YY_STATE_EOF(INITIAL):
 		yyterminate();
 
