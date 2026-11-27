@@ -97,7 +97,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 7
-#define YY_FLEX_SUBMINOR_VERSION 7
+#define YY_FLEX_SUBMINOR_VERSION 11
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -463,9 +463,24 @@ typedef void* yyscan_t;
 /* Legacy interface */
 #define yy_flex_debug yyflexdebug
 
+/* The struct tag of a C scanner's buffer. It is yy_buffer_state, as in
+ * every earlier release, because programs declare that struct
+ * themselves and, when the scanner is compiled as C++, the tag is part
+ * of the mangled names of the buffer functions. A C scanner compiled as
+ * C++ and a scanner generated with %option c++ in one program would
+ * each define that struct, so a program that links both defines
+ * YY_C_BUFFER_STATE_TAG to another tag, such as yy_c_buffer_state,
+ * everywhere it includes the C scanner's header.
+ */
+#ifndef YY_C_BUFFER_STATE_TAG
+#define YY_C_BUFFER_STATE_TAG yy_buffer_state
+#endif
+
 #ifndef YY_TYPEDEF_YYBUFFER
 #define YY_TYPEDEF_YYBUFFER
-typedef struct yy_buffer_state *yybuffer;
+
+typedef struct YY_C_BUFFER_STATE_TAG *yybuffer;
+
 #endif
 
 /* Legacy interface. A program that declares YY_BUFFER_STATE itself
@@ -474,7 +489,9 @@ typedef struct yy_buffer_state *yybuffer;
  */
 #ifndef YY_TYPEDEF_YY_BUFFER_STATE
 #define YY_TYPEDEF_YY_BUFFER_STATE
-typedef struct yy_buffer_state *YY_BUFFER_STATE;
+
+typedef struct YY_C_BUFFER_STATE_TAG *YY_BUFFER_STATE;
+
 #endif
 
 #ifndef YY_TYPEDEF_YY_SIZE_T
@@ -482,9 +499,10 @@ typedef struct yy_buffer_state *YY_BUFFER_STATE;
 typedef size_t yy_size_t;
 #endif
 
-#ifndef YY_STRUCT_YY_BUFFER_STATE
-#define YY_STRUCT_YY_BUFFER_STATE
-struct yy_buffer_state
+#ifndef YY_STRUCT_YY_C_BUFFER_STATE
+#define YY_STRUCT_YY_C_BUFFER_STATE
+struct YY_C_BUFFER_STATE_TAG
+
 	{
 
 	FILE *yy_input_file;
@@ -866,4 +884,4 @@ extern int yylex \
 #line 357 "./jparse.l"
 
 
-#line 816 "jparse.lex.h"
+#line 834 "jparse.lex.h"

@@ -1,6 +1,14 @@
 # Major changes to the IOCCC mkiocccentry toolkit
 
 
+## Release 2.12.9 2026-11-27
+
+Updated `jparse/jparse.lex.ref.h` as per `flex(1)` v2.7.11.
+Updated `jparse/jparse.ref.c` as per `flex(1)` v2.7.11.
+
+Changed `MKIOCCCENTRY_REPO_VERSION` to "2.12.9 2026-11-27"
+
+
 ## Release 2.12.8 2026-11-23
 
 Updated `jparse/jparse.lex.ref.h` as per `flex(1)` v2.7.5.

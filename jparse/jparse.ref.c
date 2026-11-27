@@ -93,7 +93,7 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 7
-#define YY_FLEX_SUBMINOR_VERSION 7
+#define YY_FLEX_SUBMINOR_VERSION 11
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -490,9 +490,24 @@ typedef void* yyscan_t;
 #define YY_STATE_BUF_EXTRA_SPACE 3
 #define YY_STATE_BUF_SIZE   (YY_BUF_SIZE + YY_STATE_BUF_EXTRA_SPACE)
 
+/* The struct tag of a C scanner's buffer. It is yy_buffer_state, as in
+ * every earlier release, because programs declare that struct
+ * themselves and, when the scanner is compiled as C++, the tag is part
+ * of the mangled names of the buffer functions. A C scanner compiled as
+ * C++ and a scanner generated with %option c++ in one program would
+ * each define that struct, so a program that links both defines
+ * YY_C_BUFFER_STATE_TAG to another tag, such as yy_c_buffer_state,
+ * everywhere it includes the C scanner's header.
+ */
+#ifndef YY_C_BUFFER_STATE_TAG
+#define YY_C_BUFFER_STATE_TAG yy_buffer_state
+#endif
+
 #ifndef YY_TYPEDEF_YYBUFFER
 #define YY_TYPEDEF_YYBUFFER
-typedef struct yy_buffer_state *yybuffer;
+
+typedef struct YY_C_BUFFER_STATE_TAG *yybuffer;
+
 #endif
 
 /* Legacy interface. A program that declares YY_BUFFER_STATE itself
@@ -501,7 +516,9 @@ typedef struct yy_buffer_state *yybuffer;
  */
 #ifndef YY_TYPEDEF_YY_BUFFER_STATE
 #define YY_TYPEDEF_YY_BUFFER_STATE
-typedef struct yy_buffer_state *YY_BUFFER_STATE;
+
+typedef struct YY_C_BUFFER_STATE_TAG *YY_BUFFER_STATE;
+
 #endif
 
 #ifndef YY_TYPEDEF_YY_SIZE_T
@@ -560,9 +577,10 @@ typedef size_t yy_size_t;
 /* Push a character back onto the input. In an action, flex also reads yyunput(c) as this. */
 #define unput(c) yyunput( c, yyg->yytext_ptr , yyscanner )
 
-#ifndef YY_STRUCT_YY_BUFFER_STATE
-#define YY_STRUCT_YY_BUFFER_STATE
-struct yy_buffer_state
+#ifndef YY_STRUCT_YY_C_BUFFER_STATE
+#define YY_STRUCT_YY_C_BUFFER_STATE
+struct YY_C_BUFFER_STATE_TAG
+
 	{
 
 	FILE *yy_input_file;
@@ -1019,7 +1037,7 @@ static YY_BUFFER_STATE bs;
 				} \
 			    } \
 			}
-#line 969 "jparse.c"
+#line 987 "jparse.c"
 /*
  * Section 1 - Patterns (regular expressions) and actions.
  */
@@ -1089,7 +1107,7 @@ static YY_BUFFER_STATE bs;
  * JSON_COMMA		","
  */
 /* Actions. */
-#line 1039 "jparse.c"
+#line 1057 "jparse.c"
 
 #define INITIAL 0
 
@@ -1408,7 +1426,7 @@ YY_DECL {
 /* %% [4.0] user's declarations go here */
 #line 214 "./jparse.l"
 
-#line 1358 "jparse.c"
+#line 1376 "jparse.c"
 
 		while ( /*CONSTCOND*/1 ) {		/* loops until end-of-file is reached */
 
@@ -1538,8 +1556,8 @@ YY_RULE_SETUP
 			    (void) json_dbg(JSON_DBG_VVHIGH, __func__, "\nignoring %d whitespace%s\n",
 							     (int)yyleng, yyleng==1?"":"s");
 			}
+#line 1506 "jparse.c"
 	YY_BREAK
-#line 1489 "jparse.c"
 	case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
@@ -1552,8 +1570,8 @@ YY_RULE_SETUP
                              */
 			    yycolumn = 1;
 			}
+#line 1520 "jparse.c"
 	YY_BREAK
-#line 1503 "jparse.c"
 	case 3:
 YY_RULE_SETUP
 
@@ -1564,8 +1582,8 @@ YY_RULE_SETUP
                              */
 			    return JSON_STRING;
 			}
+#line 1532 "jparse.c"
 	YY_BREAK
-#line 1515 "jparse.c"
 	case 4:
 YY_RULE_SETUP
 
@@ -1576,8 +1594,8 @@ YY_RULE_SETUP
                              */
 			    return JSON_NUMBER;
 			}
+#line 1544 "jparse.c"
 	YY_BREAK
-#line 1527 "jparse.c"
 	case 5:
 YY_RULE_SETUP
 
@@ -1588,8 +1606,8 @@ YY_RULE_SETUP
                              */
 			    return JSON_NULL;
 			}
+#line 1556 "jparse.c"
 	YY_BREAK
-#line 1539 "jparse.c"
 	case 6:
 YY_RULE_SETUP
 
@@ -1600,8 +1618,8 @@ YY_RULE_SETUP
                              */
 			    return JSON_TRUE;
 			}
+#line 1568 "jparse.c"
 	YY_BREAK
-#line 1551 "jparse.c"
 	case 7:
 YY_RULE_SETUP
 
@@ -1615,8 +1633,8 @@ YY_RULE_SETUP
                              */
 			    return JSON_FALSE;
 			}
+#line 1583 "jparse.c"
 	YY_BREAK
-#line 1566 "jparse.c"
 	case 8:
 YY_RULE_SETUP
 
@@ -1627,8 +1645,8 @@ YY_RULE_SETUP
                              */
 			    return JSON_OPEN_BRACE;
 			}
+#line 1595 "jparse.c"
 	YY_BREAK
-#line 1578 "jparse.c"
 	case 9:
 YY_RULE_SETUP
 
@@ -1639,8 +1657,8 @@ YY_RULE_SETUP
                              */
 			    return JSON_CLOSE_BRACE;
 			}
+#line 1607 "jparse.c"
 	YY_BREAK
-#line 1590 "jparse.c"
 	case 10:
 YY_RULE_SETUP
 
@@ -1651,8 +1669,8 @@ YY_RULE_SETUP
                              */
 			    return JSON_OPEN_BRACKET;
 			}
+#line 1619 "jparse.c"
 	YY_BREAK
-#line 1602 "jparse.c"
 	case 11:
 YY_RULE_SETUP
 
@@ -1663,8 +1681,8 @@ YY_RULE_SETUP
                              */
 			    return JSON_CLOSE_BRACKET;
 			}
+#line 1631 "jparse.c"
 	YY_BREAK
-#line 1614 "jparse.c"
 	case 12:
 YY_RULE_SETUP
 
@@ -1675,8 +1693,8 @@ YY_RULE_SETUP
                              */
 			    return JSON_COLON;
 			}
+#line 1643 "jparse.c"
 	YY_BREAK
-#line 1626 "jparse.c"
 	case 13:
 YY_RULE_SETUP
 
@@ -1687,8 +1705,8 @@ YY_RULE_SETUP
                              */
 			    return JSON_COMMA;
 			}
+#line 1655 "jparse.c"
 	YY_BREAK
-#line 1638 "jparse.c"
 	case 14:
 YY_RULE_SETUP
 
@@ -1728,16 +1746,15 @@ YY_RULE_SETUP
 			     */
 			    return token;
 			}
+#line 1696 "jparse.c"
 	YY_BREAK
-#line 1679 "jparse.c"
 	case 15:
 /* rule 15 can match eol */
 YY_RULE_SETUP
 
 YY_FATAL_ERROR("flex scanner jammed");
 	YY_BREAK
-#line 1686 "jparse.c"
-#line 1687 "jparse.c"
+#line 1704 "jparse.c"
 	case YY_STATE_EOF(INITIAL):
 		yyterminate();
 
@@ -2309,7 +2326,7 @@ yybuffer yy_create_buffer  (FILE * file, int  size , yyscan_t yyscanner)
 {
 	yybuffer b;
 
-	b = (yybuffer) yyalloc( sizeof( struct yy_buffer_state ) , yyscanner );
+	b = (yybuffer) yyalloc( sizeof( *b ) , yyscanner );
 	if (  b == NULL ) {
 		YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
 	}
@@ -2504,14 +2521,14 @@ static void yyensure_buffer_stack (yyscan_t yyscanner)
 		 * immediate realloc on the next call.
 		 */
 		num_to_alloc = 1; /* After all that talk, this was set to 1 anyways... */
-		yyg->yy_buffer_stack = (struct yy_buffer_state**)yyalloc
-								(num_to_alloc * sizeof(struct yy_buffer_state*)
+		yyg->yy_buffer_stack = (yybuffer *) yyalloc
+								(num_to_alloc * sizeof(yybuffer)
 								, yyscanner);
 		if ( yyg->yy_buffer_stack == NULL ) {
 			YY_FATAL_ERROR( "out of dynamic memory in yyensure_buffer_stack()" );
 		}
 
-		memset(yyg->yy_buffer_stack, 0, num_to_alloc * sizeof(struct yy_buffer_state*));
+		memset(yyg->yy_buffer_stack, 0, num_to_alloc * sizeof(yybuffer));
 
 		yyg->yy_buffer_stack_max = num_to_alloc;
 		yyg->yy_buffer_stack_top = 0;
@@ -2523,15 +2540,15 @@ static void yyensure_buffer_stack (yyscan_t yyscanner)
 		yy_size_t grow_size = 8 /* arbitrary grow size */;
 
 		num_to_alloc = yyg->yy_buffer_stack_max + grow_size;
-		yyg->yy_buffer_stack = (struct yy_buffer_state**)yyrealloc
+		yyg->yy_buffer_stack = (yybuffer *) yyrealloc
 								(yyg->yy_buffer_stack,
-								num_to_alloc * sizeof(struct yy_buffer_state*)
+								num_to_alloc * sizeof(yybuffer)
 								, yyscanner);
 		if (yyg->yy_buffer_stack == NULL) {
 			YY_FATAL_ERROR( "out of dynamic memory in yyensure_buffer_stack()" );
 		}
 		/* zero only the new slots.*/
-		memset(yyg->yy_buffer_stack + yyg->yy_buffer_stack_max, 0, grow_size * sizeof(struct yy_buffer_state*));
+		memset(yyg->yy_buffer_stack + yyg->yy_buffer_stack_max, 0, grow_size * sizeof(yybuffer));
 		yyg->yy_buffer_stack_max = num_to_alloc;
 	}
 }
@@ -2552,7 +2569,7 @@ yybuffer yy_scan_buffer  (char * base, yy_size_t  size , yyscan_t yyscanner)
 		/* They forgot to leave room for the EOB's. */
 		return NULL;
 	}
-	b = (yybuffer) yyalloc( sizeof( struct yy_buffer_state ) , yyscanner );
+	b = (yybuffer) yyalloc( sizeof( *b ) , yyscanner );
 	if ( b == NULL ) {
 		YY_FATAL_ERROR( "out of dynamic memory in yy_scan_buffer()" );
 	}
